@@ -1,9 +1,11 @@
-﻿using HTCSharp.Core.Interfaces;
+﻿using HTCSharp.Core.Interfaces.Plugin;
 using HTCSharp.Core.IO;
 using HTCSharp.Core.Logging;
+using HTCSharp.Core.Utils;
 using McMaster.NETCore.Plugins;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -44,14 +46,14 @@ namespace HTCSharp.Core.Managers {
         }
 
         public void ConstructPlugins() {
-            if(!HTCDirectory.Exists(PluginsPath)) {
+            if(!Directory.Exists(PluginsPath)) {
                 _Logger.Fatal($"Plugins path '{PluginsPath}' does not exist!");
                 Environment.Exit(2);
             }
             var loaders = new List<PluginLoader>();
-            foreach (var pluginConfig in HTCDirectory.GetFiles(PluginsPath, "*.config", System.IO.SearchOption.AllDirectories)) {
-                if (HTCFile.Exists(pluginConfig)) {
-                    var loader = PluginLoader.CreateFromConfigFile(pluginConfig, sharedTypes: new[] { typeof(IHTCPlugin) });
+            foreach (var pluginConfig in IOUtils.GetFilesExceptionFix(PluginsPath, "*.config", System.IO.SearchOption.AllDirectories)) {
+                if (File.Exists(pluginConfig)) {
+                    var loader = PluginLoader.CreateFromConfigFile(pluginConfig, sharedTypes: new[] { typeof(IHTCPlugin), typeof(IHttpEvents), typeof(Models.Http.HTCHttpContext) });
                     loaders.Add(loader);
                 }
             }

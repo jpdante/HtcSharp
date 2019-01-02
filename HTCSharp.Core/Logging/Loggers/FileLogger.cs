@@ -11,7 +11,7 @@ namespace HTCSharp.Core.Logging.Loggers {
         private StreamWriter streamWriter;
 
         public FileLogger(string filename) {
-            if (!HTCFile.Exists(filename)) HTCFile.CreateEmptyFile(filename);
+            if (!File.Exists(filename)) File.Create(filename);
             fileStream = new FileStream(filename, FileMode.Truncate, FileAccess.Write, FileShare.ReadWrite);
             streamWriter = new StreamWriter(fileStream);
         }
@@ -46,10 +46,10 @@ namespace HTCSharp.Core.Logging.Loggers {
 
         public void ExecuteLog(string logType, Type type, DateTime time, object obj, Exception ex) {
             if (obj != null) {
-                streamWriter.WriteLine($"[{time.ToString()}] [{type.Name}] [{logType}] {obj}");
+                streamWriter.WriteLine($"[{time.ToString()}] [{logType}] [{type.Name}] {obj}");
             }
             if (ex != null) {
-                streamWriter.WriteLine($"[{time.ToString()}] [{type.Name}] [{logType}] Message: {ex.Message}.{Environment.NewLine}StackTrace: {ex.StackTrace}");
+                streamWriter.WriteLine($"[{time.ToString()}] [{logType}] [{type.Name}] {ex.Message} {ex.StackTrace}");
             }
             streamWriter.Flush();
             fileStream.Flush();

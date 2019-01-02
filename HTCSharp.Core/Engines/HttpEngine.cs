@@ -1,32 +1,95 @@
-﻿using HTCSharp.Core.Components.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using HTCSharp.Core.Components.Http;
+using HTCSharp.Core.IO;
+using HTCSharp.Core.Models.Http;
+using HTCSharp.Core.Utils;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace HTCSharp.Core.Engines {
     public class HttpEngine : Engine {
-        private IWebHost webHost;
+
+        private IWebHost WebHostServer;
+        private List<HttpServerInfo> ServersInfo;
+        private Dictionary<string, HttpServerInfo> DomainServers;
 
         public override void Start() {
-            var config = EngineConfig;
-            webHost = CreateWebHost(new string[] { }).Build();
-            webHost.Start();
+            ServersInfo = new List<HttpServerInfo>();
+            DomainServers = new Dictionary<string, HttpServerInfo>();
+            if (EngineConfig == null) throw new NullReferenceException("Engine config is null!");
+            CreateServers();
+            WebHostServer = CreateWebHost(new string[] { }).Build();
+            WebHostServer.Start();
         }
 
         public override void Stop() {
-            webHost.StopAsync().GetAwaiter().GetResult();
+            WebHostServer.StopAsync().GetAwaiter().GetResult();
         }
 
-        public IWebHostBuilder CreateWebHost(string[] args) {
-            //HttpEngineContainer container = new HttpEngineContainer(typeof(HttpEngineContainer), typeof(HttpEngineContainer), ServiceLifetime.Singleton);
+        private IWebHostBuilder CreateWebHost(string[] args) {
             IWebHostBuilder builder = WebHost.CreateDefaultBuilder(args);
-            //builder.ConfigureServices(s => { s.Add(container); });
-            builder.UseUrls("http://0.0.0.0:8080");
+            builder.UseKestrel(options => {
+                foreach(HttpServerInfo serverInfo in ServersInfo) {
+                    if(serverInfo.UseSSL) {
+                        foreach (System.Net.IPEndPoint endPoint in serverInfo.Hosts) {
+                            options.Listen(endPoint.Address, endPoint.Port, listenOptions => {
+                                listenOptions.UseHttps(serverInfo.Certificate, serverInfo.Password);
+                            });
+                        }
+                    } else {
+                        foreach(System.Net.IPEndPoint endPoint in serverInfo.Hosts) {
+                            options.Listen(endPoint.Address, endPoint.Port);
+                        }
+                    }
+                }
+            });
+            builder.ConfigureServices(servicesColletion => {
+                servicesColletion.AddSingleton<HttpEngine>(this);
+            });
             builder.UseStartup<HttpStartup>();
             return builder;
         }
+
+        private void CreateServers() {
+            JArray servers = EngineConfig.GetValue("Servers", StringComparison.CurrentCultureIgnoreCase)?.Value<JArray>();
+            foreach (JObject server in servers) {
+                List<string> hosts = GetValues<string>(server, "Hosts");
+                string domain = GetValue<string>(server, "Domain");
+                string root = IOUtils.ReplacePathTags(GetValue<string>(server, "Root"));
+                bool useSSL = GetValue<bool>(server, "SSL");
+                string certificate = null;
+                string password = null;
+                if (useSSL) {
+                    certificate = IOUtils.ReplacePathTags(GetValue<string>(server, "Certificate"));
+                    password = GetValue<string>(server, "Password");
+                }
+                HttpServerInfo serverInfo = new HttpServerInfo(hosts.AsReadOnly(), domain, root, useSSL, certificate, password);
+                ServersInfo.Add(serverInfo);
+                DomainServers.Add(domain, serverInfo);
+            }
+        }
+
+        private List<T> GetValues<T>(JObject jObject, string key) {
+            List<T> result = new List<T>();
+            JArray jArray = jObject.GetValue(key, StringComparison.CurrentCultureIgnoreCase)?.Value<JArray>();
+            if (jArray == null) throw new ArgumentNullException($"The '{key}' tag is null.");
+            foreach (var obj in jArray) {
+                result.Add(obj.Value<T>());
+            }
+            return result;
+        }
+
+        private T GetValue<T>(JObject jObject, string key) {
+            JToken jToken = jObject.GetValue(key, StringComparison.CurrentCultureIgnoreCase);
+            if (jToken == null) throw new ArgumentNullException($"The '{key}' tag is null.");
+            return jToken.Value<T>();
+        }
+
+        public List<HttpServerInfo> getServersInfo { get { return ServersInfo; } }
+        public Dictionary<string, HttpServerInfo> getDomainServers { get { return DomainServers; } }
     }
 }

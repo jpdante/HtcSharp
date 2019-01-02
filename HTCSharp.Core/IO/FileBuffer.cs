@@ -7,45 +7,7 @@ using System.IO;
 using System.Text;
 
 namespace HTCSharp.Core.IO {
-    public static class HTCFile {
-
-        public static JObject GetJsonFile(string filename) {
-            using (StreamReader file = File.OpenText(filename)) {
-                using (JsonTextReader reader = new JsonTextReader(file)) {
-                    JObject data = (JObject)JToken.ReadFrom(reader);
-                    return data;
-                }
-            }
-        }
-
-        public static void CreateEmptyFile(string filename) {
-            File.Create(filename);
-        }
-
-        public static string GetLastModified(string filename) {
-            return File.GetLastWriteTime(filename).ToString("r");
-        }
-
-        public static string GetFileName(string path) {
-            return Path.GetFileName(path);
-        }
-
-        public static string GetExtension(string filename) {
-            return Path.GetExtension(filename);
-        }
-
-        public static bool Exists(string filename) {
-            return File.Exists(filename);
-        }
-
-        public static FileInfo GetFileInfo(string filename) {
-            return new FileInfo(filename);
-        }
-
-    }
-
-    public class HTCFileBuffer : IDisposable {
-
+    public class FileBuffer : IDisposable {
         private string FilePath;
         private int BufferSize;
         private FileStream FileStream;
@@ -53,7 +15,7 @@ namespace HTCSharp.Core.IO {
         private long EndRange = 0;
         private long CurrentByte;
 
-        public HTCFileBuffer(string FilePath, int BufferSize) {
+        public FileBuffer(string FilePath, int BufferSize) {
             this.FilePath = FilePath;
             this.BufferSize = BufferSize;
             this.FileStream = new FileStream(this.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);

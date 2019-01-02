@@ -17,7 +17,7 @@ namespace HTCSharp.Server {
         public void Start(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
             LogManager.RegisterLogger(new ConsoleLogger());
-            LogManager.RegisterLogger(new FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "HTCKestrel.log")));
+            LogManager.RegisterLogger(new FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "HTCSharp.log")));
             if (args.Length == 1) {
                 htcServer = new HTCServer(args[0]);
             } else {
@@ -28,8 +28,8 @@ namespace HTCSharp.Server {
         }
 
         private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
-            htcServer.Stop();
             _Logger.Info("Exiting system due to external CTRL-C, or process kill, or shutdown");
+            htcServer.Stop();
             Environment.Exit(0);
         }
     }

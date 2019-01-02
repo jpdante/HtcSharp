@@ -34,10 +34,10 @@ namespace HTCSharp.Core.Logging.Loggers {
 
         public void ExecuteLog(string logType, Type type, DateTime time, object obj, Exception ex) {
             if (obj != null) {
-                Console.WriteLine($"[{time.ToString()}] [{type.Name}] [{logType}] {obj}");
+                Console.WriteLine($"[{time.ToString()}] [{logType}] [{type.Name}] {obj}");
             }
             if (ex != null) {
-                Console.WriteLine($"[{time.ToString()}] [{type.Name}] [{logType}] Message: {ex.Message}.{Environment.NewLine}StackTrace: {ex.StackTrace}");
+                Console.WriteLine($"[{time.ToString()}] [{logType}] [{type.Name}] {ex.Message} {ex.StackTrace}");
             }
         }
     }

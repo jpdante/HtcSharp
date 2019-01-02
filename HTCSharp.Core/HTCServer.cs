@@ -1,10 +1,14 @@
 ﻿using HTCSharp.Core.Engines;
+using HTCSharp.Core.Helpers.Http;
 using HTCSharp.Core.IO;
 using HTCSharp.Core.Logging;
 using HTCSharp.Core.Managers;
+using HTCSharp.Core.Utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection;
 
 namespace HTCSharp.Core {
@@ -22,10 +26,17 @@ namespace HTCSharp.Core {
         private string PluginsPath;
 
         public static bool IsDebug { get { return _Debug; } }
+        public static HTCServer Context { get { return _HtcServer; } }
+
+        public T GetConfig<T>(string key) {
+            return Config.GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
+        }
 
         public bool IsStopped { get { return Active; } }
+        public ReadOnlyCollection<Engine> GetEngines() { return Engines.AsReadOnly(); }
 
         public HTCServer(string configPath) {
+            _HtcServer = this;
             ConfigPath = configPath;
             Active = false;
             _Debug = false;
@@ -33,13 +44,15 @@ namespace HTCSharp.Core {
 
         public void Start() {
             AvailableEngines = new Dictionary<string, Type>();
+            URLMapping.RegisterIndexFile("index.html");
+            URLMapping.RegisterIndexFile("index.htm");
             RegisterEngine("http", typeof(HttpEngine));
             Engines = new List<Engine>();
             _Logger.Info("Starting HTCSharp...");
             _Logger.Info("Loading Configuration...");
             try {
-                Config = HTCFile.GetJsonFile(ConfigPath);
-                PluginsPath = Config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? HTCDirectory.CombinePath(HTCDirectory.GetWorkingDirectory(), @"plugins\");
+                Config = IOUtils.GetJsonFile(ConfigPath);
+                PluginsPath = Config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins\");
                 _Debug = Config.GetValue("Debug", StringComparison.CurrentCultureIgnoreCase)?.Value<bool>() == true;
             } catch (Exception ex) {
                 _Logger.Error("Failed to load configuration!", ex);
@@ -50,8 +63,12 @@ namespace HTCSharp.Core {
             PluginsManager.Call_OnLoad();
             LoadEngines();
             foreach(Engine engine in Engines) {
-                _Logger.Info($"Starting Engine: '{engine.GetType().Name}'");
-                engine.Start();
+                try {
+                    _Logger.Info($"Starting Engine: '{engine.GetType().Name}'");
+                    engine.Start();
+                } catch(Exception ex) {
+                    _Logger.Error($"Failed to start Engine: '{engine.GetType().Name}'", ex);
+                }
             }
             Active = true;
             PluginsManager.Call_OnEnable();
@@ -63,8 +80,12 @@ namespace HTCSharp.Core {
             PluginsManager.Call_OnDisable();
             Active = false;
             foreach (Engine engine in Engines) {
-                _Logger.Info($"Stopping Engine: '{engine.GetType().Name}'");
-                engine.Stop();
+                try {
+                    _Logger.Info($"Stopping Engine: '{engine.GetType().Name}'");
+                    engine.Stop();
+                } catch (Exception ex) {
+                    _Logger.Error($"Failed to stop Engine: '{engine.GetType().Name}'", ex);
+                }
             }
             this.Engines.Clear();
             this.AvailableEngines.Clear();
@@ -107,7 +128,7 @@ namespace HTCSharp.Core {
         }
 
         private void LoadEngines() {
-            JArray servers = Config.GetValue("Servers", StringComparison.CurrentCultureIgnoreCase)?.Value<JArray>();
+            JArray servers = Config.GetValue("Engines", StringComparison.CurrentCultureIgnoreCase)?.Value<JArray>();
             if(servers == null) return;
             foreach(JObject server in servers) {
                 string EngineName = server.GetValue("Engine", StringComparison.CurrentCultureIgnoreCase)?.Value<string>();
@@ -119,6 +140,8 @@ namespace HTCSharp.Core {
                     Engine instance = (Engine)Activator.CreateInstance(type);
                     instance.SetConfig(EngineConfig);
                     Engines.Add(instance);
+                } else {
+                    _Logger.Info($"Unable to create, Engine '{EngineName}' does not exist.");
                 }
             }
         }
