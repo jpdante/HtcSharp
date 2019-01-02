@@ -28,7 +28,7 @@ namespace HTCSharp.Server {
         }
 
         private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
-            _Logger.Info("Exiting system due to external CTRL-C, or process kill, or shutdown");
+            _Logger.Info("Exiting system due to external CTRL-C, or process kill, or shutdown.");
             htcServer.Stop();
             Environment.Exit(0);
         }
