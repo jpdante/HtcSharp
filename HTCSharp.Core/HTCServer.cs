@@ -28,7 +28,7 @@ namespace HTCSharp.Core {
         public static bool IsDebug { get { return _Debug; } }
         public static HTCServer Context { get { return _HtcServer; } }
 
-        public T GetConfig<T>(string key) {
+        public T GetConfig<T>(string key) { 
             return Config.GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
         }
 
