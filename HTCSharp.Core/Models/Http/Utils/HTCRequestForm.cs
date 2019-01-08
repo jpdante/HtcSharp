@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
 namespace HTCSharp.Core.Models.Http.Utils {
-    public class HTCRequestForm {
+    public class HTCRequestForm : IEnumerable<KeyValuePair<string, StringValues>>, IEnumerable {
         private IFormCollection Form;
         private HTCRequestFormFiles FormFiles;
 
-        public HTCRequestForm(IFormCollection form) {
+        public HTCRequestForm(IFormCollection form, HttpRequest httpRequest) {
             Form = form;
             FormFiles = new HTCRequestFormFiles(form.Files);
         }
@@ -28,6 +29,14 @@ namespace HTCSharp.Core.Models.Http.Utils {
 
         public bool TryGetValue(string key, out StringValues value) {
             return Form.TryGetValue(key, out value);
+        }
+
+        public IEnumerator<KeyValuePair<string, StringValues>> GetEnumerator() {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            throw new NotImplementedException();
         }
 
         public int Count { get { return Form.Count; } }

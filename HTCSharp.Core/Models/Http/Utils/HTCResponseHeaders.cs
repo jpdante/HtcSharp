@@ -25,10 +25,6 @@ namespace HTCSharp.Core.Models.Http.Utils {
             Header.Add(key, value);
         }
 
-        public void Add(string key, StringValues value) {
-            Header.Add(key, value);
-        }
-
         public void Clear() {
             Header.Clear();
         }

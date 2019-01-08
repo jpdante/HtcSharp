@@ -5,14 +5,18 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 
 namespace HTCSharp.Core.Models.Http.Utils {
-    public class HTCFormFile {
+    public class HTCFile {
         private IFormFile File;
 
-        public HTCFormFile(IFormFile file) {
+        public HTCFile(IFormFile file) {
             File = file;
+            Headers = new Dictionary<string, string>();
+            foreach (string key in File.Headers.Keys) {
+                Headers.Add(key, File.Headers[key]);
+            }
         }
 
-        public HTCRequestHeaders Headers { get { return new HTCRequestHeaders(File.Headers); } }
+        public Dictionary<string, string> Headers { get; }
         public string ContentType { get { return File.ContentType; } }
         public string FileName { get { return File.FileName; } }
         public long Lenght { get { return File.Length; } }

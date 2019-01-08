@@ -46,7 +46,7 @@ namespace HTCSharp.Core.Models.Rewriter {
                             string[] query = rules[r].Split("=");
                             //Console.WriteLine($"Exec Rule -> {rules[r]}");
                             //Console.WriteLine($"GET Inject -> {query[0]}={query[1].Replace($"${p}", separatedPath[p])}");
-                            context.Request.Query.Inject(query[0], query[1].Replace($"${p}", separatedPath[p]));
+                            context.Request.Query.Add(query[0], query[1].Replace($"${p}", separatedPath[p]));
                         }
                     }
                 }

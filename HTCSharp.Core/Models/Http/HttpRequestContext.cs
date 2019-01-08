@@ -1,8 +1,12 @@
-﻿using HTCSharp.Core.Models.Http.Utils;
+﻿using HTCSharp.Core.Helpers.Http;
+using HTCSharp.Core.Models.Http.Utils;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Web;
 
@@ -14,47 +18,45 @@ namespace HTCSharp.Core.Models.Http {
 
         public Stream InputStream { get { return Request.Body; } }
         public long? ContentLength { get { return Request.ContentLength; } }
-        public string ContentType { get { return Request.ContentType; } }
+        public ContentType ContentType { get { return ContentType.DEFAULT.FromString(Request.ContentType); } }
         public string Host { get { return Request.Host.ToString(); } }
         public bool IsHttps { get { return Request.IsHttps; } }
-        public string Method { get { return Request.Method; } }
+        public HttpMethod Method { get { return HttpMethod.GET.FromString(Request.Method); } }
         public string Path { get { return Request.Path.ToString(); } }
         public string PathBase { get { return Request.PathBase.ToString(); } }
         public string Protocol { get { return Request.Protocol; } }
         public string QueryString { get { return Request.QueryString.ToString(); } }
         public string Scheme { get { return Request.Scheme; } }
-        public HTCRequestForm Form { get; }
-        public HTCRequestHeaders Headers { get; }
-        public HTCRequestQuery Query { get; }
-        public HTCRequestCookies Cookies { get; }
-//         public Dictionary<string, string> Post {
-//             get {
-//                 if (Request.Method.Equals("Post", StringComparison.CurrentCultureIgnoreCase)) {
-//                     if(PostData == null) {
-//                         PostData = new Dictionary<string, string>();
-//                         using (StreamReader reader = new StreamReader(InputStream)) {
-//                             foreach (var param in reader.ReadToEnd().Split("&")) {
-//                                 string[] kvPair = param.Split('=');
-//                                 if (kvPair.Length < 2) continue;
-//                                 PostData.Add(kvPair[0], HttpUtility.UrlDecode(kvPair[1]));
-//                             }
-//                         }
-//                     }
-//                     return PostData;
-//                 } else {
-//                     return new Dictionary<string, string>(); ;
-//                 }
-//             }
-//         }
+        public List<HTCFile> Files;
+        public Dictionary<string, string> Post;
+        public Dictionary<string, string> Cookies;
+        public Dictionary<string, string> Query;
+        public Dictionary<string, string> Headers;
 
         public HttpRequestContext(HttpRequest request) {
             Request = request;
-            try {
-                if (request.Method.Equals("Post", StringComparison.CurrentCultureIgnoreCase)) Form = new HTCRequestForm(Request.Form);
-            } catch { }
-            Headers = new HTCRequestHeaders(Request.Headers);
-            Cookies = new HTCRequestCookies(Request.Cookies);
-            Query = new HTCRequestQuery(Request.Query);
+            Files = new List<HTCFile>();
+            Post = new Dictionary<string, string>();
+            Cookies = new Dictionary<string, string>();
+            Query = new Dictionary<string, string>();
+            Headers = new Dictionary<string, string>();
+            foreach (string key in Request.Cookies.Keys) {
+                Cookies.Add(key, Request.Cookies[key]);
+            }
+            foreach (string key in Request.Query.Keys) {
+                Query.Add(key, Request.Query[key]);
+            }
+            foreach (string key in Request.Headers.Keys) {
+                Headers.Add(key, Request.Headers[key]);
+            }
+            if(Method == HttpMethod.POST) {
+                foreach (string key in Request.Form.Keys) {
+                    Post.Add(key, Request.Form[key]);
+                }
+                foreach (var file in Request.Form.Files) {
+                    Files.Add(new HTCFile(file));
+                }
+            }
         }
     }
 }

@@ -6,16 +6,16 @@ using System.Text;
 
 namespace HTCSharp.Core.Models.Http.Utils {
     public class HTCRequestFormFiles {
-        private List<HTCFormFile> Files;
+        private List<HTCFile> Files;
 
         public HTCRequestFormFiles(IFormFileCollection files) {
-            Files = new List<HTCFormFile>();
+            Files = new List<HTCFile>();
             foreach (IFormFile file in files) {
-                Files.Add(new HTCFormFile(file));
+                Files.Add(new HTCFile(file));
             }
         }
 
-        public HTCFormFile this[int index] {
+        public HTCFile this[int index] {
             get {
                 return Files[index];
             }

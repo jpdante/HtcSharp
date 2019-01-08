@@ -25,6 +25,14 @@ namespace HTCSharp.Core.Models.Http.Utils {
             Cookies.Append(key, value, options);
         }
 
+        public void Append(string key, string value, CookieOptions options) {
+            Cookies.Append(key, value, options);
+        }
+
+        public void Append(string key, string value) {
+            Cookies.Append(key, value);
+        }
+
         public void Delete(string key) {
             Cookies.Delete(key);
         }
