@@ -2,6 +2,7 @@
 using HTCSharp.Core.Models.Http.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +15,6 @@ namespace HTCSharp.Core.Models.Http {
     public class HttpRequestContext {
 
         private HttpRequest Request;
-        private Dictionary<string, string> PostData;
 
         public Stream InputStream { get { return Request.Body; } }
         public long? ContentLength { get { return Request.ContentLength; } }
@@ -50,13 +50,93 @@ namespace HTCSharp.Core.Models.Http {
                 Headers.Add(key, Request.Headers[key]);
             }
             if(Method == HttpMethod.POST) {
-                foreach (string key in Request.Form.Keys) {
-                    Post.Add(key, Request.Form[key]);
-                }
-                foreach (var file in Request.Form.Files) {
-                    Files.Add(new HTCFile(file));
+                if(ContentType == ContentType.FormUrlEncoded || ContentType == ContentType.MultipartFormData) {
+                    foreach (string key in Request.Form.Keys) {
+                        Post.Add(key, Request.Form[key]);
+                    }
+                    foreach (var file in Request.Form.Files) {
+                        Files.Add(new HTCFile(file));
+                    }
+                } else if (ContentType == ContentType.JSON) {
+                    using (StreamReader reader = new StreamReader(InputStream, Encoding.UTF8)) {
+                        string json = reader.ReadToEnd();
+                        try {
+                            JObject post = JObject.Parse(json);
+                            foreach (var item in post) {
+                                DoJsonAdd(item.Key, item.Value);
+                            }
+                        } catch { }
+                    }
                 }
             }
+        }
+
+        public void DoJsonAdd(string key, JToken obj) {
+            try {
+                switch (obj.Type) {
+                    case JTokenType.Array:
+                        JArray array = (JArray)obj;
+                        DoJsonAdd($"{key}.length", array.Count);
+                        for (int i = 0; i < array.Count; i++) {
+                            DoJsonAdd($"{key}.{i}", array[i]);
+                        }
+                        break;
+                    case JTokenType.Boolean:
+                        Post.Add(key, obj.ToObject<bool>().ToString());
+                        break;
+                    case JTokenType.Bytes:
+                        Post.Add(key, obj.ToObject<object>().ToString());
+                        break;
+                    case JTokenType.Comment:
+                        Post.Add(key, obj.ToObject<object>().ToString());
+                        break;
+                    case JTokenType.Constructor:
+                        Post.Add(key, obj.ToObject<object>().ToString());
+                        break;
+                    case JTokenType.Date:
+                        Post.Add(key, obj.ToObject<DateTime>().ToString());
+                        break;
+                    case JTokenType.Float:
+                        Post.Add(key, obj.ToObject<float>().ToString());
+                        break;
+                    case JTokenType.Guid:
+                        Post.Add(key, obj.ToObject<Guid>().ToString());
+                        break;
+                    case JTokenType.Integer:
+                        Post.Add(key, obj.ToObject<int>().ToString());
+                        break;
+                    case JTokenType.None:
+                        Post.Add(key, "");
+                        break;
+                    case JTokenType.Null:
+                        break;
+                    case JTokenType.Object:
+                        JObject obj2 = obj.ToObject<JObject>();
+                        foreach (var item in obj2) {
+                            DoJsonAdd($"{key}.{item.Key}", item.Value);
+                        }
+                        Post.Add(key, obj.ToObject<JObject>().ToString());
+                        break;
+                    case JTokenType.Property:
+                        Post.Add(key, obj.ToObject<object>().ToString());
+                        break;
+                    case JTokenType.Raw:
+                        Post.Add(key, obj.ToObject<object>().ToString());
+                        break;
+                    case JTokenType.String:
+                        Post.Add(key, obj.ToObject<string>());
+                        break;
+                    case JTokenType.TimeSpan:
+                        Post.Add(key, obj.ToObject<TimeSpan>().ToString());
+                        break;
+                    case JTokenType.Undefined:
+                        Post.Add(key, obj.ToObject<object>().ToString());
+                        break;
+                    case JTokenType.Uri:
+                        Post.Add(key, obj.ToObject<Uri>().ToString());
+                        break;
+                }
+            } catch { }
         }
     }
 }
