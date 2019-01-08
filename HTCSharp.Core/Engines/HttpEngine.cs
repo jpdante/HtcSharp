@@ -7,6 +7,7 @@ using HTCSharp.Core.Models.Http;
 using HTCSharp.Core.Utils;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 
@@ -32,16 +33,24 @@ namespace HTCSharp.Core.Engines {
 
         private IWebHostBuilder CreateWebHost(string[] args) {
             IWebHostBuilder builder = WebHost.CreateDefaultBuilder(args);
+            List<string> endpoints = new List<string>();
+            builder.ConfigureAppConfiguration((hostingContext, config) => {
+                config.AddJsonFile(HTCServer.Context.AspNetConfigPath);
+            });
             builder.UseKestrel(options => {
                 foreach(HttpServerInfo serverInfo in ServersInfo) {
                     if(serverInfo.UseSSL) {
                         foreach (System.Net.IPEndPoint endPoint in serverInfo.Hosts) {
+                            if (endpoints.Contains($"{endPoint.Address}{endPoint.Port}")) continue;
+                            endpoints.Add($"{endPoint.Address}{endPoint.Port}");
                             options.Listen(endPoint.Address, endPoint.Port, listenOptions => {
                                 listenOptions.UseHttps(serverInfo.Certificate, serverInfo.Password);
                             });
                         }
                     } else {
                         foreach(System.Net.IPEndPoint endPoint in serverInfo.Hosts) {
+                            if (endpoints.Contains($"{endPoint.Address}{endPoint.Port}")) continue;
+                            endpoints.Add($"{endPoint.Address}{endPoint.Port}");
                             options.Listen(endPoint.Address, endPoint.Port);
                         }
                     }

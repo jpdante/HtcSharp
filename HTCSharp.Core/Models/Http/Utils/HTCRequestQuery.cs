@@ -6,10 +6,13 @@ using System.Text;
 
 namespace HTCSharp.Core.Models.Http.Utils {
     public class HTCRequestQuery {
-        private IQueryCollection Query;
+        private Dictionary<string, string> Query;
 
         public HTCRequestQuery(IQueryCollection query) {
-            Query = query;
+            Query = new Dictionary<string, string>();
+            foreach(var row in query) {
+                Query.Add(row.Key, row.Value);
+            }
         }
 
         public string this[string key] {
@@ -18,11 +21,15 @@ namespace HTCSharp.Core.Models.Http.Utils {
             }
         }
 
-        public bool ConstainsKey(string key) {
+        public void Inject(string key, string value) {
+            Query.Add(key, value);
+        }
+
+        public bool ContainsKey(string key) {
             return Query.ContainsKey(key);
         }
 
-        public bool TryGetValue(string key, out StringValues value) {
+        public bool TryGetValue(string key, out string value) {
             return Query.TryGetValue(key, out value);
         }
 

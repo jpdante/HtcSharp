@@ -39,5 +39,11 @@ namespace HTCSharp.Core.Utils {
             ));
         }
 
+        public static void CreateHttpConfig(string path) {
+            if(!File.Exists(path)) {
+                File.WriteAllText(path, "{\"Logging\":{\"IncludeScopes\":false,\"LogLevel\":{\"Default\":\"None\",\"System\":\"Warning\",\"Microsoft\":\"Warning\"}}}");
+            }
+        }
+
     }
 }

@@ -17,7 +17,7 @@ namespace HTCSharp.Core.Models.Http.Utils {
             }
         }
 
-        public bool ConstainsKey(string key) {
+        public bool ContainsKey(string key) {
             return Cookies.ContainsKey(key);
         }
 

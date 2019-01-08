@@ -22,6 +22,7 @@ namespace HTCSharp.Core {
         private PluginManager PluginsManager;
         private JObject Config;
         private bool Active;
+        private string AspNetConfig;
         private string ConfigPath;
         private string PluginsPath;
 
@@ -32,6 +33,7 @@ namespace HTCSharp.Core {
             return Config.GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
         }
 
+        public string AspNetConfigPath { get { return AspNetConfig; } }
         public bool IsStopped { get { return Active; } }
         public ReadOnlyCollection<Engine> GetEngines() { return Engines.AsReadOnly(); }
 
@@ -52,7 +54,10 @@ namespace HTCSharp.Core {
             _Logger.Info("Loading Configuration...");
             try {
                 Config = IOUtils.GetJsonFile(ConfigPath);
-                PluginsPath = Config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins\");
+                AspNetConfig = Path.Combine(Path.GetDirectoryName(ConfigPath), "aspnet-appsettings.json");
+                IOUtils.CreateHttpConfig(AspNetConfig);
+                PluginsPath = Config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins/");
+                PluginsPath = IOUtils.ReplacePathTags(PluginsPath);
                 _Debug = Config.GetValue("Debug", StringComparison.CurrentCultureIgnoreCase)?.Value<bool>() == true;
             } catch (Exception ex) {
                 _Logger.Error("Failed to load configuration!", ex);

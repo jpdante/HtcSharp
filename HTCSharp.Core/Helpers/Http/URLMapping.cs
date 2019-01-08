@@ -3,6 +3,7 @@ using HTCSharp.Core.IO;
 using HTCSharp.Core.Logging;
 using HTCSharp.Core.Models.Http;
 using HTCSharp.Core.Models.Http.Pages;
+using HTCSharp.Core.Models.Rewriter;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace HTCSharp.Core.Helpers.Http {
         private static List<string> IndexFiles = new List<string>();
         private static Dictionary<string, IHttpEvents> ExtensionPlugins = new Dictionary<string, IHttpEvents>();
         private static Dictionary<string, IHttpEvents> RegisteredPages = new Dictionary<string, IHttpEvents>();
+        private static Dictionary<string, FolderConfig> FolderConfigs = new Dictionary<string, FolderConfig>();
+        private static FolderConfig DefaultConfig = new FolderConfig();
 
         public static void RegisterIndexFile(string file) {
             IndexFiles.Add(file.ToLower());
@@ -45,15 +48,43 @@ namespace HTCSharp.Core.Helpers.Http {
             RegisteredPages.Remove(page);
         }
 
+        public static void DoFolderConfig(HTCHttpContext context, HttpServerInfo serverInfo, out string definitiveUrl, out FolderConfig pathConfig) {
+            string tempRoot = serverInfo.Root;
+            string tempUrlPath = context.Request.Path.ToString();
+            string tempPath = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(tempRoot, tempUrlPath.Remove(0, 1))));
+            if(FolderConfigs.ContainsKey(tempUrlPath)) {
+                FolderConfig config = FolderConfigs[tempUrlPath];
+                config.CheckConfigChange();
+                definitiveUrl = config.Rewrite(tempUrlPath, context);
+                pathConfig = config;
+                return;
+            } else {
+                if (File.Exists(Path.Combine(tempPath, "htcconf.json"))) {
+                    FolderConfig config = new FolderConfig(tempUrlPath, Path.Combine(tempPath, "htcconf.json"));
+                    FolderConfigs.Add(tempUrlPath, config);
+                    config.CheckConfigChange();
+                    definitiveUrl = config.Rewrite(tempUrlPath, context);
+                    pathConfig = config;
+                    return;
+                } else {
+                    definitiveUrl = tempUrlPath;
+                    pathConfig = DefaultConfig;
+                    return;
+                }
+            }
+        }
+
         public static void ProcessRequest(HTCHttpContext context, HttpServerInfo serverInfo) {
             string root = serverInfo.Root;
-            string urlPath = context.Request.Path.ToString();
-            if (RegisteredPages.ContainsKey(urlPath.ToLower())) {
-                if (RegisteredPages[urlPath.ToLower()].OnHttpPageRequest(context, urlPath.ToLower())) {
+            string requestedUrl = null;
+            FolderConfig folderConfig = null;
+            DoFolderConfig(context, serverInfo, out requestedUrl, out folderConfig);
+            if (RegisteredPages.ContainsKey(requestedUrl.ToLower())) {
+                if (RegisteredPages[requestedUrl.ToLower()].OnHttpPageRequest(context, requestedUrl.ToLower())) {
                     Default5xx.Call500(context);
                 }
             } else {
-                string requestPath = Path.GetFullPath(Path.Combine(root, urlPath.Remove(0, 1)));
+                string requestPath = Path.GetFullPath(Path.Combine(root, requestedUrl.Remove(0, 1)));
                 if (File.Exists(requestPath)) {
                     string extension = Path.GetExtension(requestPath);
                     if (ExtensionPlugins.ContainsKey(extension.ToLower())) {
@@ -70,7 +101,7 @@ namespace HTCSharp.Core.Helpers.Http {
                     }
                 } else {
                     if (Directory.Exists(requestPath)) {
-                        CallIndex(context, Path.GetFullPath(Path.Combine(root, requestPath)), false);
+                        CallIndex(context, requestPath, requestedUrl, false);
                     } else {
                         Default4xx.Call404(context);
                     }
@@ -81,25 +112,26 @@ namespace HTCSharp.Core.Helpers.Http {
             } catch { }
         }
 
-        public static void CallIndex(HTCHttpContext context, string serverPath, bool allowDirectoryIndexer) {
+        public static void CallIndex(HTCHttpContext context, string rootPath, string requestPath, bool allowDirectoryIndexer) {
             foreach (string indexFile in IndexFiles) {
-                string indexPath = Path.Combine(serverPath, indexFile);
-                if (RegisteredPages.ContainsKey(indexPath.ToLower())) {
-                    if (RegisteredPages[indexFile.ToLower()].OnHttpPageRequest(context, indexPath.ToLower())) {
+                string indexRequestPath = Path.Combine(requestPath, indexFile);
+                string indexFilePath = Path.Combine(rootPath, indexRequestPath.Remove(0, 1));
+                if (RegisteredPages.ContainsKey(indexRequestPath.ToLower())) {
+                    if (RegisteredPages[indexRequestPath.ToLower()].OnHttpPageRequest(context, indexRequestPath.ToLower())) {
                         Default5xx.Call500(context);
                     }
                     return;
                 } else {
-                    if (File.Exists(indexPath)) {
+                    if (File.Exists(indexFilePath)) {
                         IHttpEvents plugin = null;
-                        string extension = Path.GetExtension(indexPath);
+                        string extension = Path.GetExtension(indexFilePath);
                         if (ExtensionPlugins.TryGetValue(extension.ToLower(), out plugin)) {
-                            if (plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower())) {
+                            if (plugin.OnHttpExtensionRequest(context, indexFilePath, extension.ToLower())) {
                                 Default5xx.Call500(context);
                             }
                         } else {
                             try {
-                                CallFile(context, indexPath);
+                                CallFile(context, indexFilePath);
                             } catch (Exception ex) {
                                 _Logger.Error(ex);
                                 Default5xx.Call500(context);

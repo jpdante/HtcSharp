@@ -11,10 +11,10 @@ namespace HTCSharp.Core.Models.Http {
         private ConnectionInfo Connection;
 
         public X509Certificate ClientCertificate { get { return Connection.ClientCertificate; } }
-        public string Id { get { return Connection.Id; } }
-        public IPAddress LocalIpAddress { get { return Connection.LocalIpAddress; } }
+        public string ID { get { return Connection.Id; } }
+        public IPAddress LocalIPAddress { get { return Connection.LocalIpAddress; } }
         public int LocalPort { get { return Connection.LocalPort; } }
-        public IPAddress RemoteIpAddress { get { return Connection.RemoteIpAddress; } }
+        public IPAddress RemoteIPAddress { get { return Connection.RemoteIpAddress; } }
         public int RemotePort { get { return Connection.RemotePort; } }
 
         public HttpConnectionContext(ConnectionInfo connection) {

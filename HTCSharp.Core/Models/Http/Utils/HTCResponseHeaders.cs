@@ -33,7 +33,7 @@ namespace HTCSharp.Core.Models.Http.Utils {
             Header.Clear();
         }
 
-        public bool ConstainsKey(string key) {
+        public bool ContainsKey(string key) {
             return Header.ContainsKey(key);
         }
 

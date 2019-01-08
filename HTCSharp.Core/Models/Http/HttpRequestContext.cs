@@ -23,31 +23,35 @@ namespace HTCSharp.Core.Models.Http {
         public string Protocol { get { return Request.Protocol; } }
         public string QueryString { get { return Request.QueryString.ToString(); } }
         public string Scheme { get { return Request.Scheme; } }
+        public HTCRequestForm Form { get; }
         public HTCRequestHeaders Headers { get; }
         public HTCRequestQuery Query { get; }
         public HTCRequestCookies Cookies { get; }
-        public Dictionary<string, string> Post {
-            get {
-                if (Request.Method.Equals("Post", StringComparison.CurrentCultureIgnoreCase)) {
-                    if(PostData == null) {
-                        PostData = new Dictionary<string, string>();
-                        using (StreamReader reader = new StreamReader(InputStream)) {
-                            foreach (var param in reader.ReadToEnd().Split("&")) {
-                                string[] kvPair = param.Split('=');
-                                if (kvPair.Length < 2) continue;
-                                PostData.Add(kvPair[0], HttpUtility.UrlDecode(kvPair[1]));
-                            }
-                        }
-                    }
-                    return PostData;
-                } else {
-                    return new Dictionary<string, string>(); ;
-                }
-            }
-        }
+//         public Dictionary<string, string> Post {
+//             get {
+//                 if (Request.Method.Equals("Post", StringComparison.CurrentCultureIgnoreCase)) {
+//                     if(PostData == null) {
+//                         PostData = new Dictionary<string, string>();
+//                         using (StreamReader reader = new StreamReader(InputStream)) {
+//                             foreach (var param in reader.ReadToEnd().Split("&")) {
+//                                 string[] kvPair = param.Split('=');
+//                                 if (kvPair.Length < 2) continue;
+//                                 PostData.Add(kvPair[0], HttpUtility.UrlDecode(kvPair[1]));
+//                             }
+//                         }
+//                     }
+//                     return PostData;
+//                 } else {
+//                     return new Dictionary<string, string>(); ;
+//                 }
+//             }
+//         }
 
         public HttpRequestContext(HttpRequest request) {
             Request = request;
+            try {
+                if (request.Method.Equals("Post", StringComparison.CurrentCultureIgnoreCase)) Form = new HTCRequestForm(Request.Form);
+            } catch { }
             Headers = new HTCRequestHeaders(Request.Headers);
             Cookies = new HTCRequestCookies(Request.Cookies);
             Query = new HTCRequestQuery(Request.Query);
