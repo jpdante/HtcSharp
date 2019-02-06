@@ -15,14 +15,13 @@ using System.Threading.Tasks;
 
 namespace HTCSharp.Core.Helpers.Http {
     public static class URLMapping {
-
         private static readonly ILog _Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static List<string> IndexFiles = new List<string>();
         private static Dictionary<string, IHttpEvents> ExtensionPlugins = new Dictionary<string, IHttpEvents>();
         private static Dictionary<string, IHttpEvents> RegisteredPages = new Dictionary<string, IHttpEvents>();
-        private static Dictionary<string, FolderConfig> FolderConfigs = new Dictionary<string, FolderConfig>();
-        private static FolderConfig DefaultConfig = new FolderConfig();
+//         private static Dictionary<string, FolderConfig> FolderConfigs = new Dictionary<string, FolderConfig>();
+//         private static FolderConfig DefaultConfig = new FolderConfig();
 
         public static void RegisterIndexFile(string file) {
             IndexFiles.Add(file.ToLower());
@@ -47,38 +46,44 @@ namespace HTCSharp.Core.Helpers.Http {
         public static void UnregisterPluginPage(string page) {
             RegisteredPages.Remove(page);
         }
-
-        public static void DoFolderConfig(HTCHttpContext context, HttpServerInfo serverInfo, out string definitiveUrl, out FolderConfig pathConfig) {
-            string tempRoot = serverInfo.Root;
-            string tempUrlPath = context.Request.Path.ToString();
-            string tempPath = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(tempRoot, tempUrlPath.Remove(0, 1))));
-            if(FolderConfigs.ContainsKey(tempUrlPath)) {
-                FolderConfig config = FolderConfigs[tempUrlPath];
-                config.CheckConfigChange();
-                definitiveUrl = config.Rewrite(tempUrlPath, context);
-                pathConfig = config;
-                return;
-            } else {
-                if (File.Exists(Path.Combine(tempPath, "htcconf.json"))) {
-                    FolderConfig config = new FolderConfig(tempUrlPath, Path.Combine(tempPath, "htcconf.json"));
-                    FolderConfigs.Add(tempUrlPath, config);
-                    config.CheckConfigChange();
-                    definitiveUrl = config.Rewrite(tempUrlPath, context);
-                    pathConfig = config;
-                    return;
-                } else {
-                    definitiveUrl = tempUrlPath;
-                    pathConfig = DefaultConfig;
-                    return;
-                }
-            }
-        }
+// 
+//         public static void DoFolderConfig(HTCHttpContext context, HttpServerInfo serverInfo, out string definitiveUrl, out FolderConfig pathConfig) {
+//             string tempRoot = serverInfo.Root;
+//             string tempUrlPath = context.Request.Path.ToString();
+//             string tempPath = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(tempRoot, tempUrlPath.Remove(0, 1))));
+//             if(FolderConfigs.ContainsKey(tempUrlPath)) {
+//                 FolderConfig config = FolderConfigs[tempUrlPath];
+//                 config.CheckConfigChange();
+//                 definitiveUrl = config.Rewrite(tempUrlPath, context);
+//                 pathConfig = config;
+//                 return;
+//             } else {
+//                 if (File.Exists(Path.Combine(tempPath, "htcconf.json"))) {
+//                     FolderConfig config = new FolderConfig(tempUrlPath, Path.Combine(tempPath, "htcconf.json"));
+//                     FolderConfigs.Add(tempUrlPath, config);
+//                     config.CheckConfigChange();
+//                     definitiveUrl = config.Rewrite(tempUrlPath, context);
+//                     pathConfig = config;
+//                     return;
+//                 } else {
+//                     definitiveUrl = tempUrlPath;
+//                     pathConfig = DefaultConfig;
+//                     return;
+//                 }
+//             }
+//         }
 
         public static void ProcessRequest(HTCHttpContext context, HttpServerInfo serverInfo) {
             string root = serverInfo.Root;
             string requestedUrl = null;
-            FolderConfig folderConfig = null;
-            DoFolderConfig(context, serverInfo, out requestedUrl, out folderConfig);
+            if (serverInfo.GetHttpRewriter != null) {
+                if (serverInfo.GetHttpRewriter.Rewrite(context, out requestedUrl)) {
+                    Close(context);
+                    return;
+                }
+            } else {
+                requestedUrl = context.Request.Path.ToString();
+            }
             if (RegisteredPages.ContainsKey(requestedUrl.ToLower())) {
                 if (RegisteredPages[requestedUrl.ToLower()].OnHttpPageRequest(context, requestedUrl.ToLower())) {
                     Default5xx.Call500(context);
@@ -107,6 +112,10 @@ namespace HTCSharp.Core.Helpers.Http {
                     }
                 }
             }
+            Close(context);
+        }
+
+        public static void Close(HTCHttpContext context) {
             try {
                 context.Response.OutputStream.Close();
             } catch { }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using HTCSharp.Core.Components.Http;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -13,8 +14,9 @@ namespace HTCSharp.Core.Models.Http {
         private bool _UseSSL;
         private string _Certificate;
         private string _Password;
+        private HttpRewriter _HttpRewriter;
 
-        public HttpServerInfo(IReadOnlyCollection<string> hosts, string domain, string root, bool useSSL, string certificate, string password) {
+        public HttpServerInfo(IReadOnlyCollection<string> hosts, string domain, string root, bool useSSL, string certificate, string password, HttpRewriter httpRewriter) {
             List<IPEndPoint> thosts = new List<IPEndPoint>();
             foreach(var host in hosts) {
                 string[] rawSplit = host.Split(":");
@@ -28,6 +30,7 @@ namespace HTCSharp.Core.Models.Http {
             _UseSSL = useSSL;
             _Certificate = certificate;
             _Password = password;
+            _HttpRewriter = httpRewriter;
         }
 
         public IReadOnlyCollection<IPEndPoint> Hosts { get { return _Hosts; } }
@@ -36,5 +39,6 @@ namespace HTCSharp.Core.Models.Http {
         public bool UseSSL { get { return _UseSSL; } }
         public string Certificate { get { return _Certificate; } }
         public string Password { get { return _Password; } }
+        public HttpRewriter GetHttpRewriter { get { return _HttpRewriter; } }
     }
 }

@@ -15,7 +15,6 @@ namespace HTCSharp.Core.Components.Http {
 
         public IConfiguration Configuration { get; }
         public HttpEngine Engine;
-        Stopwatch stopwatch = new Stopwatch();
 
         public HttpStartup(IConfiguration configuration, HttpEngine engine) {
             Configuration = configuration;
@@ -34,7 +33,6 @@ namespace HTCSharp.Core.Components.Http {
             if (Engine.getDomainServers.ContainsKey(context.Request.Host.ToString())) {
                 HttpServerInfo serverInfo = Engine.getDomainServers[context.Request.Host.ToString()];
                 URLMapping.ProcessRequest(new HTCHttpContext(context), serverInfo);
-                Console.WriteLine(stopwatch.ElapsedMilliseconds);
             } else {
                 await context.Response.WriteAsync("Unknown domain");
             }

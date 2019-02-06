@@ -14,21 +14,21 @@ using Newtonsoft.Json.Linq;
 namespace HTCSharp.Core.Engines {
     public class HttpEngine : Engine {
 
-        private IWebHost WebHostServer;
-        private List<HttpServerInfo> ServersInfo;
-        private Dictionary<string, HttpServerInfo> DomainServers;
+        private IWebHost webHostServer;
+        private List<HttpServerInfo> serversInfo;
+        private Dictionary<string, HttpServerInfo> domainServers;
 
         public override void Start() {
-            ServersInfo = new List<HttpServerInfo>();
-            DomainServers = new Dictionary<string, HttpServerInfo>();
+            serversInfo = new List<HttpServerInfo>();
+            domainServers = new Dictionary<string, HttpServerInfo>();
             if (EngineConfig == null) throw new NullReferenceException("Engine config is null!");
             CreateServers();
-            WebHostServer = CreateWebHost(new string[] { }).Build();
-            WebHostServer.Start();
+            webHostServer = CreateWebHost(new string[] { }).Build();
+            webHostServer.Start();
         }
 
         public override void Stop() {
-            WebHostServer.StopAsync().GetAwaiter().GetResult();
+            webHostServer.StopAsync().GetAwaiter().GetResult();
         }
 
         private IWebHostBuilder CreateWebHost(string[] args) {
@@ -38,7 +38,7 @@ namespace HTCSharp.Core.Engines {
                 config.AddJsonFile(HTCServer.Context.AspNetConfigPath);
             });
             builder.UseKestrel(options => {
-                foreach(HttpServerInfo serverInfo in ServersInfo) {
+                foreach(HttpServerInfo serverInfo in serversInfo) {
                     if(serverInfo.UseSSL) {
                         foreach (System.Net.IPEndPoint endPoint in serverInfo.Hosts) {
                             if (endpoints.Contains($"{endPoint.Address}{endPoint.Port}")) continue;
@@ -76,9 +76,13 @@ namespace HTCSharp.Core.Engines {
                     certificate = IOUtils.ReplacePathTags(GetValue<string>(server, "Certificate"));
                     password = GetValue<string>(server, "Password");
                 }
-                HttpServerInfo serverInfo = new HttpServerInfo(hosts.AsReadOnly(), domain, root, useSSL, certificate, password);
-                ServersInfo.Add(serverInfo);
-                DomainServers.Add(domain, serverInfo);
+                HttpRewriter rewriter = null;
+                if (ContainsKey(server, "Rewrites")) {
+                    rewriter = new HttpRewriter(GetValue<JObject>(server, "Rewrites"));
+                }
+                HttpServerInfo serverInfo = new HttpServerInfo(hosts.AsReadOnly(), domain, root, useSSL, certificate, password, rewriter);
+                serversInfo.Add(serverInfo);
+                domainServers.Add(domain, serverInfo);
             }
         }
 
@@ -98,7 +102,12 @@ namespace HTCSharp.Core.Engines {
             return jToken.Value<T>();
         }
 
-        public List<HttpServerInfo> getServersInfo { get { return ServersInfo; } }
-        public Dictionary<string, HttpServerInfo> getDomainServers { get { return DomainServers; } }
+        private bool ContainsKey(JObject jObject, string key) {
+            JToken jToken = jObject.GetValue(key, StringComparison.CurrentCultureIgnoreCase);
+            return jToken != null;
+        }
+
+        public List<HttpServerInfo> getServersInfo { get { return serversInfo; } }
+        public Dictionary<string, HttpServerInfo> getDomainServers { get { return domainServers; } }
     }
 }
