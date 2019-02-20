@@ -32,12 +32,12 @@ namespace HTCSharp.Core.Engines {
         }
 
         private IWebHostBuilder CreateWebHost(string[] args) {
-            IWebHostBuilder builder = WebHost.CreateDefaultBuilder(args);
             List<string> endpoints = new List<string>();
-            builder.ConfigureAppConfiguration((hostingContext, config) => {
+            return WebHost.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((hostingContext, config) => {
                 config.AddJsonFile(HTCServer.Context.AspNetConfigPath);
-            });
-            builder.UseKestrel(options => {
+            })
+            .UseKestrel(options => {
                 foreach(HttpServerInfo serverInfo in serversInfo) {
                     if(serverInfo.UseSSL) {
                         foreach (System.Net.IPEndPoint endPoint in serverInfo.Hosts) {
@@ -55,12 +55,11 @@ namespace HTCSharp.Core.Engines {
                         }
                     }
                 }
-            });
-            builder.ConfigureServices(servicesColletion => {
+            })
+            .ConfigureServices(servicesColletion => {
                 servicesColletion.AddSingleton<HttpEngine>(this);
-            });
-            builder.UseStartup<HttpStartup>();
-            return builder;
+            })
+            .UseStartup<HttpStartup>(); 
         }
 
         private void CreateServers() {

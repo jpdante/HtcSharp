@@ -96,24 +96,31 @@ namespace HTCSharp.Core {
             this.AvailableEngines.Clear();
         }
 
-        public void WaitStop() {
-            while (Active) {
-                string rawcmd = Console.ReadLine();
-                if (rawcmd == null) continue;
-                string[] cmds = rawcmd.Split(' ');
-                switch (cmds[0]) {
-                    case "stop":
-                        Stop();
-                        break;
-                    case "close":
-                        Stop();
-                        break;
-                    case "exit":
-                        Stop();
-                        break;
-                    default:
-                        _Logger.Info("This command does not exist!");
-                        break;
+        public void WaitStop(bool daemon) {
+            if(daemon) {
+                while (Active) {
+                    System.Threading.Thread.Sleep(100);
+                }
+            } else {
+                while (Active) {
+                    string rawcmd = Console.ReadLine();
+                    if (rawcmd == null) continue;
+                    string[] cmds = rawcmd.Split(' ');
+                    switch (cmds[0]) {
+                        case "stop":
+                            Stop();
+                            break;
+                        case "close":
+                            Stop();
+                            break;
+                        case "exit":
+                            Stop();
+                            break;
+                        default:
+                            _Logger.Info("This command does not exist!");
+                            break;
+                    }
+                    System.Threading.Thread.Sleep(1000);
                 }
             }
         }

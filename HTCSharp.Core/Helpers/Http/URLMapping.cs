@@ -162,9 +162,9 @@ namespace HTCSharp.Core.Helpers.Http {
                 // 7 * 24 Hour * 60 Min * 60 Sec = 604800 Sec;
                 context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
                 context.Response.Headers.Add("Date", DateTime.Now.ToString("r"));
-                context.Response.Headers.Add("Last-Modified", File.GetLastWriteTime(requestPath).ToString("r"));
+                //context.Response.Headers.Add("Last-Modified", File.GetLastWriteTime(requestPath).ToString("r"));
                 context.Response.Headers.Add("Server", "HTCSharp");
-                context.Response.Headers.Add("Cache-Control", "max-age=604800");
+                //context.Response.Headers.Add("Cache-Control", "max-age=604800");
                 context.Response.ContentType = contentType.ToValue();
                 context.Response.StatusCode = 200;
                 Tuple<long, long> Range = GetRange(context, fileBuffer);
