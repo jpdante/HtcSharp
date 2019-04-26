@@ -39,10 +39,12 @@ namespace HTCSharp.Core.Utils {
             ));
         }
 
-        public static void CreateHttpConfig(string path) {
-            if(!File.Exists(path)) {
-                File.WriteAllText(path, "{\"Logging\":{\"IncludeScopes\":false,\"LogLevel\":{\"Default\":\"None\",\"System\":\"Warning\",\"Microsoft\":\"Warning\"}}}");
-            }
+        public static void CreateAspConfig(string path) {
+            if(!File.Exists(path)) File.WriteAllText(path, "{\"Logging\":{\"IncludeScopes\":false,\"LogLevel\":{\"Default\":\"None\",\"System\":\"Warning\",\"Microsoft\":\"Warning\"}}}");
+        }
+
+        public static void CreateHtcConfig(string path) {
+            if(!File.Exists(path)) File.WriteAllText(path, "{\"_PluginsPath\":\"\",\"Engines\":[{\"Engine\":\"http\",\"Config\":{\"Servers\":[{\"Hosts\":[\"0.0.0.0:80\"],\"Domain\":\"*:80\",\"Root\":\"%workingpath%/\",\"SSL\":false,\"Rewrites\":{}}]}}]}");
         }
 
     }

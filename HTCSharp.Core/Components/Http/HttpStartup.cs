@@ -31,7 +31,7 @@ namespace HTCSharp.Core.Components.Http {
 
         private async Task Request(HttpContext context) {
             if (Engine.getDomainServers.ContainsKey(context.Request.Host.ToString())) {
-                HttpServerInfo serverInfo = Engine.getDomainServers[context.Request.Host.ToString()];
+                var serverInfo = Engine.getDomainServers[context.Request.Host.ToString()];
                 URLMapping.ProcessRequest(new HTCHttpContext(context), serverInfo);
             } else {
                 await context.Response.WriteAsync("Unknown domain");

@@ -13,100 +13,99 @@ using System.Reflection;
 
 namespace HTCSharp.Core {
     public class HTCServer {
-        private static readonly ILog _Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
-        private static HTCServer _HtcServer;
-        private static bool _Debug;
+        private static readonly ILog Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private Dictionary<string, Type> AvailableEngines;
-        private List<Engine> Engines;
-        private PluginManager PluginsManager;
-        private JObject Config;
-        private bool Active;
-        private string AspNetConfig;
-        private string ConfigPath;
-        private string PluginsPath;
+        private Dictionary<string, Type> _availableEngines;
+        private List<Engine> _engines;
+        private PluginManager _pluginsManager;
+        private JObject _config;
+        private readonly string _configPath;
+        private string _pluginsPath;
 
-        public static bool IsDebug { get { return _Debug; } }
-        public static HTCServer Context { get { return _HtcServer; } }
+        public static bool IsDebug { get; private set; }
+        public static HTCServer Context { get; private set; }
 
         public T GetConfig<T>(string key) { 
-            return Config.GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
+            return _config.GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
         }
 
-        public string AspNetConfigPath { get { return AspNetConfig; } }
-        public bool IsStopped { get { return Active; } }
-        public ReadOnlyCollection<Engine> GetEngines() { return Engines.AsReadOnly(); }
+        public string AspNetConfigPath { get; private set; }
+        public bool IsStopped { get; private set; }
+        public ReadOnlyCollection<Engine> GetEngines() { return _engines.AsReadOnly(); }
 
         public HTCServer(string configPath) {
-            _HtcServer = this;
-            ConfigPath = configPath;
-            Active = false;
-            _Debug = false;
+            Context = this;
+            _configPath = configPath;
+            IsStopped = false;
+            IsDebug = false;
+            _engines = new List<Engine>();
         }
 
         public void Start() {
-            AvailableEngines = new Dictionary<string, Type>();
+            _availableEngines = new Dictionary<string, Type>();
             URLMapping.RegisterIndexFile("index.html");
             URLMapping.RegisterIndexFile("index.htm");
             RegisterEngine("http", typeof(HttpEngine));
-            Engines = new List<Engine>();
-            _Logger.Info("Starting HTCSharp...");
-            _Logger.Info("Loading Configuration...");
+            _engines = new List<Engine>();
+            Logger.Info("Starting HTCSharp...");
+            Logger.Info("Loading Configuration...");
+            AspNetConfigPath = Path.Combine(Path.GetDirectoryName(_configPath), "aspnet-appsettings.json");
             try {
-                Config = IOUtils.GetJsonFile(ConfigPath);
-                AspNetConfig = Path.Combine(Path.GetDirectoryName(ConfigPath), "aspnet-appsettings.json");
-                IOUtils.CreateHttpConfig(AspNetConfig);
-                PluginsPath = Config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins/");
-                PluginsPath = IOUtils.ReplacePathTags(PluginsPath);
-                _Debug = Config.GetValue("Debug", StringComparison.CurrentCultureIgnoreCase)?.Value<bool>() == true;
+                if (!File.Exists(_configPath)) IOUtils.CreateHtcConfig(_configPath);
+                _config = IOUtils.GetJsonFile(_configPath);
+                if(!File.Exists(AspNetConfigPath)) IOUtils.CreateAspConfig(AspNetConfigPath);
+                _pluginsPath = _config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins/");
+                _pluginsPath = IOUtils.ReplacePathTags(_pluginsPath);
+                IsDebug = _config.GetValue("Debug", StringComparison.CurrentCultureIgnoreCase)?.Value<bool>() == true;
+                if (!Directory.Exists(_pluginsPath)) Directory.CreateDirectory(_pluginsPath);
             } catch (Exception ex) {
-                _Logger.Error("Failed to load configuration!", ex);
+                Logger.Error("Failed to load configuration!", ex);
                 return;
             }
-            PluginsManager = new PluginManager(PluginsPath);
-            PluginsManager.ConstructPlugins();
-            PluginsManager.Call_OnLoad();
+            _pluginsManager = new PluginManager(_pluginsPath);
+            _pluginsManager.ConstructPlugins();
+            _pluginsManager.Call_OnLoad();
             LoadEngines();
-            foreach(Engine engine in Engines) {
+            foreach(var engine in _engines) {
                 try {
-                    _Logger.Info($"Starting Engine: '{engine.GetType().Name}'");
+                    Logger.Info($"Starting Engine: '{engine.GetType().Name}'");
                     engine.Start();
                 } catch(Exception ex) {
-                    _Logger.Error($"Failed to start Engine: '{engine.GetType().Name}'", ex);
+                    Logger.Error($"Failed to start Engine: '{engine.GetType().Name}'", ex);
                 }
             }
-            Active = true;
-            PluginsManager.Call_OnEnable();
-            _Logger.Info("HTCServer is now running!");
+            IsStopped = true;
+            _pluginsManager.Call_OnEnable();
+            Logger.Info("HTCServer is now running!");
         }
 
         public void Stop() {
-            _Logger.Info("Shutting down HTCSharp...");
-            PluginsManager.Call_OnDisable();
-            Active = false;
-            foreach (Engine engine in Engines) {
+            Logger.Info("Shutting down HTCSharp...");
+            _pluginsManager.Call_OnDisable();
+            IsStopped = false;
+            foreach (var engine in _engines) {
                 try {
-                    _Logger.Info($"Stopping Engine: '{engine.GetType().Name}'");
+                    Logger.Info($"Stopping Engine: '{engine.GetType().Name}'");
                     engine.Stop();
                 } catch (Exception ex) {
-                    _Logger.Error($"Failed to stop Engine: '{engine.GetType().Name}'", ex);
+                    Logger.Error($"Failed to stop Engine: '{engine.GetType().Name}'", ex);
                 }
             }
-            this.Engines.Clear();
-            this.AvailableEngines.Clear();
+            this._engines.Clear();
+            this._availableEngines.Clear();
         }
 
         public void WaitStop(bool daemon) {
             if(daemon) {
-                while (Active) {
+                while (IsStopped) {
                     System.Threading.Thread.Sleep(100);
                 }
             } else {
-                while (Active) {
-                    string rawcmd = Console.ReadLine();
-                    if (rawcmd == null) continue;
-                    string[] cmds = rawcmd.Split(' ');
-                    switch (cmds[0]) {
+                while (IsStopped) {
+                    var line = Console.ReadLine();
+                    if (line == null) continue;
+                    var args = line.Split(' ');
+                    switch (args[0]) {
                         case "stop":
                             Stop();
                             break;
@@ -117,7 +116,7 @@ namespace HTCSharp.Core {
                             Stop();
                             break;
                         default:
-                            _Logger.Info("This command does not exist!");
+                            Logger.Info("This command does not exist!");
                             break;
                     }
                     System.Threading.Thread.Sleep(1000);
@@ -126,34 +125,35 @@ namespace HTCSharp.Core {
         }
 
         public void RegisterEngine(string engineName, Type type) {
-            if (!AvailableEngines.ContainsKey(engineName.ToLower())) AvailableEngines.Add(engineName, type);
+            if (!_availableEngines.ContainsKey(engineName.ToLower())) _availableEngines.Add(engineName, type);
             else {
                 throw new Exceptions.Dictionary.KeyAlreadyExistException(engineName.ToLower());
             }
         }
 
         public void UnregisterEngine(string engineName) {
-            if(AvailableEngines.ContainsKey(engineName.ToLower())) AvailableEngines.Remove(engineName);
+            if(_availableEngines.ContainsKey(engineName.ToLower())) _availableEngines.Remove(engineName);
             else {
                 throw new Exceptions.Dictionary.KeyNotFoundException(engineName.ToLower());
             }
         }
 
         private void LoadEngines() {
-            JArray servers = Config.GetValue("Engines", StringComparison.CurrentCultureIgnoreCase)?.Value<JArray>();
+            var servers = _config.GetValue("Engines", StringComparison.CurrentCultureIgnoreCase)?.Value<JArray>();
             if(servers == null) return;
-            foreach(JObject server in servers) {
-                string EngineName = server.GetValue("Engine", StringComparison.CurrentCultureIgnoreCase)?.Value<string>();
-                JObject EngineConfig = server.GetValue("Config", StringComparison.CurrentCultureIgnoreCase)?.Value<JObject>();
-                if(EngineName == null) continue;
-                if(AvailableEngines.ContainsKey(EngineName.ToLower())) {
-                    Type type = AvailableEngines[EngineName.ToLower()];
-                    _Logger.Info($"Creating Engine: '{type.Name}'");
-                    Engine instance = (Engine)Activator.CreateInstance(type);
-                    instance.SetConfig(EngineConfig);
-                    Engines.Add(instance);
+            foreach(var jToken in servers) {
+                var server = (JObject) jToken;
+                var engineName = server.GetValue("Engine", StringComparison.CurrentCultureIgnoreCase)?.Value<string>();
+                var engineConfig = server.GetValue("Config", StringComparison.CurrentCultureIgnoreCase)?.Value<JObject>();
+                if(engineName == null) continue;
+                if(_availableEngines.ContainsKey(engineName.ToLower())) {
+                    var type = _availableEngines[engineName.ToLower()];
+                    Logger.Info($"Creating Engine: '{type.Name}'");
+                    var instance = (Engine)Activator.CreateInstance(type);
+                    instance.SetConfig(engineConfig);
+                    _engines.Add(instance);
                 } else {
-                    _Logger.Info($"Unable to create, Engine '{EngineName}' does not exist.");
+                    Logger.Info($"Unable to create, Engine '{engineName}' does not exist.");
                 }
             }
         }

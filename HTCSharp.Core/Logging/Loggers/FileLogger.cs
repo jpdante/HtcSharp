@@ -11,8 +11,7 @@ namespace HTCSharp.Core.Logging.Loggers {
         private StreamWriter streamWriter;
 
         public FileLogger(string filename) {
-            if (!File.Exists(filename)) File.Create(filename);
-            fileStream = new FileStream(filename, FileMode.Truncate, FileAccess.Write, FileShare.ReadWrite);
+            fileStream = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
             streamWriter = new StreamWriter(fileStream);
         }
 
