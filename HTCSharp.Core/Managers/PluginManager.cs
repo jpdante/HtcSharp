@@ -53,7 +53,8 @@ namespace HTCSharp.Core.Managers {
             var loaders = new List<PluginLoader>();
             foreach (var pluginConfig in IOUtils.GetFilesExceptionFix(PluginsPath, "*.config", System.IO.SearchOption.AllDirectories)) {
                 if (File.Exists(pluginConfig)) {
-                    var loader = PluginLoader.CreateFromConfigFile(pluginConfig, sharedTypes: new[] { typeof(IHTCPlugin), typeof(IHttpEvents), typeof(Models.Http.HTCHttpContext) });
+                    
+                    var loader = PluginLoader.CreateFromAssemblyFile(pluginConfig, sharedTypes: new[] { typeof(IHTCPlugin), typeof(IHttpEvents), typeof(Models.Http.HTCHttpContext) });
                     loaders.Add(loader);
                 }
             }
@@ -63,7 +64,7 @@ namespace HTCSharp.Core.Managers {
                     .LoadDefaultAssembly()
                     .GetTypes()
                     .Where(t => typeof(IHTCPlugin).IsAssignableFrom(t) && !t.IsAbstract)) {
-                    IHTCPlugin plugin = (IHTCPlugin)Activator.CreateInstance(pluginType);
+                    var plugin = (IHTCPlugin)Activator.CreateInstance(pluginType);
                     Plugins.Add(plugin);
                 }
             }
