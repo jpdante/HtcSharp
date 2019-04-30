@@ -50,13 +50,7 @@ namespace HTCSharp.Core.Managers {
                 _Logger.Fatal($"Plugins path '{PluginsPath}' does not exist!");
                 Environment.Exit(2);
             }
-            var loaders = new List<PluginLoader>();
-            foreach (var pluginConfig in IOUtils.GetFilesExceptionFix(PluginsPath, "*.plugin.dll", System.IO.SearchOption.AllDirectories)) {
-                if (File.Exists(pluginConfig)) {
-                    var loader = PluginLoader.CreateFromAssemblyFile(pluginConfig, sharedTypes: new[] { typeof(IHTCPlugin), typeof(IHttpEvents), typeof(Models.Http.HTCHttpContext) });
-                    loaders.Add(loader);
-                }
-            }
+            var loaders = (from pluginFile in IOUtils.GetFilesExceptionFix(PluginsPath, "*.plugin.dll", System.IO.SearchOption.AllDirectories) where File.Exists(pluginFile) select PluginLoader.CreateFromAssemblyFile(pluginFile, sharedTypes: new[] {typeof(IHTCPlugin), typeof(IHttpEvents), typeof(Models.Http.HTCHttpContext)})).ToList();
             Plugins = new List<IHTCPlugin>();
             foreach (var loader in loaders) {
                 foreach (var pluginType in loader
