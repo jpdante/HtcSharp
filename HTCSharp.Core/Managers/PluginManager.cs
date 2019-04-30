@@ -51,9 +51,8 @@ namespace HTCSharp.Core.Managers {
                 Environment.Exit(2);
             }
             var loaders = new List<PluginLoader>();
-            foreach (var pluginConfig in IOUtils.GetFilesExceptionFix(PluginsPath, "*.config", System.IO.SearchOption.AllDirectories)) {
+            foreach (var pluginConfig in IOUtils.GetFilesExceptionFix(PluginsPath, "*.plugin.dll", System.IO.SearchOption.AllDirectories)) {
                 if (File.Exists(pluginConfig)) {
-                    
                     var loader = PluginLoader.CreateFromAssemblyFile(pluginConfig, sharedTypes: new[] { typeof(IHTCPlugin), typeof(IHttpEvents), typeof(Models.Http.HTCHttpContext) });
                     loaders.Add(loader);
                 }
