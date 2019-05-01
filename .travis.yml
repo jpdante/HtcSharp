@@ -3,6 +3,8 @@ solution: YTLiveLib.sln
 mono: none
 dotnet: 2.2
 dist: xenial
+git:
+  depth: false
 script:
  - dotnet restore
  - dotnet build
