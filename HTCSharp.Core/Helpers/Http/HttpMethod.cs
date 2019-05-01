@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HTCSharp.Core.Helpers.Http {
+namespace HtcSharp.Core.Helpers.Http {
     public static class HttpMethodExtensions {
         private static readonly ConcurrentDictionary<string, int> ValueCache;
 
         static HttpMethodExtensions() {
             ValueCache = new ConcurrentDictionary<string, int>();
 
-            foreach (var ctype in Enum.GetValues(typeof(HttpMethod)).Cast<HttpMethod>()) {
-                var key = ctype.ToValue();
-                var ext = ctype.ToString();
-                if (!ValueCache.ContainsKey(key)) ValueCache[key] = (int)ctype;
+            foreach (var contentType in Enum.GetValues(typeof(HttpMethod)).Cast<HttpMethod>()) {
+                var key = contentType.ToValue();
+                var ext = contentType.ToString();
+                if (!ValueCache.ContainsKey(key)) ValueCache[key] = (int)contentType;
             }
         }
 
@@ -30,8 +30,8 @@ namespace HTCSharp.Core.Helpers.Http {
 
         public static HttpMethod FromString(this HttpMethod ct, string contentType) {
             if (string.IsNullOrWhiteSpace(contentType)) return HttpMethod.GET;
-            var contenttype = contentType.Trim();
-            if (ValueCache.ContainsKey(contenttype)) return (HttpMethod)ValueCache[contenttype.ToUpper()];
+            contentType = contentType.Trim();
+            if (ValueCache.ContainsKey(contentType)) return (HttpMethod)ValueCache[contentType.ToUpper()];
             return HttpMethod.GET;
         }
     }

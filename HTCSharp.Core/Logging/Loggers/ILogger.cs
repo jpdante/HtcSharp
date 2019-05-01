@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Logging.Loggers {
+namespace HtcSharp.Core.Logging.Loggers {
     public interface ILogger {
 
         void Log(Type type, DateTime time, object obj, Exception ex);

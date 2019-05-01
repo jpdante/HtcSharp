@@ -4,23 +4,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Models.Http.Utils {
-    public class HTCRequestFormFiles {
-        private List<HTCFile> Files;
+namespace HtcSharp.Core.Models.Http.Utils {
+    public class HtcRequestFormFiles {
+        private readonly List<HtcFile> _files;
 
-        public HTCRequestFormFiles(IFormFileCollection files) {
-            Files = new List<HTCFile>();
-            foreach (IFormFile file in files) {
-                Files.Add(new HTCFile(file));
+        public HtcRequestFormFiles(IFormFileCollection files) {
+            _files = new List<HtcFile>();
+            foreach (var file in files) {
+                _files.Add(new HtcFile(file));
             }
         }
 
-        public HTCFile this[int index] {
-            get {
-                return Files[index];
-            }
-        }
+        public HtcFile this[int index] => _files[index];
 
-        public int Count { get { return Files.Count; } }
+        public int Count => _files.Count;
     }
 }

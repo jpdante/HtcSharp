@@ -1,18 +1,18 @@
-﻿using HTCSharp.Core.IO;
+﻿using HtcSharp.Core.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace HTCSharp.Core.Logging.Loggers {
+namespace HtcSharp.Core.Logging.Loggers {
     public class FileLogger : ILogger {
 
-        private FileStream fileStream;
-        private StreamWriter streamWriter;
+        private readonly FileStream _fileStream;
+        private readonly StreamWriter _streamWriter;
 
         public FileLogger(string filename) {
-            fileStream = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-            streamWriter = new StreamWriter(fileStream);
+            _fileStream = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            _streamWriter = new StreamWriter(_fileStream);
         }
 
         public void Debug(Type type, DateTime time, object obj, Exception ex) {
@@ -45,13 +45,13 @@ namespace HTCSharp.Core.Logging.Loggers {
 
         public void ExecuteLog(string logType, Type type, DateTime time, object obj, Exception ex) {
             if (obj != null) {
-                streamWriter.WriteLine($"[{time.ToString()}] [{logType}] [{type.Name}] {obj}");
+                _streamWriter.WriteLine($"[{time.ToString()}] [{logType}] [{type.Name}] {obj}");
             }
             if (ex != null) {
-                streamWriter.WriteLine($"[{time.ToString()}] [{logType}] [{type.Name}] {ex.Message} {ex.StackTrace}");
+                _streamWriter.WriteLine($"[{time.ToString()}] [{logType}] [{type.Name}] {ex.Message} {ex.StackTrace}");
             }
-            streamWriter.Flush();
-            fileStream.Flush();
+            _streamWriter.Flush();
+            _fileStream.Flush();
         }
     }
 }

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTCSharp.Server", "HTCSharp.Server\HTCSharp.Server.csproj", "{ED15C20E-9ED9-416C-8C77-03C4813E925F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtcSharp.Server", "HtcSharp.Server\HtcSharp.Server.csproj", "{ED15C20E-9ED9-416C-8C77-03C4813E925F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTCSharp.Core", "HTCSharp.Core\HTCSharp.Core.csproj", "{4F25A046-0D0E-4467-B7FC-A4222B1E6F69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtcSharp.Core", "HtcSharp.Core\HtcSharp.Core.csproj", "{4F25A046-0D0E-4467-B7FC-A4222B1E6F69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

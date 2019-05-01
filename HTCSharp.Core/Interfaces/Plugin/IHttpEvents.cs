@@ -1,12 +1,12 @@
-﻿using HTCSharp.Core.Models.Http;
+﻿using HtcSharp.Core.Models.Http;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Interfaces.Plugin {
+namespace HtcSharp.Core.Interfaces.Plugin {
     public interface IHttpEvents {
-        bool OnHttpPageRequest(HTCHttpContext context, string filename);
-        bool OnHttpExtensionRequest(HTCHttpContext context, string filename, string extension);
+        bool OnHttpPageRequest(HtcHttpContext httpContext, string filename);
+        bool OnHttpExtensionRequest(HtcHttpContext httpContext, string filename, string extension);
     }
 }

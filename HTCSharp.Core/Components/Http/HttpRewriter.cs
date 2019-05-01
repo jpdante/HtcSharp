@@ -1,28 +1,28 @@
-﻿using HTCSharp.Core.Models.Http;
-using HTCSharp.Core.Models.Rewriter;
+﻿using HtcSharp.Core.Models.Http;
+using HtcSharp.Core.Models.ReWriter;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Components.Http {
-    public class HttpRewriter {
+namespace HtcSharp.Core.Components.Http {
+    public class HttpReWriter {
 
-        private readonly List<RewriteLocation> _rewriteLocations;
+        private readonly List<ReWriteLocation> _rewriteLocations;
 
-        public HttpRewriter(JObject rewritesConfig) {
-            _rewriteLocations = new List<RewriteLocation>();
+        public HttpReWriter(JObject rewritesConfig) {
+            _rewriteLocations = new List<ReWriteLocation>();
             foreach(var config in rewritesConfig) {
                 var rules = new List<string>();
                 var jArray = config.Value.Value<JArray>();
                 foreach (var obj in jArray) {
                     rules.Add(obj.Value<string>());
                 }
-                _rewriteLocations.Add(new RewriteLocation(config.Key, rules));
+                _rewriteLocations.Add(new ReWriteLocation(config.Key, rules));
             }
         }
 
-        public bool Rewrite(HTCHttpContext context, out string outRequest) {
+        public bool Rewrite(HtcHttpContext context, out string outRequest) {
             var request = context.Request.Path.ToString();
             foreach (var rewriteLocation in _rewriteLocations) {
                 var response = rewriteLocation.MatchRules(request, context, out request);

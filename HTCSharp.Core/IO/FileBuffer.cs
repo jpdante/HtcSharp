@@ -6,56 +6,56 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace HTCSharp.Core.IO {
+namespace HtcSharp.Core.IO {
     public class FileBuffer : IDisposable {
-        private string FilePath;
-        private int BufferSize;
-        private FileStream FileStream;
-        private long StartRange = 0;
-        private long EndRange = 0;
-        private long CurrentByte;
+        private string _filePath;
+        private int _bufferSize;
+        private readonly FileStream _fileStream;
+        private long _startRange = 0;
+        private long _endRange = 0;
+        private long _currentByte;
 
-        public FileBuffer(string FilePath, int BufferSize) {
-            this.FilePath = FilePath;
-            this.BufferSize = BufferSize;
-            this.FileStream = new FileStream(this.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        public FileBuffer(string filePath, int bufferSize) {
+            this._filePath = filePath;
+            this._bufferSize = bufferSize;
+            this._fileStream = new FileStream(this._filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        public void CopyToStream(Stream StreamOut, long start, long end) {
-            StartRange = start;
-            EndRange = end;
-            CopyToStream(StreamOut);
+        public void CopyToStream(Stream streamOut, long start, long end) {
+            _startRange = start;
+            _endRange = end;
+            CopyToStream(streamOut);
         }
 
-        public void CopyToStream(Stream StreamOut) {
-            this.FileStream.Position = StartRange;
-            this.CurrentByte = StartRange;
-            if (this.EndRange <= 0) this.EndRange = this.FileStream.Length;
-            bool continueRead = true;
-            byte[] buffer = new byte[BufferSize];
-            int bytesRead;
+        public void CopyToStream(Stream streamOut) {
+            this._fileStream.Position = _startRange;
+            this._currentByte = _startRange;
+            if (this._endRange <= 0) this._endRange = this._fileStream.Length;
+            var continueRead = true;
+            var buffer = new byte[_bufferSize];
             while (continueRead) {
-                if ((EndRange - CurrentByte) > BufferSize) {
-                    bytesRead = FileStream.Read(buffer, 0, buffer.Length);
-                    CurrentByte += bytesRead;
+                int bytesRead;
+                if ((_endRange - _currentByte) > _bufferSize) {
+                    bytesRead = _fileStream.Read(buffer, 0, buffer.Length);
+                    _currentByte += bytesRead;
                 } else {
-                    bytesRead = FileStream.Read(buffer, 0, (int)(EndRange - CurrentByte));
-                    CurrentByte += bytesRead;
+                    bytesRead = _fileStream.Read(buffer, 0, (int)(_endRange - _currentByte));
+                    _currentByte += bytesRead;
                 }
-                StreamOut.Write(buffer, 0, bytesRead);
-                if (CurrentByte >= EndRange) continueRead = false;
+                streamOut.Write(buffer, 0, bytesRead);
+                if (_currentByte >= _endRange) continueRead = false;
             }
         }
 
-        public string FileName { get { return this.FilePath; } }
-        public int BufferLenght { get { return this.BufferSize; } }
-        public long Lenght { get { return this.FileStream.Length; } }
-        public Stream Stream { get { return this.FileStream; } }
+        public string FileName => this._filePath;
+        public int BufferLenght => this._bufferSize;
+        public long Lenght => this._fileStream.Length;
+        public Stream Stream => this._fileStream;
 
         public void Dispose() {
-            this.FileStream.Dispose();
-            BufferSize = 0;
-            FilePath = null;
+            this._fileStream.Dispose();
+            _bufferSize = 0;
+            _filePath = null;
             GC.SuppressFinalize(this);
         }
     }

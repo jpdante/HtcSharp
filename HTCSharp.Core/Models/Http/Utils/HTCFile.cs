@@ -4,23 +4,23 @@ using System.IO;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 
-namespace HTCSharp.Core.Models.Http.Utils {
-    public class HTCFile {
-        private IFormFile File;
+namespace HtcSharp.Core.Models.Http.Utils {
+    public class HtcFile {
+        private readonly IFormFile _file;
 
-        public HTCFile(IFormFile file) {
-            File = file;
+        public HtcFile(IFormFile file) {
+            _file = file;
             Headers = new Dictionary<string, string>();
-            foreach (string key in File.Headers.Keys) {
-                Headers.Add(key, File.Headers[key]);
+            foreach (string key in _file.Headers.Keys) {
+                Headers.Add(key, _file.Headers[key]);
             }
         }
 
         public Dictionary<string, string> Headers { get; }
-        public string ContentType { get { return File.ContentType; } }
-        public string FileName { get { return File.FileName; } }
-        public long Lenght { get { return File.Length; } }
-        public string Name { get { return File.Name; } }
-        public void CopyTo(Stream stream) => File.CopyTo(stream);
+        public string ContentType => _file.ContentType;
+        public string FileName => _file.FileName;
+        public long Lenght => _file.Length;
+        public string Name => _file.Name;
+        public void CopyTo(Stream stream) => _file.CopyTo(stream);
     }
 }

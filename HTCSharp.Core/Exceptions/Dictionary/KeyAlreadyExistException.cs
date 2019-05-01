@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Exceptions.Dictionary {
+namespace HtcSharp.Core.Exceptions.Dictionary {
     public class KeyAlreadyExistException : Exception {
         public readonly string Key;
 

@@ -4,38 +4,34 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Models.Http.Utils {
-    public class HTCResponseHeaders {
-        private IHeaderDictionary Header;
+namespace HtcSharp.Core.Models.Http.Utils {
+    public class HtcResponseHeaders {
+        private readonly IHeaderDictionary _header;
 
-        public HTCResponseHeaders(IHeaderDictionary header) {
-            Header = header;
+        public HtcResponseHeaders(IHeaderDictionary header) {
+            _header = header;
         }
 
         public string this[string key] {
-            get {
-                return Header[key];
-            }
-            set {
-                Header.Add(key, value);
-            }
+            get => _header[key];
+            set => _header.Add(key, value);
         }
 
         public void Add(string key, string value) {
-            Header.Add(key, value);
+            _header.Add(key, value);
         }
 
         public void Clear() {
-            Header.Clear();
+            _header.Clear();
         }
 
         public bool ContainsKey(string key) {
-            return Header.ContainsKey(key);
+            return _header.ContainsKey(key);
         }
 
-        public long? ContentLength { get { return Header.ContentLength; } }
-        public int Count { get { return Header.Count; } }
-        public ICollection<string> Keys { get { return Header.Keys; } }
-        public ICollection<StringValues> Values { get { return Header.Values; } }
+        public long? ContentLength => _header.ContentLength;
+        public int Count => _header.Count;
+        public ICollection<string> Keys => _header.Keys;
+        public ICollection<StringValues> Values => _header.Values;
     }
 }

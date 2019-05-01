@@ -1,19 +1,21 @@
-﻿using HTCSharp.Core.Engines;
-using HTCSharp.Core.Helpers.Http;
-using HTCSharp.Core.IO;
-using HTCSharp.Core.Logging;
-using HTCSharp.Core.Managers;
-using HTCSharp.Core.Utils;
+﻿using HtcSharp.Core.Engines;
+using HtcSharp.Core.Helpers.Http;
+using HtcSharp.Core.IO;
+using HtcSharp.Core.Logging;
+using HtcSharp.Core.Managers;
+using HtcSharp.Core.Utils;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
+using HtcSharp.Core.Exceptions.Dictionary;
+using KeyNotFoundException = HtcSharp.Core.Exceptions.Dictionary.KeyNotFoundException;
 
-namespace HTCSharp.Core {
-    public class HTCServer {
-        private static readonly ILog Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
+namespace HtcSharp.Core {
+    public class HtcServer {
+        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
         private Dictionary<string, Type> _availableEngines;
         private List<Engine> _engines;
@@ -23,7 +25,7 @@ namespace HTCSharp.Core {
         private string _pluginsPath;
 
         public static bool IsDebug { get; private set; }
-        public static HTCServer Context { get; private set; }
+        public static HtcServer Context { get; private set; }
 
         public T GetConfig<T>(string key) { 
             return _config.GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
@@ -33,7 +35,7 @@ namespace HTCSharp.Core {
         public bool IsStopped { get; private set; }
         public ReadOnlyCollection<Engine> GetEngines() { return _engines.AsReadOnly(); }
 
-        public HTCServer(string configPath) {
+        public HtcServer(string configPath) {
             Context = this;
             _configPath = configPath;
             IsStopped = false;
@@ -43,19 +45,19 @@ namespace HTCSharp.Core {
 
         public void Start() {
             _availableEngines = new Dictionary<string, Type>();
-            URLMapping.RegisterIndexFile("index.html");
-            URLMapping.RegisterIndexFile("index.htm");
+            UrlMapper.RegisterIndexFile("index.html");
+            UrlMapper.RegisterIndexFile("index.htm");
             RegisterEngine("http", typeof(HttpEngine));
             _engines = new List<Engine>();
-            Logger.Info("Starting HTCSharp...");
+            Logger.Info("Starting HtcSharp...");
             Logger.Info("Loading Configuration...");
             AspNetConfigPath = Path.Combine(Path.GetDirectoryName(_configPath), "aspnet-appsettings.json");
             try {
-                if (!File.Exists(_configPath)) IOUtils.CreateHtcConfig(_configPath);
-                _config = IOUtils.GetJsonFile(_configPath);
-                if(!File.Exists(AspNetConfigPath)) IOUtils.CreateAspConfig(AspNetConfigPath);
+                if (!File.Exists(_configPath)) IoUtils.CreateHtcConfig(_configPath);
+                _config = IoUtils.GetJsonFile(_configPath);
+                if(!File.Exists(AspNetConfigPath)) IoUtils.CreateAspConfig(AspNetConfigPath);
                 _pluginsPath = _config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins/");
-                _pluginsPath = IOUtils.ReplacePathTags(_pluginsPath);
+                _pluginsPath = IoUtils.ReplacePathTags(_pluginsPath);
                 IsDebug = _config.GetValue("Debug", StringComparison.CurrentCultureIgnoreCase)?.Value<bool>() == true;
                 if (!Directory.Exists(_pluginsPath)) Directory.CreateDirectory(_pluginsPath);
             } catch (Exception ex) {
@@ -80,7 +82,7 @@ namespace HTCSharp.Core {
         }
 
         public void Stop() {
-            Logger.Info("Shutting down HTCSharp...");
+            Logger.Info("Shutting down HtcSharp...");
             _pluginsManager.Call_OnDisable();
             IsStopped = false;
             foreach (var engine in _engines) {
@@ -127,14 +129,14 @@ namespace HTCSharp.Core {
         public void RegisterEngine(string engineName, Type type) {
             if (!_availableEngines.ContainsKey(engineName.ToLower())) _availableEngines.Add(engineName, type);
             else {
-                throw new Exceptions.Dictionary.KeyAlreadyExistException(engineName.ToLower());
+                throw new KeyAlreadyExistException(engineName.ToLower());
             }
         }
 
-        public void UnregisterEngine(string engineName) {
+        public void UnRegisterEngine(string engineName) {
             if(_availableEngines.ContainsKey(engineName.ToLower())) _availableEngines.Remove(engineName);
             else {
-                throw new Exceptions.Dictionary.KeyNotFoundException(engineName.ToLower());
+                throw new KeyNotFoundException(engineName.ToLower());
             }
         }
 

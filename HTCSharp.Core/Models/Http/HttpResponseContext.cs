@@ -1,4 +1,4 @@
-﻿using HTCSharp.Core.Models.Http.Utils;
+﻿using HtcSharp.Core.Models.Http.Utils;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -7,29 +7,36 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HTCSharp.Core.Models.Http {
+namespace HtcSharp.Core.Models.Http {
     public class HttpResponseContext {
 
-        private HttpResponse Response;
+        private readonly HttpResponse _response;
 
-        public Stream OutputStream { get { return Response.Body; } }
-        public long? ContentLength { get { return Response.ContentLength; } set { Response.ContentLength = value; } }
-        public string ContentType { get { return Response.ContentType; } set { Response.ContentType = value; } }
-        public int StatusCode { get { return Response.StatusCode; } set { Response.StatusCode = value; } }
-        public bool HasStarted { get { return Response.HasStarted; } }
-        public HTCResponseHeaders Headers { get; }
-        public HTCResponseCookies Cookies { get; }
+        public Stream OutputStream => _response.Body;
+        public long? ContentLength { get => _response.ContentLength;
+            set => _response.ContentLength = value;
+        }
+        public string ContentType { get => _response.ContentType;
+            set => _response.ContentType = value;
+        }
+        public int StatusCode { get => _response.StatusCode;
+            set => _response.StatusCode = value;
+        }
+        public bool HasStarted => _response.HasStarted;
+        public HtcResponseHeaders Headers { get; }
+        public HtcResponseCookies Cookies { get; }
 
         public HttpResponseContext(HttpResponse response) {
-            Response = response;
-            Headers = new HTCResponseHeaders(response.Headers);
-            Cookies = new HTCResponseCookies(response.Cookies);
+            _response = response;
+            Headers = new HtcResponseHeaders(response.Headers);
+            Cookies = new HtcResponseCookies(response.Cookies);
         }
 
-        public async Task WriteAsync(string text) => await Response.WriteAsync(text);
-        public async Task WriteAsync(string text, CancellationToken cancellationToken = default(CancellationToken)) => await Response.WriteAsync(text, cancellationToken);
+        public async Task WriteAsync(string text) => await _response.WriteAsync(text);
+        // Not used
+        // public async Task WriteAsync(string text, CancellationToken cancellationToken = default(CancellationToken)) => await _response.WriteAsync(text, cancellationToken);
         public void Redirect(string location) {
-            Response.Redirect(location);
+            _response.Redirect(location);
         }
     }
 }

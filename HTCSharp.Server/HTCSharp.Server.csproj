@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <StartupObject>HTCSharp.Server.Program</StartupObject>
+    <StartupObject>HtcSharp.Server.Program</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HTCSharp.Core\HTCSharp.Core.csproj" />
+    <ProjectReference Include="..\HTCSharp.Core\HtcSharp.Core.csproj" />
   </ItemGroup>
 
 </Project>

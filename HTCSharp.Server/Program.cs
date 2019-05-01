@@ -1,14 +1,14 @@
-﻿using HTCSharp.Core;
-using HTCSharp.Core.Logging;
-using HTCSharp.Core.Logging.Loggers;
+﻿using HtcSharp.Core;
+using HtcSharp.Core.Logging;
+using HtcSharp.Core.Logging.Loggers;
 using System;
 using System.IO;
 using System.Reflection;
 
-namespace HTCSharp.Server {
+namespace HtcSharp.Server {
     public class Program {
-        private static readonly ILog Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
-        private HTCServer _htcServer;
+        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
+        private HtcServer _htcServer;
 
         private static void Main(string[] args) {
             new Program().Start(args);
@@ -17,25 +17,30 @@ namespace HTCSharp.Server {
         public void Start(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
             LogManager.RegisterLogger(new ConsoleLogger());
-            LogManager.RegisterLogger(new FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "HTCSharp.log")));
-            bool daemon = false;
-            if (args.Length == 1) {
-                if (args[0].Equals("daemode", StringComparison.CurrentCultureIgnoreCase)) {
+            LogManager.RegisterLogger(new FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "HtcSharp.log")));
+            var daemon = false;
+            switch (args.Length) {
+                case 1 when args[0].Equals("daemode", StringComparison.CurrentCultureIgnoreCase):
                     daemon = true;
-                    _htcServer = new HTCServer(Path.Combine(Directory.GetCurrentDirectory(), "HTCConfig.json"));
-                } else _htcServer = new HTCServer(args[0]);
-            } else if (args.Length == 2) {
-                if (args[0].Equals("daemode", StringComparison.CurrentCultureIgnoreCase)) {
+                    _htcServer = new HtcServer(Path.Combine(Directory.GetCurrentDirectory(), "HTCConfig.json"));
+                    break;
+                case 1:
+                    _htcServer = new HtcServer(args[0]);
+                    break;
+                case 2 when args[0].Equals("daemode", StringComparison.CurrentCultureIgnoreCase):
                     daemon = true;
-                    _htcServer = new HTCServer(args[1]);
-                } else if (args[1].Equals("daemode", StringComparison.CurrentCultureIgnoreCase)) {
+                    _htcServer = new HtcServer(args[1]);
+                    break;
+                case 2 when args[1].Equals("daemode", StringComparison.CurrentCultureIgnoreCase):
                     daemon = true;
-                    _htcServer = new HTCServer(args[0]);
-                } else {
-                    _htcServer = new HTCServer(args[0]);
-                }
-            } else {
-                _htcServer = new HTCServer(Path.Combine(Directory.GetCurrentDirectory(), "HTCConfig.json"));
+                    _htcServer = new HtcServer(args[0]);
+                    break;
+                case 2:
+                    _htcServer = new HtcServer(args[0]);
+                    break;
+                default:
+                    _htcServer = new HtcServer(Path.Combine(Directory.GetCurrentDirectory(), "HTCConfig.json"));
+                    break;
             }
             _htcServer.Start();
             _htcServer.WaitStop(daemon);

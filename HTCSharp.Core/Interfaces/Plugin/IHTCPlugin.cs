@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Interfaces.Plugin {
-    public interface IHTCPlugin {
+namespace HtcSharp.Core.Interfaces.Plugin {
+    public interface IHtcPlugin {
         string PluginName { get; }
         string PluginVersion { get; }
         void OnLoad();

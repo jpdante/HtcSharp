@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace HTCSharp.Core.Helpers.Http {
+namespace HtcSharp.Core.Helpers.Http {
     public static class ContentTypeExtensions {
         private static readonly ConcurrentDictionary<string, int> ValueLookup;
         private static readonly ConcurrentDictionary<string, int> ValueCache;
@@ -16,12 +16,12 @@ namespace HTCSharp.Core.Helpers.Http {
             ValueCache = new ConcurrentDictionary<string, int>();
             ExtensionLookup = new ConcurrentDictionary<string, int>();
 
-            foreach (var ctype in Enum.GetValues(typeof(ContentType)).Cast<ContentType>()) {
-                var key = ctype.ToValue();
-                var ext = ctype.ToString();
-                if (!ValueLookup.ContainsKey(key)) ValueLookup[key] = (int)ctype;
-                if (!ValueCache.ContainsKey(key)) ValueCache[key] = (int)ctype;
-                ExtensionLookup[ext] = (int)ctype;
+            foreach (var contentType in Enum.GetValues(typeof(ContentType)).Cast<ContentType>()) {
+                var key = contentType.ToValue();
+                var ext = contentType.ToString();
+                if (!ValueLookup.ContainsKey(key)) ValueLookup[key] = (int)contentType;
+                if (!ValueCache.ContainsKey(key)) ValueCache[key] = (int)contentType;
+                ExtensionLookup[ext] = (int)contentType;
             }
         }
 
@@ -45,20 +45,20 @@ namespace HTCSharp.Core.Helpers.Http {
 
         public static ContentType FromString(this ContentType ct, string contentType) {
             if (string.IsNullOrWhiteSpace(contentType)) return ContentType.CUSTOM_TEXT;
-            var contenttype = contentType.Trim();
+            contentType = contentType.Trim();
 
-            if (ValueCache.ContainsKey(contenttype)) return (ContentType)ValueCache[contenttype];
+            if (ValueCache.ContainsKey(contentType)) return (ContentType)ValueCache[contentType];
 
-            foreach (var part in contenttype.Split(';', ',')) {
-                var ctype = part.Trim();
-                if (!ValueLookup.ContainsKey(ctype)) continue;
-                var tct = (ContentType)ValueLookup[ctype];
+            foreach (var part in contentType.Split(';', ',')) {
+                var contentType2 = part.Trim();
+                if (!ValueLookup.ContainsKey(contentType2)) continue;
+                var tct = (ContentType)ValueLookup[contentType2];
 
-                ValueCache[contenttype] = (int)tct;
+                ValueCache[contentType] = (int)tct;
                 return tct;
             }
 
-            ValueCache[contenttype] = 0;
+            ValueCache[contentType] = 0;
             return 0;
         }
 
@@ -74,8 +74,8 @@ namespace HTCSharp.Core.Helpers.Http {
         public string Value { get; set; }
         public bool IsText { get; set; }
         public bool IsBinary {
-            get { return !IsText; }
-            set { IsText = !value; }
+            get => !IsText;
+            set => IsText = !value;
         }
         public ContentTypeMetadata() {
             Value = "text/plain";

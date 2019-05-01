@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Exceptions.Dictionary {
+namespace HtcSharp.Core.Exceptions.Dictionary {
     public class KeyNotFoundException : Exception {
         public readonly string Key;
 

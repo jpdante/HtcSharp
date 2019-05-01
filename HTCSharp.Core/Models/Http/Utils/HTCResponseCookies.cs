@@ -3,12 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Models.Http.Utils {
-    public class HTCResponseCookies {
-        private IResponseCookies Cookies;
+namespace HtcSharp.Core.Models.Http.Utils {
+    public class HtcResponseCookies {
+        private readonly IResponseCookies _cookies;
 
-        public HTCResponseCookies(IResponseCookies cookies) {
-            Cookies = cookies;
+        public HtcResponseCookies(IResponseCookies cookies) {
+            _cookies = cookies;
         }
 
         public void Append(string key, string value, int expire = -1, string path = null, string domain = null, bool httpOnly = false, bool isEssential = false, bool secure = false) {
@@ -22,19 +22,19 @@ namespace HTCSharp.Core.Models.Http.Utils {
             if(expire != -1) {
                 options.MaxAge = TimeSpan.FromSeconds(DateTime.UtcNow.AddSeconds(expire).Second);
             }
-            Cookies.Append(key, value, options);
+            _cookies.Append(key, value, options);
         }
 
         public void Append(string key, string value, CookieOptions options) {
-            Cookies.Append(key, value, options);
+            _cookies.Append(key, value, options);
         }
 
         public void Append(string key, string value) {
-            Cookies.Append(key, value);
+            _cookies.Append(key, value);
         }
 
         public void Delete(string key) {
-            Cookies.Delete(key);
+            _cookies.Delete(key);
         }
     }
 }

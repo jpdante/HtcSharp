@@ -1,5 +1,5 @@
-﻿using HTCSharp.Core.Helpers.Http;
-using HTCSharp.Core.Models.Http.Utils;
+﻿using HtcSharp.Core.Helpers.Http;
+using HtcSharp.Core.Models.Http.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
@@ -11,57 +11,57 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 
-namespace HTCSharp.Core.Models.Http {
+namespace HtcSharp.Core.Models.Http {
     public class HttpRequestContext {
 
-        private HttpRequest Request;
+        private readonly HttpRequest _request;
 
-        public Stream InputStream { get { return Request.Body; } }
-        public long? ContentLength { get { return Request.ContentLength; } }
-        public ContentType ContentType { get { return ContentType.DEFAULT.FromString(Request.ContentType); } }
-        public string Host { get { return Request.Host.ToString(); } }
-        public bool IsHttps { get { return Request.IsHttps; } }
-        public HttpMethod Method { get { return HttpMethod.GET.FromString(Request.Method); } }
-        public string Path { get { return Request.Path.ToString(); } }
-        public string PathBase { get { return Request.PathBase.ToString(); } }
-        public string Protocol { get { return Request.Protocol; } }
-        public string QueryString { get { return Request.QueryString.ToString(); } }
-        public string Scheme { get { return Request.Scheme; } }
-        public List<HTCFile> Files;
+        public Stream InputStream => _request.Body;
+        public long? ContentLength => _request.ContentLength;
+        public ContentType ContentType => ContentType.DEFAULT.FromString(_request.ContentType);
+        public string Host => _request.Host.ToString();
+        public bool IsHttps => _request.IsHttps;
+        public HttpMethod Method => HttpMethod.GET.FromString(_request.Method);
+        public string Path => _request.Path.ToString();
+        public string PathBase => _request.PathBase.ToString();
+        public string Protocol => _request.Protocol;
+        public string QueryString => _request.QueryString.ToString();
+        public string Scheme => _request.Scheme;
+        public List<HtcFile> Files;
         public Dictionary<string, string> Post;
         public Dictionary<string, string> Cookies;
         public Dictionary<string, string> Query;
         public Dictionary<string, string> Headers;
 
         public HttpRequestContext(HttpRequest request) {
-            Request = request;
-            Files = new List<HTCFile>();
+            _request = request;
+            Files = new List<HtcFile>();
             Post = new Dictionary<string, string>();
             Cookies = new Dictionary<string, string>();
             Query = new Dictionary<string, string>();
             Headers = new Dictionary<string, string>();
-            foreach (string key in Request.Cookies.Keys) {
-                Cookies.Add(key, Request.Cookies[key]);
+            foreach (var key in _request.Cookies.Keys) {
+                Cookies.Add(key, _request.Cookies[key]);
             }
-            foreach (string key in Request.Query.Keys) {
-                Query.Add(key, Request.Query[key]);
+            foreach (var key in _request.Query.Keys) {
+                Query.Add(key, _request.Query[key]);
             }
-            foreach (string key in Request.Headers.Keys) {
-                Headers.Add(key, Request.Headers[key]);
+            foreach (var key in _request.Headers.Keys) {
+                Headers.Add(key, _request.Headers[key]);
             }
             if(Method == HttpMethod.POST) {
                 if(ContentType == ContentType.FormUrlEncoded || ContentType == ContentType.MultipartFormData) {
-                    foreach (string key in Request.Form.Keys) {
-                        Post.Add(key, Request.Form[key]);
+                    foreach (var key in _request.Form.Keys) {
+                        Post.Add(key, _request.Form[key]);
                     }
-                    foreach (var file in Request.Form.Files) {
-                        Files.Add(new HTCFile(file));
+                    foreach (var file in _request.Form.Files) {
+                        Files.Add(new HtcFile(file));
                     }
                 } else if (ContentType == ContentType.JSON) {
-                    using (StreamReader reader = new StreamReader(InputStream, Encoding.UTF8)) {
-                        string json = reader.ReadToEnd();
+                    using (var reader = new StreamReader(InputStream, Encoding.UTF8)) {
+                        var json = reader.ReadToEnd();
                         try {
-                            JObject post = JObject.Parse(json);
+                            var post = JObject.Parse(json);
                             foreach (var item in post) {
                                 DoJsonAdd(item.Key, item.Value);
                             }
@@ -75,9 +75,9 @@ namespace HTCSharp.Core.Models.Http {
             try {
                 switch (obj.Type) {
                     case JTokenType.Array:
-                        JArray array = (JArray)obj;
+                        var array = (JArray)obj;
                         DoJsonAdd($"{key}.length", array.Count);
-                        for (int i = 0; i < array.Count; i++) {
+                        for (var i = 0; i < array.Count; i++) {
                             DoJsonAdd($"{key}.{i}", array[i]);
                         }
                         break;
@@ -111,7 +111,7 @@ namespace HTCSharp.Core.Models.Http {
                     case JTokenType.Null:
                         break;
                     case JTokenType.Object:
-                        JObject obj2 = obj.ToObject<JObject>();
+                        var obj2 = obj.ToObject<JObject>();
                         foreach (var item in obj2) {
                             DoJsonAdd($"{key}.{item.Key}", item.Value);
                         }
@@ -135,8 +135,12 @@ namespace HTCSharp.Core.Models.Http {
                     case JTokenType.Uri:
                         Post.Add(key, obj.ToObject<Uri>().ToString());
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
-            } catch { }
+            } catch {
+                // ignored
+            }
         }
     }
 }

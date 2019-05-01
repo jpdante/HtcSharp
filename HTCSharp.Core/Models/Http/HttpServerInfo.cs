@@ -1,44 +1,30 @@
-﻿using HTCSharp.Core.Components.Http;
+﻿using HtcSharp.Core.Components.Http;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace HTCSharp.Core.Models.Http {
+namespace HtcSharp.Core.Models.Http {
     public class HttpServerInfo {
-
-        private IReadOnlyCollection<IPEndPoint> _Hosts;
-        private string _Domain;
-        private string _Root;
-        private bool _UseSSL;
-        private string _Certificate;
-        private string _Password;
-        private HttpRewriter _HttpRewriter;
-
-        public HttpServerInfo(IReadOnlyCollection<string> hosts, string domain, string root, bool useSSL, string certificate, string password, HttpRewriter httpRewriter) {
-            List<IPEndPoint> thosts = new List<IPEndPoint>();
-            foreach(var host in hosts) {
-                string[] rawSplit = host.Split(":");
-                IPAddress address = IPAddress.Parse(rawSplit[0]);
-                int port = int.Parse(rawSplit[1]);
-                thosts.Add(new IPEndPoint(address, port));
-            }
-            _Hosts = thosts.AsReadOnly();
-            _Domain = domain;
-            _Root = root;
-            _UseSSL = useSSL;
-            _Certificate = certificate;
-            _Password = password;
-            _HttpRewriter = httpRewriter;
+        public HttpServerInfo(IEnumerable<string> hosts, string domain, string root, bool useSsl, string certificate, string password, HttpReWriter httpReWriter) {
+            var tempHosts = (from host in hosts select host.Split(":") into rawSplit let address = IPAddress.Parse(rawSplit[0]) let port = int.Parse(rawSplit[1]) select new IPEndPoint(address, port)).ToList();
+            Hosts = tempHosts.AsReadOnly();
+            Domain = domain;
+            Root = root;
+            UseSsl = useSsl;
+            Certificate = certificate;
+            Password = password;
+            GetHttpReWriter = httpReWriter;
         }
 
-        public IReadOnlyCollection<IPEndPoint> Hosts { get { return _Hosts; } }
-        public string Domain { get { return _Domain; } }
-        public string Root { get { return _Root; } }
-        public bool UseSSL { get { return _UseSSL; } }
-        public string Certificate { get { return _Certificate; } }
-        public string Password { get { return _Password; } }
-        public HttpRewriter GetHttpRewriter { get { return _HttpRewriter; } }
+        public IReadOnlyCollection<IPEndPoint> Hosts { get; }
+        public string Domain { get; }
+        public string Root { get; }
+        public bool UseSsl { get; }
+        public string Certificate { get; }
+        public string Password { get; }
+        public HttpReWriter GetHttpReWriter { get; }
     }
 }

@@ -1,47 +1,51 @@
-﻿using HTCSharp.Core.Logging;
-using HTCSharp.Core.Models.Http;
+﻿using HtcSharp.Core.Logging;
+using HtcSharp.Core.Models.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace HTCSharp.Core.Models.Rewriter {
-    public class RewriteLocation {
-        private static readonly ILog _Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
+namespace HtcSharp.Core.Models.ReWriter {
+    public class ReWriteLocation {
+        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly byte ActionType;
-        private readonly string Data;
-        private readonly List<RewriteRule> Rules;
+        private readonly byte _actionType;
+        private readonly string _data;
+        private readonly List<ReWriteRule> _rules;
 
-        public RewriteLocation(string location, List<string> rules) {
-            Rules = new List<RewriteRule>();
-            string[] locationParts = location.Split(" ");
+        public ReWriteLocation(string location, IEnumerable<string> rules) {
+            _rules = new List<ReWriteRule>();
+            var locationParts = location.Split(" ");
             if(locationParts[0].Equals("location", StringComparison.CurrentCultureIgnoreCase)) {
-                if (locationParts.Length == 2) {
-                    ActionType = 1;
-                    Data = locationParts[1];
-                } else if (locationParts.Length == 3) {
-                    if (locationParts.Equals("=")) ActionType = 2;
-                    if (locationParts.Equals("=i")) ActionType = 3;
-                    if (locationParts.Equals("c")) ActionType = 4;
-                    if (locationParts.Equals("ci")) ActionType = 5;
-                    Data = locationParts[2];
+                switch (locationParts.Length) {
+                    case 2:
+                        _actionType = 1;
+                        _data = locationParts[1];
+                        break;
+                    case 3: {
+                        if (locationParts.Equals("=")) _actionType = 2;
+                        if (locationParts.Equals("=i")) _actionType = 3;
+                        if (locationParts.Equals("c")) _actionType = 4;
+                        if (locationParts.Equals("ci")) _actionType = 5;
+                        _data = locationParts[2];
+                        break;
+                    }
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(locationParts));
                 }
             }
-            foreach (string rule in rules) {
-                Rules.Add(new RewriteRule(rule));
+            foreach (var rule in rules) {
+                _rules.Add(new ReWriteRule(rule));
             }
         }
 
-        public byte MatchRules(string request, HTCHttpContext context, out string newRequest) {
-            if (ActionType == 1) {
-                string remotePath = string.Empty;
-                if (request.Equals("/")) remotePath = "/";
-                else remotePath = $"{Path.GetDirectoryName(request).Replace(@"\", @"/")}/".Replace(@"//", @"/");
-                if (Data.Equals(remotePath)) {
-                    foreach (RewriteRule rule in Rules) {
-                        byte response = rule.MatchRule(request, context, out request);
+        public byte MatchRules(string request, HtcHttpContext context, out string newRequest) {
+            if (_actionType == 1) {
+                var remotePath = request.Equals("/") ? "/" : $"{Path.GetDirectoryName(request).Replace(@"\", @"/")}/".Replace(@"//", @"/");
+                if (_data.Equals(remotePath)) {
+                    foreach (var rule in _rules) {
+                        var response = rule.MatchRule(request, context, out request);
                         if (response == 1) {
                             newRequest = request;
                             return 0;

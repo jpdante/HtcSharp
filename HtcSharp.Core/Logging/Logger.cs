@@ -1,15 +1,14 @@
-﻿using HTCSharp.Core.Logging.Loggers;
+﻿using HtcSharp.Core.Logging.Loggers;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Logging {
-    public class ILog {
+namespace HtcSharp.Core.Logging {
+    public class Logger {
+        private readonly Type _objType;
 
-        private Type objType;
-
-        public ILog(Type type) {
-            objType = type;
+        public Logger(Type type) {
+            _objType = type;
         }
 
         public void Log(object obj) {
@@ -17,8 +16,8 @@ namespace HTCSharp.Core.Logging {
         }
 
         public void Log(object obj, Exception ex) {
-            foreach(ILogger logger in LogManager.GetLoggers()) {
-                logger.Log(objType, DateTime.Now, obj, ex);
+            foreach(var logger in LogManager.GetLoggers()) {
+                logger.Log(_objType, DateTime.Now, obj, ex);
             }
         }
 
@@ -27,8 +26,8 @@ namespace HTCSharp.Core.Logging {
         }
 
         public void Debug(object obj, Exception ex) {
-            foreach (ILogger logger in LogManager.GetLoggers()) {
-                logger.Debug(objType, DateTime.Now, obj, ex);
+            foreach (var logger in LogManager.GetLoggers()) {
+                logger.Debug(_objType, DateTime.Now, obj, ex);
             }
         }
 
@@ -37,8 +36,8 @@ namespace HTCSharp.Core.Logging {
         }
         
         public void Info(object obj, Exception ex) {
-            foreach (ILogger logger in LogManager.GetLoggers()) {
-                logger.Info(objType, DateTime.Now, obj, ex);
+            foreach (var logger in LogManager.GetLoggers()) {
+                logger.Info(_objType, DateTime.Now, obj, ex);
             }
         }
 
@@ -47,8 +46,8 @@ namespace HTCSharp.Core.Logging {
         }
 
         public void Warn(object obj, Exception ex) {
-            foreach (ILogger logger in LogManager.GetLoggers()) {
-                logger.Warn(objType, DateTime.Now, obj, ex);
+            foreach (var logger in LogManager.GetLoggers()) {
+                logger.Warn(_objType, DateTime.Now, obj, ex);
             }
         }
 
@@ -57,8 +56,8 @@ namespace HTCSharp.Core.Logging {
         }
 
         public void Error(object obj, Exception ex) {
-            foreach (ILogger logger in LogManager.GetLoggers()) {
-                logger.Error(objType, DateTime.Now, obj, ex);
+            foreach (var logger in LogManager.GetLoggers()) {
+                logger.Error(_objType, DateTime.Now, obj, ex);
             }
         }
 
@@ -67,8 +66,8 @@ namespace HTCSharp.Core.Logging {
         }
 
         public void Fatal(object obj, Exception ex) {
-            foreach (ILogger logger in LogManager.GetLoggers()) {
-                logger.Fatal(objType, DateTime.Now, obj, ex);
+            foreach (var logger in LogManager.GetLoggers()) {
+                logger.Fatal(_objType, DateTime.Now, obj, ex);
             }
         }
 
@@ -77,8 +76,8 @@ namespace HTCSharp.Core.Logging {
         }
 
         public void Trace(object obj, Exception ex) {
-            foreach (ILogger logger in LogManager.GetLoggers()) {
-                logger.Trace(objType, DateTime.Now, obj, ex);
+            foreach (var logger in LogManager.GetLoggers()) {
+                logger.Trace(_objType, DateTime.Now, obj, ex);
             }
         }
 

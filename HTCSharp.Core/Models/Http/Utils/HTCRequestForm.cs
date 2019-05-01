@@ -5,41 +5,36 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Models.Http.Utils {
-    public class HTCRequestForm : IEnumerable<KeyValuePair<string, StringValues>>, IEnumerable {
-        private IFormCollection Form;
-        private HTCRequestFormFiles FormFiles;
+namespace HtcSharp.Core.Models.Http.Utils {
+    public class HtcRequestForm : IEnumerable<KeyValuePair<string, StringValues>>, IEnumerable {
+        private readonly IFormCollection _form;
 
-        public HTCRequestForm(IFormCollection form, HttpRequest httpRequest) {
-            Form = form;
-            FormFiles = new HTCRequestFormFiles(form.Files);
+        public HtcRequestForm(IFormCollection form, HttpRequest httpRequest) {
+            _form = form;
+            Files = new HtcRequestFormFiles(form.Files);
         }
 
-        public HTCRequestFormFiles Files { get { return FormFiles; } }
+        public HtcRequestFormFiles Files { get; }
 
-        public string this[string key] {
-            get {
-                return Form[key];
-            }
-        }
+        public string this[string key] => _form[key];
 
         public bool ContainsKey(string key) {
-            return Form.ContainsKey(key);
+            return _form.ContainsKey(key);
         }
 
         public bool TryGetValue(string key, out StringValues value) {
-            return Form.TryGetValue(key, out value);
+            return _form.TryGetValue(key, out value);
         }
 
         public IEnumerator<KeyValuePair<string, StringValues>> GetEnumerator() {
-            throw new NotImplementedException();
+            return _form.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
-            throw new NotImplementedException();
+            return _form.GetEnumerator();
         }
 
-        public int Count { get { return Form.Count; } }
-        public ICollection<string> Keys { get { return Form.Keys; } }
+        public int Count => _form.Count;
+        public ICollection<string> Keys => _form.Keys;
     }
 }

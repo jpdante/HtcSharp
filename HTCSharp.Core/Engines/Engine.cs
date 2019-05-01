@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HTCSharp.Core.Engines {
+namespace HtcSharp.Core.Engines {
     public abstract class Engine {
 
         protected JObject EngineConfig = null;
