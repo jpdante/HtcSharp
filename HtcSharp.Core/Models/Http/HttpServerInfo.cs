@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using HtcSharp.Core.Managers;
 
 namespace HtcSharp.Core.Models.Http {
     public class HttpServerInfo {
-        public HttpServerInfo(IEnumerable<string> hosts, string domain, string root, bool useSsl, string certificate, string password, HttpReWriter httpReWriter) {
+        public HttpServerInfo(IEnumerable<string> hosts, string domain, string root, bool useSsl, string certificate, string password, HttpReWriter httpReWriter, ErrorMessagesManager errorMessageManager) {
             var tempHosts = (from host in hosts select host.Split(":") into rawSplit let address = IPAddress.Parse(rawSplit[0]) let port = int.Parse(rawSplit[1]) select new IPEndPoint(address, port)).ToList();
             Hosts = tempHosts.AsReadOnly();
             Domain = domain;
@@ -16,7 +17,8 @@ namespace HtcSharp.Core.Models.Http {
             UseSsl = useSsl;
             Certificate = certificate;
             Password = password;
-            GetHttpReWriter = httpReWriter;
+            HttpReWriter = httpReWriter;
+            ErrorMessageManager = errorMessageManager;
         }
 
         public IReadOnlyCollection<IPEndPoint> Hosts { get; }
@@ -25,6 +27,7 @@ namespace HtcSharp.Core.Models.Http {
         public bool UseSsl { get; }
         public string Certificate { get; }
         public string Password { get; }
-        public HttpReWriter GetHttpReWriter { get; }
+        public HttpReWriter HttpReWriter { get; }
+        public ErrorMessagesManager ErrorMessageManager { get; }
     }
 }

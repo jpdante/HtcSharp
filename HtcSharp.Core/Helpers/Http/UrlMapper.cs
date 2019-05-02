@@ -2,16 +2,11 @@
 using HtcSharp.Core.IO;
 using HtcSharp.Core.Logging;
 using HtcSharp.Core.Models.Http;
-using HtcSharp.Core.Models.Http.Pages;
-using HtcSharp.Core.Models.ReWriter;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HtcSharp.Core.Helpers.Http {
     public static class UrlMapper {
@@ -46,69 +41,43 @@ namespace HtcSharp.Core.Helpers.Http {
         public static void UnRegisterPluginPage(string page) {
             RegisteredPages.Remove(page);
         }
-// 
-//         public static void DoFolderConfig(HTCHttpContext context, HttpServerInfo serverInfo, out string definitiveUrl, out FolderConfig pathConfig) {
-//             string tempRoot = serverInfo.Root;
-//             string tempUrlPath = context.Request.Path.ToString();
-//             string tempPath = Path.GetDirectoryName(Path.GetFullPath(Path.Combine(tempRoot, tempUrlPath.Remove(0, 1))));
-//             if(FolderConfigs.ContainsKey(tempUrlPath)) {
-//                 FolderConfig config = FolderConfigs[tempUrlPath];
-//                 config.CheckConfigChange();
-//                 definitiveUrl = config.Rewrite(tempUrlPath, context);
-//                 pathConfig = config;
-//                 return;
-//             } else {
-//                 if (File.Exists(Path.Combine(tempPath, "htcconf.json"))) {
-//                     FolderConfig config = new FolderConfig(tempUrlPath, Path.Combine(tempPath, "htcconf.json"));
-//                     FolderConfigs.Add(tempUrlPath, config);
-//                     config.CheckConfigChange();
-//                     definitiveUrl = config.Rewrite(tempUrlPath, context);
-//                     pathConfig = config;
-//                     return;
-//                 } else {
-//                     definitiveUrl = tempUrlPath;
-//                     pathConfig = DefaultConfig;
-//                     return;
-//                 }
-//             }
-//         }
 
         public static void ProcessRequest(HtcHttpContext httpContext, HttpServerInfo serverInfo) {
-            string root = serverInfo.Root;
-            string requestedUrl = null;
-            if (serverInfo.GetHttpReWriter != null) {
-                if (serverInfo.GetHttpReWriter.Rewrite(httpContext, out requestedUrl)) {
+            var root = serverInfo.Root;
+            string requestedUrl;
+            if (serverInfo.HttpReWriter != null) {
+                if (serverInfo.HttpReWriter.Rewrite(httpContext, out requestedUrl)) {
                     Close(httpContext);
                     return;
                 }
             } else {
-                requestedUrl = httpContext.Request.Path.ToString();
+                requestedUrl = httpContext.Request.Path;
             }
             if (RegisteredPages.ContainsKey(requestedUrl.ToLower())) {
                 if (RegisteredPages[requestedUrl.ToLower()].OnHttpPageRequest(httpContext, requestedUrl.ToLower())) {
-                    Default5xx.Call500(httpContext);
+                    serverInfo.ErrorMessageManager.SendError(httpContext, 500);
                 }
             } else {
-                string requestPath = Path.GetFullPath(Path.Combine(root, requestedUrl.Remove(0, 1)));
+                var requestPath = Path.GetFullPath(Path.Combine(root, requestedUrl.Remove(0, 1)));
                 if (File.Exists(requestPath)) {
-                    string extension = Path.GetExtension(requestPath);
+                    var extension = Path.GetExtension(requestPath);
                     if (ExtensionPlugins.ContainsKey(extension.ToLower())) {
                         if (ExtensionPlugins[extension.ToLower()].OnHttpExtensionRequest(httpContext, requestPath, extension.ToLower())) {
-                            Default5xx.Call500(httpContext);
+                            serverInfo.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     } else {
                         try {
                             CallFile(httpContext, requestPath);
                         } catch (Exception ex) {
                             Logger.Error(ex);
-                            Default5xx.Call500(httpContext);
+                            serverInfo.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     }
                 } else {
                     if (Directory.Exists(requestPath)) {
-                        CallIndex(httpContext, requestPath, requestedUrl, false);
+                        CallIndex(httpContext, serverInfo, requestPath, requestedUrl, false);
                     } else {
-                        Default4xx.Call404(httpContext);
+                        serverInfo.ErrorMessageManager.SendError(httpContext, 404);
                     }
                 }
             }
@@ -123,42 +92,38 @@ namespace HtcSharp.Core.Helpers.Http {
             }
         }
 
-        public static void CallIndex(HtcHttpContext httpContext, string rootPath, string requestPath, bool allowDirectoryIndexer) {
+        public static void CallIndex(HtcHttpContext httpContext, HttpServerInfo serverInfo, string rootPath, string requestPath, bool allowDirectoryIndexer) {
             foreach (var indexFile in IndexFiles) {
                 var indexRequestPath = Path.Combine(requestPath, indexFile);
                 var indexFilePath = Path.Combine(rootPath, indexRequestPath.Remove(0, 1));
-                string extension = Path.GetExtension(indexFilePath);
+                var extension = Path.GetExtension(indexFilePath);
                 if (RegisteredPages.ContainsKey(indexRequestPath.ToLower())) {
                     if (RegisteredPages[indexRequestPath.ToLower()].OnHttpPageRequest(httpContext, indexRequestPath.ToLower())) {
-                        Default5xx.Call500(httpContext);
+                        serverInfo.ErrorMessageManager.SendError(httpContext, 500);
                     }
                     return;
                 } else {
                     if (!File.Exists(indexFilePath)) continue;
                     if (ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                         if (plugin.OnHttpExtensionRequest(httpContext, indexFilePath, extension.ToLower())) {
-                            Default5xx.Call500(httpContext);
+                            serverInfo.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     } else {
                         try {
                             CallFile(httpContext, indexFilePath);
                         } catch (Exception ex) {
                             Logger.Error(ex);
-                            Default5xx.Call500(httpContext);
+                            serverInfo.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     }
                 }
             }
-            if (allowDirectoryIndexer) {
-                Default5xx.Call500(httpContext);
-            } else {
-                Default4xx.Call403(httpContext);
-            }
+            serverInfo.ErrorMessageManager.SendError(httpContext, allowDirectoryIndexer ? 500 : 403);
         }
 
         public static void CallFile(HtcHttpContext httpContext, string requestPath) {
-            using (FileBuffer fileBuffer = new FileBuffer(requestPath, 2048)) {
-                 ContentType contentType = ContentType.DEFAULT.FromExtension(requestPath);
+            using (var fileBuffer = new FileBuffer(requestPath, 2048)) {
+                 var contentType = ContentType.DEFAULT.FromExtension(requestPath);
                 // 7 * 24 Hour * 60 Min * 60 Sec = 604800 Sec;
                 httpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
                 httpContext.Response.Headers.Add("Date", DateTime.Now.ToString("r"));
@@ -167,27 +132,27 @@ namespace HtcSharp.Core.Helpers.Http {
                 //context.Response.Headers.Add("Cache-Control", "max-age=604800");
                 httpContext.Response.ContentType = contentType.ToValue();
                 httpContext.Response.StatusCode = 200;
-                Tuple<long, long> Range = GetRange(httpContext, fileBuffer);
-                if (UseGzip(httpContext, fileBuffer.Lenght, contentType)) {
+                var (startRange, endRange) = GetRange(httpContext, fileBuffer);
+                if (UseGzip(httpContext, fileBuffer.Lenght)) {
                     httpContext.Response.Headers.Add("Content-Encoding", "gzip");
-                    using (GZipStream gzipStream = new GZipStream(httpContext.Response.OutputStream, CompressionMode.Compress, false)) {
-                        fileBuffer.CopyToStream(gzipStream, Range.Item1, Range.Item2);
+                    using (var gzipStream = new GZipStream(httpContext.Response.OutputStream, CompressionMode.Compress, false)) {
+                        fileBuffer.CopyToStream(gzipStream, startRange, endRange);
                     }
                 } else {
-                    httpContext.Response.ContentLength = Range.Item2 - Range.Item1;
-                    fileBuffer.CopyToStream(httpContext.Response.OutputStream, Range.Item1, Range.Item2);
+                    httpContext.Response.ContentLength = endRange - startRange;
+                    fileBuffer.CopyToStream(httpContext.Response.OutputStream, startRange, endRange);
                 }
             }
         }
 
-        private static bool UseGzip(HtcHttpContext httpContext, long fileSize, ContentType contentType) {
+        private static bool UseGzip(HtcHttpContext httpContext, long fileSize) {
             var header = GetHeader(httpContext, "Accept-Encoding");
             return fileSize > (1024 * 5) && fileSize < (1024 * 1024 * 5) && header != null && header.Contains("gzip", StringComparison.CurrentCultureIgnoreCase);
         }
 
         private static Tuple<long, long> GetRange(HtcHttpContext httpContext, FileBuffer fileBuffer) {
             var rangeData = GetHeader(httpContext, "Range");
-            long startRange = -1;
+            long startRange;
             long endRange = -1;
             if (rangeData != null) {
                 var rangeHeader = rangeData.Replace("bytes=", "");

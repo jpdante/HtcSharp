@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using HtcSharp.Core.Exceptions.Dictionary;
+using HtcSharp.Core.Models.Http.Pages;
 using KeyNotFoundException = HtcSharp.Core.Exceptions.Dictionary.KeyNotFoundException;
 
 namespace HtcSharp.Core {
@@ -23,6 +24,7 @@ namespace HtcSharp.Core {
         private JObject _config;
         private readonly string _configPath;
         private string _pluginsPath;
+        private string _errorPagesPath;
 
         public static bool IsDebug { get; private set; }
         public static HtcServer Context { get; private set; }
@@ -58,12 +60,16 @@ namespace HtcSharp.Core {
                 if(!File.Exists(AspNetConfigPath)) IoUtils.CreateAspConfig(AspNetConfigPath);
                 _pluginsPath = _config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins/");
                 _pluginsPath = IoUtils.ReplacePathTags(_pluginsPath);
+                _errorPagesPath = _config.GetValue("ErrorPagesPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"error-pages/");
+                _errorPagesPath = IoUtils.ReplacePathTags(_errorPagesPath);
                 IsDebug = _config.GetValue("Debug", StringComparison.CurrentCultureIgnoreCase)?.Value<bool>() == true;
                 if (!Directory.Exists(_pluginsPath)) Directory.CreateDirectory(_pluginsPath);
+                if (!Directory.Exists(_errorPagesPath)) Directory.CreateDirectory(_errorPagesPath);
             } catch (Exception ex) {
                 Logger.Error("Failed to load configuration!", ex);
                 return;
             }
+            RegisterErrorPages();
             _pluginsManager = new PluginManager(_pluginsPath);
             _pluginsManager.ConstructPlugins();
             _pluginsManager.Call_OnLoad();
@@ -124,6 +130,33 @@ namespace HtcSharp.Core {
                     System.Threading.Thread.Sleep(1000);
                 }
             }
+        }
+
+        private void RegisterErrorPages() {
+            var path400 = Path.Combine(_errorPagesPath, "400.html");
+            var path401 = Path.Combine(_errorPagesPath, "401.html");
+            var path403 = Path.Combine(_errorPagesPath, "403.html");
+            var path404 = Path.Combine(_errorPagesPath, "404.html");
+            var path500 = Path.Combine(_errorPagesPath, "500.html");
+            var path501 = Path.Combine(_errorPagesPath, "501.html");
+            var path502 = Path.Combine(_errorPagesPath, "502.html");
+            var path503 = Path.Combine(_errorPagesPath, "503.html");
+            if(!File.Exists(path400)) File.WriteAllText(path400, IoUtils.Default400);
+            if(!File.Exists(path401)) File.WriteAllText(path401, IoUtils.Default401);
+            if(!File.Exists(path403)) File.WriteAllText(path403, IoUtils.Default403);
+            if(!File.Exists(path404)) File.WriteAllText(path404, IoUtils.Default404);
+            if(!File.Exists(path500)) File.WriteAllText(path500, IoUtils.Default500);
+            if(!File.Exists(path501)) File.WriteAllText(path501, IoUtils.Default501);
+            if(!File.Exists(path502)) File.WriteAllText(path502, IoUtils.Default502);
+            if(!File.Exists(path503)) File.WriteAllText(path503, IoUtils.Default503);
+            ErrorMessagesManager.RegisterDefaultPage(new FilePageMessage(path400, 400));
+            ErrorMessagesManager.RegisterDefaultPage(new FilePageMessage(path401, 401));
+            ErrorMessagesManager.RegisterDefaultPage(new FilePageMessage(path403, 403));
+            ErrorMessagesManager.RegisterDefaultPage(new FilePageMessage(path404, 404));
+            ErrorMessagesManager.RegisterDefaultPage(new FilePageMessage(path500, 500));
+            ErrorMessagesManager.RegisterDefaultPage(new FilePageMessage(path501, 501));
+            ErrorMessagesManager.RegisterDefaultPage(new FilePageMessage(path502, 502));
+            ErrorMessagesManager.RegisterDefaultPage(new FilePageMessage(path503, 503));
         }
 
         public void RegisterEngine(string engineName, Type type) {
