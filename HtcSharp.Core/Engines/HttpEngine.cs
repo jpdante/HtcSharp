@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using HtcSharp.Core;
 using HtcSharp.Core.Components.Http;
@@ -71,6 +72,7 @@ namespace HtcSharp.Core.Engines {
                 var hosts = GetValues<string>(server, "Hosts");
                 var domain = GetValue<string>(server, "Domain");
                 var root = IoUtils.ReplacePathTags(GetValue<string>(server, "Root"));
+                if (!Directory.Exists(root)) Directory.CreateDirectory(root);
                 var useSsl = GetValue<bool>(server, "SSL");
                 string certificate = null;
                 string password = null;

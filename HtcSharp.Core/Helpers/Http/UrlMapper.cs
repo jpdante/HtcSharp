@@ -15,8 +15,6 @@ namespace HtcSharp.Core.Helpers.Http {
         private static readonly List<string> IndexFiles = new List<string>();
         private static readonly Dictionary<string, IHttpEvents> ExtensionPlugins = new Dictionary<string, IHttpEvents>();
         private static readonly Dictionary<string, IHttpEvents> RegisteredPages = new Dictionary<string, IHttpEvents>();
-//         private static Dictionary<string, FolderConfig> FolderConfigs = new Dictionary<string, FolderConfig>();
-//         private static FolderConfig DefaultConfig = new FolderConfig();
 
         public static void RegisterIndexFile(string file) {
             IndexFiles.Add(file.ToLower());
@@ -55,7 +53,7 @@ namespace HtcSharp.Core.Helpers.Http {
             }
             if (RegisteredPages.ContainsKey(requestedUrl.ToLower())) {
                 if (RegisteredPages[requestedUrl.ToLower()].OnHttpPageRequest(httpContext, requestedUrl.ToLower())) {
-                    serverInfo.ErrorMessageManager.SendError(httpContext, 500);
+                    httpContext.ErrorMessageManager.SendError(httpContext, 500);
                 }
             } else {
                 var requestPath = Path.GetFullPath(Path.Combine(root, requestedUrl.Remove(0, 1)));
@@ -63,21 +61,21 @@ namespace HtcSharp.Core.Helpers.Http {
                     var extension = Path.GetExtension(requestPath);
                     if (ExtensionPlugins.ContainsKey(extension.ToLower())) {
                         if (ExtensionPlugins[extension.ToLower()].OnHttpExtensionRequest(httpContext, requestPath, extension.ToLower())) {
-                            serverInfo.ErrorMessageManager.SendError(httpContext, 500);
+                            httpContext.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     } else {
                         try {
                             CallFile(httpContext, requestPath);
                         } catch (Exception ex) {
                             Logger.Error(ex);
-                            serverInfo.ErrorMessageManager.SendError(httpContext, 500);
+                            httpContext.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     }
                 } else {
                     if (Directory.Exists(requestPath)) {
-                        CallIndex(httpContext, serverInfo, requestPath, requestedUrl, false);
+                        CallIndex(httpContext, requestPath, requestedUrl, false);
                     } else {
-                        serverInfo.ErrorMessageManager.SendError(httpContext, 404);
+                        httpContext.ErrorMessageManager.SendError(httpContext, 404);
                     }
                 }
             }
@@ -92,33 +90,33 @@ namespace HtcSharp.Core.Helpers.Http {
             }
         }
 
-        public static void CallIndex(HtcHttpContext httpContext, HttpServerInfo serverInfo, string rootPath, string requestPath, bool allowDirectoryIndexer) {
+        public static void CallIndex(HtcHttpContext httpContext, string rootPath, string requestPath, bool allowDirectoryIndexer) {
             foreach (var indexFile in IndexFiles) {
                 var indexRequestPath = Path.Combine(requestPath, indexFile);
                 var indexFilePath = Path.Combine(rootPath, indexRequestPath.Remove(0, 1));
                 var extension = Path.GetExtension(indexFilePath);
                 if (RegisteredPages.ContainsKey(indexRequestPath.ToLower())) {
                     if (RegisteredPages[indexRequestPath.ToLower()].OnHttpPageRequest(httpContext, indexRequestPath.ToLower())) {
-                        serverInfo.ErrorMessageManager.SendError(httpContext, 500);
+                        httpContext.ErrorMessageManager.SendError(httpContext, 500);
                     }
                     return;
                 } else {
                     if (!File.Exists(indexFilePath)) continue;
                     if (ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                         if (plugin.OnHttpExtensionRequest(httpContext, indexFilePath, extension.ToLower())) {
-                            serverInfo.ErrorMessageManager.SendError(httpContext, 500);
+                            httpContext.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     } else {
                         try {
                             CallFile(httpContext, indexFilePath);
                         } catch (Exception ex) {
                             Logger.Error(ex);
-                            serverInfo.ErrorMessageManager.SendError(httpContext, 500);
+                            httpContext.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     }
                 }
             }
-            serverInfo.ErrorMessageManager.SendError(httpContext, allowDirectoryIndexer ? 500 : 403);
+            httpContext.ErrorMessageManager.SendError(httpContext, allowDirectoryIndexer ? 500 : 403);
         }
 
         public static void CallFile(HtcHttpContext httpContext, string requestPath) {

@@ -12,6 +12,7 @@ namespace HtcLuaProcessor {
         private readonly string _luaFilename;
         private readonly Script _luaScript;
         private readonly HtcHttpContext _httpContext;
+        private bool headerSent = false;
         private readonly DynValue _dynScript;
 
         public CustomLuaRequest(string luaFilename, HtcHttpContext httpContext) {
@@ -20,6 +21,14 @@ namespace HtcLuaProcessor {
             _luaScript = new Script();
             var luaIncludePath = Path.GetDirectoryName(_luaFilename).Replace(@"\", "/");
             ((ScriptLoaderBase)_luaScript.Options.ScriptLoader).ModulePaths = new string[] { $"{luaIncludePath}/?", $"{luaIncludePath}/?.lua" };
+            _luaScript.Options.DebugPrint = data => {
+                if (!headerSent) {
+                    headerSent = true;
+                    //httpContext.Response.StatusCode = statusCode;
+                    //httpContext.Response.ContentType = contentType;
+                }
+                httpContext.Response.OutputStream.Write(Encoding.UTF8.GetBytes(data));
+            };
             _dynScript = _luaScript.LoadFile(_luaFilename);
         }
 

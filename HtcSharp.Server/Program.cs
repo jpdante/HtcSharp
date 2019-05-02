@@ -20,18 +20,18 @@ namespace HtcSharp.Server {
             LogManager.RegisterLogger(new FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "HtcSharp.log")));
             var daemon = false;
             switch (args.Length) {
-                case 1 when args[0].Equals("daemode", StringComparison.CurrentCultureIgnoreCase):
+                case 1 when args[0].Equals("daemon-mode", StringComparison.CurrentCultureIgnoreCase):
                     daemon = true;
-                    _htcServer = new HtcServer(Path.Combine(Directory.GetCurrentDirectory(), "HTCConfig.json"));
+                    _htcServer = new HtcServer(Path.Combine(Directory.GetCurrentDirectory(), "HtcConfig.json"));
                     break;
                 case 1:
                     _htcServer = new HtcServer(args[0]);
                     break;
-                case 2 when args[0].Equals("daemode", StringComparison.CurrentCultureIgnoreCase):
+                case 2 when args[0].Equals("daemon-mode", StringComparison.CurrentCultureIgnoreCase):
                     daemon = true;
                     _htcServer = new HtcServer(args[1]);
                     break;
-                case 2 when args[1].Equals("daemode", StringComparison.CurrentCultureIgnoreCase):
+                case 2 when args[1].Equals("daemon-mode", StringComparison.CurrentCultureIgnoreCase):
                     daemon = true;
                     _htcServer = new HtcServer(args[0]);
                     break;
@@ -39,7 +39,7 @@ namespace HtcSharp.Server {
                     _htcServer = new HtcServer(args[0]);
                     break;
                 default:
-                    _htcServer = new HtcServer(Path.Combine(Directory.GetCurrentDirectory(), "HTCConfig.json"));
+                    _htcServer = new HtcServer(Path.Combine(Directory.GetCurrentDirectory(), "HtcConfig.json"));
                     break;
             }
             _htcServer.Start();

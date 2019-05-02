@@ -32,6 +32,8 @@ namespace HtcSharp.Core.Models.Http {
         public Dictionary<string, string> Cookies;
         public Dictionary<string, string> Query;
         public Dictionary<string, string> Headers;
+        public int RequestTimestamp => (int)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
+        public long RequestTimestampMs => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 
         public HttpRequestContext(HttpRequest request) {
             _request = request;
