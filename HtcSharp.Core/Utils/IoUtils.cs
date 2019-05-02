@@ -44,7 +44,7 @@ namespace HtcSharp.Core.Utils {
         }
 
         public static void CreateHtcConfig(string path) {
-            if(!File.Exists(path)) File.WriteAllText(path, "{\"_PluginsPath\":\"\",\"Engines\":[{\"Engine\":\"http\",\"Config\":{\"Servers\":[{\"Hosts\":[\"0.0.0.0:80\"],\"Domain\":\"*:80\",\"Root\":\"%workingpath%/\",\"SSL\":false,\"Rewrites\":{}}]}}]}");
+            if(!File.Exists(path)) File.WriteAllText(path, "{\"Engines\":[{\"Engine\":\"http\",\"Config\":{\"Servers\":[{\"Hosts\":[\"0.0.0.0:80\"],\"Domain\":\"*:80\",\"Root\":\"%workingpath%/\",\"SSL\":false,\"Rewrites\":{}}]}}]}");
         }
 
     }
