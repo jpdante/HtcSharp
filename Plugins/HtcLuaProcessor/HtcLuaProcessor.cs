@@ -28,6 +28,7 @@ namespace HtcLuaProcessor {
 
         public bool OnHttpExtensionRequest(HtcHttpContext context, string filename, string extension) {
             if (extension != ".lua") return false;
+
             return false;
         }
     }

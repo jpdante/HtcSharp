@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
-        <PostBuildEvent>dotnet publish --no-build --output $(SolutionDir)/../HTCSharp/HTCSharp.Server/bin/Debug/netcoreapp2.2/plugins/HTCLuaProcessor/ $(SolutionPath)</PostBuildEvent>
+        <PostBuildEvent>dotnet publish --no-build --output $(SolutionDir)/HTCSharp.Server/bin/Debug/netcoreapp2.2/plugins/HTCLuaProcessor/ $(SolutionPath)</PostBuildEvent>
         <AssemblyName>HtcLuaProcessor.plugin</AssemblyName>
     </PropertyGroup>
 
