@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <PostBuildEvent>dotnet publish --no-build --output $(SolutionDir)/../HTCSharp/HTCSharp.Server/bin/Debug/netcoreapp2.2/plugins/HTCLuaProcessor/ $(SolutionPath)</PostBuildEvent>
+        <AssemblyName>HtcLuaProcessor.plugin</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MoonSharp" Version="2.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\HtcSharp.Core\HtcSharp.Core.csproj" />
+    </ItemGroup>
+
+</Project>
