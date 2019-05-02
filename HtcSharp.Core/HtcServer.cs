@@ -93,8 +93,8 @@ namespace HtcSharp.Core {
                     Logger.Error($"Failed to stop Engine: '{engine.GetType().Name}'", ex);
                 }
             }
-            this._engines.Clear();
-            this._availableEngines.Clear();
+            _engines.Clear();
+            _availableEngines.Clear();
         }
 
         public void WaitStop(bool daemon) {
