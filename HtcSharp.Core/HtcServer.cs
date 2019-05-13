@@ -20,14 +20,14 @@ namespace HtcSharp.Core {
 
         private Dictionary<string, Type> _availableEngines;
         private List<Engine> _engines;
-        private PluginManager _pluginsManager;
         private JObject _config;
         private readonly string _configPath;
-        private string _pluginsPath;
         private string _errorPagesPath;
 
         public static bool IsDebug { get; private set; }
         public static HtcServer Context { get; private set; }
+        public PluginManager PluginsManager { get; private set; }
+        public string PluginsPath { get; private set; }
 
         public T GetConfig<T>(string key) { 
             return _config.GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
@@ -58,21 +58,21 @@ namespace HtcSharp.Core {
                 if (!File.Exists(_configPath)) IoUtils.CreateHtcConfig(_configPath);
                 _config = IoUtils.GetJsonFile(_configPath);
                 if(!File.Exists(AspNetConfigPath)) IoUtils.CreateAspConfig(AspNetConfigPath);
-                _pluginsPath = _config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins/");
-                _pluginsPath = IoUtils.ReplacePathTags(_pluginsPath);
+                PluginsPath = _config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"plugins/");
+                PluginsPath = IoUtils.ReplacePathTags(PluginsPath);
                 _errorPagesPath = _config.GetValue("ErrorPagesPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>() ?? Path.Combine(Directory.GetCurrentDirectory(), @"error-pages/");
                 _errorPagesPath = IoUtils.ReplacePathTags(_errorPagesPath);
                 IsDebug = _config.GetValue("Debug", StringComparison.CurrentCultureIgnoreCase)?.Value<bool>() == true;
-                if (!Directory.Exists(_pluginsPath)) Directory.CreateDirectory(_pluginsPath);
+                if (!Directory.Exists(PluginsPath)) Directory.CreateDirectory(PluginsPath);
                 if (!Directory.Exists(_errorPagesPath)) Directory.CreateDirectory(_errorPagesPath);
             } catch (Exception ex) {
                 Logger.Error("Failed to load configuration!", ex);
                 return;
             }
             RegisterErrorPages();
-            _pluginsManager = new PluginManager(_pluginsPath);
-            _pluginsManager.ConstructPlugins();
-            _pluginsManager.Call_OnLoad();
+            PluginsManager = new PluginManager();
+            PluginsManager.LoadPlugins(PluginsPath);
+            PluginsManager.Call_OnLoad();
             LoadEngines();
             foreach(var engine in _engines) {
                 try {
@@ -83,13 +83,13 @@ namespace HtcSharp.Core {
                 }
             }
             IsStopped = true;
-            _pluginsManager.Call_OnEnable();
+            PluginsManager.Call_OnEnable();
             Logger.Info("HTCServer is now running!");
         }
 
         public void Stop() {
             Logger.Info("Shutting down HtcSharp...");
-            _pluginsManager.Call_OnDisable();
+            PluginsManager.Call_OnDisable();
             IsStopped = false;
             foreach (var engine in _engines) {
                 try {

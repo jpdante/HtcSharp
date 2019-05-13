@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AssemblyName>HtcPlugin.LuaMySql.luaplugin</AssemblyName>
+    <RootNamespace>HtcPlugin.LuaMySql</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MoonSharp" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HtcSharp.Core\HtcSharp.Core.csproj" />
+    <ProjectReference Include="..\Plugins\HtcLuaProcessor\HtcPlugin.LuaProcessor.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet publish --no-build --output $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\ $(ProjectPath)&#xD;&#xA;del $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\microsoft.*.dll&#xD;&#xA;del $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\HtcSharp.Core.*.*&#xD;&#xA;del $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\HtcSharp.Server.*.*&#xD;&#xA;del $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\McMaster.NETCore.Plugins.dll&#xD;&#xA;del $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\Newtonsoft.Json.dll&#xD;&#xA;del $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\System.IO.Pipelines.dll&#xD;&#xA;del $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\System.Runtime.CompilerServices.Unsafe.dll&#xD;&#xA;del $(SolutionDir)HTCSharp.Server\bin\Debug\netcoreapp2.2\plugins\HtcPlugin.Lua\System.Text.Encodings.Web.dll" />
+  </Target>
+
+</Project>

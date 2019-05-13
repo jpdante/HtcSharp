@@ -6,7 +6,7 @@ using HtcSharp.Core.Models.Http;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
-namespace HtcLuaProcessor {
+namespace HtcPlugin.LuaProcessor {
     public class CustomLuaRequest {
 
         private readonly string _luaFilename;

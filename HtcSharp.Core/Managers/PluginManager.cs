@@ -13,16 +13,12 @@ using System.Text;
 namespace HtcSharp.Core.Managers {
     public class PluginManager {
         private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly Type[] GlobalSharedTypes = new[] {typeof(IHtcPlugin), typeof(IHttpEvents), typeof(Models.Http.HtcHttpContext)};
+        private readonly List<IHtcPlugin> _plugins;
 
-        private List<IHtcPlugin> _plugins;
-        private readonly string _pluginsPath;
-
-        public PluginManager(string path) {
-            _pluginsPath = path;
+        public PluginManager() {
             _plugins = new List<IHtcPlugin>();
         }
-
-        public IHtcPlugin[] GetPlugins => _plugins.ToArray();
 
         public void Call_OnLoad() {
             foreach (var plugin in _plugins) {
@@ -45,13 +41,14 @@ namespace HtcSharp.Core.Managers {
             }
         }
 
-        public void ConstructPlugins() {
-            if(!Directory.Exists(_pluginsPath)) {
-                Logger.Fatal($"Plugins path '{_pluginsPath}' does not exist!");
+        public void LoadPlugins(string pluginsPath) {
+            if(!Directory.Exists(pluginsPath)) {
+                Logger.Fatal($"Plugins path '{pluginsPath}' does not exist!");
                 Environment.Exit(2);
             }
-            var loaders = (from pluginFile in IoUtils.GetFilesExceptionFix(_pluginsPath, "*.plugin.dll", System.IO.SearchOption.AllDirectories) where File.Exists(pluginFile) select PluginLoader.CreateFromAssemblyFile(pluginFile, sharedTypes: new[] {typeof(IHtcPlugin), typeof(IHttpEvents), typeof(Models.Http.HtcHttpContext)})).ToList();
-            _plugins = new List<IHtcPlugin>();
+            var loaders = (from pluginFile in IoUtils.GetFilesExceptionFix(pluginsPath, "*.plugin.dll", SearchOption.AllDirectories) 
+                where File.Exists(pluginFile)
+                select PluginLoader.CreateFromAssemblyFile(pluginFile, sharedTypes:GlobalSharedTypes)).ToList();
             foreach (var loader in loaders) {
                 foreach (var pluginType in loader
                     .LoadDefaultAssembly()
@@ -62,5 +59,25 @@ namespace HtcSharp.Core.Managers {
                 }
             }
         }
+
+        public List<IHtcPlugin> LoadPluginsCustom(string pluginsPath, string searchPattern, Type[] sharedTypes) {
+            if(!Directory.Exists(pluginsPath)) {
+                Logger.Fatal($"Plugins path '{pluginsPath}' does not exist!");
+                Environment.Exit(2);
+            }
+            var types = new Type[GlobalSharedTypes.Length + sharedTypes.Length];
+            GlobalSharedTypes.CopyTo(types, 0);
+            sharedTypes.CopyTo(types, GlobalSharedTypes.Length);
+            var loaders = (from pluginFile in IoUtils.GetFilesExceptionFix(pluginsPath, searchPattern, SearchOption.AllDirectories) 
+                where File.Exists(pluginFile)
+                select PluginLoader.CreateFromAssemblyFile(pluginFile, sharedTypes: types)).ToList();
+            var plugins = new List<IHtcPlugin>();
+            foreach (var loader in loaders) {
+                plugins.AddRange(loader.LoadDefaultAssembly().GetTypes().Where(t => typeof(IHtcPlugin).IsAssignableFrom(t) && !t.IsAbstract).Select(pluginType => (IHtcPlugin) Activator.CreateInstance(pluginType)));
+            }
+            return plugins;
+        }
+
+        public IHtcPlugin[] GetPlugins => _plugins.ToArray();
     }
 }
