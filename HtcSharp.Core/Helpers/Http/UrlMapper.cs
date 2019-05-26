@@ -30,38 +30,37 @@ namespace HtcSharp.Core.Helpers.Http {
 
         public static void ProcessRequest(HtcHttpContext httpContext, HttpServerInfo serverInfo) {
             var root = serverInfo.Root;
-            string requestedUrl;
             if (serverInfo.HttpReWriter != null) {
-                if (serverInfo.HttpReWriter.Rewrite(httpContext, out requestedUrl)) {
+                if (serverInfo.HttpReWriter.Rewrite(httpContext, out httpContext.Request.RequestPath)) {
                     Close(httpContext);
                     return;
                 }
             } else {
-                requestedUrl = httpContext.Request.Path;
+                httpContext.Request.RequestPath = httpContext.Request.Path;
             }
-            if (RegisteredPages.ContainsKey(requestedUrl.ToLower())) {
-                if (RegisteredPages[requestedUrl.ToLower()].OnHttpPageRequest(httpContext, requestedUrl.ToLower())) {
+            if (RegisteredPages.ContainsKey(httpContext.Request.RequestPath.ToLower())) {
+                if (RegisteredPages[httpContext.Request.RequestPath.ToLower()].OnHttpPageRequest(httpContext, httpContext.Request.RequestPath.ToLower())) {
                     httpContext.ErrorMessageManager.SendError(httpContext, 500);
                 }
             } else {
-                var requestPath = Path.GetFullPath(Path.Combine(root, requestedUrl.Remove(0, 1)));
-                if (File.Exists(requestPath)) {
-                    var extension = Path.GetExtension(requestPath);
+                httpContext.Request.TranslatedPath = Path.GetFullPath(Path.Combine(root, httpContext.Request.RequestPath.Remove(0, 1)));
+                if (File.Exists(httpContext.Request.TranslatedPath)) {
+                    var extension = Path.GetExtension(httpContext.Request.TranslatedPath);
                     if (ExtensionPlugins.ContainsKey(extension.ToLower())) {
-                        if (ExtensionPlugins[extension.ToLower()].OnHttpExtensionRequest(httpContext, requestPath, extension.ToLower())) {
+                        if (ExtensionPlugins[extension.ToLower()].OnHttpExtensionRequest(httpContext, httpContext.Request.TranslatedPath, extension.ToLower())) {
                             httpContext.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     } else {
                         try {
-                            CallFile(httpContext, requestPath);
+                            CallFile(httpContext, httpContext.Request.TranslatedPath);
                         } catch (Exception ex) {
                             Logger.Error(ex);
                             httpContext.ErrorMessageManager.SendError(httpContext, 500);
                         }
                     }
                 } else {
-                    if (Directory.Exists(requestPath)) {
-                        CallIndex(httpContext, requestPath, requestedUrl, false);
+                    if (Directory.Exists(httpContext.Request.TranslatedPath)) {
+                        CallIndex(httpContext, false);
                     } else {
                         httpContext.ErrorMessageManager.SendError(httpContext, 404);
                     }
@@ -78,18 +77,22 @@ namespace HtcSharp.Core.Helpers.Http {
             }
         }
 
-        public static void CallIndex(HtcHttpContext httpContext, string rootPath, string requestPath, bool allowDirectoryIndexer) {
+        public static void CallIndex(HtcHttpContext httpContext, bool allowDirectoryIndexer) {
             foreach (var indexFile in IndexFiles) {
-                var indexRequestPath = Path.Combine(requestPath, indexFile);
-                var indexFilePath = Path.Combine(rootPath, indexRequestPath.Remove(0, 1));
+                var indexRequestPath = Path.Combine(httpContext.Request.RequestPath, indexFile);
+                var indexFilePath = Path.Combine(httpContext.Request.TranslatedPath, indexRequestPath.Remove(0, 1));
                 var extension = Path.GetExtension(indexFilePath);
                 if (RegisteredPages.ContainsKey(indexRequestPath.ToLower())) {
+                    httpContext.Request.RequestPath = indexRequestPath;
+                    httpContext.Request.TranslatedPath = indexFilePath;
                     if (RegisteredPages[indexRequestPath.ToLower()].OnHttpPageRequest(httpContext, indexRequestPath.ToLower())) {
                         httpContext.ErrorMessageManager.SendError(httpContext, 500);
                     }
                     return;
                 } else {
                     if (!File.Exists(indexFilePath)) continue;
+                    httpContext.Request.RequestPath = indexRequestPath;
+                    httpContext.Request.TranslatedPath = indexFilePath;
                     if (ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                         if (plugin.OnHttpExtensionRequest(httpContext, indexFilePath, extension.ToLower())) {
                             httpContext.ErrorMessageManager.SendError(httpContext, 500);

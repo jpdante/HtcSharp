@@ -33,6 +33,8 @@ namespace HtcSharp.Core.Models.Http {
         }
 
         public async Task WriteAsync(string text) => await _response.WriteAsync(text);
+        public void Write(string text) => _response.Body.Write(Encoding.UTF8.GetBytes(text));
+
         // Not used
         // public async Task WriteAsync(string text, CancellationToken cancellationToken = default(CancellationToken)) => await _response.WriteAsync(text, cancellationToken);
         public void Redirect(string location) {

@@ -32,7 +32,7 @@ namespace HtcSharp.Core.Components.Http {
         private async Task Request(HttpContext context) {
             if (Engine.DomainServers.ContainsKey(context.Request.Host.ToString())) {
                 var serverInfo = Engine.DomainServers[context.Request.Host.ToString()];
-                UrlMapper.ProcessRequest(new HtcHttpContext(context, serverInfo.ErrorMessageManager), serverInfo);
+                UrlMapper.ProcessRequest(new HtcHttpContext(context, serverInfo), serverInfo);
             } else {
                 await context.Response.WriteAsync("Unknown domain");
             }
