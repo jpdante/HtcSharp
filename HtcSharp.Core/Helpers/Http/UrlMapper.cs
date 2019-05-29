@@ -79,8 +79,8 @@ namespace HtcSharp.Core.Helpers.Http {
 
         public static void CallIndex(HtcHttpContext httpContext, bool allowDirectoryIndexer) {
             foreach (var indexFile in IndexFiles) {
-                var indexRequestPath = Path.Combine(httpContext.Request.RequestPath, indexFile);
-                var indexFilePath = Path.Combine(httpContext.Request.TranslatedPath, indexRequestPath.Remove(0, 1));
+                var indexRequestPath = Path.Combine(httpContext.Request.Path, indexFile);
+                var indexFilePath = Path.Combine(httpContext.ServerInfo.RootPath, indexRequestPath.Remove(0, 1));
                 var extension = Path.GetExtension(indexFilePath);
                 if (RegisteredPages.ContainsKey(indexRequestPath.ToLower())) {
                     httpContext.Request.RequestPath = indexRequestPath;
@@ -96,6 +96,7 @@ namespace HtcSharp.Core.Helpers.Http {
                     if (ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                         if (plugin.OnHttpExtensionRequest(httpContext, indexFilePath, extension.ToLower())) {
                             httpContext.ErrorMessageManager.SendError(httpContext, 500);
+                            return;
                         }
                     } else {
                         try {
@@ -104,6 +105,7 @@ namespace HtcSharp.Core.Helpers.Http {
                             Logger.Error(ex);
                             httpContext.ErrorMessageManager.SendError(httpContext, 500);
                         }
+                        return;
                     }
                 }
             }
