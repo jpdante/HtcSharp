@@ -14,7 +14,7 @@ namespace HtcSharp.Core.Models.Http.Utils {
 
         public string this[string key] {
             get => _header[key];
-            set => _header.Add(key, value);
+            set => _header[key] = value;
         }
 
         public void Add(string key, string value) {

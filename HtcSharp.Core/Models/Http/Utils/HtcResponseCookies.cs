@@ -17,7 +17,7 @@ namespace HtcSharp.Core.Models.Http.Utils {
                 HttpOnly = httpOnly,
                 IsEssential = isEssential,
                 Path = path,
-                Secure = secure,
+                Secure = secure, 
             };
             if(expire != -1) {
                 options.MaxAge = TimeSpan.FromSeconds(DateTime.UtcNow.AddSeconds(expire).Second);

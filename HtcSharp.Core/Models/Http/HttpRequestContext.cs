@@ -35,6 +35,7 @@ namespace HtcSharp.Core.Models.Http {
         public int RequestTimestamp => (int)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds();
         public long RequestTimestampMs => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
         public string RequestPath; //Defined by the UrlMapper
+        public string RequestFilePath; //Defined by the UrlMapper
         public string TranslatedPath; //Defined by the UrlMapper
 
         public HttpRequestContext(HttpRequest request) {
@@ -57,31 +58,34 @@ namespace HtcSharp.Core.Models.Http {
             _request.Body.CopyTo(InputStream);
             InputStream.Position = 0;
             if (Method != HttpMethod.POST) return;
-            return;
-            switch (ContentType) {
-                case ContentType.FormUrlEncoded:
-                case ContentType.MultipartFormData: {
-                    foreach (var key in _request.Form.Keys) {
-                        Post.Add(key, _request.Form[key]);
+            try {
+                switch (ContentType) {
+                    case ContentType.FormUrlEncoded:
+                    case ContentType.MultipartFormData: {
+                        foreach (var key in _request.Form.Keys) {
+                            Post.Add(key, _request.Form[key]);
+                        }
+                        foreach (var file in _request.Form.Files) {
+                            Files.Add(new HtcFile(file));
+                        }
+                        break;
                     }
-                    foreach (var file in _request.Form.Files) {
-                        Files.Add(new HtcFile(file));
-                    }
-                    break;
-                }
-                case ContentType.JSON: {
-                    using (var reader = new StreamReader(InputStream, Encoding.UTF8, true, 2048, true)) {
-                        var json = reader.ReadToEnd();
-                        try {
-                            var post = JObject.Parse(json);
-                            foreach (var item in post) {
-                                DoJsonAdd(item.Key, item.Value);
+                    case ContentType.JSON: {
+                        using (var reader = new StreamReader(InputStream, Encoding.UTF8, true, 2048, true)) {
+                            var json = reader.ReadToEnd();
+                            try {
+                                var post = JObject.Parse(json);
+                                foreach (var item in post) {
+                                    DoJsonAdd(item.Key, item.Value);
+                                }
+                            } catch {
                             }
-                        } catch { }
+                        }
+                        InputStream.Position = 0;
+                        break;
                     }
-                    InputStream.Position = 0;
-                    break;
                 }
+            } catch {
             }
         }
 

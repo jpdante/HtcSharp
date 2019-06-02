@@ -40,5 +40,7 @@ namespace HtcSharp.Core.Models.Http {
         public void Redirect(string location) {
             _response.Redirect(location);
         }
+
+        public HttpResponse InternalAspNetResponse => _response;
     }
 }
