@@ -36,10 +36,23 @@ namespace HtcSharp.Core.Models.ReWriter {
                 var requestParts = request.Split("/");
                 if (_pattern.IsMatch(request)) {
                     byte response = 0;
-                    var rewriteQuery = _rewriteData.Split("?");
+                    newRequest = _rewriteData;
+                    newRequest = newRequest.Replace("$scheme", context.Request.Scheme);
+                    newRequest = newRequest.Replace("$host", context.Request.Host);
+                    foreach (Match match in _pattern.Matches(request)) {
+                        newRequest = newRequest.Replace($"${match.Name}", match.Value);
+                    }
+                    /*var rewriteQuery = _rewriteData.Split("?");
                     request = rewriteQuery[0].Replace("$scheme", context.Request.Scheme);
-                    var queryParts = rewriteQuery[1].Split("&");
-                    if (rewriteQuery.Length == 2) {
+                    if (rewriteQuery.Length == 1) {
+                        request = _rewriteData;
+                        Logger.Info($"{request}");
+                        for (var p = 1; p < requestParts.Length; p++) {
+                            request = request.Replace($"${p}", requestParts[p]);
+                        }
+                        Logger.Info($"{request}");
+                    } else if (rewriteQuery.Length == 2) {
+                        var queryParts = rewriteQuery[1].Split("&");
                         foreach (var query in queryParts) {
                             var queryData = query.Split("=");
                             var key = queryData[0];
@@ -49,12 +62,11 @@ namespace HtcSharp.Core.Models.ReWriter {
                             }
                             context.Request.Query.Add(key, value);
                         }
-                    }
+                    }*/
                     if (_flag.Equals("last", StringComparison.CurrentCultureIgnoreCase)) response = 0;
                     if (_flag.Equals("break", StringComparison.CurrentCultureIgnoreCase)) response = 1;
                     if (_flag.Equals("redirect", StringComparison.CurrentCultureIgnoreCase)) response = 2;
                     if (_flag.Equals("permanent", StringComparison.CurrentCultureIgnoreCase)) response = 3;
-                    newRequest = request;
                     return response;
                 }
             } else if (_ruleType == 2) {

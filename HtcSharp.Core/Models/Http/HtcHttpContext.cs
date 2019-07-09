@@ -24,13 +24,13 @@ namespace HtcSharp.Core.Models.Http {
 
     public class BasicServerInfo {
         public readonly string RootPath;
-        public readonly string Domain;
+        public readonly IReadOnlyCollection<string> Domain;
         public readonly bool UseSsl;
         public readonly IReadOnlyCollection<IPEndPoint> Hosts;
 
         public BasicServerInfo(HttpServerInfo serverInfo) {
             RootPath = serverInfo.Root;
-            Domain = serverInfo.Domain;
+            Domain = serverInfo.Domains;
             UseSsl = serverInfo.UseSsl;
             Hosts = serverInfo.Hosts;
         }

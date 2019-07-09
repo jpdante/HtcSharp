@@ -70,7 +70,7 @@ namespace HtcSharp.Core.Engines {
             foreach (var jToken in servers) {
                 var server = (JObject) jToken;
                 var hosts = GetValues<string>(server, "Hosts");
-                var domain = GetValue<string>(server, "Domain");
+                var domains = GetValues<string>(server, "Domains");
                 var root = IoUtils.ReplacePathTags(GetValue<string>(server, "Root"));
                 if (!Directory.Exists(root)) Directory.CreateDirectory(root);
                 var useSsl = GetValue<bool>(server, "SSL");
@@ -80,20 +80,18 @@ namespace HtcSharp.Core.Engines {
                     certificate = IoUtils.ReplacePathTags(GetValue<string>(server, "Certificate"));
                     password = GetValue<string>(server, "Password");
                 }
-                HttpReWriter reWriter = null;
-                if (ContainsKey(server, "ReWrites")) {
-                    reWriter = new HttpReWriter(GetValue<JObject>(server, "ReWrites"));
-                }
+                var locationManager = ContainsKey(server, "Locations") ? new HttpLocationManager(GetValue<JToken>(server, "Default"), GetValue<JObject>(server, "Locations")) : new HttpLocationManager(GetValue<JToken>(server, "Default"), null);
                 var errorMessagesManager = new ErrorMessagesManager();
-                if (ContainsKey(server, "ErrorMessages")) {
-                    foreach(var pages in GetValue<JObject>(server, "ErrorMessages")) {
-                        if (int.TryParse(pages.Key, out var pageStatusCode)) errorMessagesManager.RegisterOverridePage(new FilePageMessage(pages.Value.Value<string>(), pageStatusCode));
+                if (ContainsKey(server, "ErrorPages")) {
+                    foreach(var (key, value) in GetValue<JObject>(server, "ErrorPages")) {
+                        if (int.TryParse(key, out var pageStatusCode)) errorMessagesManager.RegisterOverridePage(new FilePageMessage(value.Value<string>(), pageStatusCode));
                     }
-                    reWriter = new HttpReWriter(GetValue<JObject>(server, "ErrorMessages"));
                 }
-                var serverInfo = new HttpServerInfo(hosts.AsReadOnly(), domain, root, useSsl, certificate, password, reWriter, errorMessagesManager);
+                var serverInfo = new HttpServerInfo(hosts.AsReadOnly(), domains, root, useSsl, certificate, password, locationManager, errorMessagesManager);
                 ServersInfo.Add(serverInfo);
-                DomainServers.Add(domain, serverInfo);
+                foreach (var domain in domains) {
+                    DomainServers.Add(domain, serverInfo);
+                }
             }
         }
 

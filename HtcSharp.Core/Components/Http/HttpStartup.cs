@@ -33,10 +33,13 @@ namespace HtcSharp.Core.Components.Http {
         private async Task Request(HttpContext context) {
             if (Engine.DomainServers.ContainsKey(context.Request.Host.ToString())) {
                 var serverInfo = Engine.DomainServers[context.Request.Host.ToString()];
-                try { context.Request.EnableRewind(); } catch { }
+                try {
+                    context.Request.EnableRewind();
+                } catch {
+                    // ignored
+                }
                 var httpContext = new HtcHttpContext(context, serverInfo);
-                UrlMapper.ProcessRequest(httpContext, serverInfo);
-                //httpContext.Request.InputStream.Dispose();
+                serverInfo.LocationManager.ProcessRequest(httpContext);
             } else {
                 await context.Response.WriteAsync("Unknown domain");
             }

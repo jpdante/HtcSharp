@@ -6,7 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace HtcSharp.Core.IO {
+namespace HtcSharp.Core.IO.Http {
     public class FileBuffer : IDisposable {
         private string _filePath;
         private int _bufferSize;
