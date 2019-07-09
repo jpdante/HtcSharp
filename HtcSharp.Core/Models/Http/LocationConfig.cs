@@ -69,15 +69,12 @@ namespace HtcSharp.Core.Models.Http {
                         _directives.Add(new ReWriteDirective(dataSplit));
                         break;
                     case "try_pages":
-                        //_directives.Add(new LocationDirective(i));
+                        _directives.Add(new TryPagesDirective(dataSplit, _httpLocationManager));
                         break;
                     case "return":
-                        //_directives.Add(new LocationDirective(i));
+                        _directives.Add(new ReturnDirective(dataSplit));
                         break;
                     case "autoindex":
-                        //_directives.Add(new LocationDirective(i));
-                        break;
-                    default:
                         //_directives.Add(new LocationDirective(i));
                         break;
                 }

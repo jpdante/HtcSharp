@@ -6,7 +6,7 @@ using HtcSharp.Core.Helpers.Http;
 using HtcSharp.Core.IO.Http;
 using HtcSharp.Core.Models.Http;
 
-namespace HtcSharp.Core.Utils {
+namespace HtcSharp.Core.Utils.Http {
     public static class HttpIoUtils {
         public static void CallFile(HtcHttpContext httpContext, string requestPath) {
             using (var fileBuffer = new FileBuffer(requestPath, 2048)) {
@@ -61,6 +61,13 @@ namespace HtcSharp.Core.Utils {
                 }
             }
             return null;
+        }
+
+        public static string ReplaceVars(HtcHttpContext httpContext, string data) {
+            data = data.Replace("$scheme", httpContext.Request.Scheme);
+            data = data.Replace("$uri", httpContext.Request.RequestPath);
+            data = data.Replace("$host", httpContext.Request.Host);
+            return data;
         }
     }
 }

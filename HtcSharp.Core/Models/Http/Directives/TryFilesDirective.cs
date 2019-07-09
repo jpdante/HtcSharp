@@ -8,6 +8,7 @@ using HtcSharp.Core.Helpers.Http;
 using HtcSharp.Core.Interfaces.Http;
 using HtcSharp.Core.Logging;
 using HtcSharp.Core.Utils;
+using HtcSharp.Core.Utils.Http;
 
 namespace HtcSharp.Core.Models.Http.Directives {
     public class TryFilesDirective : IDirective {
@@ -27,7 +28,7 @@ namespace HtcSharp.Core.Models.Http.Directives {
 
         public void Execute(HtcHttpContext context) {
             foreach (var file in _files) {
-                var tempPath = file.Replace("$uri", context.Request.RequestPath);
+                var tempPath = HttpIoUtils.ReplaceVars(context, file);
                 if (file[0].Equals('=')) {
                     if (int.TryParse(file.Remove(0, 1), out var statusCode)) {
                         context.ErrorMessageManager.SendError(context, statusCode);

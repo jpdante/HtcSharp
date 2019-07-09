@@ -5,6 +5,7 @@ using System.Text;
 using HtcSharp.Core.Helpers.Http;
 using HtcSharp.Core.Interfaces.Http;
 using HtcSharp.Core.Utils;
+using HtcSharp.Core.Utils.Http;
 
 namespace HtcSharp.Core.Models.Http.Directives {
     public class IndexDirective : IDirective {
@@ -20,7 +21,8 @@ namespace HtcSharp.Core.Models.Http.Directives {
 
         public void Execute(HtcHttpContext context) {
             foreach (var i in _indexes) {
-                if (i.Equals("$internal_indexes")) {
+                var index = HttpIoUtils.ReplaceVars(context, i);
+                if (index.Equals("$internal_indexes")) {
                     foreach (var j in UrlMapper.IndexFiles) {
                         var indexPath = Path.Combine(context.ServerInfo.RootPath, j[0].Equals('/') ? j.Remove(0, 1) : Path.Combine(context.Request.Path, j).Remove(0, 1));
                         if (!File.Exists(indexPath)) continue;
@@ -39,7 +41,7 @@ namespace HtcSharp.Core.Models.Http.Directives {
                         return;
                     }
                 } else {
-                    var indexPath = Path.Combine(context.ServerInfo.RootPath, i[0].Equals('/') ? i.Remove(0, 1) : Path.Combine(context.Request.Path, i).Remove(0, 1));
+                    var indexPath = Path.Combine(context.ServerInfo.RootPath, index[0].Equals('/') ? index.Remove(0, 1) : Path.Combine(context.Request.Path, index).Remove(0, 1));
                     if (!File.Exists(indexPath)) continue;
                     var extension = Path.GetExtension(indexPath);
                     context.Request.RequestFilePath = indexPath;
