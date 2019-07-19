@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using HtcSharp.Core.Interfaces.Http;
+using HtcSharp.Core.Utils.Http;
 
 namespace HtcSharp.Core.Models.Http.Directives {
     public class ReWriteDirective : IDirective {
@@ -18,11 +19,9 @@ namespace HtcSharp.Core.Models.Http.Directives {
         }
 
         public void Execute(HtcHttpContext context) {
-            if (!_pattern.IsMatch(context.Request.Path)) return;
-            var newRequest = _rewriteData;
-            newRequest = newRequest.Replace("$scheme", context.Request.Scheme);
-            newRequest = newRequest.Replace("$host", context.Request.Host);
             var match = _pattern.Match(context.Request.Path);
+            if (!match.Success) return;
+            var newRequest = HttpIoUtils.ReplaceVars(context, _rewriteData);
             for (var i = 0; i < match.Captures.Count; i++) {
                 newRequest = newRequest.Replace($"${i + 1}", match.Captures[i].Value);
             }

@@ -28,23 +28,23 @@ namespace HtcSharp.Core.Models.Http.Directives {
         public void Execute(HtcHttpContext context) {
             foreach (var file in _pages) {
                 var tempPath = HttpIoUtils.ReplaceVars(context, file);
-                if (file[0].Equals('=')) {
-                    if (int.TryParse(file.Remove(0, 1), out var statusCode)) {
+                if (tempPath[0].Equals('=')) {
+                    if (int.TryParse(tempPath.Remove(0, 1), out var statusCode)) {
                         context.ErrorMessageManager.SendError(context, statusCode);
                         return;
                     }
                     context.ErrorMessageManager.SendError(context, 500);
                     return;
                 }
-                if (file[0].Equals('@')) {
+                if (tempPath[0].Equals('@')) {
                     foreach (var location in _httpLocationManager.Locations) {
-                        if (!location.Key.Equals(file, StringComparison.CurrentCultureIgnoreCase)) continue;
+                        if (!location.Key.Equals(tempPath, StringComparison.CurrentCultureIgnoreCase)) continue;
                         location.Execute(context);
                         return;
                     }
                 }
-                if (!UrlMapper.RegisteredPages.ContainsKey(context.Request.RequestPath.ToLower())) continue;
-                if (UrlMapper.RegisteredPages[context.Request.RequestPath.ToLower()].OnHttpPageRequest(context, context.Request.RequestPath.ToLower())) {
+                if (!UrlMapper.RegisteredPages.ContainsKey(tempPath.ToLower())) continue;
+                if (UrlMapper.RegisteredPages[tempPath.ToLower()].OnHttpPageRequest(context, tempPath.ToLower())) {
                     context.ErrorMessageManager.SendError(context, 500);
                 }
             }
