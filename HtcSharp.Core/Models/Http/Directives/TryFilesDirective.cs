@@ -59,10 +59,11 @@ namespace HtcSharp.Core.Models.Http.Directives {
                         }
                     }
                 } else if (Directory.Exists(context.Request.TranslatedPath)) {
+                    if (!context.Request.RequestPath.EndsWith('/')) {
+                        context.Response.Redirect(context.Request.RequestPath + "/");
+                    }
                     //context.ErrorMessageManager.SendError(context, 404);
                     // Do indexer
-                } else {
-                    //context.ErrorMessageManager.SendError(context, 404);
                 }
             }
         }

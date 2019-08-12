@@ -90,6 +90,8 @@ namespace HtcSharp.Core.Engines {
                 var serverInfo = new HttpServerInfo(hosts.AsReadOnly(), domains, root, useSsl, certificate, password, locationManager, errorMessagesManager);
                 ServersInfo.Add(serverInfo);
                 foreach (var domain in domains) {
+                    // ! ISSUE ! Need future fix, for decoding the domain between ports
+                    if (DomainServers.ContainsKey(domain)) continue;
                     DomainServers.Add(domain, serverInfo);
                 }
             }
