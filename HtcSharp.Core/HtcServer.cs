@@ -33,6 +33,10 @@ namespace HtcSharp.Core {
             return _config.GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
         }
 
+        public T GetConfig<T>(string fileName, string key) { 
+            return IoUtils.GetJsonFile(fileName).GetValue(key, StringComparison.CurrentCultureIgnoreCase).Value<T>();
+        }
+
         public string AspNetConfigPath { get; private set; }
         public bool IsStopped { get; private set; }
         public ReadOnlyCollection<Engine> GetEngines() { return _engines.AsReadOnly(); }

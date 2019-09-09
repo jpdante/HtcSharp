@@ -77,6 +77,9 @@ namespace HtcSharp.Core.Models.Http {
                     case "autoindex":
                         //_directives.Add(new LocationDirective(i));
                         break;
+                    case "add_header":
+                        _directives.Add(new AddHeaderDirective(dataSplit));
+                        break;
                 }
             }
         }

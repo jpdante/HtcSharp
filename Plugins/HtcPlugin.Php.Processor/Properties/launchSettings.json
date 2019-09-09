@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "HtcPlugin.Php.Processor": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "commandLineArgs": "dotnet C:\\Users\\jpdante\\Documents\\GitHub\\htcsharp2\\HtcSharp.Server\\bin\\Debug\\netcoreapp2.2\\HtcSharp.Server.dll",
+      "workingDirectory": "C:\\Users\\jpdante\\Documents\\GitHub\\htcsharp2\\HtcSharp.Server\\bin\\Debug\\netcoreapp2.2\\"
+    }
+  }
+}
