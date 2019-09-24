@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using HtcSharp.Http.Model.Http.Enum;
 
 namespace HtcSharp.Http.Model.Http {
     public class HttpRequest {
@@ -11,10 +12,10 @@ namespace HtcSharp.Http.Model.Http {
         public string Query { get; internal set; }
         public bool IsHttps { get; internal set; }
         public string Scheme { get; internal set; }
-        public string Method { get; internal set; }
+        public RequestMethod Method { get; internal set; }
         public string Protocol { get; internal set; }
         public string QueryString { get; internal set; }
-        public string HttpVersion { get; internal set; }
+        public HttpVersion HttpVersion { get; internal set; }
         public string ContentType { get; internal set; }
         public long ContentLength { get; internal set; }
         public Dictionary<string, string> Cookies { get; internal set; }
