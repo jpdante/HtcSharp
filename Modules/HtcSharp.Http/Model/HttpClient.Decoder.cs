@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HtcSharp.Core.Utils;
-using HtcSharp.Http.Model.Http;
 
 namespace HtcSharp.Http.Model {
     public partial class HttpClient {
@@ -18,41 +16,38 @@ namespace HtcSharp.Http.Model {
             }
 
             public async Task RunAsync() {
-                /*var _buffer = new byte[9024];
-                var bytesRead = await _owner._stream.ReadAsync(_buffer, 0, _buffer.Length);
-                var sBuffer = Encoding.ASCII.GetString(_buffer, 0, bytesRead);
-                Logger.Fatal(sBuffer);
-                return;*/
-                try {
-                    _streamReader.BaseStream.ReadTimeout = 2000;
-                    var dataSplit = (await _streamReader.ReadLineAsync()).Split(' ');
-                    _owner._httpRequest = new HttpRequest {
-                        Method = dataSplit[0],
-                        QueryString = dataSplit[1],
-                        HttpVersion = dataSplit[2]
-                    };
-                    while (!_streamReader.EndOfStream) {
-                        var line = await _streamReader.ReadLineAsync();
-                        dataSplit = line.Split(": ");
-                        if (dataSplit.Length == 2) {
-                            _owner._httpRequest.Headers.Add(dataSplit[0], dataSplit[1]);
-                            Logger.Info($"{dataSplit[0]}: {dataSplit[1]}");
-                            //_owner._stream.Write(Encoding.ASCII.GetBytes("GET 100 HTTP/1.1"));
-                            if (dataSplit[0].Equals("Host", StringComparison.CurrentCultureIgnoreCase)) {
-                                _owner._httpRequest.Host = dataSplit[1];
-                            } else if (dataSplit[0].Equals("Connection", StringComparison.CurrentCultureIgnoreCase)) {
-
-                            } else {
-
+                var stringBuilder = new StringBuilder();
+                int current, previous = -1, lineIndex = 0;
+                while ((current = _streamReader.Read()) != -1) {
+                    stringBuilder.Append((char)current);
+                    if (previous == '\r' && current == '\n') {
+                        if (stringBuilder.Length == 0) break;
+                        if (lineIndex == 0) {
+                            var httpVersionArgs = Regex.Split(stringBuilder.ToString(), "[ \t\n\x0b\r\f]");
+                            foreach (var i in httpVersionArgs) {
+                               Logger.Error(i); 
                             }
-                        } else {
-                            //SUICIDIO
-                        }
+                            if (httpVersionArgs[2].IndexOf("HTTP/", StringComparison.Ordinal) == 0 && httpVersionArgs[2].IndexOf('.') > 5) {
+                                var versionData = httpVersionArgs[2].Substring(5).Split('.');
+                                var versionInt = new int[2];
+                                if (int.TryParse(versionData[0], out versionInt[0]) && int.TryParse(versionData[1], out versionInt[1])) {
+
+                                }
+                            }
+                        } else DecodeProtocolHTTP1(stringBuilder.ToString().Remove(stringBuilder.Length - 2, 2), lineIndex);
+                        stringBuilder.Clear();
+                        lineIndex++;
                     }
-                    ObjectDump.DumpToLogger(_owner._httpRequest);
-                } catch(Exception ex) {
-                    _owner.Dispose();
+                    previous = current;
                 }
+            }
+
+            private void DecodeProtocolHTTP1(string data, int lineIndex) {
+                Logger.Info(data.Replace("\n", "\\n").Replace("\r", "\\r"));
+            }
+
+            private void DecodeProtocolHTTP2(string data, int lineIndex) {
+                Logger.Info(data.Replace("\n", "\\n").Replace("\r", "\\r"));
             }
         }
     }

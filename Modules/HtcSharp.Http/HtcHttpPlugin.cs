@@ -5,10 +5,10 @@ using HtcSharp.Core.Interfaces.Plugin;
 namespace HtcSharp.Http {
     public class HtcHttpEngine : IHtcPlugin {
         public string PluginName => "HtcHttp";
-        public string PluginVersion => "1.0.0";
+        public string PluginVersion => "1.0.1";
 
         public void OnLoad() {
-            HtcServer.Context.RegisterEngine("HtcHttp", typeof(HttpEngine2));
+            HtcServer.Context.RegisterEngine("htc-http", typeof(HttpEngine));
         }
 
         public void OnEnable() {
