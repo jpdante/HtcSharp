@@ -103,6 +103,7 @@ namespace HtcSharp.Http.Model {
             }
 
             private void DecodeProtocolHttp1_1(string data) {
+
                 Logger.Info(data.Replace("\n", "\\n").Replace("\r", "\\r"));
             }
 
