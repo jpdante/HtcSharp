@@ -33,12 +33,21 @@ namespace HtcSharp.Http.Model {
             _token = new CancellationTokenSource();
         }
 
-        public async Task Start() {
+        public async void Start() {
             _httpConnection = new HttpConnection(
                 _socket.LocalEndPoint as IPEndPoint, 
                 _socket.RemoteEndPoint as IPEndPoint, 
                 null);
-            await _decoder.RunAsync();
+            while (_socket.Connected) {
+                try {
+
+                }
+                catch {
+                    return;
+                }
+            }
+            _decoder.RunAsync();
+            _encoder.RunAsync();
         }
 
         public void Dispose() {

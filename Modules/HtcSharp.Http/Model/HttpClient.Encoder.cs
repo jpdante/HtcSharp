@@ -10,6 +10,8 @@ namespace HtcSharp.Http.Model {
             public Encoder(HttpClient owner) {
                 _owner = owner;
             }
+
+            public async void RunAsync() { }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -14,26 +15,37 @@ namespace HtcSharp.Http {
 
         private readonly ListenerManager _listenerManager;
 
+        Stopwatch stopWatch = new Stopwatch();
+
         public HttpEngine() {
             _listenerManager = new ListenerManager();
             _listenerManager.CreateListener(new IPEndPoint(IPAddress.Any, 80));
         }
 
-        private async void OnReceiveSocketHandler(SocketListener socketlistener, Socket socket) {
+        private void OnReceiveSocketHandler(SocketListener socketlistener, Socket socket) {
             Logger.Info($"{((IPEndPoint) socket.RemoteEndPoint).Address}:{((IPEndPoint) socket.RemoteEndPoint).Port}");
-            var httpClient = new HttpClient(socket);
-            await httpClient.Start();
         }
 
-        public override async void Start() {
+        public override void Start() {
             _listenerManager.StartAllListeners();
             foreach (var listener in _listenerManager.GetListeners()) {
-                var j = await listener.AcceptAsync();
-                await Task.Factory.StartNew(async () => {
-                    Logger.Info($"New Connection: {((IPEndPoint) j.RemoteEndPoint).Address}");
-                    var httpClient = new HttpClient(j);
+                WaitConnections(listener);
+            }
+        }
+
+        private async void WaitConnections(SocketListener socketListener) {
+            while (socketListener.IsListening) {
+                Logger.Info("Listening for connection");
+                var socket = await socketListener.AcceptAsync();
+
+                _ = Task.Run(async () => {
+                    Logger.Info($"New Connection: {((IPEndPoint)socket.RemoteEndPoint).Address}");
+                    stopWatch.Start();
+                    var httpClient = new HttpClient(socket);
                     await httpClient.Start();
-                    Logger.Info($"Connection processed!");
+                    stopWatch.Stop();
+                    Logger.Info($"Decoder took: {stopWatch.ElapsedMilliseconds}ms");
+                    stopWatch.Reset();
                 });
             }
         }

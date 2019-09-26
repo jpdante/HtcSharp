@@ -18,7 +18,11 @@ namespace HtcSharp.Http.Model {
                 _streamReader = new StreamReader(_owner._stream);
             }
 
-            public async Task RunAsync() {
+            public async ValueTask<HttpRequest> DecodeRequest() {
+                return new HttpRequest();
+            }
+
+            public async void RunAsync() {
                 var stringBuilder = new StringBuilder();
                 int current, previous = -1, lineIndex = 0;
                 while ((current = _streamReader.Read()) != -1) {
@@ -96,19 +100,26 @@ namespace HtcSharp.Http.Model {
                     }
                     previous = current;
                 }
+                // Stream Body
+                _owner.Dispose();
             }
 
             private void DecodeProtocolHttp1_0(string data) {
-                Logger.Info(data.Replace("\n", "\\n").Replace("\r", "\\r"));
+                var dataSplit = data.Split(": ", 2);
+                _owner._httpRequest.Headers.Add(dataSplit[0], dataSplit[1]);
+                Logger.Debug($"{dataSplit[0]}: {dataSplit[1]}");
             }
 
             private void DecodeProtocolHttp1_1(string data) {
-
-                Logger.Info(data.Replace("\n", "\\n").Replace("\r", "\\r"));
+                var dataSplit = data.Split(": ", 2);
+                _owner._httpRequest.Headers.Add(dataSplit[0], dataSplit[1]);
+                Logger.Debug($"{dataSplit[0]}: {dataSplit[1]}");
             }
 
             private void DecodeProtocolHttp2_0(string data) {
-                Logger.Info(data.Replace("\n", "\\n").Replace("\r", "\\r"));
+                var dataSplit = data.Split(": ", 2);
+                _owner._httpRequest.Headers.Add(dataSplit[0], dataSplit[1]);
+                Logger.Debug($"{dataSplit[0]}: {dataSplit[1]}");
             }
         }
     }

@@ -29,18 +29,19 @@ namespace HtcSharp.Http.Net {
         }
 
         public async ValueTask<Socket> AcceptAsync() {
-            while (true) {
+            while (IsListening) {
                 try {
                     return await _socketListener.AcceptAsync();
                 } catch { 
                     // ignored
                 }
             }
+            return null;
         }
 
         public void UnBind() {
-            _socketListener?.Dispose();
             IsListening = false;
+            _socketListener?.Dispose();
         }
 
         public void Dispose() {
