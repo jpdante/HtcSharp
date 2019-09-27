@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using HtcSharp.Core.Logging;
-using HtcSharp.Http.Model.Http;
+using HtcSharp.HttpModule.Model.Http;
 
-namespace HtcSharp.Http.Model {
+namespace HtcSharp.HttpModule.Model {
     public partial class HttpClient : IDisposable {
         private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 

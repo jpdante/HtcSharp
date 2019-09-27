@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HtcSharp.Http.Model.Http;
-using HtcSharp.Http.Model.Http.Enum;
+using HtcSharp.HttpModule.Model.Http;
+using HtcSharp.HttpModule.Model.Http.Enum;
 
-namespace HtcSharp.Http.Model {
+namespace HtcSharp.HttpModule.Model {
     public partial class HttpClient {
         private class Decoder {
             private readonly HttpClient _owner;

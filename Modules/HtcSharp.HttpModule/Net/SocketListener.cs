@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace HtcSharp.Http.Net {
+namespace HtcSharp.HttpModule.Net {
     public class SocketListener : IDisposable {
 
         private Socket _socketListener;

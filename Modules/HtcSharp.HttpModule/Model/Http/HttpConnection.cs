@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
-namespace HtcSharp.Http.Model.Http {
+namespace HtcSharp.HttpModule.Model.Http {
     public class HttpConnection {
         public IPEndPoint LocalEndPoint;
         public IPEndPoint RemoteEndPoint;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HtcSharp.Http.Model.Http.Enum {
+﻿namespace HtcSharp.HttpModule.Model.Http.Enum {
     public enum RequestMethod {
         GET,
         HEAD,

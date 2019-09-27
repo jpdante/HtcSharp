@@ -1,8 +1,7 @@
-﻿using System;
-using HtcSharp.Core;
+﻿using HtcSharp.Core;
 using HtcSharp.Core.Interfaces.Plugin;
 
-namespace HtcSharp.Http {
+namespace HtcSharp.HttpModule {
     public class HtcHttpEngine : IHtcPlugin {
         public string PluginName => "HtcHttp";
         public string PluginVersion => "1.0.1";

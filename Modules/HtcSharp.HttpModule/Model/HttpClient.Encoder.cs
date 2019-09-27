@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HtcSharp.Http.Model {
+﻿namespace HtcSharp.HttpModule.Model {
     public partial class HttpClient {
         private class Encoder {
             private HttpClient _owner;

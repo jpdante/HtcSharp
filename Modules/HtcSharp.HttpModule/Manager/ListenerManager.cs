@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
-using HtcSharp.Http.Net;
+using HtcSharp.HttpModule.Net;
 
-namespace HtcSharp.Http.Manager {
+namespace HtcSharp.HttpModule.Manager {
     public class ListenerManager {
         private readonly List<SocketListener> _listeners;
 

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using HtcSharp.Http.Model.Http.Enum;
+using HtcSharp.HttpModule.Model.Http.Enum;
 
-namespace HtcSharp.Http.Model.Http {
+namespace HtcSharp.HttpModule.Model.Http {
     public class HttpRequest {
         public string Path { get; internal set; }
         public Stream Body { get; internal set; }

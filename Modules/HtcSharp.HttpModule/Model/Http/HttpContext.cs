@@ -1,7 +1,4 @@
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-
-namespace HtcSharp.Http.Model.Http {
+namespace HtcSharp.HttpModule.Model.Http {
     public class HttpContext {
         public readonly HttpConnection Connection;
         public readonly HttpRequest Request;
