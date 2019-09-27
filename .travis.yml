@@ -1,8 +1,8 @@
 language: csharp
-solution: YTLiveLib.sln
+solution: HtcSharp.sln
 mono: none
-dotnet: 2.2
-dist: xenial
+dotnet: 3.0
+dist: bionic
 script:
  - dotnet restore
  - dotnet build
