@@ -123,6 +123,7 @@ namespace HtcSharp.HttpModule.Http {
                         }
                         //Debug.Assert(readAhead == 0 || readAhead == 2);
                         //BadHttpRequestException.Throw(RequestRejectionReason.InvalidRequestHeadersNoCRLF);
+                        throw new Exception("Invalid request headers no CRLF");
                     }
                     var length = 0;
                     if (readAhead == 0) {
@@ -169,18 +170,12 @@ namespace HtcSharp.HttpModule.Http {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe void TakeSingleHeader(byte* headerLine, int length, IParserRequestHandler handler) {
-            // Skip CR, LF from end position
             var valueEnd = length - 3;
             var nameEnd = FindEndOfName(headerLine, length);
-
-            // Header name is empty, invalid, or doesn't end in CRLF
             if (nameEnd <= 0 || headerLine[valueEnd + 2] != ByteLF || headerLine[valueEnd + 1] != ByteCR) {
                 RejectRequestHeader(headerLine, length);
             }
-
-            // Skip colon from value start
             var valueStart = nameEnd + 1;
-            // Ignore start whitespace
             for (; valueStart < valueEnd; valueStart++) {
                 var ch = headerLine[valueStart];
                 if (ch != ByteTab && ch != ByteSpace && ch != ByteCR) {
@@ -189,31 +184,22 @@ namespace HtcSharp.HttpModule.Http {
                     RejectRequestHeader(headerLine, length);
                 }
             }
-
-            // Check for CR in value
             var valueBuffer = new Span<byte>(headerLine + valueStart, valueEnd - valueStart + 1);
             if (valueBuffer.Contains(ByteCR)) {
                 RejectRequestHeader(headerLine, length);
             }
-
-            // Ignore end whitespace
             var lengthChanged = false;
             for (; valueEnd >= valueStart; valueEnd--) {
                 var ch = headerLine[valueEnd];
                 if (ch != ByteTab && ch != ByteSpace) {
                     break;
                 }
-
                 lengthChanged = true;
             }
-
             if (lengthChanged) {
-                // Length changed
                 valueBuffer = new Span<byte>(headerLine + valueStart, valueEnd - valueStart + 1);
             }
-
             var nameBuffer = new Span<byte>(headerLine, nameEnd);
-
             handler.OnRequestHeader(nameBuffer, valueBuffer);
         }
 
@@ -248,7 +234,6 @@ namespace HtcSharp.HttpModule.Http {
         private static bool TryGetNewLine(in ReadOnlySequence<byte> buffer, out SequencePosition found) {
             var byteLfPosition = buffer.PositionOf(ByteLF);
             if (byteLfPosition != null) {
-                // Move 1 byte past the \n
                 found = buffer.GetPosition(1, byteLfPosition.Value);
                 return true;
             }

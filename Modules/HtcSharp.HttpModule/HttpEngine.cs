@@ -40,7 +40,10 @@ namespace HtcSharp.HttpModule {
             while (socketListener.IsListening) {
                 Logger.Info("Listening for connection");
                 var socket = await socketListener.AcceptAsync();
-
+                await Task.Run(async () => {
+                    Logger.Info("Accepted");
+                    await new ReaderPipeline(null).ProcessLinesAsync(socket, null);
+                });
                 /*_ = Task.Run(async () => {
                     Logger.Info($"New Connection: {((IPEndPoint)socket.RemoteEndPoint).Address}");
                     stopWatch.Start();

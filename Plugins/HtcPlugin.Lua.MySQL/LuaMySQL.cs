@@ -21,7 +21,7 @@ namespace HtcPlugin.Lua.MySql {
         }
 
         public void OnDisable() {
-            _mySqlRegister.Deinitialize();
+            _mySqlRegister.Uninitialized();
         }
     }
 }

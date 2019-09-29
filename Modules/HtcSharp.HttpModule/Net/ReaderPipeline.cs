@@ -5,25 +5,31 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.Core.Logging;
+using HtcSharp.HttpModule.Http;
+using HtcSharp.HttpModule.Interface;
 
 namespace HtcSharp.HttpModule.Net {
-    public class SocketPipeline {
+    public class ReaderPipeline {
         private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
         public readonly int MinimumBufferSize;
-        public readonly Socket Socket;
+        public readonly HttpParser Parser;
 
-        private readonly Pipe _pipe;
-
-        public SocketPipeline(Socket socket, int minimumBufferSize = 1024) {
-            Socket = socket;
+        public ReaderPipeline(HttpParser httpParser, int minimumBufferSize = 1024) {
+            Parser = httpParser;
             MinimumBufferSize = minimumBufferSize;
-            _pipe = new Pipe();
+        }
+
+        public Task ProcessLinesAsync(Socket socket, IParserRequestHandler handler) {
+            var pipe = new Pipe();
+            var writing = FillPipeAsync(socket, pipe.Writer);
+            var reading = ReadPipeAsync(pipe.Reader, handler);
+            return Task.WhenAll(reading, writing);
         }
 
         public async Task FillPipeAsync(Socket socket, PipeWriter writer) {
             while (true) {
-                var memory = writer.GetMemory(MinimumBufferSize);
+                var memory = writer.GetMemory(1024);
                 try {
                     var bytesRead = await socket.ReceiveAsync(memory, SocketFlags.None);
                     if (bytesRead == 0) break;
@@ -39,7 +45,7 @@ namespace HtcSharp.HttpModule.Net {
             writer.Complete();
         }
 
-        public async Task ReadPipeAsync(PipeReader reader) {
+        public async Task ReadPipeAsync(PipeReader reader, IParserRequestHandler handler) {
             while (true) {
                 var result = await reader.ReadAsync();
                 var buffer = result.Buffer;
@@ -47,7 +53,8 @@ namespace HtcSharp.HttpModule.Net {
                 do {
                     position = buffer.PositionOf((byte)'\n');
                     if (position != null) {
-                        //ProcessLine(buffer.Slice(0, position.Value));
+                        var sequence = buffer.Slice(0, position.Value);
+                        Parser.ParseRequestLine(handler, sequence, out var consumed, out var examined);
                         buffer = buffer.Slice(buffer.GetPosition(1, position.Value));
                     }
                 }

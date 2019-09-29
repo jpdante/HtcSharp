@@ -30,7 +30,7 @@ namespace HtcPlugin.Lua.MySql {
             _luaProcessor.LuaLowLevelAccess.RegisterLowLevelClass("mysql", new LuaSql());
         }
 
-        public void Deinitialize() {
+        public void Uninitialized() {
             _luaProcessor.LuaLowLevelAccess.RemoveLowLevelClass("mysql");
         }
     }

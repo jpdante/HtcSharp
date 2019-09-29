@@ -6,11 +6,7 @@
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-
-  <Target Name="Windows" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' ">
-    <Exec Command="if not exist &quot;$(SolutionDir)HtcSharp.Server\bin\Debug\plugins\&quot; mkdir &quot;$(SolutionDir)HtcSharp.Server\bin\Debug\plugins\&quot;&#xD;&#xA;if not exist &quot;$(SolutionDir)HtcSharp.Server\bin\Release\plugins\&quot; mkdir &quot;$(SolutionDir)HtcSharp.Server\bin\Release\plugins\&quot;&#xD;&#xA;copy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)\HtcSharp.Server\bin\Debug\plugins\$(TargetFileName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)\HtcSharp.Server\bin\Release\plugins\$(TargetFileName)&quot;" />
-  </Target>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
   </ItemGroup>
@@ -30,5 +26,9 @@
       <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.net.http.headers\2.2.0\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="dotnet $(SolutionDir)LuaBuildEvents\LuaBuildEvents.dll BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(TargetPath) $(TargetFileName)" />
+  </Target>
 
 </Project>

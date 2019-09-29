@@ -15,9 +15,9 @@
     <ItemGroup>
       <ProjectReference Include="..\..\HtcSharp.Core\HtcSharp.Core.csproj" />
     </ItemGroup>
-
-    <Target Name="Windows" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' ">
-      <Exec Command="if not exist &quot;$(SolutionDir)HtcSharp.Server\bin\Debug\plugins\&quot; mkdir &quot;$(SolutionDir)HtcSharp.Server\bin\Debug\plugins\&quot;&#xD;&#xA;if not exist &quot;$(SolutionDir)HtcSharp.Server\bin\Release\plugins\&quot; mkdir &quot;$(SolutionDir)HtcSharp.Server\bin\Release\plugins\&quot;&#xD;&#xA;copy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)HtcSharp.Server\bin\Debug\plugins\$(TargetFileName)&quot;&#xD;&#xA;copy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)HtcSharp.Server\bin\Release\plugins\$(TargetFileName)&quot;" />
+	
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="dotnet $(SolutionDir)LuaBuildEvents\LuaBuildEvents.dll BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(TargetPath) $(TargetFileName)" />
     </Target>
 
 </Project>
