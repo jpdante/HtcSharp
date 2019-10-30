@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Buffers;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using HtcSharp.Core.Logging;
 using HtcSharp.HttpModule.Helpers;
 using HtcSharp.HttpModule.Interface;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 // ReSharper disable InconsistentNaming
 namespace HtcSharp.HttpModule.Http {
     public class HttpParser {
+        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
         private const byte ByteCR = (byte)'\r';
         private const byte ByteLF = (byte)'\n';
@@ -27,11 +30,13 @@ namespace HtcSharp.HttpModule.Http {
                 consumed = buffer.GetPosition(lineIndex + 1, consumed);
                 span = span.Slice(0, lineIndex + 1);
             } else if (buffer.IsSingleSegment) {
+                Logger.Debug("IsSingleSegment");
                 return false;
             } else if (TryGetNewLine(buffer, out var found)) {
                 span = buffer.Slice(consumed, found).ToSpan();
                 consumed = found;
             } else {
+                Logger.Debug("lineIndex <! 0");
                 return false;
             }
             fixed (byte* data = span) {

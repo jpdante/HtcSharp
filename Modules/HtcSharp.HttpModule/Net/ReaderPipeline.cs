@@ -22,7 +22,9 @@ namespace HtcSharp.HttpModule.Net {
 
         public Task ProcessLinesAsync(Socket socket, IParserRequestHandler handler) {
             var pipe = new Pipe();
+            Logger.Debug("Filling pipe...");
             var writing = FillPipeAsync(socket, pipe.Writer);
+            Logger.Debug("Reading pipe...");
             var reading = ReadPipeAsync(pipe.Reader, handler);
             return Task.WhenAll(reading, writing);
         }
@@ -54,6 +56,7 @@ namespace HtcSharp.HttpModule.Net {
                     position = buffer.PositionOf((byte)'\n');
                     if (position != null) {
                         var sequence = buffer.Slice(0, position.Value);
+                        Logger.Debug("Parsing request...");
                         Parser.ParseRequestLine(handler, sequence, out var consumed, out var examined);
                         buffer = buffer.Slice(buffer.GetPosition(1, position.Value));
                     }

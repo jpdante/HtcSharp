@@ -15,6 +15,11 @@
     <ItemGroup>
       <ProjectReference Include="..\..\HtcSharp.Core\HtcSharp.Core.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Http\Http1\" />
+      <Folder Include="Http\Http2\" />
+    </ItemGroup>
 	
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
       <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(TargetPath) $(TargetFileName)" />

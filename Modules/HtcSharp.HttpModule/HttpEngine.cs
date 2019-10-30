@@ -42,7 +42,7 @@ namespace HtcSharp.HttpModule {
                 var socket = await socketListener.AcceptAsync();
                 await Task.Run(async () => {
                     Logger.Info("Accepted");
-                    await new ReaderPipeline(null).ProcessLinesAsync(socket, null);
+                    await new ReaderPipeline(new HttpParser()).ProcessLinesAsync(socket, new DefaultParserRequestHandler());
                 });
                 /*_ = Task.Run(async () => {
                     Logger.Info($"New Connection: {((IPEndPoint)socket.RemoteEndPoint).Address}");

@@ -35,14 +35,6 @@ namespace HtcSharp.HttpModule.Model {
                 _socket.LocalEndPoint as IPEndPoint, 
                 _socket.RemoteEndPoint as IPEndPoint, 
                 null);
-            while (_socket.Connected) {
-                try {
-
-                }
-                catch {
-                    return;
-                }
-            }
             _decoder.RunAsync();
             _encoder.RunAsync();
         }
