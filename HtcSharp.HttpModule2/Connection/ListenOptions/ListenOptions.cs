@@ -29,7 +29,7 @@ namespace HtcSharp.HttpModule2.Connection.ListenOptions {
 
         public ulong FileHandle => (EndPoint as FileHandleEndPoint)?.FileHandle ?? 0;
 
-        public HtcServerOptions KestrelServerOptions { get; internal set; }
+        public HtcServerOptions HtcServerOptions { get; internal set; }
 
         public HttpProtocols Protocols { get; set; } = HttpProtocols.HTTP1_AND_HTTP2;
 
@@ -44,7 +44,7 @@ namespace HtcSharp.HttpModule2.Connection.ListenOptions {
 
         internal bool IsTls { get; set; }
 
-        public IServiceProvider ApplicationServices => KestrelServerOptions?.ApplicationServices;
+        public IServiceProvider ApplicationServices => HtcServerOptions?.ApplicationServices;
 
         public IConnectionBuilder Use(Func<ConnectionDelegate, ConnectionDelegate> middleware) {
             Middleware.Add(middleware);

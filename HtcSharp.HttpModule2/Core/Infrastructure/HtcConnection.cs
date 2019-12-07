@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule2.Core.Infrastructure {
-    internal class KestrelConnection : IConnectionHeartbeatFeature, IConnectionCompleteFeature, IConnectionLifetimeNotificationFeature, IThreadPoolWorkItem {
+    internal class HtcConnection : IConnectionHeartbeatFeature, IConnectionCompleteFeature, IConnectionLifetimeNotificationFeature, IThreadPoolWorkItem {
         private List<(Action<object> handler, object state)> _heartbeatHandlers;
         private readonly object _heartbeatLock = new object();
 
@@ -17,7 +17,7 @@ namespace HtcSharp.HttpModule2.Core.Infrastructure {
         private readonly ServiceContext _serviceContext;
         private readonly ConnectionDelegate _connectionDelegate;
 
-        public KestrelConnection(long id, ServiceContext serviceContext,
+        public HtcConnection(long id, ServiceContext serviceContext,
                                  ConnectionDelegate connectionDelegate,
                                  ConnectionContext connectionContext,
                                  IKestrelTrace logger) {

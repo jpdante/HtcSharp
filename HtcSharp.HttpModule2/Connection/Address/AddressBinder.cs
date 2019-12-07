@@ -53,7 +53,7 @@ namespace HtcSharp.HttpModule2.Connection.Address {
 
                 return new EndpointsStrategy(listenOptions);
             } else if (hasAddresses) {
-                // If no endpoints are configured directly using KestrelServerOptions, use those configured via the IServerAddressesFeature.
+                // If no endpoints are configured directly using HtcServerOptions, use those configured via the IServerAddressesFeature.
                 return new AddressesStrategy(addresses);
             } else {
                 // "localhost" for both IPv4 and IPv6 can't be represented as an IPEndPoint.

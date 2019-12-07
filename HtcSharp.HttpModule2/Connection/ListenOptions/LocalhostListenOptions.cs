@@ -40,7 +40,7 @@ namespace HtcSharp.HttpModule2.Connection.ListenOptions {
 
         internal ListenOptions Clone(IPAddress address) {
             var options = new ListenOptions(new IPEndPoint(address, IPEndPoint.Port)) {
-                KestrelServerOptions = KestrelServerOptions,
+                HtcServerOptions = HtcServerOptions,
                 Protocols = Protocols,
                 IsTls = IsTls
             };

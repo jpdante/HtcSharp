@@ -37,7 +37,7 @@ namespace HtcSharp.HttpModule2.Core {
         }
 
         internal void ApplyEndpointDefaults(ListenOptions listenOptions) {
-            listenOptions.KestrelServerOptions = this;
+            listenOptions.HtcServerOptions = this;
             ConfigurationLoader?.ApplyConfigurationDefaults(listenOptions);
             EndpointDefaults(listenOptions);
         }

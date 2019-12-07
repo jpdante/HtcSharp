@@ -4,7 +4,7 @@ using System.Threading;
 namespace HtcSharp.HttpModule2.Core.Infrastructure {
     internal class HeartbeatManager : IHeartbeatHandler, ISystemClock {
         private readonly ConnectionManager _connectionManager;
-        private readonly Action<KestrelConnection> _walkCallback;
+        private readonly Action<HtcConnection> _walkCallback;
         private DateTimeOffset _now;
         private long _nowTicks;
 
@@ -26,7 +26,7 @@ namespace HtcSharp.HttpModule2.Core.Infrastructure {
             _connectionManager.Walk(_walkCallback);
         }
 
-        private void WalkCallback(KestrelConnection connection) {
+        private void WalkCallback(HtcConnection connection) {
             connection.TickHeartbeat();
         }
     }

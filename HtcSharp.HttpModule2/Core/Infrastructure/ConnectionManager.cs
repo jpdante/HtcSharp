@@ -25,7 +25,7 @@ namespace HtcSharp.HttpModule2.Core.Infrastructure {
         /// </summary>
         public ResourceCounter UpgradedConnectionCount { get; }
 
-        public void AddConnection(long id, KestrelConnection connection) {
+        public void AddConnection(long id, HtcConnection connection) {
             if (!_connectionReferences.TryAdd(id, new ConnectionReference(connection))) {
                 throw new ArgumentException(nameof(id));
             }
@@ -41,7 +41,7 @@ namespace HtcSharp.HttpModule2.Core.Infrastructure {
             }
         }
 
-        public void Walk(Action<KestrelConnection> callback) {
+        public void Walk(Action<HtcConnection> callback) {
             foreach (var kvp in _connectionReferences) {
                 var reference = kvp.Value;
 
