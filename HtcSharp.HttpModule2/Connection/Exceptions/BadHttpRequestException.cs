@@ -1,8 +1,11 @@
 ﻿using System.IO;
 using System.Runtime.CompilerServices;
 using HtcSharp.Core.Helpers.Http;
+using HtcSharp.HttpModule2.Core;
 using HtcSharp.HttpModule2.Core.Http;
 using HtcSharp.HttpModule2.Core.Infrastructure;
+using HtcSharp.HttpModule2.Shared;
+using HttpMethod = HtcSharp.HttpModule2.Core.Http.HttpMethod;
 
 namespace HtcSharp.HttpModule2.Connection.Exceptions {
     public sealed class BadHttpRequestException : IOException {

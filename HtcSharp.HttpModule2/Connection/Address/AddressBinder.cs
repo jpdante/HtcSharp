@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using HtcSharp.Core.Logging.Loggers;
+using HtcSharp.Core.Logging;
 using HtcSharp.HttpModule2.Connection.Exceptions;
 using HtcSharp.HttpModule2.Connection.ListenOptions;
 using HtcSharp.HttpModule2.Core;
+using HtcSharp.HttpModule2.Core.Infrastructure;
+using Microsoft.AspNetCore.Builder;
 
 namespace HtcSharp.HttpModule2.Connection.Address {
     internal class AddressBinder {
-        public static async Task BindAsync(IServerAddressesFeature addresses,
-            KestrelServerOptions serverOptions,
-            ILogger logger,
-            Func<ListenOptions.ListenOptions, Task> createBinding) {
+        public static async Task BindAsync(IServerAddressesFeature addresses, HtcServerOptions serverOptions, Logger logger, Func<ListenOptions.ListenOptions, Task> createBinding) {
             var listenOptions = serverOptions.ListenOptions;
             var strategy = CreateStrategy(
                 listenOptions.ToArray(),
@@ -79,7 +79,7 @@ namespace HtcSharp.HttpModule2.Connection.Address {
             try {
                 await context.CreateBinding(endpoint).ConfigureAwait(false);
             } catch (AddressInUseException ex) {
-                throw new IOException(CoreStrings.FormatEndpointAlreadyInUse(endpoint), ex);
+                throw new IOException($"Failed to bind to address {endpoint}: address already in use.", ex);
             }
             context.ListenOptions.Add(endpoint);
         }
@@ -91,11 +91,11 @@ namespace HtcSharp.HttpModule2.Connection.Address {
             if (parsedAddress.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
                 https = true;
             } else if (!parsedAddress.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase)) {
-                throw new InvalidOperationException(CoreStrings.FormatUnsupportedAddressScheme(address));
+                throw new InvalidOperationException($"Unrecognized scheme in server address '{address}'. Only 'http://' is supported.");
             }
 
             if (!string.IsNullOrEmpty(parsedAddress.PathBase)) {
-                throw new InvalidOperationException(CoreStrings.FormatConfigurePathBaseFromMethodCall($"{nameof(IApplicationBuilder)}.UsePathBase()"));
+                throw new InvalidOperationException($"A path base can only be configured using {nameof(IApplicationBuilder)}.UsePathBase().");
             }
 
             ListenOptions.ListenOptions options = null;
@@ -130,11 +130,10 @@ namespace HtcSharp.HttpModule2.Connection.Address {
 
                 if (httpsDefault.IsTls || httpsDefault.TryUseHttps()) {
                     await httpsDefault.BindAsync(context).ConfigureAwait(false);
-                    context.Logger.LogDebug(CoreStrings.BindingToDefaultAddresses,
-                        Constants.DefaultServerAddress, Constants.DefaultServerHttpsAddress);
+                    context.Logger.Debug($"No listening endpoints were configured. Binding to {Constants.DefaultServerAddress} and {Constants.DefaultServerHttpsAddress} by default.");
                 } else {
                     // No default cert is available, do not bind to the https endpoint.
-                    context.Logger.LogDebug(CoreStrings.BindingToDefaultAddress, Constants.DefaultServerAddress);
+                    context.Logger.Debug($"No listening endpoints were configured. Binding to {Constants.DefaultServerAddress} by default.");
                 }
             }
         }
@@ -146,7 +145,7 @@ namespace HtcSharp.HttpModule2.Connection.Address {
 
             public override Task BindAsync(AddressBindContext context) {
                 var joined = string.Join(", ", _addresses);
-                context.Logger.LogInformation(CoreStrings.OverridingWithPreferHostingUrls, nameof(IServerAddressesFeature.PreferHostingUrls), joined);
+                context.Logger.Info($"Overriding endpoints defined in UseKestrel() because {nameof(IServerAddressesFeature.PreferHostingUrls)} is set to true. Binding to address(es) '{joined}' instead.");
 
                 return base.BindAsync(context);
             }
@@ -162,7 +161,7 @@ namespace HtcSharp.HttpModule2.Connection.Address {
 
             public override Task BindAsync(AddressBindContext context) {
                 var joined = string.Join(", ", _originalAddresses);
-                context.Logger.LogWarning(CoreStrings.OverridingWithKestrelOptions, joined, "UseKestrel()");
+                context.Logger.Warn($"Overriding address(es) '{joined}'. Binding to endpoints defined in UseKestrel() instead.");
 
                 return base.BindAsync(context);
             }

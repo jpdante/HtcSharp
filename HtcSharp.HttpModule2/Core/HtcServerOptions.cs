@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using HtcSharp.HttpModule2.Connection.ListenOptions;
+using HtcSharp.HttpModule2.Cryptography;
 
 namespace HtcSharp.HttpModule2.Core {
     public class HtcServerOptions {
@@ -20,7 +22,7 @@ namespace HtcSharp.HttpModule2.Core {
 
         public HtcServerLimits Limits { get; } = new HtcServerLimits();
 
-        public KestrelConfigurationLoader ConfigurationLoader { get; set; }
+        public HtcConfigurationLoader ConfigurationLoader { get; set; }
 
         private Action<ListenOptions> EndpointDefaults { get; set; } = _ => { };
 
@@ -59,12 +61,12 @@ namespace HtcSharp.HttpModule2.Core {
         }
 
         private void EnsureDefaultCert() {
-            if (DefaultCertificate == null && !IsDevCertLoaded) {
+            // TODO: Fix EnsureDefaultCert
+            /*if (DefaultCertificate == null && !IsDevCertLoaded) {
                 IsDevCertLoaded = true; // Only try once
                 var logger = ApplicationServices.GetRequiredService<ILogger<KestrelServer>>();
                 try {
-                    DefaultCertificate = CertificateManager.ListCertificates(CertificatePurpose.HTTPS, StoreName.My, StoreLocation.CurrentUser, isValid: true)
-                        .FirstOrDefault();
+                    DefaultCertificate = CertificateManager.ListCertificates(CertificatePurpose.HTTPS, StoreName.My, StoreLocation.CurrentUser, isValid: true).FirstOrDefault();
 
                     if (DefaultCertificate != null) {
                         logger.LocatedDevelopmentCertificate(DefaultCertificate);
@@ -74,17 +76,11 @@ namespace HtcSharp.HttpModule2.Core {
                 } catch {
                     logger.UnableToLocateDevelopmentCertificate();
                 }
-            }
+            }*/
         }
 
-        public KestrelConfigurationLoader Configure() {
-            var loader = new KestrelConfigurationLoader(this, new ConfigurationBuilder().Build());
-            ConfigurationLoader = loader;
-            return loader;
-        }
-
-        public KestrelConfigurationLoader Configure(IConfiguration config) {
-            var loader = new KestrelConfigurationLoader(this, config);
+        public HtcConfigurationLoader Configure() {
+            var loader = new HtcConfigurationLoader(this);
             ConfigurationLoader = loader;
             return loader;
         }

@@ -5,6 +5,10 @@
     <AssemblyName>HtcSharp.HttpModule2.plugin</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(TargetPath) $(TargetFileName)" />
   </Target>

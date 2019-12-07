@@ -4,22 +4,21 @@ using System.IO;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using HtcSharp.Core.Logging;
+using HtcSharp.HttpModule2.Configuration;
 using HtcSharp.HttpModule2.Connection.Address;
 using HtcSharp.HttpModule2.Connection.ListenOptions;
+using HtcSharp.HttpModule2.Cryptography;
 
 namespace HtcSharp.HttpModule2.Core {
     public class HtcConfigurationLoader {
         private bool _loaded = false;
 
-        internal HtcConfigurationLoader(HtcServerOptions options, IConfiguration configuration) {
+        internal HtcConfigurationLoader(HtcServerOptions options) {
             Options = options ?? throw new ArgumentNullException(nameof(options));
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            ConfigurationReader = new ConfigurationReader(Configuration);
         }
 
         public HtcServerOptions Options { get; }
-        public IConfiguration Configuration { get; }
-        internal ConfigurationReader ConfigurationReader { get; }
         private IDictionary<string, Action<EndpointConfiguration>> EndpointConfigurations { get; } = new Dictionary<string, Action<EndpointConfiguration>>(0, StringComparer.OrdinalIgnoreCase);
         private IList<Action> EndpointsToAdd { get; } = new List<Action>();
 
@@ -34,7 +33,7 @@ namespace HtcSharp.HttpModule2.Core {
 
         public HtcConfigurationLoader Endpoint(IPAddress address, int port) => Endpoint(address, port, _ => { });
 
-        public KestrelConfiguHtcConfigurationLoaderrationLoader Endpoint(IPAddress address, int port, Action<ListenOptions> configure) {
+        public HtcConfigurationLoader Endpoint(IPAddress address, int port, Action<ListenOptions> configure) {
             if (address == null) {
                 throw new ArgumentNullException(nameof(address));
             }
@@ -94,7 +93,7 @@ namespace HtcSharp.HttpModule2.Core {
                 throw new ArgumentNullException(nameof(socketPath));
             }
             if (socketPath.Length == 0 || socketPath[0] != '/') {
-                throw new ArgumentException(CoreStrings.UnixSocketPathMustBeAbsolute, nameof(socketPath));
+                throw new ArgumentException("Unix socket path must be absolute.", nameof(socketPath));
             }
             if (configure == null) {
                 throw new ArgumentNullException(nameof(configure));
@@ -150,15 +149,14 @@ namespace HtcSharp.HttpModule2.Core {
                 }
 
                 if (EndpointConfigurations.TryGetValue(endpoint.Name, out var configureEndpoint)) {
-                    var endpointConfig = new EndpointConfiguration(https, listenOptions, httpsOptions, endpoint.ConfigSection);
+                    var endpointConfig = new EndpointConfiguration(https, listenOptions, httpsOptions);
                     configureEndpoint(endpointConfig);
                 }
 
                 if (https && !listenOptions.IsTls) {
                     if (httpsOptions.ServerCertificate == null && httpsOptions.ServerCertificateSelector == null) {
-                        throw new InvalidOperationException(CoreStrings.NoCertSpecifiedNoDevelopmentCertificateFound);
+                        throw new InvalidOperationException("Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.\nTo generate a developer certificate run 'dotnet dev-certs https'. To trust the certificate (Windows and macOS only) run 'dotnet dev-certs https --trust'.\nFor more information on configuring HTTPS see https://go.microsoft.com/fwlink/?linkid=848054.");
                     }
-
                     listenOptions.UseHttps(httpsOptions);
                 }
 
@@ -177,7 +175,7 @@ namespace HtcSharp.HttpModule2.Core {
                     Options.DefaultCertificate = defaultCert;
                 }
             } else {
-                var logger = Options.ApplicationServices.GetRequiredService<ILogger<KestrelServer>>();
+                var logger = Options.ApplicationServices.GetRequiredService<ILogger<HtcServer>>();
                 var certificate = FindDeveloperCertificateFile(configReader, logger);
                 if (certificate != null) {
                     logger.LocatedDevelopmentCertificate(certificate);
@@ -186,7 +184,7 @@ namespace HtcSharp.HttpModule2.Core {
             }
         }
 
-        private X509Certificate2 FindDeveloperCertificateFile(ConfigurationReader configReader, ILogger<KestrelServer> logger) {
+        private X509Certificate2 FindDeveloperCertificateFile(ConfigurationReader configReader, Logger logger) {
             string certificatePath = null;
             try {
                 if (configReader.Certificates.TryGetValue("Development", out var certificateConfig) &&
@@ -197,12 +195,11 @@ namespace HtcSharp.HttpModule2.Core {
                     var certificate = new X509Certificate2(certificatePath, certificateConfig.Password);
                     return IsDevelopmentCertificate(certificate) ? certificate : null;
                 } else if (!File.Exists(certificatePath)) {
-                    logger.FailedToLocateDevelopmentCertificateFile(certificatePath);
+                    logger.Error($"Failed to locate development certificate file '{certificatePath}'");
                 }
             } catch (CryptographicException) {
-                logger.FailedToLoadDevelopmentCertificate(certificatePath);
+                logger.Error($"Failed to load development certificate '{certificatePath}'");
             }
-
             return null;
         }
 
@@ -253,7 +250,6 @@ namespace HtcSharp.HttpModule2.Core {
                 storeLocation = (StoreLocation)Enum.Parse(typeof(StoreLocation), location, ignoreCase: true);
             }
             var allowInvalid = certInfo.AllowInvalid ?? false;
-
             return CertificateLoader.LoadFromStoreCert(subject, storeName, storeLocation, allowInvalid);
         }
     }
