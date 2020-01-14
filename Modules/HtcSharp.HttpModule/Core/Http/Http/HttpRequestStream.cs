@@ -3,6 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Core.Http.Features;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal sealed class HttpRequestStream : Stream {

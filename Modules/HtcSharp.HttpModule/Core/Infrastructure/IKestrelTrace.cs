@@ -1,6 +1,7 @@
 ﻿using System;
 using HtcSharp.HttpModule.Core.Http;
 using HtcSharp.HttpModule.Core.Http.Http2;
+using HtcSharp.HttpModule.Core.Http.Http2.HPack;
 
 namespace HtcSharp.HttpModule.Core.Infrastructure {
     internal interface IKestrelTrace : ILogger {
