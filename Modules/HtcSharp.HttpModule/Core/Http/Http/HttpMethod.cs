@@ -1,4 +1,4 @@
-﻿namespace HtcSharp.HttpModule.Core.Http.Http1 {
+﻿namespace HtcSharp.HttpModule.Core.Http.Http {
     public enum HttpMethod : byte {
         Get,
         Put,
