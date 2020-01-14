@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading;
+using HtcSharp.HttpModule.Core.Infrastructure;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     /// <summary>

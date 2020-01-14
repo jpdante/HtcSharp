@@ -2,6 +2,7 @@
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Core.Infrastructure;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal abstract class MessageBody {
