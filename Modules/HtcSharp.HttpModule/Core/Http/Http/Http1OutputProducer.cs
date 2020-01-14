@@ -6,8 +6,9 @@ using System.IO.Pipelines;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Core.Infrastructure.PipeWriterHelpers;
+using IHttpMinResponseDataRateFeature = HtcSharp.HttpModule.Core.Http.Features.IHttpMinResponseDataRateFeature;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal class Http1OutputProducer : IHttpOutputProducer, IHttpOutputAborter, IDisposable {

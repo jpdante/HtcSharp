@@ -1,4 +1,6 @@
-﻿namespace HtcSharp.HttpModule.Core.Infrastructure {
+﻿using HtcSharp.HttpModule.Core.Http.Http2;
+
+namespace HtcSharp.HttpModule.Core.Infrastructure {
     internal interface ITimeoutControl {
         TimeoutReason TimerReason { get; }
 

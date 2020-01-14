@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
+using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal abstract partial class HttpProtocol : IHttpResponseControl {
