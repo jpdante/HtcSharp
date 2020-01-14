@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.Core.Logging;
-using HtcSharp.HttpModule.Http;
+using HtcSharp.HttpModule.Core.Http;
 using HtcSharp.HttpModule.Interface;
 
 namespace HtcSharp.HttpModule.Net {

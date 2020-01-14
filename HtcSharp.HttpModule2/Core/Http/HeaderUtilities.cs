@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
+using HtcSharp.HttpModule2.Shared;
 
 namespace HtcSharp.HttpModule2.Core.Http {
     public static class HeaderUtilities {

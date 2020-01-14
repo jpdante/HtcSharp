@@ -2,42 +2,42 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace HtcSharp.HttpModule.Http {
+namespace HtcSharp.HttpModule.Core.Http {
     public class HttpConverter {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static unsafe HttpMethod GetHttpMethod(byte* data, int length, out int methodLength) {
             methodLength = 0;
-            if (length > 8) return HttpMethod.CUSTOM;
+            if (length > 8) return HttpMethod.Custom;
             switch (*(ulong*)data) {
-                case (ulong)HttpMethod.GET:
+                case (ulong)HttpMethod.Get:
                     methodLength = 3;
-                    return HttpMethod.GET;
-                case (ulong)HttpMethod.POST:
+                    return HttpMethod.Get;
+                case (ulong)HttpMethod.Post:
                     methodLength = 4;
-                    return HttpMethod.POST;
-                case (ulong)HttpMethod.HEAD:
+                    return HttpMethod.Post;
+                case (ulong)HttpMethod.Head:
                     methodLength = 4;
-                    return HttpMethod.HEAD;
-                case (ulong)HttpMethod.PUT:
+                    return HttpMethod.Head;
+                case (ulong)HttpMethod.Put:
                     methodLength = 3;
-                    return HttpMethod.PUT;
-                case (ulong)HttpMethod.DELETE:
+                    return HttpMethod.Put;
+                case (ulong)HttpMethod.Delete:
                     methodLength = 6;
-                    return HttpMethod.DELETE;
-                case (ulong)HttpMethod.TRACE:
+                    return HttpMethod.Delete;
+                case (ulong)HttpMethod.Trace:
                     methodLength = 5;
-                    return HttpMethod.TRACE;
-                case (ulong)HttpMethod.PATCH:
+                    return HttpMethod.Trace;
+                case (ulong)HttpMethod.Patch:
                     methodLength = 5;
-                    return HttpMethod.PATCH;
-                case (ulong)HttpMethod.CONNECT:
+                    return HttpMethod.Patch;
+                case (ulong)HttpMethod.Connect:
                     methodLength = 7;
-                    return HttpMethod.CONNECT;
-                case (ulong)HttpMethod.OPTIONS:
+                    return HttpMethod.Connect;
+                case (ulong)HttpMethod.Options:
                     methodLength = 7;
-                    return HttpMethod.OPTIONS;
+                    return HttpMethod.Options;
                 default:
-                    return HttpMethod.CUSTOM;
+                    return HttpMethod.Custom;
             }
         }
 
@@ -46,19 +46,19 @@ namespace HtcSharp.HttpModule.Http {
             HttpVersion knownVersion;
             var version = *(ulong*)location;
             if (length < sizeof(ulong) + 1 || location[sizeof(ulong)] != (byte)'\r') {
-                knownVersion = HttpVersion.UNKNOWN;
+                knownVersion = HttpVersion.Unknown;
             } else switch (version) {
-                case (ulong)HttpVersion.HTTP_11:
-                    knownVersion = HttpVersion.HTTP_11;
+                case (ulong)HttpVersion.Http11:
+                    knownVersion = HttpVersion.Http11;
                     break;
-                case (ulong)HttpVersion.HTTP_2:
-                    knownVersion = HttpVersion.HTTP_2;
+                case (ulong)HttpVersion.Http2:
+                    knownVersion = HttpVersion.Http2;
                     break;
-                case (ulong)HttpVersion.HTTP_10:
-                    knownVersion = HttpVersion.HTTP_10;
+                case (ulong)HttpVersion.Http10:
+                    knownVersion = HttpVersion.Http10;
                     break;
                 default:
-                    knownVersion = HttpVersion.UNKNOWN;
+                    knownVersion = HttpVersion.Unknown;
                     break;
             }
             return knownVersion;

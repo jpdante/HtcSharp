@@ -1,4 +1,7 @@
-﻿using System;
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,10 +12,21 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule2.Core.Infrastructure;
+using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Internal;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Infrastructure;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 
-namespace HtcSharp.HttpModule2.Core.Http {
-    internal abstract partial class HttpProtocol : IHttpResponseControl {
+namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
+{
+    internal abstract partial class HttpProtocol : HtcSharp.HttpModule.Core.Http.Http1.IHttpResponseControl
+    {
         private static readonly byte[] _bytesConnectionClose = Encoding.ASCII.GetBytes("\r\nConnection: close");
         private static readonly byte[] _bytesConnectionKeepAlive = Encoding.ASCII.GetBytes("\r\nConnection: keep-alive");
         private static readonly byte[] _bytesTransferEncodingChunked = Encoding.ASCII.GetBytes("\r\nTransfer-Encoding: chunked");
@@ -28,7 +42,7 @@ namespace HtcSharp.HttpModule2.Core.Http {
         private CancellationTokenSource _abortedCts;
         private CancellationToken? _manuallySetRequestAbortToken;
 
-        protected RequestProcessingStatus _requestProcessingStatus;
+        protected HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus _requestProcessingStatus;
 
         // Keep-alive is default for HTTP/1.1 and HTTP/2; parsing and errors will change its value
         // volatile, see: https://msdn.microsoft.com/en-us/library/x13ttww7.aspx
@@ -42,7 +56,7 @@ namespace HtcSharp.HttpModule2.Core.Http {
         protected Exception _applicationException;
         private BadHttpRequestException _requestRejectedException;
 
-        protected HttpVersion _httpVersion;
+        protected HtcSharp.HttpModule.Core.Http.Http1.HttpVersion _httpVersion;
 
         private string _requestId;
         private int _requestHeadersParsed;
@@ -58,15 +72,16 @@ namespace HtcSharp.HttpModule2.Core.Http {
         private Stream _requestStreamInternal;
         private Stream _responseStreamInternal;
 
-        public HttpProtocol(HttpConnectionContext context) {
+        public HttpProtocol(HttpConnectionContext context)
+        {
             _context = context;
 
             ServerOptions = ServiceContext.ServerOptions;
-            HttpRequestHeaders = new HttpRequestHeaders(reuseHeaderValues: !ServerOptions.DisableStringReuse);
+            HttpRequestHeaders = new HtcSharp.HttpModule.Core.Http.Http1.HttpRequestHeaders(reuseHeaderValues: !ServerOptions.DisableStringReuse);
             HttpResponseControl = this;
         }
 
-        public IHttpResponseControl HttpResponseControl { get; set; }
+        public HtcSharp.HttpModule.Core.Http.Http1.IHttpResponseControl HttpResponseControl { get; set; }
 
         public ServiceContext ServiceContext => _context.ServiceContext;
         private IPEndPoint LocalEndPoint => _context.LocalEndPoint;
@@ -74,10 +89,10 @@ namespace HtcSharp.HttpModule2.Core.Http {
         public ITimeoutControl TimeoutControl => _context.TimeoutControl;
 
         public IFeatureCollection ConnectionFeatures => _context.ConnectionFeatures;
-        public IHttpOutputProducer Output { get; protected set; }
+        public HtcSharp.HttpModule.Core.Http.Http1.IHttpOutputProducer Output { get; protected set; }
 
         protected IKestrelTrace Log => ServiceContext.Log;
-        private DateHeaderValueManager DateHeaderValueManager => ServiceContext.DateHeaderValueManager;
+        private HtcSharp.HttpModule.Core.Http.Http1.DateHeaderValueManager DateHeaderValueManager => ServiceContext.DateHeaderValueManager;
         // Hold direct reference to ServerOptions since this is used very often in the request processing path
         protected KestrelServerOptions ServerOptions { get; }
         protected string ConnectionId => _context.ConnectionId;
@@ -91,11 +106,14 @@ namespace HtcSharp.HttpModule2.Core.Http {
         /// <summary>
         /// The request id. <seealso cref="HttpContext.TraceIdentifier"/>
         /// </summary>
-        public string TraceIdentifier {
+        public string TraceIdentifier
+        {
             set => _requestId = value;
-            get {
+            get
+            {
                 // don't generate an ID until it is requested
-                if (_requestId == null) {
+                if (_requestId == null)
+                {
                     _requestId = CreateRequestId();
                 }
                 return _requestId;
@@ -109,7 +127,7 @@ namespace HtcSharp.HttpModule2.Core.Http {
         public IPAddress LocalIpAddress { get; set; }
         public int LocalPort { get; set; }
         public string Scheme { get; set; }
-        public HttpMethod Method { get; set; }
+        public HtcSharp.HttpModule.Core.Http.Http1.HttpMethod Method { get; set; }
         public string PathBase { get; set; }
 
         protected string _parsedPath = null;
@@ -121,15 +139,20 @@ namespace HtcSharp.HttpModule2.Core.Http {
         protected string _parsedRawTarget = null;
         public string RawTarget { get; set; }
 
-        public string HttpVersion {
-            get {
-                if (_httpVersion == Http.HttpVersion.Http11) {
+        public string HttpVersion
+        {
+            get
+            {
+                if (_httpVersion == HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http11)
+                {
                     return HttpUtilities.Http11Version;
                 }
-                if (_httpVersion == Http.HttpVersion.Http10) {
+                if (_httpVersion == HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http10)
+                {
                     return HttpUtilities.Http10Version;
                 }
-                if (_httpVersion == Http.HttpVersion.Http2) {
+                if (_httpVersion == HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http2)
+                {
                     return HttpUtilities.Http2Version;
                 }
 
@@ -137,31 +160,47 @@ namespace HtcSharp.HttpModule2.Core.Http {
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set {
+            set
+            {
                 // GetKnownVersion returns versions which ReferenceEquals interned string
                 // As most common path, check for this only in fast-path and inline
-                if (ReferenceEquals(value, HttpUtilities.Http11Version)) {
-                    _httpVersion = Http.HttpVersion.Http11;
-                } else if (ReferenceEquals(value, HttpUtilities.Http10Version)) {
-                    _httpVersion = Http.HttpVersion.Http10;
-                } else if (ReferenceEquals(value, HttpUtilities.Http2Version)) {
-                    _httpVersion = Http.HttpVersion.Http2;
-                } else {
+                if (ReferenceEquals(value, HttpUtilities.Http11Version))
+                {
+                    _httpVersion = HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http11;
+                }
+                else if (ReferenceEquals(value, HttpUtilities.Http10Version))
+                {
+                    _httpVersion = HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http10;
+                }
+                else if (ReferenceEquals(value, HttpUtilities.Http2Version))
+                {
+                    _httpVersion = HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http2;
+                }
+                else
+                {
                     HttpVersionSetSlow(value);
                 }
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void HttpVersionSetSlow(string value) {
-            if (value == HttpUtilities.Http11Version) {
-                _httpVersion = Http.HttpVersion.Http11;
-            } else if (value == HttpUtilities.Http10Version) {
-                _httpVersion = Http.HttpVersion.Http10;
-            } else if (value == HttpUtilities.Http2Version) {
-                _httpVersion = Http.HttpVersion.Http2;
-            } else {
-                _httpVersion = Http.HttpVersion.Unknown;
+        private void HttpVersionSetSlow(string value)
+        {
+            if (value == HttpUtilities.Http11Version)
+            {
+                _httpVersion = HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http11;
+            }
+            else if (value == HttpUtilities.Http10Version)
+            {
+                _httpVersion = HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http10;
+            }
+            else if (value == HttpUtilities.Http2Version)
+            {
+                _httpVersion = HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http2;
+            }
+            else
+            {
+                _httpVersion = HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Unknown;
             }
         }
 
@@ -170,13 +209,16 @@ namespace HtcSharp.HttpModule2.Core.Http {
         public bool RequestTrailersAvailable { get; set; }
         public Stream RequestBody { get; set; }
         public PipeReader RequestBodyPipeReader { get; set; }
-        public HttpResponseTrailers ResponseTrailers { get; set; }
+        public HtcSharp.HttpModule.Core.Http.Http1.HttpResponseTrailers ResponseTrailers { get; set; }
 
         private int _statusCode;
-        public int StatusCode {
+        public int StatusCode
+        {
             get => _statusCode;
-            set {
-                if (HasResponseStarted) {
+            set
+            {
+                if (HasResponseStarted)
+                {
                     ThrowResponseAlreadyStartedException(nameof(StatusCode));
                 }
 
@@ -186,11 +228,14 @@ namespace HtcSharp.HttpModule2.Core.Http {
 
         private string _reasonPhrase;
 
-        public string ReasonPhrase {
+        public string ReasonPhrase
+        {
             get => _reasonPhrase;
 
-            set {
-                if (HasResponseStarted) {
+            set
+            {
+                if (HasResponseStarted)
+                {
                     ThrowResponseAlreadyStartedException(nameof(ReasonPhrase));
                 }
 
@@ -202,48 +247,58 @@ namespace HtcSharp.HttpModule2.Core.Http {
         public Stream ResponseBody { get; set; }
         public PipeWriter ResponseBodyPipeWriter { get; set; }
 
-        public CancellationToken RequestAborted {
-            get {
+        public CancellationToken RequestAborted
+        {
+            get
+            {
                 // If a request abort token was previously explicitly set, return it.
-                if (_manuallySetRequestAbortToken.HasValue) {
+                if (_manuallySetRequestAbortToken.HasValue)
+                {
                     return _manuallySetRequestAbortToken.Value;
                 }
 
-                lock (_abortLock) {
-                    if (_preventRequestAbortedCancellation) {
+                lock (_abortLock)
+                {
+                    if (_preventRequestAbortedCancellation)
+                    {
                         return new CancellationToken(false);
                     }
 
-                    if (_connectionAborted) {
+                    if (_connectionAborted)
+                    {
                         return new CancellationToken(true);
                     }
 
-                    if (_abortedCts == null) {
+                    if (_abortedCts == null)
+                    {
                         _abortedCts = new CancellationTokenSource();
                     }
 
                     return _abortedCts.Token;
                 }
             }
-            set {
+            set
+            {
                 // Set an abort token, overriding one we create internally.  This setter and associated
                 // field exist purely to support IHttpRequestLifetimeFeature.set_RequestAborted.
                 _manuallySetRequestAbortToken = value;
             }
         }
 
-        public bool HasResponseStarted => _requestProcessingStatus >= RequestProcessingStatus.HeadersCommitted;
+        public bool HasResponseStarted => _requestProcessingStatus >= HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.HeadersCommitted;
 
-        public bool HasFlushedHeaders => _requestProcessingStatus >= RequestProcessingStatus.HeadersFlushed;
+        public bool HasFlushedHeaders => _requestProcessingStatus >= HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.HeadersFlushed;
 
-        public bool HasResponseCompleted => _requestProcessingStatus == RequestProcessingStatus.ResponseCompleted;
+        public bool HasResponseCompleted => _requestProcessingStatus == HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.ResponseCompleted;
 
-        protected HttpRequestHeaders HttpRequestHeaders { get; }
+        protected HtcSharp.HttpModule.Core.Http.Http1.HttpRequestHeaders HttpRequestHeaders { get; }
 
-        protected HttpResponseHeaders HttpResponseHeaders { get; } = new HttpResponseHeaders();
+        protected HtcSharp.HttpModule.Core.Http.Http1.HttpResponseHeaders HttpResponseHeaders { get; } = new HtcSharp.HttpModule.Core.Http.Http1.HttpResponseHeaders();
 
-        public void InitializeBodyControl(MessageBody messageBody) {
-            if (_bodyControl == null) {
+        public void InitializeBodyControl(HtcSharp.HttpModule.Core.Http.Http1.MessageBody messageBody)
+        {
+            if (_bodyControl == null)
+            {
                 _bodyControl = new BodyControl(bodyControl: this, this);
             }
 
@@ -253,16 +308,18 @@ namespace HtcSharp.HttpModule2.Core.Http {
         }
 
         // For testing
-        internal void ResetState() {
-            _requestProcessingStatus = RequestProcessingStatus.RequestPending;
+        internal void ResetState()
+        {
+            _requestProcessingStatus = HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.RequestPending;
         }
 
-        public void Reset() {
+        public void Reset()
+        {
             _onStarting?.Clear();
             _onCompleted?.Clear();
             _routeValues?.Clear();
 
-            _requestProcessingStatus = RequestProcessingStatus.RequestPending;
+            _requestProcessingStatus = HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.RequestPending;
             _autoChunk = false;
             _applicationException = null;
             _requestRejectedException = null;
@@ -274,14 +331,14 @@ namespace HtcSharp.HttpModule2.Core.Http {
             MinRequestBodyDataRate = ServerOptions.Limits.MinRequestBodyDataRate;
             AllowSynchronousIO = ServerOptions.AllowSynchronousIO;
             TraceIdentifier = null;
-            Method = HttpMethod.None;
+            Method = HtcSharp.HttpModule.Core.Http.Http1.HttpMethod.None;
             _methodText = null;
             _endpoint = null;
             PathBase = null;
             Path = null;
             RawTarget = null;
             QueryString = null;
-            _httpVersion = Http.HttpVersion.Unknown;
+            _httpVersion = HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Unknown;
             _statusCode = StatusCodes.Status200OK;
             _reasonPhrase = null;
 
@@ -306,7 +363,8 @@ namespace HtcSharp.HttpModule2.Core.Http {
             _hasAdvanced = false;
             _canWriteResponseBody = true;
 
-            if (_scheme == null) {
+            if (_scheme == null)
+            {
                 var tlsFeature = ConnectionFeatures?[typeof(ITlsConnectionFeature)];
                 _scheme = tlsFeature != null ? "https" : "http";
             }
@@ -318,7 +376,8 @@ namespace HtcSharp.HttpModule2.Core.Http {
             // Lock to prevent CancelRequestAbortedToken from attempting to cancel a disposed CTS.
             CancellationTokenSource localAbortCts = null;
 
-            lock (_abortLock) {
+            lock (_abortLock)
+            {
                 _preventRequestAbortedCancellation = false;
                 localAbortCts = _abortedCts;
                 _abortedCts = null;
@@ -339,35 +398,44 @@ namespace HtcSharp.HttpModule2.Core.Http {
 
         protected abstract void ApplicationAbort();
 
-        protected virtual void OnRequestProcessingEnding() {
+        protected virtual void OnRequestProcessingEnding()
+        {
         }
 
-        protected virtual void OnRequestProcessingEnded() {
+        protected virtual void OnRequestProcessingEnded()
+        {
         }
 
-        protected virtual void BeginRequestProcessing() {
+        protected virtual void BeginRequestProcessing()
+        {
         }
 
-        protected virtual void OnErrorAfterResponseStarted() {
+        protected virtual void OnErrorAfterResponseStarted()
+        {
         }
 
-        protected virtual bool BeginRead(out ValueTask<ReadResult> awaitable) {
+        protected virtual bool BeginRead(out ValueTask<ReadResult> awaitable)
+        {
             awaitable = default;
             return false;
         }
 
         protected abstract string CreateRequestId();
 
-        protected abstract MessageBody CreateMessageBody();
+        protected abstract HtcSharp.HttpModule.Core.Http.Http1.MessageBody CreateMessageBody();
 
         protected abstract bool TryParseRequest(ReadResult result, out bool endConnection);
 
-        private void CancelRequestAbortedToken() {
-            try {
+        private void CancelRequestAbortedToken()
+        {
+            try
+            {
                 CancellationTokenSource localAbortCts = null;
 
-                lock (_abortLock) {
-                    if (_abortedCts != null && !_preventRequestAbortedCancellation) {
+                lock (_abortLock)
+                {
+                    if (_abortedCts != null && !_preventRequestAbortedCancellation)
+                    {
                         localAbortCts = _abortedCts;
                         _abortedCts = null;
                     }
@@ -376,16 +444,21 @@ namespace HtcSharp.HttpModule2.Core.Http {
                 // If we cancel the cts, we don't dispose as people may still be using
                 // the cts. It also isn't necessary to dispose a canceled cts.
                 localAbortCts?.Cancel();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Log.ApplicationError(ConnectionId, TraceIdentifier, ex);
             }
         }
 
-        protected void AbortRequest() {
+        protected void AbortRequest()
+        {
             var shouldScheduleCancellation = false;
 
-            lock (_abortLock) {
-                if (_connectionAborted) {
+            lock (_abortLock)
+            {
+                if (_connectionAborted)
+                {
                     return;
                 }
 
@@ -393,20 +466,25 @@ namespace HtcSharp.HttpModule2.Core.Http {
                 _connectionAborted = true;
             }
 
-            if (shouldScheduleCancellation) {
+            if (shouldScheduleCancellation)
+            {
                 // Potentially calling user code. CancelRequestAbortedToken logs any exceptions.
-                ServiceContext.Scheduler.Schedule(state => ((HttpProtocol)state).CancelRequestAbortedToken(), this);
+                ServiceContext.Scheduler.Schedule(state => ((HtcSharp.HttpModule.Core.Http.Http1.HttpProtocol)state).CancelRequestAbortedToken(), this);
             }
         }
 
-        protected void PoisonRequestBodyStream(Exception abortReason) {
+        protected void PoisonRequestBodyStream(Exception abortReason)
+        {
             _bodyControl?.Abort(abortReason);
         }
 
         // Prevents the RequestAborted token from firing for the duration of the request.
-        private void PreventRequestAbortedCancellation() {
-            lock (_abortLock) {
-                if (_connectionAborted) {
+        private void PreventRequestAbortedCancellation()
+        {
+            lock (_abortLock)
+            {
+                if (_connectionAborted)
+                {
                     return;
                 }
 
@@ -414,83 +492,115 @@ namespace HtcSharp.HttpModule2.Core.Http {
             }
         }
 
-        public void OnHeader(Span<byte> name, Span<byte> value) {
+        public void OnHeader(Span<byte> name, Span<byte> value)
+        {
             _requestHeadersParsed++;
-            if (_requestHeadersParsed > ServerOptions.Limits.MaxRequestHeaderCount) {
-                BadHttpRequestException.Throw(RequestRejectionReason.TooManyHeaders);
+            if (_requestHeadersParsed > ServerOptions.Limits.MaxRequestHeaderCount)
+            {
+                BadHttpRequestException.Throw(HtcSharp.HttpModule.Core.Http.Http1.RequestRejectionReason.TooManyHeaders);
             }
 
             HttpRequestHeaders.Append(name, value);
         }
 
-        public void OnTrailer(Span<byte> name, Span<byte> value) {
+        public void OnTrailer(Span<byte> name, Span<byte> value)
+        {
             // Trailers still count towards the limit.
             _requestHeadersParsed++;
-            if (_requestHeadersParsed > ServerOptions.Limits.MaxRequestHeaderCount) {
-                BadHttpRequestException.Throw(RequestRejectionReason.TooManyHeaders);
+            if (_requestHeadersParsed > ServerOptions.Limits.MaxRequestHeaderCount)
+            {
+                BadHttpRequestException.Throw(HtcSharp.HttpModule.Core.Http.Http1.RequestRejectionReason.TooManyHeaders);
             }
 
             string key = name.GetHeaderName();
-            var valueStr = HttpUtilities.GetAsciiOrUTF8StringNonNullCharacters(value);
+            var valueStr = value.GetAsciiOrUTF8StringNonNullCharacters();
             RequestTrailers.Append(key, valueStr);
         }
 
-        public void OnHeadersComplete() {
+        public void OnHeadersComplete()
+        {
             HttpRequestHeaders.OnHeadersComplete();
         }
 
-        public void OnTrailersComplete() {
+        public void OnTrailersComplete()
+        {
             RequestTrailersAvailable = true;
         }
 
-        public async Task ProcessRequestsAsync<TContext>(IHttpApplication<TContext> application) {
-            try {
+        public async Task ProcessRequestsAsync<TContext>(IHttpApplication<TContext> application)
+        {
+            try
+            {
                 await ProcessRequests(application);
-            } catch (BadHttpRequestException ex) {
+            }
+            catch (BadHttpRequestException ex)
+            {
                 // Handle BadHttpRequestException thrown during request line or header parsing.
                 // SetBadRequestState logs the error.
                 SetBadRequestState(ex);
-            } catch (ConnectionResetException ex) {
+            }
+            catch (ConnectionResetException ex)
+            {
                 // Don't log ECONNRESET errors made between requests. Browsers like IE will reset connections regularly.
-                if (_requestProcessingStatus != RequestProcessingStatus.RequestPending) {
+                if (_requestProcessingStatus != HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.RequestPending)
+                {
                     Log.RequestProcessingError(ConnectionId, ex);
                 }
-            } catch (IOException ex) {
+            }
+            catch (IOException ex)
+            {
                 Log.RequestProcessingError(ConnectionId, ex);
-            } catch (ConnectionAbortedException ex) {
+            }
+            catch (ConnectionAbortedException ex)
+            {
                 Log.RequestProcessingError(ConnectionId, ex);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Log.LogWarning(0, ex, CoreStrings.RequestProcessingEndError);
-            } finally {
-                try {
+            }
+            finally
+            {
+                try
+                {
                     await TryProduceInvalidRequestResponse();
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Log.LogWarning(0, ex, CoreStrings.ConnectionShutdownError);
-                } finally {
+                }
+                finally
+                {
                     OnRequestProcessingEnded();
                 }
             }
         }
 
-        private async Task ProcessRequests<TContext>(IHttpApplication<TContext> application) {
-            while (_keepAlive) {
+        private async Task ProcessRequests<TContext>(IHttpApplication<TContext> application)
+        {
+            while (_keepAlive)
+            {
                 BeginRequestProcessing();
 
                 var result = default(ReadResult);
                 var endConnection = false;
-                do {
-                    if (BeginRead(out var awaitable)) {
+                do
+                {
+                    if (BeginRead(out var awaitable))
+                    {
                         result = await awaitable;
                     }
                 } while (!TryParseRequest(result, out endConnection));
 
-                if (endConnection) {
+                if (endConnection)
+                {
                     // Connection finished, stop processing requests
                     return;
                 }
 
                 var messageBody = CreateMessageBody();
-                if (!messageBody.RequestKeepAlive) {
+                if (!messageBody.RequestKeepAlive)
+                {
                     _keepAlive = false;
                 }
 
@@ -500,7 +610,8 @@ namespace HtcSharp.HttpModule2.Core.Http {
 
                 var context = application.CreateContext(this);
 
-                try {
+                try
+                {
                     KestrelEventSource.Log.RequestStart(this);
 
                     // Run the application code for this request
@@ -510,20 +621,26 @@ namespace HtcSharp.HttpModule2.Core.Http {
                     // already failed. If an OnStarting callback throws we can go through
                     // our normal error handling in ProduceEnd.
                     // https://github.com/aspnet/KestrelHttpServer/issues/43
-                    if (!HasResponseStarted && _applicationException == null && _onStarting?.Count > 0) {
+                    if (!HasResponseStarted && _applicationException == null && _onStarting?.Count > 0)
+                    {
                         await FireOnStarting();
                     }
 
-                    if (!_connectionAborted && !VerifyResponseContentLength(out var lengthException)) {
+                    if (!_connectionAborted && !VerifyResponseContentLength(out var lengthException))
+                    {
                         ReportApplicationError(lengthException);
                     }
-                } catch (BadHttpRequestException ex) {
+                }
+                catch (BadHttpRequestException ex)
+                {
                     // Capture BadHttpRequestException for further processing
                     // This has to be caught here so StatusCode is set properly before disposing the HttpContext
                     // (DisposeContext logs StatusCode).
                     SetBadRequestState(ex);
                     ReportApplicationError(ex);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     ReportApplicationError(ex);
                 }
 
@@ -531,9 +648,12 @@ namespace HtcSharp.HttpModule2.Core.Http {
 
                 // At this point all user code that needs use to the request or response streams has completed.
                 // Using these streams in the OnCompleted callback is not allowed.
-                try {
+                try
+                {
                     await _bodyControl.StopAsync();
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     // BodyControl.StopAsync() can throw if the PipeWriter was completed prior to the application writing
                     // enough bytes to satisfy the specified Content-Length. This risks double-logging the exception,
                     // but this scenario generally indicates an app bug, so I don't want to risk not logging it.
@@ -541,8 +661,10 @@ namespace HtcSharp.HttpModule2.Core.Http {
                 }
 
                 // 4XX responses are written by TryProduceInvalidRequestResponse during connection tear down.
-                if (_requestRejectedException == null) {
-                    if (!_connectionAborted) {
+                if (_requestRejectedException == null)
+                {
+                    if (!_connectionAborted)
+                    {
                         // Call ProduceEnd() before consuming the rest of the request body to prevent
                         // delaying clients waiting for the chunk terminator:
                         //
@@ -556,103 +678,136 @@ namespace HtcSharp.HttpModule2.Core.Http {
                         // HttpContext.Response.StatusCode is correctly set when
                         // IHttpContextFactory.Dispose(HttpContext) is called.
                         await ProduceEnd();
-                    } else if (!HasResponseStarted) {
+                    }
+                    else if (!HasResponseStarted)
+                    {
                         // If the request was aborted and no response was sent, there's no
                         // meaningful status code to log.
                         StatusCode = 0;
                     }
                 }
 
-                if (_onCompleted?.Count > 0) {
+                if (_onCompleted?.Count > 0)
+                {
                     await FireOnCompleted();
                 }
 
                 application.DisposeContext(context, _applicationException);
 
                 // Even for non-keep-alive requests, try to consume the entire body to avoid RSTs.
-                if (!_connectionAborted && _requestRejectedException == null && !messageBody.IsEmpty) {
+                if (!_connectionAborted && _requestRejectedException == null && !messageBody.IsEmpty)
+                {
                     await messageBody.ConsumeAsync();
                 }
 
-                if (HasStartedConsumingRequestBody) {
+                if (HasStartedConsumingRequestBody)
+                {
                     await messageBody.StopAsync();
                 }
             }
         }
 
-        public void OnStarting(Func<object, Task> callback, object state) {
-            if (HasResponseStarted) {
+        public void OnStarting(Func<object, Task> callback, object state)
+        {
+            if (HasResponseStarted)
+            {
                 ThrowResponseAlreadyStartedException(nameof(OnStarting));
             }
 
-            if (_onStarting == null) {
+            if (_onStarting == null)
+            {
                 _onStarting = new Stack<KeyValuePair<Func<object, Task>, object>>();
             }
             _onStarting.Push(new KeyValuePair<Func<object, Task>, object>(callback, state));
         }
 
-        public void OnCompleted(Func<object, Task> callback, object state) {
-            if (_onCompleted == null) {
+        public void OnCompleted(Func<object, Task> callback, object state)
+        {
+            if (_onCompleted == null)
+            {
                 _onCompleted = new Stack<KeyValuePair<Func<object, Task>, object>>();
             }
             _onCompleted.Push(new KeyValuePair<Func<object, Task>, object>(callback, state));
         }
 
-        protected Task FireOnStarting() {
+        protected Task FireOnStarting()
+        {
             var onStarting = _onStarting;
 
-            if (onStarting == null || onStarting.Count == 0) {
+            if (onStarting == null || onStarting.Count == 0)
+            {
                 return Task.CompletedTask;
-            } else {
+            }
+            else
+            {
                 return FireOnStartingMayAwait(onStarting);
             }
         }
 
-        private Task FireOnStartingMayAwait(Stack<KeyValuePair<Func<object, Task>, object>> onStarting) {
-            try {
-                while (onStarting.TryPop(out var entry)) {
+        private Task FireOnStartingMayAwait(Stack<KeyValuePair<Func<object, Task>, object>> onStarting)
+        {
+            try
+            {
+                while (onStarting.TryPop(out var entry))
+                {
                     var task = entry.Key.Invoke(entry.Value);
-                    if (!task.IsCompletedSuccessfully) {
+                    if (!task.IsCompletedSuccessfully)
+                    {
                         return FireOnStartingAwaited(task, onStarting);
                     }
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 ReportApplicationError(ex);
             }
 
             return Task.CompletedTask;
         }
 
-        private async Task FireOnStartingAwaited(Task currentTask, Stack<KeyValuePair<Func<object, Task>, object>> onStarting) {
-            try {
+        private async Task FireOnStartingAwaited(Task currentTask, Stack<KeyValuePair<Func<object, Task>, object>> onStarting)
+        {
+            try
+            {
                 await currentTask;
 
-                while (onStarting.TryPop(out var entry)) {
+                while (onStarting.TryPop(out var entry))
+                {
                     await entry.Key.Invoke(entry.Value);
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 ReportApplicationError(ex);
             }
         }
 
-        protected Task FireOnCompleted() {
+        protected Task FireOnCompleted()
+        {
             var onCompleted = _onCompleted;
 
-            if (onCompleted == null || onCompleted.Count == 0) {
+            if (onCompleted == null || onCompleted.Count == 0)
+            {
                 return Task.CompletedTask;
             }
 
             return FireOnCompletedMayAwait(onCompleted);
         }
 
-        private Task FireOnCompletedMayAwait(Stack<KeyValuePair<Func<object, Task>, object>> onCompleted) {
-            while (onCompleted.TryPop(out var entry)) {
-                try {
+        private Task FireOnCompletedMayAwait(Stack<KeyValuePair<Func<object, Task>, object>> onCompleted)
+        {
+            while (onCompleted.TryPop(out var entry))
+            {
+                try
+                {
                     var task = entry.Key.Invoke(entry.Value);
-                    if (!task.IsCompletedSuccessfully) {
+                    if (!task.IsCompletedSuccessfully)
+                    {
                         return FireOnCompletedAwaited(task, onCompleted);
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     ReportApplicationError(ex);
                 }
             }
@@ -660,29 +815,39 @@ namespace HtcSharp.HttpModule2.Core.Http {
             return Task.CompletedTask;
         }
 
-        private async Task FireOnCompletedAwaited(Task currentTask, Stack<KeyValuePair<Func<object, Task>, object>> onCompleted) {
-            try {
+        private async Task FireOnCompletedAwaited(Task currentTask, Stack<KeyValuePair<Func<object, Task>, object>> onCompleted)
+        {
+            try
+            {
                 await currentTask;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Log.ApplicationError(ConnectionId, TraceIdentifier, ex);
             }
 
-            while (onCompleted.TryPop(out var entry)) {
-                try {
+            while (onCompleted.TryPop(out var entry))
+            {
+                try
+                {
                     await entry.Key.Invoke(entry.Value);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Log.ApplicationError(ConnectionId, TraceIdentifier, ex);
                 }
             }
         }
 
-        private void VerifyAndUpdateWrite(int count) {
+        private void VerifyAndUpdateWrite(int count)
+        {
             var responseHeaders = HttpResponseHeaders;
 
             if (responseHeaders != null &&
                 !responseHeaders.HasTransferEncoding &&
                 responseHeaders.ContentLength.HasValue &&
-                _responseBytesWritten + count > responseHeaders.ContentLength.Value) {
+                _responseBytesWritten + count > responseHeaders.ContentLength.Value)
+            {
                 _keepAlive = false;
                 ThrowTooManyBytesWritten(count);
             }
@@ -691,18 +856,21 @@ namespace HtcSharp.HttpModule2.Core.Http {
         }
 
         [StackTraceHidden]
-        private void ThrowTooManyBytesWritten(int count) {
+        private void ThrowTooManyBytesWritten(int count)
+        {
             throw GetTooManyBytesWrittenException(count);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private InvalidOperationException GetTooManyBytesWrittenException(int count) {
+        private InvalidOperationException GetTooManyBytesWrittenException(int count)
+        {
             var responseHeaders = HttpResponseHeaders;
             return new InvalidOperationException(
                 CoreStrings.FormatTooManyBytesWritten(_responseBytesWritten + count, responseHeaders.ContentLength.Value));
         }
 
-        private void CheckLastWrite() {
+        private void CheckLastWrite()
+        {
             var responseHeaders = HttpResponseHeaders;
 
             // Prevent firing request aborted token if this is the last write, to avoid
@@ -713,22 +881,26 @@ namespace HtcSharp.HttpModule2.Core.Http {
             if (responseHeaders != null &&
                 !responseHeaders.HasTransferEncoding &&
                 responseHeaders.ContentLength.HasValue &&
-                _responseBytesWritten == responseHeaders.ContentLength.Value) {
+                _responseBytesWritten == responseHeaders.ContentLength.Value)
+            {
                 PreventRequestAbortedCancellation();
             }
         }
 
-        protected bool VerifyResponseContentLength(out Exception ex) {
+        protected bool VerifyResponseContentLength(out Exception ex)
+        {
             var responseHeaders = HttpResponseHeaders;
 
-            if (Method != HttpMethod.Head &&
+            if (Method != HtcSharp.HttpModule.Core.Http.Http1.HttpMethod.Head &&
                 StatusCode != StatusCodes.Status304NotModified &&
                 !responseHeaders.HasTransferEncoding &&
                 responseHeaders.ContentLength.HasValue &&
-                _responseBytesWritten < responseHeaders.ContentLength.Value) {
+                _responseBytesWritten < responseHeaders.ContentLength.Value)
+            {
                 // We need to close the connection if any bytes were written since the client
                 // cannot be certain of how many bytes it will receive.
-                if (_responseBytesWritten > 0) {
+                if (_responseBytesWritten > 0)
+                {
                     _keepAlive = false;
                 }
 
@@ -741,21 +913,26 @@ namespace HtcSharp.HttpModule2.Core.Http {
             return true;
         }
 
-        public void ProduceContinue() {
-            if (HasResponseStarted) {
+        public void ProduceContinue()
+        {
+            if (HasResponseStarted)
+            {
                 return;
             }
 
-            if (_httpVersion != Http.HttpVersion.Http10 &&
+            if (_httpVersion != HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http10 &&
                 RequestHeaders.TryGetValue(HeaderNames.Expect, out var expect) &&
-                (expect.FirstOrDefault() ?? "").Equals("100-continue", StringComparison.OrdinalIgnoreCase)) {
+                (expect.FirstOrDefault() ?? "").Equals("100-continue", StringComparison.OrdinalIgnoreCase))
+            {
                 Output.Write100ContinueAsync().GetAwaiter().GetResult();
             }
         }
 
-        public Task InitializeResponseAsync(int firstWriteByteCount) {
+        public Task InitializeResponseAsync(int firstWriteByteCount)
+        {
             var startingTask = FireOnStarting();
-            if (!startingTask.IsCompletedSuccessfully) {
+            if (!startingTask.IsCompletedSuccessfully)
+            {
                 return InitializeResponseAwaited(startingTask, firstWriteByteCount);
             }
 
@@ -767,7 +944,8 @@ namespace HtcSharp.HttpModule2.Core.Http {
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public async Task InitializeResponseAwaited(Task startingTask, int firstWriteByteCount) {
+        public async Task InitializeResponseAwaited(Task startingTask, int firstWriteByteCount)
+        {
             await startingTask;
 
             VerifyInitializeState(firstWriteByteCount);
@@ -775,57 +953,68 @@ namespace HtcSharp.HttpModule2.Core.Http {
             ProduceStart(appCompleted: false);
         }
 
-        private HttpResponseHeaders InitializeResponseFirstWrite(int firstWriteByteCount) {
+        private HtcSharp.HttpModule.Core.Http.Http1.HttpResponseHeaders InitializeResponseFirstWrite(int firstWriteByteCount)
+        {
             VerifyInitializeState(firstWriteByteCount);
 
             var responseHeaders = CreateResponseHeaders(appCompleted: false);
 
             // InitializeResponse can only be called if we are just about to Flush the headers
-            _requestProcessingStatus = RequestProcessingStatus.HeadersFlushed;
+            _requestProcessingStatus = HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.HeadersFlushed;
 
             return responseHeaders;
         }
 
-        private void ProduceStart(bool appCompleted) {
-            if (HasResponseStarted) {
+        private void ProduceStart(bool appCompleted)
+        {
+            if (HasResponseStarted)
+            {
                 return;
             }
 
             _isLeasedMemoryInvalid = true;
 
-            _requestProcessingStatus = RequestProcessingStatus.HeadersCommitted;
+            _requestProcessingStatus = HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.HeadersCommitted;
 
             var responseHeaders = CreateResponseHeaders(appCompleted);
 
             Output.WriteResponseHeaders(StatusCode, ReasonPhrase, responseHeaders, _autoChunk, appCompleted);
         }
 
-        private void VerifyInitializeState(int firstWriteByteCount) {
-            if (_applicationException != null) {
+        private void VerifyInitializeState(int firstWriteByteCount)
+        {
+            if (_applicationException != null)
+            {
                 ThrowResponseAbortedException();
             }
 
             VerifyAndUpdateWrite(firstWriteByteCount);
         }
 
-        protected Task TryProduceInvalidRequestResponse() {
+        protected Task TryProduceInvalidRequestResponse()
+        {
             // If _requestAborted is set, the connection has already been closed.
-            if (_requestRejectedException != null && !_connectionAborted) {
+            if (_requestRejectedException != null && !_connectionAborted)
+            {
                 return ProduceEnd();
             }
 
             return Task.CompletedTask;
         }
 
-        protected Task ProduceEnd() {
-            if (HasResponseCompleted) {
+        protected Task ProduceEnd()
+        {
+            if (HasResponseCompleted)
+            {
                 return Task.CompletedTask;
             }
 
             _isLeasedMemoryInvalid = true;
 
-            if (_requestRejectedException != null || _applicationException != null) {
-                if (HasResponseStarted) {
+            if (_requestRejectedException != null || _applicationException != null)
+            {
+                if (HasResponseStarted)
+                {
                     // We can no longer change the response, so we simply close the connection.
                     _keepAlive = false;
                     OnErrorAfterResponseStarted();
@@ -834,69 +1023,83 @@ namespace HtcSharp.HttpModule2.Core.Http {
 
                 // If the request was rejected, the error state has already been set by SetBadRequestState and
                 // that should take precedence.
-                if (_requestRejectedException != null) {
+                if (_requestRejectedException != null)
+                {
                     SetErrorResponseException(_requestRejectedException);
-                } else {
+                }
+                else
+                {
                     // 500 Internal Server Error
                     SetErrorResponseHeaders(statusCode: StatusCodes.Status500InternalServerError);
                 }
             }
 
-            if (!HasResponseStarted) {
+            if (!HasResponseStarted)
+            {
                 ProduceStart(appCompleted: true);
             }
 
             return WriteSuffix();
         }
 
-        private Task WriteSuffix() {
-            if (_autoChunk || _httpVersion == Http.HttpVersion.Http2) {
+        private Task WriteSuffix()
+        {
+            if (_autoChunk || _httpVersion == HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http2)
+            {
                 // For the same reason we call CheckLastWrite() in Content-Length responses.
                 PreventRequestAbortedCancellation();
             }
 
             var writeTask = Output.WriteStreamSuffixAsync();
 
-            if (!writeTask.IsCompletedSuccessfully) {
+            if (!writeTask.IsCompletedSuccessfully)
+            {
                 return WriteSuffixAwaited(writeTask);
             }
 
-            _requestProcessingStatus = RequestProcessingStatus.ResponseCompleted;
+            _requestProcessingStatus = HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.ResponseCompleted;
 
-            if (_keepAlive) {
+            if (_keepAlive)
+            {
                 Log.ConnectionKeepAlive(ConnectionId);
             }
 
-            if (Method == HttpMethod.Head && _responseBytesWritten > 0) {
+            if (Method == HtcSharp.HttpModule.Core.Http.Http1.HttpMethod.Head && _responseBytesWritten > 0)
+            {
                 Log.ConnectionHeadResponseBodyWrite(ConnectionId, _responseBytesWritten);
             }
 
             return Task.CompletedTask;
         }
 
-        private async Task WriteSuffixAwaited(ValueTask<FlushResult> writeTask) {
-            _requestProcessingStatus = RequestProcessingStatus.HeadersFlushed;
+        private async Task WriteSuffixAwaited(ValueTask<FlushResult> writeTask)
+        {
+            _requestProcessingStatus = HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.HeadersFlushed;
 
             await writeTask;
 
-            _requestProcessingStatus = RequestProcessingStatus.ResponseCompleted;
+            _requestProcessingStatus = HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.ResponseCompleted;
 
-            if (_keepAlive) {
+            if (_keepAlive)
+            {
                 Log.ConnectionKeepAlive(ConnectionId);
             }
 
-            if (Method == HttpMethod.Head && _responseBytesWritten > 0) {
+            if (Method == HtcSharp.HttpModule.Core.Http.Http1.HttpMethod.Head && _responseBytesWritten > 0)
+            {
                 Log.ConnectionHeadResponseBodyWrite(ConnectionId, _responseBytesWritten);
             }
         }
 
-        private HttpResponseHeaders CreateResponseHeaders(bool appCompleted) {
+        private HtcSharp.HttpModule.Core.Http.Http1.HttpResponseHeaders CreateResponseHeaders(bool appCompleted)
+        {
             var responseHeaders = HttpResponseHeaders;
             var hasConnection = responseHeaders.HasConnection;
             var connectionOptions = HttpHeaders.ParseConnection(responseHeaders.HeaderConnection);
             var hasTransferEncoding = responseHeaders.HasTransferEncoding;
 
-            if (_keepAlive && hasConnection && (connectionOptions & ConnectionOptions.KeepAlive) != ConnectionOptions.KeepAlive) {
+            if (_keepAlive && hasConnection && (connectionOptions & HtcSharp.HttpModule.Core.Http.Http1.ConnectionOptions.KeepAlive) != HtcSharp.HttpModule.Core.Http.Http1.ConnectionOptions.KeepAlive)
+            {
                 _keepAlive = false;
             }
 
@@ -906,60 +1109,76 @@ namespace HtcSharp.HttpModule2.Core.Http {
             // apply chunked as the final transfer coding or terminate the message
             // by closing the connection.
             if (hasTransferEncoding &&
-                HttpHeaders.GetFinalTransferCoding(responseHeaders.HeaderTransferEncoding) != TransferCoding.Chunked) {
+                HttpHeaders.GetFinalTransferCoding(responseHeaders.HeaderTransferEncoding) != HtcSharp.HttpModule.Core.Http.Http1.TransferCoding.Chunked)
+            {
                 _keepAlive = false;
             }
 
             // Set whether response can have body
             _canWriteResponseBody = CanWriteResponseBody();
 
-            if (!_canWriteResponseBody && hasTransferEncoding) {
+            if (!_canWriteResponseBody && hasTransferEncoding)
+            {
                 RejectNonBodyTransferEncodingResponse(appCompleted);
-            } else if (!hasTransferEncoding && !responseHeaders.ContentLength.HasValue) {
-                if (StatusCode == StatusCodes.Status101SwitchingProtocols) {
+            }
+            else if (!hasTransferEncoding && !responseHeaders.ContentLength.HasValue)
+            {
+                if (StatusCode == StatusCodes.Status101SwitchingProtocols)
+                {
                     _keepAlive = false;
-                } else if ((appCompleted || !_canWriteResponseBody) && !_hasAdvanced) // Avoid setting contentLength of 0 if we wrote data before calling CreateResponseHeaders
-                  {
+                }
+                else if ((appCompleted || !_canWriteResponseBody) && !_hasAdvanced) // Avoid setting contentLength of 0 if we wrote data before calling CreateResponseHeaders
+                {
                     // Don't set the Content-Length header automatically for HEAD requests, 204 responses, or 304 responses.
-                    if (CanAutoSetContentLengthZeroResponseHeader()) {
+                    if (CanAutoSetContentLengthZeroResponseHeader())
+                    {
                         // Since the app has completed writing or cannot write to the response, we can safely set the Content-Length to 0.
                         responseHeaders.ContentLength = 0;
                     }
                 }
-                  // Note for future reference: never change this to set _autoChunk to true on HTTP/1.0
-                  // connections, even if we were to infer the client supports it because an HTTP/1.0 request
-                  // was received that used chunked encoding. Sending a chunked response to an HTTP/1.0
-                  // client would break compliance with RFC 7230 (section 3.3.1):
-                  //
-                  // A server MUST NOT send a response containing Transfer-Encoding unless the corresponding
-                  // request indicates HTTP/1.1 (or later).
-                  //
-                  // This also covers HTTP/2, which forbids chunked encoding in RFC 7540 (section 8.1:
-                  //
-                  // The chunked transfer encoding defined in Section 4.1 of [RFC7230] MUST NOT be used in HTTP/2.
-                  else if (_httpVersion == Http.HttpVersion.Http11) {
+                // Note for future reference: never change this to set _autoChunk to true on HTTP/1.0
+                // connections, even if we were to infer the client supports it because an HTTP/1.0 request
+                // was received that used chunked encoding. Sending a chunked response to an HTTP/1.0
+                // client would break compliance with RFC 7230 (section 3.3.1):
+                //
+                // A server MUST NOT send a response containing Transfer-Encoding unless the corresponding
+                // request indicates HTTP/1.1 (or later).
+                //
+                // This also covers HTTP/2, which forbids chunked encoding in RFC 7540 (section 8.1:
+                //
+                // The chunked transfer encoding defined in Section 4.1 of [RFC7230] MUST NOT be used in HTTP/2.
+                else if (_httpVersion == HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http11)
+                {
                     _autoChunk = true;
                     responseHeaders.SetRawTransferEncoding("chunked", _bytesTransferEncodingChunked);
-                } else {
+                }
+                else
+                {
                     _keepAlive = false;
                 }
             }
 
             responseHeaders.SetReadOnly();
 
-            if (!hasConnection && _httpVersion != Http.HttpVersion.Http2) {
-                if (!_keepAlive) {
+            if (!hasConnection && _httpVersion != HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http2)
+            {
+                if (!_keepAlive)
+                {
                     responseHeaders.SetRawConnection("close", _bytesConnectionClose);
-                } else if (_httpVersion == Http.HttpVersion.Http10) {
+                }
+                else if (_httpVersion == HtcSharp.HttpModule.Core.Http.Http1.HttpVersion.Http10)
+                {
                     responseHeaders.SetRawConnection("keep-alive", _bytesConnectionKeepAlive);
                 }
             }
 
-            if (ServerOptions.AddServerHeader && !responseHeaders.HasServer) {
+            if (ServerOptions.AddServerHeader && !responseHeaders.HasServer)
+            {
                 responseHeaders.SetRawServer(Constants.ServerName, _bytesServer);
             }
 
-            if (!responseHeaders.HasDate) {
+            if (!responseHeaders.HasDate)
+            {
                 var dateHeaderValues = DateHeaderValueManager.GetDateHeaderValues();
                 responseHeaders.SetRawDate(dateHeaderValues.String, dateHeaderValues.Bytes);
             }
@@ -967,31 +1186,38 @@ namespace HtcSharp.HttpModule2.Core.Http {
             return responseHeaders;
         }
 
-        private bool CanWriteResponseBody() {
+        private bool CanWriteResponseBody()
+        {
             // List of status codes taken from Microsoft.Net.Http.Server.Response
-            return Method != HttpMethod.Head &&
+            return Method != HtcSharp.HttpModule.Core.Http.Http1.HttpMethod.Head &&
                    StatusCode != StatusCodes.Status204NoContent &&
                    StatusCode != StatusCodes.Status205ResetContent &&
                    StatusCode != StatusCodes.Status304NotModified;
         }
 
-        private bool CanAutoSetContentLengthZeroResponseHeader() {
-            return Method != HttpMethod.Head &&
+        private bool CanAutoSetContentLengthZeroResponseHeader()
+        {
+            return Method != HtcSharp.HttpModule.Core.Http.Http1.HttpMethod.Head &&
                    StatusCode != StatusCodes.Status204NoContent &&
                    StatusCode != StatusCodes.Status304NotModified;
         }
 
-        private static void ThrowResponseAlreadyStartedException(string value) {
+        private static void ThrowResponseAlreadyStartedException(string value)
+        {
             throw new InvalidOperationException(CoreStrings.FormatParameterReadOnlyAfterResponseStarted(value));
         }
 
-        private void RejectNonBodyTransferEncodingResponse(bool appCompleted) {
+        private void RejectNonBodyTransferEncodingResponse(bool appCompleted)
+        {
             var ex = new InvalidOperationException(CoreStrings.FormatHeaderNotAllowedOnResponse("Transfer-Encoding", StatusCode));
-            if (!appCompleted) {
+            if (!appCompleted)
+            {
                 // Back out of header creation surface exception in user code
-                _requestProcessingStatus = RequestProcessingStatus.AppStarted;
+                _requestProcessingStatus = HtcSharp.HttpModule.Core.Http.Http1.RequestProcessingStatus.AppStarted;
                 throw ex;
-            } else {
+            }
+            else
+            {
                 ReportApplicationError(ex);
 
                 // 500 Internal Server Error
@@ -999,15 +1225,18 @@ namespace HtcSharp.HttpModule2.Core.Http {
             }
         }
 
-        private void SetErrorResponseException(BadHttpRequestException ex) {
+        private void SetErrorResponseException(BadHttpRequestException ex)
+        {
             SetErrorResponseHeaders(ex.StatusCode);
 
-            if (!StringValues.IsNullOrEmpty(ex.AllowedHeader)) {
+            if (!StringValues.IsNullOrEmpty(ex.AllowedHeader))
+            {
                 HttpResponseHeaders.HeaderAllow = ex.AllowedHeader;
             }
         }
 
-        private void SetErrorResponseHeaders(int statusCode) {
+        private void SetErrorResponseHeaders(int statusCode)
+        {
             Debug.Assert(!HasResponseStarted, $"{nameof(SetErrorResponseHeaders)} called after response had already started.");
 
             StatusCode = statusCode;
@@ -1022,26 +1251,31 @@ namespace HtcSharp.HttpModule2.Core.Http {
 
             responseHeaders.ContentLength = 0;
 
-            if (ServerOptions.AddServerHeader) {
+            if (ServerOptions.AddServerHeader)
+            {
                 responseHeaders.SetRawServer(Constants.ServerName, _bytesServer);
             }
         }
 
-        public void HandleNonBodyResponseWrite() {
+        public void HandleNonBodyResponseWrite()
+        {
             // Writes to HEAD response are ignored and logged at the end of the request
-            if (Method != HttpMethod.Head) {
+            if (Method != HtcSharp.HttpModule.Core.Http.Http1.HttpMethod.Head)
+            {
                 ThrowWritingToResponseBodyNotSupported();
             }
         }
 
         [StackTraceHidden]
-        private void ThrowWritingToResponseBodyNotSupported() {
+        private void ThrowWritingToResponseBodyNotSupported()
+        {
             // Throw Exception for 204, 205, 304 responses.
             throw new InvalidOperationException(CoreStrings.FormatWritingToResponseBodyNotSupported(StatusCode));
         }
 
         [StackTraceHidden]
-        private void ThrowResponseAbortedException() {
+        private void ThrowResponseAbortedException()
+        {
             throw new ObjectDisposedException(CoreStrings.UnhandledApplicationException, _applicationException);
         }
 
@@ -1052,15 +1286,17 @@ namespace HtcSharp.HttpModule2.Core.Http {
         [MethodImpl(MethodImplOptions.NoInlining)]
         private BadHttpRequestException GetInvalidRequestTargetException(Span<byte> target)
             => BadHttpRequestException.GetException(
-                RequestRejectionReason.InvalidRequestTarget,
+                HtcSharp.HttpModule.Core.Http.Http1.RequestRejectionReason.InvalidRequestTarget,
                 Log.IsEnabled(LogLevel.Information)
-                    ? HttpUtilities.GetAsciiStringEscaped(target, Constants.MaxExceptionDetailSize)
+                    ? target.GetAsciiStringEscaped(Constants.MaxExceptionDetailSize)
                     : string.Empty);
 
-        public void SetBadRequestState(BadHttpRequestException ex) {
+        public void SetBadRequestState(BadHttpRequestException ex)
+        {
             Log.ConnectionBadRequest(ConnectionId, ex);
 
-            if (!HasResponseStarted) {
+            if (!HasResponseStarted)
+            {
                 SetErrorResponseException(ex);
             }
 
@@ -1068,38 +1304,53 @@ namespace HtcSharp.HttpModule2.Core.Http {
             _requestRejectedException = ex;
         }
 
-        public void ReportApplicationError(Exception ex) {
+        public void ReportApplicationError(Exception ex)
+        {
             // ReportApplicationError can be called with a null exception from MessageBody
-            if (ex == null) {
+            if (ex == null)
+            {
                 return;
             }
 
-            if (_applicationException == null) {
+            if (_applicationException == null)
+            {
                 _applicationException = ex;
-            } else if (_applicationException is AggregateException) {
+            }
+            else if (_applicationException is AggregateException)
+            {
                 _applicationException = new AggregateException(_applicationException, ex).Flatten();
-            } else {
+            }
+            else
+            {
                 _applicationException = new AggregateException(_applicationException, ex);
             }
 
             Log.ApplicationError(ConnectionId, TraceIdentifier, ex);
         }
 
-        public void Advance(int bytes) {
-            if (bytes < 0) {
+        public void Advance(int bytes)
+        {
+            if (bytes < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(bytes));
-            } else if (bytes > 0) {
+            }
+            else if (bytes > 0)
+            {
                 _hasAdvanced = true;
             }
 
-            if (_isLeasedMemoryInvalid) {
+            if (_isLeasedMemoryInvalid)
+            {
                 throw new InvalidOperationException("Invalid ordering of calling StartAsync or CompleteAsync and Advance.");
             }
 
-            if (_canWriteResponseBody) {
+            if (_canWriteResponseBody)
+            {
                 VerifyAndUpdateWrite(bytes);
                 Output.Advance(bytes);
-            } else {
+            }
+            else
+            {
                 HandleNonBodyResponseWrite();
                 // For HEAD requests, we still use the number of bytes written for logging
                 // how many bytes were written.
@@ -1107,20 +1358,25 @@ namespace HtcSharp.HttpModule2.Core.Http {
             }
         }
 
-        public Memory<byte> GetMemory(int sizeHint = 0) {
+        public Memory<byte> GetMemory(int sizeHint = 0)
+        {
             _isLeasedMemoryInvalid = false;
             return Output.GetMemory(sizeHint);
         }
 
-        public Span<byte> GetSpan(int sizeHint = 0) {
+        public Span<byte> GetSpan(int sizeHint = 0)
+        {
             _isLeasedMemoryInvalid = false;
             return Output.GetSpan(sizeHint);
         }
 
-        public ValueTask<FlushResult> FlushPipeAsync(CancellationToken cancellationToken) {
-            if (!HasResponseStarted) {
+        public ValueTask<FlushResult> FlushPipeAsync(CancellationToken cancellationToken)
+        {
+            if (!HasResponseStarted)
+            {
                 var initializeTask = InitializeResponseAsync(0);
-                if (!initializeTask.IsCompletedSuccessfully) {
+                if (!initializeTask.IsCompletedSuccessfully)
+                {
                     return FlushAsyncAwaited(initializeTask, cancellationToken);
                 }
             }
@@ -1128,31 +1384,39 @@ namespace HtcSharp.HttpModule2.Core.Http {
             return Output.FlushAsync(cancellationToken);
         }
 
-        public void CancelPendingFlush() {
+        public void CancelPendingFlush()
+        {
             Output.CancelPendingFlush();
         }
 
-        public Task CompleteAsync(Exception exception = null) {
-            if (exception != null) {
+        public Task CompleteAsync(Exception exception = null)
+        {
+            if (exception != null)
+            {
                 var wrappedException = new ConnectionAbortedException("The BodyPipe was completed with an exception.", exception);
                 ReportApplicationError(wrappedException);
 
-                if (HasResponseStarted) {
+                if (HasResponseStarted)
+                {
                     ApplicationAbort();
                 }
             }
 
             // Finalize headers
-            if (!HasResponseStarted) {
+            if (!HasResponseStarted)
+            {
                 var onStartingTask = FireOnStarting();
-                if (!onStartingTask.IsCompletedSuccessfully) {
+                if (!onStartingTask.IsCompletedSuccessfully)
+                {
                     return CompleteAsyncAwaited(onStartingTask);
                 }
             }
 
             // Flush headers, body, trailers...
-            if (!HasResponseCompleted) {
-                if (!VerifyResponseContentLength(out var lengthException)) {
+            if (!HasResponseCompleted)
+            {
+                if (!VerifyResponseContentLength(out var lengthException))
+                {
                     // Try to throw this exception from CompleteAsync() instead of CompleteAsyncAwaited() if possible,
                     // so it can be observed by BodyWriter.Complete(). If this isn't possible because an
                     // async OnStarting callback hadn't yet run, it's OK, since the Exception will be observed with
@@ -1166,11 +1430,14 @@ namespace HtcSharp.HttpModule2.Core.Http {
             return Task.CompletedTask;
         }
 
-        private async Task CompleteAsyncAwaited(Task onStartingTask) {
+        private async Task CompleteAsyncAwaited(Task onStartingTask)
+        {
             await onStartingTask;
 
-            if (!HasResponseCompleted) {
-                if (!VerifyResponseContentLength(out var lengthException)) {
+            if (!HasResponseCompleted)
+            {
+                if (!VerifyResponseContentLength(out var lengthException))
+                {
                     ThrowException(lengthException);
                 }
 
@@ -1179,105 +1446,139 @@ namespace HtcSharp.HttpModule2.Core.Http {
         }
 
         [StackTraceHidden]
-        private static void ThrowException(Exception exception) {
+        private static void ThrowException(Exception exception)
+        {
             throw exception;
         }
 
-        public ValueTask<FlushResult> WritePipeAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken) {
+        public ValueTask<FlushResult> WritePipeAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken)
+        {
             // For the first write, ensure headers are flushed if WriteDataAsync isn't called.
-            if (!HasResponseStarted) {
+            if (!HasResponseStarted)
+            {
                 return FirstWriteAsync(data, cancellationToken);
-            } else {
+            }
+            else
+            {
                 VerifyAndUpdateWrite(data.Length);
             }
 
-            if (_canWriteResponseBody) {
-                if (_autoChunk) {
-                    if (data.Length == 0) {
+            if (_canWriteResponseBody)
+            {
+                if (_autoChunk)
+                {
+                    if (data.Length == 0)
+                    {
                         return default;
                     }
 
                     return Output.WriteChunkAsync(data.Span, cancellationToken);
-                } else {
+                }
+                else
+                {
                     CheckLastWrite();
                     return Output.WriteDataToPipeAsync(data.Span, cancellationToken: cancellationToken);
                 }
-            } else {
+            }
+            else
+            {
                 HandleNonBodyResponseWrite();
                 return default;
             }
         }
 
-        private ValueTask<FlushResult> FirstWriteAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken) {
+        private ValueTask<FlushResult> FirstWriteAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken)
+        {
             Debug.Assert(!HasResponseStarted);
 
             var startingTask = FireOnStarting();
-            if (!startingTask.IsCompletedSuccessfully) {
+            if (!startingTask.IsCompletedSuccessfully)
+            {
                 return FirstWriteAsyncAwaited(startingTask, data, cancellationToken);
             }
 
             return FirstWriteAsyncInternal(data, cancellationToken);
         }
 
-        private async ValueTask<FlushResult> FirstWriteAsyncAwaited(Task initializeTask, ReadOnlyMemory<byte> data, CancellationToken cancellationToken) {
+        private async ValueTask<FlushResult> FirstWriteAsyncAwaited(Task initializeTask, ReadOnlyMemory<byte> data, CancellationToken cancellationToken)
+        {
             await initializeTask;
 
             return await FirstWriteAsyncInternal(data, cancellationToken);
         }
 
-        private ValueTask<FlushResult> FirstWriteAsyncInternal(ReadOnlyMemory<byte> data, CancellationToken cancellationToken) {
+        private ValueTask<FlushResult> FirstWriteAsyncInternal(ReadOnlyMemory<byte> data, CancellationToken cancellationToken)
+        {
             var responseHeaders = InitializeResponseFirstWrite(data.Length);
 
-            if (_canWriteResponseBody) {
-                if (_autoChunk) {
-                    if (data.Length == 0) {
+            if (_canWriteResponseBody)
+            {
+                if (_autoChunk)
+                {
+                    if (data.Length == 0)
+                    {
                         Output.WriteResponseHeaders(StatusCode, ReasonPhrase, responseHeaders, _autoChunk, appCompleted: false);
                         return Output.FlushAsync(cancellationToken);
                     }
 
                     return Output.FirstWriteChunkedAsync(StatusCode, ReasonPhrase, responseHeaders, _autoChunk, data.Span, cancellationToken);
-                } else {
+                }
+                else
+                {
                     CheckLastWrite();
                     return Output.FirstWriteAsync(StatusCode, ReasonPhrase, responseHeaders, _autoChunk, data.Span, cancellationToken);
                 }
-            } else {
+            }
+            else
+            {
                 Output.WriteResponseHeaders(StatusCode, ReasonPhrase, responseHeaders, _autoChunk, appCompleted: false);
                 HandleNonBodyResponseWrite();
                 return Output.FlushAsync(cancellationToken);
             }
         }
 
-        public Task FlushAsync(CancellationToken cancellationToken = default) {
+        public Task FlushAsync(CancellationToken cancellationToken = default)
+        {
             return FlushPipeAsync(cancellationToken).GetAsTask();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private async ValueTask<FlushResult> FlushAsyncAwaited(Task initializeTask, CancellationToken cancellationToken) {
+        private async ValueTask<FlushResult> FlushAsyncAwaited(Task initializeTask, CancellationToken cancellationToken)
+        {
             await initializeTask;
             return await Output.FlushAsync(cancellationToken);
         }
 
-        public Task WriteAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default) {
+        public Task WriteAsync(ReadOnlyMemory<byte> data, CancellationToken cancellationToken = default)
+        {
             return WritePipeAsync(data, cancellationToken).GetAsTask();
         }
 
-        public async ValueTask<FlushResult> WriteAsyncAwaited(Task initializeTask, ReadOnlyMemory<byte> data, CancellationToken cancellationToken) {
+        public async ValueTask<FlushResult> WriteAsyncAwaited(Task initializeTask, ReadOnlyMemory<byte> data, CancellationToken cancellationToken)
+        {
             await initializeTask;
 
             // WriteAsyncAwaited is only called for the first write to the body.
             // Ensure headers are flushed if Write(Chunked)Async isn't called.
-            if (_canWriteResponseBody) {
-                if (_autoChunk) {
-                    if (data.Length == 0) {
+            if (_canWriteResponseBody)
+            {
+                if (_autoChunk)
+                {
+                    if (data.Length == 0)
+                    {
                         return await Output.FlushAsync(cancellationToken);
                     }
 
                     return await Output.WriteChunkAsync(data.Span, cancellationToken);
-                } else {
+                }
+                else
+                {
                     CheckLastWrite();
                     return await Output.WriteDataToPipeAsync(data.Span, cancellationToken: cancellationToken);
                 }
-            } else {
+            }
+            else
+            {
                 HandleNonBodyResponseWrite();
                 return await Output.FlushAsync(cancellationToken);
             }

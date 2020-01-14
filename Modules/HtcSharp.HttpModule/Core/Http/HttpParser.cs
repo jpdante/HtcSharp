@@ -8,7 +8,7 @@ using HtcSharp.HttpModule.Interface;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
 // ReSharper disable InconsistentNaming
-namespace HtcSharp.HttpModule.Http {
+namespace HtcSharp.HttpModule.Core.Http {
     public class HttpParser {
         private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -49,7 +49,7 @@ namespace HtcSharp.HttpModule.Http {
         private unsafe void ParseRequestLine(IParserRequestHandler handler, byte* data, int length) {
             var method = HttpConverter.GetHttpMethod(data, length, out var pathStartOffset);
             Span<byte> customMethod = default;
-            if (method == HttpMethod.CUSTOM) {
+            if (method == HttpMethod.Custom) {
                 customMethod = GetUnknownMethod(data, length, out pathStartOffset);
             }
             var offset = pathStartOffset + 1;
@@ -89,7 +89,7 @@ namespace HtcSharp.HttpModule.Http {
             var query = new Span<byte>(data + queryStart, offset - queryStart);
             offset++;
             var httpVersion = HttpConverter.GetKnownVersion(data + offset, length - offset);
-            if (httpVersion == HttpVersion.UNKNOWN) {
+            if (httpVersion == HttpVersion.Unknown) {
                 if (data[offset] == ByteCR || data[length - 2] != ByteCR) {
                     RejectRequestLine(data, length);
                 } else {

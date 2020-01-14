@@ -1,4 +1,12 @@
-﻿namespace HtcSharp.HttpModule2.Core.Http {
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using HtcSharp.HttpModule2.Core.Infrastructure;
+using HtcSharp.HttpModule2.Shared;
+
+namespace HtcSharp.HttpModule2.Core.Http {
     internal abstract class HttpHeaders : IHeaderDictionary {
         protected long _bits = 0;
         protected long? _contentLength;
@@ -50,7 +58,7 @@
         }
 
         protected static void ThrowHeadersReadOnlyException() {
-            throw new InvalidOperationException(CoreStrings.HeadersAreReadOnly);
+            throw new InvalidOperationException("Headers are read-only, response has already started.");
         }
 
         protected static void ThrowArgumentException() {
@@ -62,7 +70,7 @@
         }
 
         protected static void ThrowDuplicateKeyException() {
-            throw new ArgumentException(CoreStrings.KeyAlreadyExists);
+            throw new ArgumentException("An item with the same key has already been added.");
         }
 
         public int Count => GetCountFast();
@@ -202,7 +210,6 @@
 
         public static unsafe ConnectionOptions ParseConnection(StringValues connection) {
             var connectionOptions = ConnectionOptions.None;
-
             var connectionCount = connection.Count;
             for (var i = 0; i < connectionCount; i++) {
                 var value = connection[i];

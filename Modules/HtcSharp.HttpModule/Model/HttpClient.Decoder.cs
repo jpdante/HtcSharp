@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Core.Http;
 using HtcSharp.HttpModule.Model.Http;
 using HtcSharp.HttpModule.Model.Http.Enum;
 
@@ -34,38 +35,38 @@ namespace HtcSharp.HttpModule.Model {
                             };
                             switch (httpVersionArgs[2]) {
                                 case "HTTP/1.0":
-                                    _owner._httpRequest.HttpVersion = HttpVersion.HTTP_1_0;
+                                    _owner._httpRequest.HttpVersion = HttpVersion.Http10;
                                     break;
                                 case "HTTP/1.1":
-                                    _owner._httpRequest.HttpVersion = HttpVersion.HTTP_1_1;
+                                    _owner._httpRequest.HttpVersion = HttpVersion.Http11;
                                     break;
                                 case "HTTP/2.0":
-                                    _owner._httpRequest.HttpVersion = HttpVersion.HTTP_2_0;
+                                    _owner._httpRequest.HttpVersion = HttpVersion.Http2;
                                     break;
                                 default:
                                     throw new Exception("Unknown protocol version / type");
                             }
                             switch (httpVersionArgs[0]) {
                                 case "GET":
-                                    _owner._httpRequest.Method = RequestMethod.GET;
+                                    _owner._httpRequest.Method = HttpMethod.Get;
                                     break;
                                 case "HEAD":
-                                    _owner._httpRequest.Method = RequestMethod.HEAD;
+                                    _owner._httpRequest.Method = HttpMethod.Head;
                                     break;
                                 case "POST":
-                                    _owner._httpRequest.Method = RequestMethod.POST;
+                                    _owner._httpRequest.Method = HttpMethod.Post;
                                     break;
                                 case "OPTIONS":
-                                    _owner._httpRequest.Method = RequestMethod.OPTIONS;
+                                    _owner._httpRequest.Method = HttpMethod.Options;
                                     break;
                                 case "DELETE":
-                                    _owner._httpRequest.Method = RequestMethod.DELETE;
+                                    _owner._httpRequest.Method = HttpMethod.Delete;
                                     break;
                                 case "TRACE":
-                                    _owner._httpRequest.Method = RequestMethod.TRACE;
+                                    _owner._httpRequest.Method = HttpMethod.Trace;
                                     break;
                                 case "CONNECT":
-                                    _owner._httpRequest.Method = RequestMethod.CONNECT;
+                                    _owner._httpRequest.Method = HttpMethod.Connect;
                                     break;
                                 default:
                                     throw new Exception("Unknown request type");
@@ -81,13 +82,13 @@ namespace HtcSharp.HttpModule.Model {
                         } else {
                             if (stringBuilder.ToString() == "\r\n") break;
                             switch (_owner._httpRequest.HttpVersion) {
-                                case HttpVersion.HTTP_1_0:
+                                case HttpVersion.Http10:
                                     DecodeProtocolHttp1_0(stringBuilder.ToString().Substring(0, stringBuilder.Length - 2));
                                     break;
-                                case HttpVersion.HTTP_1_1:
+                                case HttpVersion.Http11:
                                     DecodeProtocolHttp1_1(stringBuilder.ToString().Substring(0, stringBuilder.Length - 2));
                                     break;
-                                case HttpVersion.HTTP_2_0:
+                                case HttpVersion.Http2:
                                     DecodeProtocolHttp2_0(stringBuilder.ToString().Substring(0, stringBuilder.Length - 2));
                                     break;
                                 default:

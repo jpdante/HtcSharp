@@ -4,14 +4,14 @@ using System.Runtime.CompilerServices;
 namespace HtcSharp.HttpModule.Helpers {
     internal static class HttpCharacters {
         private static readonly int _tableSize = 128;
-        private static readonly bool[] AlphaNumeric = InitializeAlphaNumeric();
-        private static readonly bool[] Authority = InitializeAuthority();
-        private static readonly bool[] Token = InitializeToken();
-        private static readonly bool[] Host = InitializeHost();
-        private static readonly bool[] FieldValue = InitializeFieldValue();
+        private static readonly bool[] _alphaNumeric = InitializeAlphaNumeric();
+        private static readonly bool[] _authority = InitializeAuthority();
+        private static readonly bool[] _token = InitializeToken();
+        private static readonly bool[] _host = InitializeHost();
+        private static readonly bool[] _fieldValue = InitializeFieldValue();
 
         internal static void Initialize() {
-            var initialize = AlphaNumeric;
+            var initialize = _alphaNumeric;
         }
 
         private static bool[] InitializeAlphaNumeric() {
@@ -30,7 +30,7 @@ namespace HtcSharp.HttpModule.Helpers {
 
         private static bool[] InitializeAuthority() {
             var authority = new bool[_tableSize];
-            Array.Copy(AlphaNumeric, authority, _tableSize);
+            Array.Copy(_alphaNumeric, authority, _tableSize);
             authority[':'] = true;
             authority['.'] = true;
             authority['['] = true;
@@ -41,7 +41,7 @@ namespace HtcSharp.HttpModule.Helpers {
 
         private static bool[] InitializeToken() {
             var token = new bool[_tableSize];
-            Array.Copy(AlphaNumeric, token, _tableSize);
+            Array.Copy(_alphaNumeric, token, _tableSize);
             token['!'] = true;
             token['#'] = true;
             token['$'] = true;
@@ -62,7 +62,7 @@ namespace HtcSharp.HttpModule.Helpers {
 
         private static bool[] InitializeHost() {
             var host = new bool[_tableSize];
-            Array.Copy(AlphaNumeric, host, _tableSize);
+            Array.Copy(_alphaNumeric, host, _tableSize);
             host['!'] = true;
             host['$'] = true;
             host['&'] = true;
@@ -86,7 +86,7 @@ namespace HtcSharp.HttpModule.Helpers {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ContainsInvalidAuthorityChar(Span<byte> s) {
-            var authority = Authority;
+            var authority = _authority;
             foreach (var c in s) {
                 if (c >= (uint)authority.Length || !authority[c]) {
                     return true;
@@ -97,7 +97,7 @@ namespace HtcSharp.HttpModule.Helpers {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfInvalidHostChar(string s) {
-            var host = Host;
+            var host = _host;
             for (var i = 0; i < s.Length; i++) {
                 var c = s[i];
                 if (c >= (uint)host.Length || !host[c]) {
@@ -109,7 +109,7 @@ namespace HtcSharp.HttpModule.Helpers {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfInvalidTokenChar(string s) {
-            var token = Token;
+            var token = _token;
             for (var i = 0; i < s.Length; i++) {
                 var c = s[i];
                 if (c >= (uint)token.Length || !token[c]) {
@@ -122,7 +122,7 @@ namespace HtcSharp.HttpModule.Helpers {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // ReSharper disable once ArrangeModifiersOrder
         public unsafe static int IndexOfInvalidTokenChar(byte* s, int length) {
-            var token = Token;
+            var token = _token;
             for (var i = 0; i < length; i++) {
                 var c = s[i];
                 if (c >= (uint)token.Length || !token[c]) {
@@ -134,7 +134,7 @@ namespace HtcSharp.HttpModule.Helpers {
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int IndexOfInvalidFieldValueChar(string s) {
-            var fieldValue = FieldValue;
+            var fieldValue = _fieldValue;
 
             for (var i = 0; i < s.Length; i++) {
                 var c = s[i];

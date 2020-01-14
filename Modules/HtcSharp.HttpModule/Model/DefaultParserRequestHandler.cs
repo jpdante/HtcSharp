@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using HtcSharp.Core.Logging;
-using HtcSharp.HttpModule.Http;
+using HtcSharp.HttpModule.Core.Http;
 using HtcSharp.HttpModule.Interface;
 
 namespace HtcSharp.HttpModule.Model {

@@ -1,5 +1,5 @@
 ﻿using System;
-using HtcSharp.HttpModule.Http;
+using HtcSharp.HttpModule.Core.Http;
 
 namespace HtcSharp.HttpModule.Interface {
     public interface IParserRequestHandler {
