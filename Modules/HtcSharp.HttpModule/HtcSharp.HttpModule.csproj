@@ -17,7 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Core\Http\Http1\" />
       <Folder Include="Core\Http\Http2\" />
+      <Folder Include="Core\Features\" />
     </ItemGroup>
 	
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
