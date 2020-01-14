@@ -1,4 +1,9 @@
-﻿namespace HtcSharp.HttpModule.Core.Http.Http {
+﻿using System;
+using System.IO.Pipelines;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace HtcSharp.HttpModule.Core.Http.Http {
     internal abstract class MessageBody {
         private static readonly MessageBody _zeroContentLengthClose = new ZeroContentLengthMessageBody(keepAlive: false);
         private static readonly MessageBody _zeroContentLengthKeepAlive = new ZeroContentLengthMessageBody(keepAlive: true);
