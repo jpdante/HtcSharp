@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace HtcSharp.HttpModule.Core.Http.Http2 {
+namespace HtcSharp.HttpModule.Core.Http.Http2.FlowControl {
     internal struct FlowControl {
         public FlowControl(uint initialWindowSize) {
             Debug.Assert(initialWindowSize <= Http2PeerSettings.MaxWindowSize, $"{nameof(initialWindowSize)} too large.");
