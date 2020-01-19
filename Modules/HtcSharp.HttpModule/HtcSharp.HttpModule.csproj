@@ -31,6 +31,10 @@
         <LastGenOutput>CoreStrings.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Properties\" />
+    </ItemGroup>
 	
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
       <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(TargetPath) $(TargetFileName)" />

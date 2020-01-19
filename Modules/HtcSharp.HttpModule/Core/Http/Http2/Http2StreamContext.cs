@@ -1,4 +1,6 @@
-﻿namespace HtcSharp.HttpModule.Core.Http.Http2 {
+﻿using HtcSharp.HttpModule.Core.Http.Http2.FlowControl;
+
+namespace HtcSharp.HttpModule.Core.Http.Http2 {
     internal sealed class Http2StreamContext : HttpConnectionContext {
         public int StreamId { get; set; }
         public IHttp2StreamLifetimeHandler StreamLifetimeHandler { get; set; }

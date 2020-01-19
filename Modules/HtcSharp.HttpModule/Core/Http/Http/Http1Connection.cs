@@ -24,7 +24,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         private volatile bool _requestTimedOut;
         private uint _requestCount;
 
-        private HttpRequestTarget _requestTargetForm = HttpRequestTarget.Unknown;
+        private HttpRequestTargetForm _requestTargetForm = HttpRequestTargetForm.Unknown;
         private Uri _absoluteRequestTarget;
 
         private int _remainingRequestHeadersBytesAllowed;
@@ -269,7 +269,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         private void OnOriginFormTarget(bool pathEncoded, Span<byte> target, Span<byte> path, Span<byte> query) {
             Debug.Assert(target[0] == ByteForwardSlash, "Should only be called when path starts with /");
 
-            _requestTargetForm = HttpRequestTarget.OriginForm;
+            _requestTargetForm = HttpRequestTargetForm.OriginForm;
 
             if (target.Length == 1) {
                 // If target.Length == 1 it can only be a forward slash (e.g. home page)
@@ -328,7 +328,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         private void OnAuthorityFormTarget(HttpMethod method, Span<byte> target) {
-            _requestTargetForm = HttpRequestTarget.AuthorityForm;
+            _requestTargetForm = HttpRequestTargetForm.AuthorityForm;
 
             // This is not complete validation. It is just a quick scan for invalid characters
             // but doesn't check that the target fully matches the URI spec.
@@ -372,7 +372,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         private void OnAsteriskFormTarget(HttpMethod method) {
-            _requestTargetForm = HttpRequestTarget.AsteriskForm;
+            _requestTargetForm = HttpRequestTargetForm.AsteriskForm;
 
             // The asterisk-form of request-target is only used for a server-wide
             // OPTIONS request (https://tools.ietf.org/html/rfc7231#section-4.3.7).
@@ -389,7 +389,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         private void OnAbsoluteFormTarget(Span<byte> target, Span<byte> query) {
-            _requestTargetForm = HttpRequestTarget.AbsoluteForm;
+            _requestTargetForm = HttpRequestTargetForm.AbsoluteForm;
 
             // absolute-form
             // https://tools.ietf.org/html/rfc7230#section-5.3.2
@@ -454,7 +454,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
                 BadHttpRequestException.Throw(RequestRejectionReason.MissingHostHeader);
             } else if (hostCount > 1) {
                 BadHttpRequestException.Throw(RequestRejectionReason.MultipleHostHeaders);
-            } else if (_requestTargetForm != HttpRequestTarget.OriginForm) {
+            } else if (_requestTargetForm != HttpRequestTargetForm.OriginForm) {
                 // Tail call
                 ValidateNonOriginHostHeader(hostText);
             } else if (!HttpUtilities.IsHostHeaderValid(hostText)) {
@@ -463,11 +463,11 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         private void ValidateNonOriginHostHeader(string hostText) {
-            if (_requestTargetForm == HttpRequestTarget.AuthorityForm) {
+            if (_requestTargetForm == HttpRequestTargetForm.AuthorityForm) {
                 if (hostText != RawTarget) {
                     BadHttpRequestException.Throw(RequestRejectionReason.InvalidHostHeader, hostText);
                 }
-            } else if (_requestTargetForm == HttpRequestTarget.AbsoluteForm) {
+            } else if (_requestTargetForm == HttpRequestTargetForm.AbsoluteForm) {
                 // If the target URI includes an authority component, then a
                 // client MUST send a field - value for Host that is identical to that
                 // authority component, excluding any userinfo subcomponent and its "@"
@@ -492,7 +492,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
             ResetHttp1Features();
 
             _requestTimedOut = false;
-            _requestTargetForm = HttpRequestTarget.Unknown;
+            _requestTargetForm = HttpRequestTargetForm.Unknown;
             _absoluteRequestTarget = null;
             _remainingRequestHeadersBytesAllowed = ServerOptions.Limits.MaxRequestHeadersTotalSize + 2;
             _requestCount++;

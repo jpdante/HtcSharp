@@ -5,7 +5,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
         private readonly int _initialWindowSize;
         private readonly int _minWindowSizeIncrement;
 
-        private FlowControl _flow;
+        private FlowControl.FlowControl _flow;
         private int _pendingUpdateSize;
         private bool _windowUpdatesDisabled;
         private readonly object _flowLock = new object();
@@ -13,7 +13,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
         public InputFlowControl(uint initialWindowSize, uint minWindowSizeIncrement) {
             Debug.Assert(initialWindowSize >= minWindowSizeIncrement, "minWindowSizeIncrement is greater than the window size.");
 
-            _flow = new FlowControl(initialWindowSize);
+            _flow = new FlowControl.FlowControl(initialWindowSize);
             _initialWindowSize = (int)initialWindowSize;
             _minWindowSizeIncrement = (int)minWindowSizeIncrement;
         }

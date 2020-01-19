@@ -1,4 +1,6 @@
-﻿namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
+﻿using System;
+
+namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
     internal class Huffman {
         // TODO: this can be constructed from _decodingTable
         private static readonly (uint code, int bitLength)[] _encodingTable = new (uint code, int bitLength)[]
