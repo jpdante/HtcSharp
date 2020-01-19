@@ -1,7 +1,11 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Buffers;
+using System.IO.Pipelines;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal partial class HttpRequestHeaders {

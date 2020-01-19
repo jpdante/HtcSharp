@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using HtcSharp.HttpModule.Core.Http.Features;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal partial class HttpProtocol : IFeatureCollection {
