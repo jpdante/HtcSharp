@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.IO.Pipelines;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http.Http;

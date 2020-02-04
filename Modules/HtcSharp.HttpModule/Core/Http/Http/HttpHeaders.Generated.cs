@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Primitives;
+using HtcSharp.HttpModule.Core.Infrastructure;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal partial class HttpRequestHeaders {

@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Http.Http;
 
 namespace HtcSharp.HttpModule.Core.Infrastructure {

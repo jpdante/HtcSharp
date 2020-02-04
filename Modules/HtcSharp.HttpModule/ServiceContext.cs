@@ -1,4 +1,5 @@
 ﻿using System.IO.Pipelines;
+using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Core.Http.Http;
 using HtcSharp.HttpModule.Core.Infrastructure;
 

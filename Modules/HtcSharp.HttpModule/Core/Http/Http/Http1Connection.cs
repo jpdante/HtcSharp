@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
