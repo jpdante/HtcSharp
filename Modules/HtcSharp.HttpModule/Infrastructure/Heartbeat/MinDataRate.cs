@@ -10,11 +10,11 @@ namespace HtcSharp.HttpModule.Infrastructure.Heartbeat {
         /// starting at the time data is first read or written.</param>
         public MinDataRate(double bytesPerSecond, TimeSpan gracePeriod) {
             if (bytesPerSecond <= 0) {
-                throw new ArgumentOutOfRangeException(nameof(bytesPerSecond), CoreStrings.PositiveNumberOrNullMinDataRateRequired);
+                throw new ArgumentOutOfRangeException(nameof(bytesPerSecond), "Value must be a positive number. To disable a minimum data rate, use null where a MinDataRate instance is expected.");
             }
 
             if (gracePeriod <= Heartbeat.Interval) {
-                throw new ArgumentOutOfRangeException(nameof(gracePeriod), CoreStrings.FormatMinimumGracePeriodRequired(Heartbeat.Interval.TotalSeconds));
+                throw new ArgumentOutOfRangeException(nameof(gracePeriod), $"The request body rate enforcement grace period must be greater than {Heartbeat.Interval.TotalSeconds} second.");
             }
 
             BytesPerSecond = bytesPerSecond;

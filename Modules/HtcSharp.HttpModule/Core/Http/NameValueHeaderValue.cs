@@ -7,10 +7,8 @@ using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Core.Http {
     public class NameValueHeaderValue {
-        private static readonly HttpHeaderParser<NameValueHeaderValue> SingleValueParser
-            = new GenericHeaderParser<NameValueHeaderValue>(false, GetNameValueLength);
-        internal static readonly HttpHeaderParser<NameValueHeaderValue> MultipleValueParser
-            = new GenericHeaderParser<NameValueHeaderValue>(true, GetNameValueLength);
+        private static readonly HttpHeaderParser<NameValueHeaderValue> SingleValueParser = new GenericHeaderParser<NameValueHeaderValue>(false, GetNameValueLength);
+        internal static readonly HttpHeaderParser<NameValueHeaderValue> MultipleValueParser = new GenericHeaderParser<NameValueHeaderValue>(true, GetNameValueLength);
 
         private StringSegment _name;
         private StringSegment _value;

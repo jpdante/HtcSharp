@@ -25,7 +25,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                 // Even if the stream is aborted, the client should never send more data than was available in the
                 // flow-control window at the time of the abort.
                 if (bytes > _flow.Available) {
-                    throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorFlowControlWindowExceeded, Http2ErrorCode.FLOW_CONTROL_ERROR);
+                    throw new Http2ConnectionErrorException("The client sent more data than what was available in the flow-control window.", Http2ErrorCode.FLOW_CONTROL_ERROR);
                 }
 
                 if (_flow.IsAborted) {

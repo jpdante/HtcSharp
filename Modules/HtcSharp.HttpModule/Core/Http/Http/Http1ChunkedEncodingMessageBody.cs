@@ -6,6 +6,7 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Infrastructure.Excpetions;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     /// <summary>
@@ -521,7 +522,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
             }
             catch (OverflowException ex)
             {
-                throw new IOException(CoreStrings.BadRequest_BadChunkSizeData, ex);
+                throw new IOException("Bad chunk size data.", ex);
             }
 
             BadHttpRequestException.Throw(RequestRejectionReason.BadChunkSizeData);

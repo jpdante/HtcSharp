@@ -81,7 +81,7 @@ namespace HtcSharp.HttpModule.Infrastructure.Binding {
             try {
                 await context.CreateBinding(endpoint).ConfigureAwait(false);
             } catch (AddressInUseException ex) {
-                throw new IOException(CoreStrings.FormatEndpointAlreadyInUse(endpoint), ex);
+                throw new IOException($"Failed to bind to address {endpoint}: address already in use.", ex);
             }
 
             context.ListenOptions.Add(endpoint);
@@ -94,11 +94,11 @@ namespace HtcSharp.HttpModule.Infrastructure.Binding {
             if (parsedAddress.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
                 https = true;
             } else if (!parsedAddress.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase)) {
-                throw new InvalidOperationException(CoreStrings.FormatUnsupportedAddressScheme(address));
+                throw new InvalidOperationException($"Unrecognized scheme in server address '{address}'. Only 'http://' is supported.");
             }
 
             if (!string.IsNullOrEmpty(parsedAddress.PathBase)) {
-                throw new InvalidOperationException(CoreStrings.FormatConfigurePathBaseFromMethodCall($"{nameof(IApplicationBuilder)}.UsePathBase()"));
+                throw new InvalidOperationException($"A path base can only be configured using {nameof(IApplicationBuilder)}.UsePathBase().");
             }
 
             ListenOptions options = null;
@@ -133,11 +133,10 @@ namespace HtcSharp.HttpModule.Infrastructure.Binding {
 
                 if (httpsDefault.IsTls || httpsDefault.TryUseHttps()) {
                     await httpsDefault.BindAsync(context).ConfigureAwait(false);
-                    context.Logger.LogDebug(CoreStrings.BindingToDefaultAddresses,
-                        Constants.DefaultServerAddress, Constants.DefaultServerHttpsAddress);
+                    context.Logger.LogDebug("No listening endpoints were configured. Binding to {address0} and {address1} by default.", Constants.DefaultServerAddress, Constants.DefaultServerHttpsAddress);
                 } else {
                     // No default cert is available, do not bind to the https endpoint.
-                    context.Logger.LogDebug(CoreStrings.BindingToDefaultAddress, Constants.DefaultServerAddress);
+                    context.Logger.LogDebug("No listening endpoints were configured. Binding to {address} by default.", Constants.DefaultServerAddress);
                 }
             }
         }
@@ -149,7 +148,7 @@ namespace HtcSharp.HttpModule.Infrastructure.Binding {
 
             public override Task BindAsync(AddressBindContext context) {
                 var joined = string.Join(", ", _addresses);
-                context.Logger.LogInformation(CoreStrings.OverridingWithPreferHostingUrls, nameof(IServerAddressesFeature.PreferHostingUrls), joined);
+                context.Logger.LogInformation("Overriding endpoints defined in UseKestrel() because {settingName} is set to true. Binding to address(es) '{addresses}' instead.", nameof(IServerAddressesFeature.PreferHostingUrls), joined);
 
                 return base.BindAsync(context);
             }
@@ -165,7 +164,7 @@ namespace HtcSharp.HttpModule.Infrastructure.Binding {
 
             public override Task BindAsync(AddressBindContext context) {
                 var joined = string.Join(", ", _originalAddresses);
-                context.Logger.LogWarning(CoreStrings.OverridingWithKestrelOptions, joined, "UseKestrel()");
+                context.Logger.LogWarning("Overriding address(es) '{addresses}'. Binding to endpoints defined in {methodName} instead.", joined, "UseKestrel()");
 
                 return base.BindAsync(context);
             }

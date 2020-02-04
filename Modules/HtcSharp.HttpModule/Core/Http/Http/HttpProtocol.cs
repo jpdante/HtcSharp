@@ -13,12 +13,14 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
+using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Attibutes;
 using HtcSharp.HttpModule.Infrastructure.Excpetions;
 using HtcSharp.HttpModule.Infrastructure.Extensions;
 using HtcSharp.HttpModule.Infrastructure.Heartbeat;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using HtcSharp.HttpModule.Infrastructure.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
@@ -470,12 +472,12 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
             } catch (ConnectionAbortedException ex) {
                 Log.RequestProcessingError(ConnectionId, ex);
             } catch (Exception ex) {
-                Log.LogWarning(0, ex, CoreStrings.RequestProcessingEndError);
+                Log.LogWarning(0, ex, "Connection processing ended abnormally.");
             } finally {
                 try {
                     await TryProduceInvalidRequestResponse();
                 } catch (Exception ex) {
-                    Log.LogWarning(0, ex, CoreStrings.ConnectionShutdownError);
+                    Log.LogWarning(0, ex, "Connection shutdown abnormally.");
                 } finally {
                     OnRequestProcessingEnded();
                 }
@@ -708,8 +710,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         [MethodImpl(MethodImplOptions.NoInlining)]
         private InvalidOperationException GetTooManyBytesWrittenException(int count) {
             var responseHeaders = HttpResponseHeaders;
-            return new InvalidOperationException(
-                CoreStrings.FormatTooManyBytesWritten(_responseBytesWritten + count, responseHeaders.ContentLength.Value));
+            return new InvalidOperationException($"Response Content-Length mismatch: too many bytes written ({_responseBytesWritten + count} of {responseHeaders.ContentLength.Value}).");
         }
 
         private void CheckLastWrite() {
@@ -742,8 +743,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
                     _keepAlive = false;
                 }
 
-                ex = new InvalidOperationException(
-                    CoreStrings.FormatTooFewBytesWritten(_responseBytesWritten, responseHeaders.ContentLength.Value));
+                ex = new InvalidOperationException($"Response Content-Length mismatch: too few bytes written ({_responseBytesWritten} of {responseHeaders.ContentLength.Value}).");
                 return false;
             }
 
@@ -992,11 +992,11 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         private static void ThrowResponseAlreadyStartedException(string value) {
-            throw new InvalidOperationException(CoreStrings.FormatParameterReadOnlyAfterResponseStarted(value));
+            throw new InvalidOperationException($"{value} cannot be set because the response has already started.");
         }
 
         private void RejectNonBodyTransferEncodingResponse(bool appCompleted) {
-            var ex = new InvalidOperationException(CoreStrings.FormatHeaderNotAllowedOnResponse("Transfer-Encoding", StatusCode));
+            var ex = new InvalidOperationException($"Setting the header Transfer-Encoding is not allowed on responses with status code {StatusCode}.");
             if (!appCompleted) {
                 // Back out of header creation surface exception in user code
                 _requestProcessingStatus = RequestProcessingStatus.AppStarted;
@@ -1047,12 +1047,12 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         [StackTraceHidden]
         private void ThrowWritingToResponseBodyNotSupported() {
             // Throw Exception for 204, 205, 304 responses.
-            throw new InvalidOperationException(CoreStrings.FormatWritingToResponseBodyNotSupported(StatusCode));
+            throw new InvalidOperationException($"Writing to the response body is invalid for responses with status code {StatusCode}.");
         }
 
         [StackTraceHidden]
         private void ThrowResponseAbortedException() {
-            throw new ObjectDisposedException(CoreStrings.UnhandledApplicationException, _applicationException);
+            throw new ObjectDisposedException("The response has been aborted due to an unhandled application exception.", _applicationException);
         }
 
         [StackTraceHidden]

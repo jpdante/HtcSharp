@@ -59,7 +59,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         protected static void ThrowHeadersReadOnlyException() {
-            throw new InvalidOperationException(CoreStrings.HeadersAreReadOnly);
+            throw new InvalidOperationException("Headers are read-only, response has already started.");
         }
 
         protected static void ThrowArgumentException() {
@@ -71,7 +71,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         protected static void ThrowDuplicateKeyException() {
-            throw new ArgumentException(CoreStrings.KeyAlreadyExists);
+            throw new ArgumentException("An item with the same key has already been added.");
         }
 
         public int Count => GetCountFast();
@@ -345,15 +345,15 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         private static void ThrowInvalidContentLengthException(long value) {
-            throw new ArgumentOutOfRangeException(CoreStrings.FormatInvalidContentLength_InvalidNumber(value));
+            throw new ArgumentOutOfRangeException($"Invalid Content-Length: \"{ value }\". Value must be a positive integral number.");
         }
 
         private static void ThrowInvalidHeaderCharacter(char ch) {
-            throw new InvalidOperationException(CoreStrings.FormatInvalidAsciiOrControlChar(string.Format("0x{0:X4}", (ushort)ch)));
+            throw new InvalidOperationException($"Invalid non-ASCII or control character in header: {($"0x{(ushort) ch:X4}")}");
         }
 
         private static void ThrowInvalidEmptyHeaderName() {
-            throw new InvalidOperationException(CoreStrings.InvalidEmptyHeaderName);
+            throw new InvalidOperationException("Header name cannot be a null or empty string.");
         }
     }
 }

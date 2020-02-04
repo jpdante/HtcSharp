@@ -212,7 +212,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
                         return _bytesStatus511;
 
                     default:
-                        var predefinedReasonPhrase = WebUtilities.ReasonPhrases.GetReasonPhrase(statusCode);
+                        var predefinedReasonPhrase = HttpModule.Infrastructure.WebUtilities.ReasonPhrases.GetReasonPhrase(statusCode);
                         // https://tools.ietf.org/html/rfc7230#section-3.1.2 requires trailing whitespace regardless of reason phrase
                         var formattedStatusCode = statusCode.ToString(CultureInfo.InvariantCulture) + " ";
                         return string.IsNullOrEmpty(predefinedReasonPhrase)

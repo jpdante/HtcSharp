@@ -8,8 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
 using HtcSharp.HttpModule.Infrastructure.Extensions;
+using HtcSharp.HttpModule.Infrastructure.Features;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal partial class HttpProtocol : IHttpRequestFeature,
@@ -104,7 +106,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         IHeaderDictionary IHttpRequestTrailersFeature.Trailers {
             get {
                 if (!RequestTrailersAvailable) {
-                    throw new InvalidOperationException(CoreStrings.RequestTrailersNotAvailable);
+                    throw new InvalidOperationException("The request trailers are not available yet. They may not be available until the full request body is read.");
                 }
                 return RequestTrailers;
             }
@@ -175,13 +177,13 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
             get => MaxRequestBodySize;
             set {
                 if (HasStartedConsumingRequestBody) {
-                    throw new InvalidOperationException(CoreStrings.MaxRequestBodySizeCannotBeModifiedAfterRead);
+                    throw new InvalidOperationException("The maximum request body size cannot be modified after the app has already started reading from the request body.");
                 }
                 if (IsUpgraded) {
-                    throw new InvalidOperationException(CoreStrings.MaxRequestBodySizeCannotBeModifiedForUpgradedRequests);
+                    throw new InvalidOperationException("The maximum request body size cannot be modified after the request has been upgraded.");
                 }
                 if (value < 0) {
-                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.NonNegativeNumberOrNullRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), "Value must be null or a non-negative number.");
                 }
 
                 MaxRequestBodySize = value;
@@ -228,15 +230,15 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
 
         async Task<Stream> IHttpUpgradeFeature.UpgradeAsync() {
             if (!IsUpgradableRequest) {
-                throw new InvalidOperationException(CoreStrings.CannotUpgradeNonUpgradableRequest);
+                throw new InvalidOperationException("Cannot upgrade a non-upgradable request. Check IHttpUpgradeFeature.IsUpgradableRequest to determine if a request can be upgraded.");
             }
 
             if (IsUpgraded) {
-                throw new InvalidOperationException(CoreStrings.UpgradeCannotBeCalledMultipleTimes);
+                throw new InvalidOperationException("IHttpUpgradeFeature.UpgradeAsync was already called and can only be called once per connection.");
             }
 
             if (!ServiceContext.ConnectionManager.UpgradedConnectionCount.TryLockOne()) {
-                throw new InvalidOperationException(CoreStrings.UpgradedConnectionLimitReached);
+                throw new InvalidOperationException("Request cannot be upgraded because the server has already opened the maximum number of upgraded connections.");
             }
 
             IsUpgraded = true;
