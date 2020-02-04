@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Excpetions;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {

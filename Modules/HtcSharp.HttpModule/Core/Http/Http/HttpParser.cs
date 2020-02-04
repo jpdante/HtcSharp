@@ -3,6 +3,8 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Attibutes;
+using HtcSharp.HttpModule.Infrastructure.Excpetions;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     public class HttpParser<TRequestHandler> : IHttpParser<TRequestHandler> where TRequestHandler : IHttpHeadersHandler, IHttpRequestLineHandler {

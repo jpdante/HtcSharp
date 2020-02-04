@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Excpetions;
+using HtcSharp.HttpModule.Infrastructure.Heartbeat;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal partial class Http1Connection : HttpProtocol, IRequestProcessor {

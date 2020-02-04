@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http;
+using HtcSharp.HttpModule.Infrastructure.Interfaces;
 
 namespace HtcSharp.HttpModule.Core.Infrastructure {
     internal class ConnectionManager {

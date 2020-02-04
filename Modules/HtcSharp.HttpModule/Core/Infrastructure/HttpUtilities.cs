@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using HtcSharp.HttpModule.Core.Http.Http;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
+using HtcSharp.HttpModule.Infrastructure.Excpetions;
 
 namespace HtcSharp.HttpModule.Core.Infrastructure {
     internal static partial class HttpUtilities {

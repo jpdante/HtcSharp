@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Interfaces;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     /// <summary>

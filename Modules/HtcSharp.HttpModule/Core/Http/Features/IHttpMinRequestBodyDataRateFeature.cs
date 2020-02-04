@@ -1,4 +1,7 @@
-﻿namespace HtcSharp.HttpModule.Core.Http.Features {
+﻿using HtcSharp.HttpModule.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+
+namespace HtcSharp.HttpModule.Core.Http.Features {
     /// <summary>
     /// Feature to set the minimum data rate at which the the request body must be sent by the client.
     /// This feature is not supported for HTTP/2 requests except to disable it entirely by setting <see cref="MinDataRate"/> to <see langword="null"/> 

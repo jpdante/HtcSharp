@@ -4,6 +4,8 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Attibutes;
+using HtcSharp.HttpModule.Infrastructure.Excpetions;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal abstract class Http1MessageBody : MessageBody {

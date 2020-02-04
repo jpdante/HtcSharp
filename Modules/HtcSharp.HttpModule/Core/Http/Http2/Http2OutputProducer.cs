@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http.Http;
 using HtcSharp.HttpModule.Core.Http.Http2.FlowControl;
 using HtcSharp.HttpModule.Core.Infrastructure;
-using HtcSharp.HttpModule.Core.Infrastructure.PipeWriterHelpers;
+using HtcSharp.HttpModule.Infrastructure.Attibutes;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
+using HtcSharp.HttpModule.Infrastructure.Interfaces;
+using HtcSharp.HttpModule.Infrastructure.PipeWriterHelpers;
 
 namespace HtcSharp.HttpModule.Core.Http.Http2 {
     internal class Http2OutputProducer : IHttpOutputProducer, IHttpOutputAborter {

@@ -13,6 +13,12 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
+using HtcSharp.HttpModule.Infrastructure.Attibutes;
+using HtcSharp.HttpModule.Infrastructure.Excpetions;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
+using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Interfaces;
+using HtcSharp.HttpModule.Infrastructure.Options;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {

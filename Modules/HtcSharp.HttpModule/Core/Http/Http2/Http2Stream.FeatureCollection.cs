@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Http.Http;
+using HtcSharp.HttpModule.Infrastructure.Heartbeat;
 
 namespace HtcSharp.HttpModule.Core.Http.Http2 {
     internal partial class Http2Stream : IHttp2StreamIdFeature,

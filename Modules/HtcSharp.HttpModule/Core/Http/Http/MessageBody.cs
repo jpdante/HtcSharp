@@ -3,6 +3,8 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Excpetions;
+using HtcSharp.HttpModule.Infrastructure.Interfaces;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal abstract class MessageBody {

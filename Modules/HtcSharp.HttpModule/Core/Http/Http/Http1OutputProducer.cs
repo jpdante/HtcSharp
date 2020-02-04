@@ -7,7 +7,10 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Infrastructure;
-using HtcSharp.HttpModule.Core.Infrastructure.PipeWriterHelpers;
+using HtcSharp.HttpModule.Infrastructure.Attibutes;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
+using HtcSharp.HttpModule.Infrastructure.Interfaces;
+using HtcSharp.HttpModule.Infrastructure.PipeWriterHelpers;
 using IHttpMinResponseDataRateFeature = HtcSharp.HttpModule.Core.Http.Features.IHttpMinResponseDataRateFeature;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {

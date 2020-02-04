@@ -16,6 +16,10 @@ using HtcSharp.HttpModule.Core.Http.Http2.FlowControl;
 using HtcSharp.HttpModule.Core.Http.Http2.HPack;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
+using HtcSharp.HttpModule.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Excpetions;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
+using HtcSharp.HttpModule.Infrastructure.Interfaces;
 
 namespace HtcSharp.HttpModule.Core.Http.Http2 {
     internal class Http2Connection : IHttp2StreamLifetimeHandler, IHttpHeadersHandler, IRequestProcessor {

@@ -1,4 +1,7 @@
-﻿namespace HtcSharp.HttpModule.Core.Http.Features {
+﻿using HtcSharp.HttpModule.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+
+namespace HtcSharp.HttpModule.Core.Http.Features {
     /// <summary>
     /// Feature to set the minimum data rate at which the response must be received by the client.
     /// This feature is not available for HTTP/2 requests. Instead, use <see cref="KestrelServerLimits.MinResponseDataRate"/>
