@@ -2,11 +2,6 @@
 using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Core.Http.Http;
 using HtcSharp.HttpModule.Core.Infrastructure;
-using HtcSharp.HttpModule.Infrastructure;
-using HtcSharp.HttpModule.Infrastructure.BindOptions;
-using HtcSharp.HttpModule.Infrastructure.HeartBeat;
-using HtcSharp.HttpModule.Infrastructure.Interface;
-using HtcSharp.HttpModule.Infrastructure.Protocol.Http;
 
 namespace HtcSharp.HttpModule {
     internal class ServiceContext {
