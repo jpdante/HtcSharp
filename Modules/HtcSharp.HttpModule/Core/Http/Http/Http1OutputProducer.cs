@@ -11,7 +11,7 @@ using HtcSharp.HttpModule.Infrastructure.Attibutes;
 using HtcSharp.HttpModule.Infrastructure.Extensions;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using HtcSharp.HttpModule.Infrastructure.PipeWriterHelpers;
-using IHttpMinResponseDataRateFeature = HtcSharp.HttpModule.Core.Http.Features.IHttpMinResponseDataRateFeature;
+using IHttpMinResponseDataRateFeature = HtcSharp.HttpModule.Infrastructure.Features.IHttpMinResponseDataRateFeature;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal class Http1OutputProducer : IHttpOutputProducer, IHttpOutputAborter, IDisposable {

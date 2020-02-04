@@ -85,7 +85,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
             }
 
             static void ThrowObjectDisposedException() {
-                throw new ObjectDisposedException(nameof(HttpResponseStream), CoreStrings.WritingToResponseBodyAfterResponseCompleted);
+                throw new ObjectDisposedException(nameof(HttpResponseStream), "Cannot write to the response body, the response has completed.");
             }
         }
     }

@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Excpetions;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
 using HtcSharp.HttpModule.Infrastructure.Features;
 using HtcSharp.HttpModule.Infrastructure.Options;
 using Microsoft.Extensions.Logging;

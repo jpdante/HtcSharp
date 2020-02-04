@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Http;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal static class PathNormalizer {

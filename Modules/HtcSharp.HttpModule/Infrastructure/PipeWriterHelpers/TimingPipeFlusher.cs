@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http;
 using HtcSharp.HttpModule.Core.Http.Http;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using Microsoft.Extensions.Logging;
 

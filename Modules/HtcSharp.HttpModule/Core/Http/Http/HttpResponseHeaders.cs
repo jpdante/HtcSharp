@@ -51,7 +51,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         private static void ThrowInvalidContentLengthException(string value) {
-            throw new InvalidOperationException(CoreStrings.FormatInvalidContentLength_InvalidNumber(value));
+            throw new InvalidOperationException($"Invalid Content-Length: \"{ value }\". Value must be a positive integral number.");
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using HtcSharp.HttpModule.Core.Http.Features;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Features;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal partial class Http1Connection : IHttpMinRequestBodyDataRateFeature,

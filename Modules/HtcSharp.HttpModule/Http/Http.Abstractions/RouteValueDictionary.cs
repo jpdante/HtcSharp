@@ -226,7 +226,7 @@ namespace HtcSharp.HttpModule.Http.Http.Abstractions {
             EnsureCapacity(_count + 1);
 
             if (ContainsKeyArray(key)) {
-                var message = Resources.FormatRouteValueDictionary_DuplicateKey(key, nameof(RouteValueDictionary));
+                var message = $"An element with the key '{key}' already exists in the {nameof(RouteValueDictionary)}.";
                 throw new ArgumentException(message, nameof(key));
             }
 
@@ -632,11 +632,7 @@ namespace HtcSharp.HttpModule.Http.Http.Abstractions {
                     var property = properties[i];
 
                     if (names.TryGetValue(property.Name, out var duplicate)) {
-                        var message = Resources.FormatRouteValueDictionary_DuplicatePropertyName(
-                            type.FullName,
-                            property.Name,
-                            duplicate.Name,
-                            nameof(RouteValueDictionary));
+                        var message = $"The type '{type.FullName}' defines properties '{property.Name}' and '{ duplicate.Name}' which differ only by casing. This is not supported by {nameof(RouteValueDictionary)} which uses case-insensitive comparisons.";
                         throw new InvalidOperationException(message);
                     }
 

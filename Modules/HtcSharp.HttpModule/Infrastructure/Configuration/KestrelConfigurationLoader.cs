@@ -4,9 +4,13 @@ using System.IO;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using HtcSharp.HttpModule.Infrastructure.Binding;
 using HtcSharp.HttpModule.Infrastructure.Certificate;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
+using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using HtcSharp.HttpModule.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure.Configuration {
@@ -215,7 +219,7 @@ namespace HtcSharp.HttpModule.Infrastructure.Configuration {
                 // EndpointDefaults or configureEndpoint may have added an https adapter.
                 if (https && !listenOptions.IsTls) {
                     if (httpsOptions.ServerCertificate == null && httpsOptions.ServerCertificateSelector == null) {
-                        throw new InvalidOperationException(CoreStrings.NoCertSpecifiedNoDevelopmentCertificateFound);
+                        throw new InvalidOperationException("Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.\r\nTo generate a developer certificate run 'dotnet dev-certs https'. To trust the certificate (Windows and macOS only) run 'dotnet dev-certs https --trust'.\r\nFor more information on configuring HTTPS see https://go.microsoft.com/fwlink/?linkid=848054.");
                     }
 
                     listenOptions.UseHttps(httpsOptions);
@@ -295,7 +299,7 @@ namespace HtcSharp.HttpModule.Infrastructure.Configuration {
 
         private X509Certificate2 LoadCertificate(CertificateConfig certInfo, string endpointName) {
             if (certInfo.IsFileCert && certInfo.IsStoreCert) {
-                throw new InvalidOperationException(CoreStrings.FormatMultipleCertificateSources(endpointName));
+                throw new InvalidOperationException($"The endpoint {endpointName} specified multiple certificate sources.");
             } else if (certInfo.IsFileCert) {
                 var env = Options.ApplicationServices.GetRequiredService<IHostEnvironment>();
                 return new X509Certificate2(Path.Combine(env.ContentRootPath, certInfo.Path), certInfo.Password);

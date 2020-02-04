@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Infrastructure.Features;
 
 namespace HtcSharp.HttpModule.Core {

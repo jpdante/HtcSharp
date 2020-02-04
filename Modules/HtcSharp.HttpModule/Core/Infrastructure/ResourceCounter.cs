@@ -22,7 +22,7 @@ namespace HtcSharp.HttpModule.Core.Infrastructure {
 
             public FiniteCounter(long max) {
                 if (max < 0) {
-                    throw new ArgumentOutOfRangeException(CoreStrings.NonNegativeNumberRequired);
+                    throw new ArgumentOutOfRangeException("Value must be a non-negative number.");
                 }
 
                 _max = max;

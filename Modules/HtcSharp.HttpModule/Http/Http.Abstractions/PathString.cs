@@ -23,7 +23,7 @@ namespace HtcSharp.HttpModule.Http.Http.Abstractions {
         /// <param name="value">The unescaped path to be assigned to the Value property.</param>
         public PathString(string value) {
             if (!string.IsNullOrEmpty(value) && value[0] != '/') {
-                throw new ArgumentException(Resources.FormatException_PathMustStartWithSlash(nameof(value)), nameof(value));
+                throw new ArgumentException($"The path in '{nameof(value)}' must start with '/'.", nameof(value));
             }
             _value = value;
         }

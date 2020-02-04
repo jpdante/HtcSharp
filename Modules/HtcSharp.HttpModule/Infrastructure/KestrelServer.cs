@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Http.Http;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
 using HtcSharp.HttpModule.Infrastructure.Binding;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
 using HtcSharp.HttpModule.Infrastructure.Features;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using HtcSharp.HttpModule.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
@@ -60,7 +60,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
 
             var heartbeatManager = new HeartbeatManager(connectionManager);
             var dateHeaderValueManager = new DateHeaderValueManager();
-            var heartbeat = new Heartbeat.Heartbeat(new IHeartbeatHandler[] { dateHeaderValueManager, heartbeatManager }, new SystemClock(), DebuggerWrapper.Singleton, trace);
+            var heartbeat = new Heartbeat(new IHeartbeatHandler[] { dateHeaderValueManager, heartbeatManager }, new SystemClock(), DebuggerWrapper.Singleton, trace);
 
             return new ServiceContext {
                 Log = trace,

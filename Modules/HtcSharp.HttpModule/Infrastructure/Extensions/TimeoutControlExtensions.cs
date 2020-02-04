@@ -1,4 +1,4 @@
-﻿using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+﻿using HtcSharp.HttpModule.Infrastructure.Heart;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 
 namespace HtcSharp.HttpModule.Infrastructure.Extensions {

@@ -31,7 +31,7 @@ namespace HtcSharp.HttpModule.Http.Http.Abstractions {
             }
 
             if (port <= 0) {
-                throw new ArgumentOutOfRangeException(nameof(port), Resources.Exception_PortMustBeGreaterThanZero);
+                throw new ArgumentOutOfRangeException(nameof(port), "The value must be greater than zero.");
             }
 
             int index;

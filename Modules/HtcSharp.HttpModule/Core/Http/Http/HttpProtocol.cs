@@ -10,14 +10,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Attibutes;
 using HtcSharp.HttpModule.Infrastructure.Excpetions;
 using HtcSharp.HttpModule.Infrastructure.Extensions;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Features;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using HtcSharp.HttpModule.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
@@ -444,7 +444,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
 
             string key = name.GetHeaderName();
             var valueStr = value.GetAsciiOrUTF8StringNonNullCharacters();
-            RequestTrailers.Append(key, valueStr);
+            //RequestTrailers.Append(key, valueStr);
         }
 
         public void OnHeadersComplete() {

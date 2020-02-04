@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
+using HtcSharp.HttpModule.Infrastructure.Features;
 
 namespace HtcSharp.HttpModule.Infrastructure {
     /// <summary>

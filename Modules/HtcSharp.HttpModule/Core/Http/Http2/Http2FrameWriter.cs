@@ -6,12 +6,12 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Http.Http;
 using HtcSharp.HttpModule.Core.Http.Http2.FlowControl;
 using HtcSharp.HttpModule.Core.Http.Http2.HPack;
 using HtcSharp.HttpModule.Core.Infrastructure;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Features;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using HtcSharp.HttpModule.Infrastructure.PipeWriterHelpers;
 

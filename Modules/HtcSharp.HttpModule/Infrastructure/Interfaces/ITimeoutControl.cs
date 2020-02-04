@@ -1,6 +1,7 @@
 ﻿using HtcSharp.HttpModule.Core.Http.Http2;
+using HtcSharp.HttpModule.Core.Http.Http2.FlowControl;
 using HtcSharp.HttpModule.Core.Infrastructure;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 
 namespace HtcSharp.HttpModule.Infrastructure.Interfaces {
     internal interface ITimeoutControl {

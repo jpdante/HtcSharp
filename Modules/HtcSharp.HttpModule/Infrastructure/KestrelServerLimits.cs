@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using HtcSharp.HttpModule.Core;
-using HtcSharp.HttpModule.Core.Http.Features;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Features;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 
 namespace HtcSharp.HttpModule.Infrastructure {
 

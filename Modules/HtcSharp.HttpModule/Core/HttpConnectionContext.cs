@@ -1,8 +1,8 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Features;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 
 namespace HtcSharp.HttpModule.Core {

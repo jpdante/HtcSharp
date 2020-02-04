@@ -3,7 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
+using HtcSharp.HttpModule.Infrastructure.Features;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal sealed class HttpRequestStream : Stream {
@@ -43,7 +43,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
 
         public override int Read(byte[] buffer, int offset, int count) {
             if (!_bodyControl.AllowSynchronousIO) {
-                throw new InvalidOperationException(CoreStrings.SynchronousReadsDisallowed);
+                throw new InvalidOperationException("Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.");
             }
 
             return ReadAsync(buffer, offset, count).GetAwaiter().GetResult();

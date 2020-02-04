@@ -1,5 +1,5 @@
 ﻿using System;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 
 namespace HtcSharp.HttpModule.Infrastructure.Interfaces {
     /// <summary>

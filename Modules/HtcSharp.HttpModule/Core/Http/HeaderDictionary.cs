@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using HtcSharp.HttpModule.Core.Http.Features;
+using HtcSharp.HttpModule.Infrastructure.Features;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Core.Http {

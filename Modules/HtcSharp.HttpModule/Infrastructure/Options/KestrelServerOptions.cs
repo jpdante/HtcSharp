@@ -7,6 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
 using HtcSharp.HttpModule.Infrastructure.Certificate;
 using HtcSharp.HttpModule.Infrastructure.Configuration;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

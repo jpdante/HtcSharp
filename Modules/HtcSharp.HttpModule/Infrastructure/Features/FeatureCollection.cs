@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using HtcSharp.HttpModule.Core.Http.Features;
 
 namespace HtcSharp.HttpModule.Infrastructure.Features {
     public class FeatureCollection : IFeatureCollection {

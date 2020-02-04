@@ -73,7 +73,7 @@ namespace HtcSharp.HttpModule.Core.Infrastructure {
             var abortTasks = new List<Task>();
 
             Walk(connection => {
-                connection.TransportConnection.Abort(new ConnectionAbortedException(CoreStrings.ConnectionAbortedDuringServerShutdown));
+                connection.TransportConnection.Abort(new ConnectionAbortedException("The connection was aborted because the server is shutting down and request processing didn't complete within the time specified by HostOptions.ShutdownTimeout."));
                 abortTasks.Add(connection.ExecutionTask);
             });
 

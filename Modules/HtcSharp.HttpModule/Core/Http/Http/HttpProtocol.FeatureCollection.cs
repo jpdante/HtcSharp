@@ -6,7 +6,6 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Http.Abstractions;

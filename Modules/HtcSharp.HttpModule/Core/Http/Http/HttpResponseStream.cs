@@ -2,7 +2,8 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
+using HtcSharp.HttpModule.Infrastructure.Features;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal sealed class HttpResponseStream : Stream {
@@ -40,7 +41,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
 
         public override void Flush() {
             if (!_bodyControl.AllowSynchronousIO) {
-                throw new InvalidOperationException(CoreStrings.SynchronousWritesDisallowed);
+                throw new InvalidOperationException("Synchronous operations are disallowed. Call WriteAsync or set AllowSynchronousIO to true instead.");
             }
 
             FlushAsync(default).GetAwaiter().GetResult();
@@ -62,7 +63,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
 
         public override void Write(byte[] buffer, int offset, int count) {
             if (!_bodyControl.AllowSynchronousIO) {
-                throw new InvalidOperationException(CoreStrings.SynchronousWritesDisallowed);
+                throw new InvalidOperationException("Synchronous operations are disallowed. Call WriteAsync or set AllowSynchronousIO to true instead.");
             }
 
             WriteAsync(buffer, offset, count, default).GetAwaiter().GetResult();

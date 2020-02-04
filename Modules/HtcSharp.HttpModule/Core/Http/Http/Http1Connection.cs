@@ -5,11 +5,11 @@ using System.Globalization;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Excpetions;
 using HtcSharp.HttpModule.Infrastructure.Extensions;
-using HtcSharp.HttpModule.Infrastructure.Heartbeat;
+using HtcSharp.HttpModule.Infrastructure.Features;
+using HtcSharp.HttpModule.Infrastructure.Heart;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
     internal partial class Http1Connection : HttpProtocol, IRequestProcessor {

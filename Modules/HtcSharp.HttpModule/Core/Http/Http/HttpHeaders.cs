@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
+using HtcSharp.HttpModule.Infrastructure.Features;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {

@@ -2,9 +2,9 @@
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Http.Http;
-using HtcSharp.HttpModule.Infrastructure.Stream;
+using HtcSharp.HttpModule.Infrastructure.Features;
+using HtcSharp.HttpModule.Infrastructure.StreamBased;
 
 namespace HtcSharp.HttpModule.Core.Infrastructure {
     internal class BodyControl {

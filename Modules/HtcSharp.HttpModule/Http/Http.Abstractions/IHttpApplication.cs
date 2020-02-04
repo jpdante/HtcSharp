@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Core.Http.Features;
+using HtcSharp.HttpModule.Infrastructure.Features;
 
 namespace HtcSharp.HttpModule.Http.Http.Abstractions {
     /// <summary>
