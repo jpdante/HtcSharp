@@ -444,7 +444,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
 
             string key = name.GetHeaderName();
             var valueStr = value.GetAsciiOrUTF8StringNonNullCharacters();
-            //RequestTrailers.Append(key, valueStr);
+            RequestTrailers.Append(key, valueStr);
         }
 
         public void OnHeadersComplete() {
