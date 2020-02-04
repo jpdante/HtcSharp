@@ -1,0 +1,7 @@
+﻿namespace HtcSharp.HttpModule.Infrastructure.Protocol.Http {
+    public enum HttpScheme {
+        Unknown = -1,
+        Http = 0,
+        Https = 1
+    }
+}
