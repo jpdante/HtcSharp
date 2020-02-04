@@ -1,23 +1,20 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v3.0",
+    "name": ".NETCoreApp,Version=v3.1",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v3.0": {
-      "LuaBuildEvents/1.1.0": {
+    ".NETCoreApp,Version=v3.1": {
+      "LuaBuildEvents/1.3.1": {
         "dependencies": {
-          "Costura.Fody": "4.1.0",
-          "Fody": "6.0.0",
-          "MoonSharp": "2.0.0"
+          "MoonSharp": "2.0.0",
+          "YamlDotNet": "8.0.0"
         },
         "runtime": {
           "LuaBuildEvents.dll": {}
         }
       },
-      "Costura.Fody/4.1.0": {},
-      "Fody/6.0.0": {},
       "MoonSharp/2.0.0": {
         "runtime": {
           "lib/netstandard1.6/MoonSharp.Interpreter.dll": {
@@ -25,28 +22,22 @@
             "fileVersion": "2.0.0.0"
           }
         }
+      },
+      "YamlDotNet/8.0.0": {
+        "runtime": {
+          "lib/netstandard2.1/YamlDotNet.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.0.0"
+          }
+        }
       }
     }
   },
   "libraries": {
-    "LuaBuildEvents/1.1.0": {
+    "LuaBuildEvents/1.3.1": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
-    },
-    "Costura.Fody/4.1.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-MkW5aqhqNvuP6MiaaD5Yx8efXv+5ucsumRx+Nsn5b+PA4RnaxJLtXhGkm1N+Hi7sjkSlL8kl1klSS/7v2DxZHw==",
-      "path": "costura.fody/4.1.0",
-      "hashPath": "costura.fody.4.1.0.nupkg.sha512"
-    },
-    "Fody/6.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-rH9Q7GapghyLYESfeCUOqh0S70eLc3FAikIgEEyGeng3JJf1M7mt2BUxjz93o3ipDXLrKn1s69AIEolmnVn8xg==",
-      "path": "fody/6.0.0",
-      "hashPath": "fody.6.0.0.nupkg.sha512"
     },
     "MoonSharp/2.0.0": {
       "type": "package",
@@ -54,6 +45,13 @@
       "sha512": "sha512-uiAcRh7d+53k3xW9pFDJfAFVw4RnjHVCJG05M3oPAVEVwPtFavhg1H/IpC6So4X1j9kJlzuLlA3OghhPcIvc5A==",
       "path": "moonsharp/2.0.0",
       "hashPath": "moonsharp.2.0.0.nupkg.sha512"
+    },
+    "YamlDotNet/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ib8lKt7TlODREDFLOWef0OmxChsQlTsRSGGx7A6YH8d7Y+YrMg8Z/RneW5WAnDsfygg/Ao2r2ND1UNe0LLPMFw==",
+      "path": "yamldotnet/8.0.0",
+      "hashPath": "yamldotnet.8.0.0.nupkg.sha512"
     }
   }
 }
