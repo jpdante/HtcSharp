@@ -6,6 +6,7 @@ using HtcSharp.HttpModule.Core.Http;
 using HtcSharp.HttpModule.Core.Http.Http;
 using HtcSharp.HttpModule.Infrastructure.Heartbeat;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure.PipeWriterHelpers {
     /// <summary>
@@ -60,7 +61,7 @@ namespace HtcSharp.HttpModule.Infrastructure.PipeWriterHelpers {
             try {
                 return await pipeFlushTask;
             } catch (OperationCanceledException ex) when (outputAborter != null) {
-                outputAborter.Abort(new ConnectionAbortedException(CoreStrings.ConnectionOrStreamAbortedByCancellationToken, ex));
+                outputAborter.Abort(new ConnectionAbortedException("The connection or stream was aborted because a write operation was aborted with a CancellationToken.", ex));
             } catch (Exception ex) {
                 // A canceled token is the only reason flush should ever throw.
                 _log.LogError(0, ex, $"Unexpected exception in {nameof(TimingPipeFlusher)}.{nameof(FlushAsync)}.");

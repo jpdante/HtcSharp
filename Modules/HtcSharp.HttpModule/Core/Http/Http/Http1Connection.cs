@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Core.Http.Features;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Excpetions;
+using HtcSharp.HttpModule.Infrastructure.Extensions;
 using HtcSharp.HttpModule.Infrastructure.Heartbeat;
 
 namespace HtcSharp.HttpModule.Core.Http.Http {
@@ -71,7 +72,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         }
 
         public void OnInputOrOutputCompleted() {
-            _http1Output.Abort(new ConnectionAbortedException(CoreStrings.ConnectionAbortedByClient));
+            _http1Output.Abort(new ConnectionAbortedException("The client closed the connection."));
             AbortRequest();
         }
 
@@ -92,7 +93,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
 
         protected override void ApplicationAbort() {
             Log.ApplicationAbortedConnection(ConnectionId, TraceIdentifier);
-            Abort(new ConnectionAbortedException(CoreStrings.ConnectionAbortedByApplication));
+            Abort(new ConnectionAbortedException("The connection was aborted by the application."));
         }
 
         /// <summary>

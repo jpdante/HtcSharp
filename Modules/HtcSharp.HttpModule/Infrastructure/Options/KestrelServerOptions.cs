@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using HtcSharp.HttpModule.Http.Http.Abstractions;
 using HtcSharp.HttpModule.Infrastructure.Certificate;
 using HtcSharp.HttpModule.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure.Options {
     /// <summary>
@@ -124,8 +127,7 @@ namespace HtcSharp.HttpModule.Infrastructure.Options {
                 IsDevCertLoaded = true; // Only try once
                 var logger = ApplicationServices.GetRequiredService<ILogger<KestrelServer>>();
                 try {
-                    DefaultCertificate = CertificateManager.ListCertificates(CertificatePurpose.HTTPS, StoreName.My, StoreLocation.CurrentUser, isValid: true)
-                        .FirstOrDefault();
+                    DefaultCertificate = CertificateManager.ListCertificates(CertificatePurpose.HTTPS, StoreName.My, StoreLocation.CurrentUser, isValid: true).FirstOrDefault();
 
                     if (DefaultCertificate != null) {
                         logger.LocatedDevelopmentCertificate(DefaultCertificate);
@@ -258,7 +260,7 @@ namespace HtcSharp.HttpModule.Infrastructure.Options {
             }
 
             if (!Path.IsPathRooted(socketPath)) {
-                throw new ArgumentException(CoreStrings.UnixSocketPathMustBeAbsolute, nameof(socketPath));
+                throw new ArgumentException("Unix socket path must be absolute.", nameof(socketPath));
             }
             if (configure == null) {
                 throw new ArgumentNullException(nameof(configure));

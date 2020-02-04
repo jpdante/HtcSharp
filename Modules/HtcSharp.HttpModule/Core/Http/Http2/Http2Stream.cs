@@ -135,7 +135,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             // CONNECT - :scheme and :path must be excluded
             if (Method == HttpMethod.Connect) {
                 if (!String.IsNullOrEmpty(RequestHeaders[HeaderNames.Scheme]) || !String.IsNullOrEmpty(RequestHeaders[HeaderNames.Path])) {
-                    ResetAndAbort(new ConnectionAbortedException(CoreStrings.Http2ErrorConnectMustNotSendSchemeOrPath), Http2ErrorCode.PROTOCOL_ERROR);
+                    ResetAndAbort(new ConnectionAbortedException("CONNECT requests must not send :scheme or :path headers."), Http2ErrorCode.PROTOCOL_ERROR);
                     return false;
                 }
 
@@ -153,8 +153,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             // - For now we'll restrict it to http/s and require it match the transport.
             // - We'll need to find some concrete scenarios to warrant unblocking this.
             if (!string.Equals(RequestHeaders[HeaderNames.Scheme], Scheme, StringComparison.OrdinalIgnoreCase)) {
-                ResetAndAbort(new ConnectionAbortedException(
-                    CoreStrings.FormatHttp2StreamErrorSchemeMismatch(RequestHeaders[HeaderNames.Scheme], Scheme)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($"The request :scheme header '{RequestHeaders[HeaderNames.Scheme]}' does not match the transport scheme '{Scheme}'."), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -180,7 +179,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             // Approximate MaxRequestLineSize by totaling the required pseudo header field lengths.
             var requestLineLength = _methodText.Length + Scheme.Length + hostText.Length + path.Length;
             if (requestLineLength > ServerOptions.Limits.MaxRequestLineSize) {
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.BadRequest_RequestLineTooLong), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException("Request line too long."), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -198,13 +197,13 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             Method = HttpUtilities.GetKnownMethod(_methodText);
 
             if (Method == HttpMethod.None) {
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2ErrorMethodInvalid(_methodText)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($"The Method '{_methodText}' is invalid."), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
             if (Method == HttpMethod.Custom) {
                 if (HttpCharacters.IndexOfInvalidTokenChar(_methodText) >= 0) {
-                    ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2ErrorMethodInvalid(_methodText)), Http2ErrorCode.PROTOCOL_ERROR);
+                    ResetAndAbort(new ConnectionAbortedException($"The Method '{_methodText}' is invalid."), Http2ErrorCode.PROTOCOL_ERROR);
                     return false;
                 }
             }
@@ -241,7 +240,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             hostText = host.ToString();
             if (host.Count > 1 || !HttpUtilities.IsHostHeaderValid(hostText)) {
                 // RST replaces 400
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatBadRequest_InvalidHostHeader_Detail(hostText)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($"Invalid Host header: '{hostText}'"), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -251,7 +250,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
         private bool TryValidatePath(ReadOnlySpan<char> pathSegment) {
             // Must start with a leading slash
             if (pathSegment.Length == 0 || pathSegment[0] != '/') {
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2StreamErrorPathInvalid(RawTarget)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($"The request :path is invalid: '{RawTarget}'"), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -277,7 +276,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
 
                 return true;
             } catch (InvalidOperationException) {
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2StreamErrorPathInvalid(RawTarget)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($"The request :path is invalid: '{RawTarget}'"), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
         }
@@ -309,7 +308,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                     if (InputRemaining.HasValue) {
                         // https://tools.ietf.org/html/rfc7540#section-8.1.2.6
                         if (dataPayload.Length > InputRemaining.Value) {
-                            throw new Http2StreamErrorException(StreamId, CoreStrings.Http2StreamErrorMoreDataThanLength, Http2ErrorCode.PROTOCOL_ERROR);
+                            throw new Http2StreamErrorException(StreamId, "More data received than specified in the Content-Length header.", Http2ErrorCode.PROTOCOL_ERROR);
                         }
 
                         InputRemaining -= dataPayload.Length;
@@ -346,7 +345,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             if (InputRemaining.HasValue) {
                 // https://tools.ietf.org/html/rfc7540#section-8.1.2.6
                 if (InputRemaining.Value != 0) {
-                    throw new Http2StreamErrorException(StreamId, CoreStrings.Http2StreamErrorLessDataThanLength, Http2ErrorCode.PROTOCOL_ERROR);
+                    throw new Http2StreamErrorException(StreamId, "Less data received than specified in the Content-Length header.", Http2ErrorCode.PROTOCOL_ERROR);
                 }
             }
 
@@ -369,7 +368,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             DecrementActiveClientStreamCount();
 
             ApplyCompletionFlag(StreamCompletionFlags.RstStreamReceived);
-            Abort(new IOException(CoreStrings.Http2StreamResetByClient));
+            Abort(new IOException("The client reset the request stream."));
         }
 
         public void Abort(IOException abortReason) {
@@ -384,12 +383,12 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
 
         protected override void OnErrorAfterResponseStarted() {
             // We can no longer change the response, send a Reset instead.
-            var abortReason = new ConnectionAbortedException(CoreStrings.Http2StreamErrorAfterHeaders);
+            var abortReason = new ConnectionAbortedException("An error occurred after the response headers were sent, a reset is being sent.");
             ResetAndAbort(abortReason, Http2ErrorCode.INTERNAL_ERROR);
         }
 
         protected override void ApplicationAbort() {
-            var abortReason = new ConnectionAbortedException(CoreStrings.ConnectionAbortedByApplication);
+            var abortReason = new ConnectionAbortedException("The connection was aborted by the application.");
             ResetAndAbort(abortReason, Http2ErrorCode.INTERNAL_ERROR);
         }
 

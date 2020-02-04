@@ -86,7 +86,7 @@ namespace HtcSharp.HttpModule.Infrastructure.Configuration {
 
                 var url = endpointConfig[UrlKey];
                 if (string.IsNullOrEmpty(url)) {
-                    throw new InvalidOperationException(CoreStrings.FormatEndpointMissingUrl(endpointConfig.Key));
+                    throw new InvalidOperationException($"The endpoint {endpointConfig.Key} is missing the required 'Url' parameter.");
                 }
 
                 var endpoint = new EndpointConfig {

@@ -73,7 +73,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
         private static readonly byte[] _bytesStatus511 = CreateStatusBytes(StatusCodes.Status511NetworkAuthenticationRequired);
 
         private static byte[] CreateStatusBytes(int statusCode) {
-            var reasonPhrase = WebUtilities.ReasonPhrases.GetReasonPhrase(statusCode);
+            var reasonPhrase = HttpModule.Infrastructure.WebUtilities.ReasonPhrases.GetReasonPhrase(statusCode);
             Debug.Assert(!string.IsNullOrEmpty(reasonPhrase));
 
             return Encoding.ASCII.GetBytes(statusCode.ToString(CultureInfo.InvariantCulture) + " " + reasonPhrase);

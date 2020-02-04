@@ -30,10 +30,10 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
         int IHttp2StreamIdFeature.StreamId => _context.StreamId;
 
         MinDataRate IHttpMinRequestBodyDataRateFeature.MinDataRate {
-            get => throw new NotSupportedException(CoreStrings.Http2MinDataRateNotSupported);
+            get => throw new NotSupportedException("This feature is not supported for HTTP/2 requests except to disable it entirely by setting the rate to null.");
             set {
                 if (value != null) {
-                    throw new NotSupportedException(CoreStrings.Http2MinDataRateNotSupported);
+                    throw new NotSupportedException("This feature is not supported for HTTP/2 requests except to disable it entirely by setting the rate to null.");
                 }
 
                 MinRequestBodyDataRate = value;
@@ -41,7 +41,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
         }
 
         void IHttpResetFeature.Reset(int errorCode) {
-            var abortReason = new ConnectionAbortedException(CoreStrings.FormatHttp2StreamResetByApplication((Http2ErrorCode)errorCode));
+            var abortReason = new ConnectionAbortedException($"The HTTP/2 stream was reset by the application with error code {(Http2ErrorCode)errorCode}.");
             ResetAndAbort(abortReason, (Http2ErrorCode)errorCode);
         }
     }

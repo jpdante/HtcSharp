@@ -9,4 +9,4 @@ namespace HtcSharp.HttpModule.Infrastructure.Excpetions {
         public ConnectionResetException(string message, Exception inner) : base(message, inner) {
         }
     }
-}}
+}

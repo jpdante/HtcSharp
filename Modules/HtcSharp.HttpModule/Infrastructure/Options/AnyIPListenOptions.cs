@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Infrastructure.Binding;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure.Options {
     internal sealed class AnyIPListenOptions : ListenOptions {

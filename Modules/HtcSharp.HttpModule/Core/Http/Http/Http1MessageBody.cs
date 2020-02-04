@@ -48,7 +48,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
                 _context.SetBadRequestState(ex);
                 return Task.CompletedTask;
             } catch (InvalidOperationException ex) {
-                var connectionAbortedException = new ConnectionAbortedException(CoreStrings.ConnectionAbortedByApplication, ex);
+                var connectionAbortedException = new ConnectionAbortedException("The connection was aborted by the application.", ex);
                 _context.ReportApplicationError(connectionAbortedException);
 
                 // Have to abort the connection because we can't finish draining the request
@@ -75,7 +75,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http {
             } catch (OperationCanceledException ex) when (ex is ConnectionAbortedException || ex is TaskCanceledException) {
                 Log.RequestBodyDrainTimedOut(_context.ConnectionIdFeature, _context.TraceIdentifier);
             } catch (InvalidOperationException ex) {
-                var connectionAbortedException = new ConnectionAbortedException(CoreStrings.ConnectionAbortedByApplication, ex);
+                var connectionAbortedException = new ConnectionAbortedException("The connection was aborted by the application.", ex);
                 _context.ReportApplicationError(connectionAbortedException);
 
                 // Have to abort the connection because we can't finish draining the request

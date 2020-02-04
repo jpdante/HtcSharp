@@ -10,6 +10,7 @@ using HtcSharp.HttpModule.Infrastructure.Attibutes;
 using HtcSharp.HttpModule.Infrastructure.Extensions;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using HtcSharp.HttpModule.Infrastructure.PipeWriterHelpers;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Http.Http2 {
     internal class Http2OutputProducer : IHttpOutputProducer, IHttpOutputAborter {

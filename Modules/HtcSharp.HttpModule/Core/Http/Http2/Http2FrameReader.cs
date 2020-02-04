@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Diagnostics;
+using HtcSharp.HttpModule.Core.Http.Http;
 
 namespace HtcSharp.HttpModule.Core.Http.Http2 {
     internal static class Http2FrameReader {
@@ -37,7 +38,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
 
             var payloadLength = (int)Bitshifter.ReadUInt24BigEndian(header);
             if (payloadLength > maxFrameSize) {
-                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorFrameOverLimit(payloadLength, maxFrameSize), Http2ErrorCode.FRAME_SIZE_ERROR);
+                throw new Http2ConnectionErrorException($"The received frame size of {payloadLength} exceeds the limit {maxFrameSize}.", Http2ErrorCode.FRAME_SIZE_ERROR);
             }
 
             // Make sure the whole frame is buffered
@@ -64,8 +65,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             var extendedHeaderLength = GetPayloadFieldsLength(frame);
 
             if (extendedHeaderLength > frame.PayloadLength) {
-                throw new Http2ConnectionErrorException(
-                    CoreStrings.FormatHttp2ErrorUnexpectedFrameLength(frame.Type, expectedLength: extendedHeaderLength), Http2ErrorCode.FRAME_SIZE_ERROR);
+                throw new Http2ConnectionErrorException($"The client sent a {frame.Type} frame with length different than {extendedHeaderLength}.", Http2ErrorCode.FRAME_SIZE_ERROR);
             }
 
             var extendedHeaders = readableBuffer.Slice(HeaderLength, extendedHeaderLength).ToSpan();
