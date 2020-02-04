@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using HtcSharp.HttpModule.Http.Http.Abstractions;
 
 namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
     internal class HPackEncoder {
@@ -34,7 +33,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
             do {
                 if (!EncodeHeader(_enumerator.Current.Key, _enumerator.Current.Value, buffer.Slice(length), out var headerLength)) {
                     if (length == 0 && throwIfNoneEncoded) {
-                        throw new HPackEncodingException(CoreStrings.HPackErrorNotEnoughBuffer);
+                        throw new HPackEncodingException("The given buffer was too small to encode any headers.");
                     }
                     return false;
                 }

@@ -3,9 +3,10 @@ using HtcSharp.HttpModule.Core.Http;
 using HtcSharp.HttpModule.Core.Http.Http2;
 using HtcSharp.HttpModule.Core.Http.Http2.HPack;
 using HtcSharp.HttpModule.Infrastructure.Excpetions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure.Interfaces {
-    internal interface IKestrelTrace {
+    internal interface IKestrelTrace : ILogger {
         void ConnectionAccepted(string connectionId);
 
         void ConnectionStart(string connectionId);
@@ -69,7 +70,5 @@ namespace HtcSharp.HttpModule.Infrastructure.Interfaces {
         void Http2FrameReceived(string connectionId, Http2Frame frame);
 
         void Http2FrameSending(string connectionId, Http2Frame frame);
-
-        void LogCritical(Exception ex, object message);
     }
 }

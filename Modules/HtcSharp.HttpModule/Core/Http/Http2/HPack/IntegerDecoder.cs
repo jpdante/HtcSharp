@@ -50,6 +50,6 @@
         }
 
         public static void ThrowIntegerTooBigException()
-            => throw new HPackDecodingException(CoreStrings.HPackErrorIntegerTooBig);
+            => throw new HPackDecodingException("The decoded integer exceeds the maximum value of Int32.MaxValue.");
     }
 }

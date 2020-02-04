@@ -330,15 +330,15 @@ namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
 
                 if (ch == -1) {
                     // No valid symbol could be decoded with the bits in next
-                    throw new HuffmanDecodingException(CoreStrings.HPackHuffmanErrorIncomplete);
+                    throw new HuffmanDecodingException("Input data could not be fully decoded.");
                 } else if (ch == 256) {
                     // A Huffman-encoded string literal containing the EOS symbol MUST be treated as a decoding error.
                     // http://httpwg.org/specs/rfc7541.html#rfc.section.5.2
-                    throw new HuffmanDecodingException(CoreStrings.HPackHuffmanErrorEOS);
+                    throw new HuffmanDecodingException("Input data contains the EOS symbol.");
                 }
 
                 if (j == dst.Length) {
-                    throw new HuffmanDecodingException(CoreStrings.HPackHuffmanErrorDestinationTooSmall);
+                    throw new HuffmanDecodingException("The destination buffer is not large enough to store the decoded data.");
                 }
 
                 dst[j++] = (byte)ch;

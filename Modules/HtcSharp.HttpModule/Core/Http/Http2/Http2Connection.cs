@@ -20,6 +20,7 @@ using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Excpetions;
 using HtcSharp.HttpModule.Infrastructure.Extensions;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Http.Http2 {
     internal class Http2Connection : IHttp2StreamLifetimeHandler, IHttpHeadersHandler, IRequestProcessor {
@@ -126,7 +127,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
 
         public void OnInputOrOutputCompleted() {
             TryClose();
-            _frameWriter.Abort(new ConnectionAbortedException(CoreStrings.ConnectionAbortedByClient));
+            _frameWriter.Abort(new ConnectionAbortedException("The client closed the connection."));
         }
 
         public void Abort(ConnectionAbortedException ex) {
@@ -142,12 +143,12 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
 
         public void HandleRequestHeadersTimeout() {
             Log.ConnectionBadRequest(ConnectionId, BadHttpRequestException.GetException(RequestRejectionReason.RequestHeadersTimeout));
-            Abort(new ConnectionAbortedException(CoreStrings.BadRequest_RequestHeadersTimeout));
+            Abort(new ConnectionAbortedException("Reading the request headers timed out."));
         }
 
         public void HandleReadDataRateTimeout() {
             Log.RequestBodyMinimumDataRateNotSatisfied(ConnectionId, null, Limits.MinRequestBodyDataRate.BytesPerSecond);
-            Abort(new ConnectionAbortedException(CoreStrings.BadRequest_RequestBodyTimeout));
+            Abort(new ConnectionAbortedException("Reading the request body timed out due to data arriving too slowly. See MinRequestBodyDataRate."));
         }
 
         public void StopProcessingNextRequest(bool serverInitiated) {
@@ -240,12 +241,12 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                 error = ex;
                 errorCode = Http2ErrorCode.COMPRESSION_ERROR;
             } catch (Exception ex) {
-                Log.LogWarning(0, ex, CoreStrings.RequestProcessingEndError);
+                Log.LogWarning(0, ex, "Connection processing ended abnormally.");
                 error = ex;
                 errorCode = Http2ErrorCode.INTERNAL_ERROR;
             } finally {
                 var connectionError = error as ConnectionAbortedException
-                    ?? new ConnectionAbortedException(CoreStrings.Http2ConnectionFaulted, error);
+                    ?? new ConnectionAbortedException("The HTTP/2 connection faulted.", error);
 
                 try {
                     if (TryClose()) {
@@ -256,7 +257,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                     _inputFlowControl.StopWindowUpdates();
 
                     foreach (var stream in _streams.Values) {
-                        stream.Abort(new IOException(CoreStrings.Http2StreamAborted, connectionError));
+                        stream.Abort(new IOException("The request stream was aborted.", connectionError));
                     }
 
                     // Use the server _serverActiveStreamCount to drain all requests on the server side.
@@ -293,7 +294,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             }
 
             if (tlsFeature.Protocol < SslProtocols.Tls12) {
-                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorMinTlsVersion(tlsFeature.Protocol), Http2ErrorCode.INADEQUATE_SECURITY);
+                throw new Http2ConnectionErrorException($"Tls 1.2 or later must be used for HTTP/2. {tlsFeature.Protocol} was negotiated.", Http2ErrorCode.INADEQUATE_SECURITY);
             }
         }
 
@@ -336,7 +337,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             var span = preface.ToSpan();
 
             if (!span.SequenceEqual(ClientPreface)) {
-                throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorInvalidPreface, Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException("Invalid HTTP/2 connection preface.", Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             consumed = examined = preface.End;
@@ -349,7 +350,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             // An endpoint that receives an unexpected stream identifier MUST respond with
             // a connection error (Section 5.4.1) of type PROTOCOL_ERROR.
             if (_incomingFrame.StreamId != 0 && (_incomingFrame.StreamId & 1) == 0) {
-                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdEven(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame with even stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             return _incomingFrame.Type switch
@@ -359,7 +360,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                 Http2FrameType.PRIORITY => ProcessPriorityFrameAsync(),
                 Http2FrameType.RST_STREAM => ProcessRstStreamFrameAsync(),
                 Http2FrameType.SETTINGS => ProcessSettingsFrameAsync(payload),
-                Http2FrameType.PUSH_PROMISE => throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorPushPromiseReceived, Http2ErrorCode.PROTOCOL_ERROR),
+                Http2FrameType.PUSH_PROMISE => throw new Http2ConnectionErrorException("The client sent a A PUSH_PROMISE frame.", Http2ErrorCode.PROTOCOL_ERROR),
                 Http2FrameType.PING => ProcessPingFrameAsync(payload),
                 Http2FrameType.GOAWAY => ProcessGoAwayFrameAsync(),
                 Http2FrameType.WINDOW_UPDATE => ProcessWindowUpdateFrameAsync(),
@@ -765,11 +766,11 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                 // All HTTP/2 requests MUST include exactly one valid value for the :method, :scheme, and :path pseudo-header
                 // fields, unless it is a CONNECT request (Section 8.3). An HTTP request that omits mandatory pseudo-header
                 // fields is malformed (Section 8.1.2.6).
-                throw new Http2StreamErrorException(_currentHeadersStream.StreamId, CoreStrings.Http2ErrorMissingMandatoryPseudoHeaderFields, Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2StreamErrorException(_currentHeadersStream.StreamId, "Request headers missing one or more mandatory pseudo-header fields.", Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_clientActiveStreamCount >= _serverSettings.MaxConcurrentStreams) {
-                throw new Http2StreamErrorException(_currentHeadersStream.StreamId, CoreStrings.Http2ErrorMaxStreams, Http2ErrorCode.REFUSED_STREAM);
+                throw new Http2StreamErrorException(_currentHeadersStream.StreamId, "A new stream was refused because this connection has reached its stream limit.", Http2ErrorCode.REFUSED_STREAM);
             }
 
             // We don't use the _serverActiveRequestCount here as during shutdown, it and the dictionary
@@ -779,7 +780,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                 // Server is getting hit hard with connection resets.
                 // Tell client to calm down.
                 // TODO consider making when to send ENHANCE_YOUR_CALM configurable?
-                throw new Http2StreamErrorException(_currentHeadersStream.StreamId, CoreStrings.Http2TellClientToCalmDown, Http2ErrorCode.ENHANCE_YOUR_CALM);
+                throw new Http2StreamErrorException(_currentHeadersStream.StreamId, "A new stream was refused because this connection has too many streams that haven't finished processing. This may happen if many streams are aborted but not yet cleaned up.", Http2ErrorCode.ENHANCE_YOUR_CALM);
             }
             // This must be initialized before we offload the request or else we may start processing request body frames without it.
             _currentHeadersStream.InputRemaining = _currentHeadersStream.RequestHeaders.ContentLength;
@@ -818,7 +819,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             // far, then the incoming frame's target stream is in the idle state, which is the implicit
             // initial state for all streams.
             if (_incomingFrame.StreamId > _highestOpenedStreamId) {
-                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdle(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame to idle stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
             }
         }
 
@@ -858,7 +859,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                 if (stream.EndStreamReceived || stream.RstStreamReceived || stream.DrainExpirationTicks < now) {
                     if (stream == _currentHeadersStream) {
                         // The drain expired out while receiving trailers. The most recent incoming frame is either a header or continuation frame for the timed out stream.
-                        throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamClosed(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.STREAM_CLOSED);
+                        throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame to closed stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.STREAM_CLOSED);
                     }
 
                     _streams.Remove(stream.StreamId);
@@ -913,7 +914,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             // "The value is based on the uncompressed size of header fields, including the length of the name and value in octets plus an overhead of 32 octets for each header field.";
             _totalParsedHeaderSize += HeaderField.RfcOverhead + name.Length + value.Length;
             if (_totalParsedHeaderSize > _context.ServiceContext.ServerOptions.Limits.MaxRequestHeadersTotalSize) {
-                throw new Http2ConnectionErrorException(CoreStrings.BadRequest_HeadersExceedMaxTotalSize, Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException("Request headers too long.", Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             ValidateHeader(name, value);
@@ -928,7 +929,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             } catch (BadHttpRequestException bre) {
                 throw new Http2ConnectionErrorException(bre.Message, Http2ErrorCode.PROTOCOL_ERROR);
             } catch (InvalidOperationException) {
-                throw new Http2ConnectionErrorException(CoreStrings.BadRequest_MalformedRequestInvalidHeaders, Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException("Malformed request: invalid headers.", Http2ErrorCode.PROTOCOL_ERROR);
             }
         }
 
@@ -955,12 +956,12 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                     // All pseudo-header fields MUST appear in the header block before regular header fields.
                     // Any request or response that contains a pseudo-header field that appears in a header
                     // block after a regular header field MUST be treated as malformed (Section 8.1.2.6).
-                    throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorPseudoHeaderFieldAfterRegularHeaders, Http2ErrorCode.PROTOCOL_ERROR);
+                    throw new Http2ConnectionErrorException("Pseudo-header field found in request headers after regular header fields.", Http2ErrorCode.PROTOCOL_ERROR);
                 }
 
                 if (_requestHeaderParsingState == RequestHeaderParsingState.Trailers) {
                     // Pseudo-header fields MUST NOT appear in trailers.
-                    throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorTrailersContainPseudoHeaderField, Http2ErrorCode.PROTOCOL_ERROR);
+                    throw new Http2ConnectionErrorException("The client sent trailers containing one or more pseudo-header fields.", Http2ErrorCode.PROTOCOL_ERROR);
                 }
 
                 _requestHeaderParsingState = RequestHeaderParsingState.PseudoHeaderFields;
@@ -968,19 +969,19 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
                 if (headerField == PseudoHeaderFields.Unknown) {
                     // Endpoints MUST treat a request or response that contains undefined or invalid pseudo-header
                     // fields as malformed (Section 8.1.2.6).
-                    throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorUnknownPseudoHeaderField, Http2ErrorCode.PROTOCOL_ERROR);
+                    throw new Http2ConnectionErrorException("Request headers contain unknown pseudo-header field.", Http2ErrorCode.PROTOCOL_ERROR);
                 }
 
                 if (headerField == PseudoHeaderFields.Status) {
                     // Pseudo-header fields defined for requests MUST NOT appear in responses; pseudo-header fields
                     // defined for responses MUST NOT appear in requests.
-                    throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorResponsePseudoHeaderField, Http2ErrorCode.PROTOCOL_ERROR);
+                    throw new Http2ConnectionErrorException("Request headers contain response-specific pseudo-header field.", Http2ErrorCode.PROTOCOL_ERROR);
                 }
 
                 if ((_parsedPseudoHeaderFields & headerField) == headerField) {
                     // http://httpwg.org/specs/rfc7540.html#rfc.section.8.1.2.3
                     // All HTTP/2 requests MUST include exactly one valid value for the :method, :scheme, and :path pseudo-header fields
-                    throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorDuplicatePseudoHeaderField, Http2ErrorCode.PROTOCOL_ERROR);
+                    throw new Http2ConnectionErrorException("Request headers contain duplicate pseudo-header field.", Http2ErrorCode.PROTOCOL_ERROR);
                 }
 
                 if (headerField == PseudoHeaderFields.Method) {
@@ -993,7 +994,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             }
 
             if (IsConnectionSpecificHeaderField(name, value)) {
-                throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorConnectionSpecificHeaderField, Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException("Request headers contain connection-specific header field.", Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             // http://httpwg.org/specs/rfc7540.html#rfc.section.8.1.2
@@ -1001,9 +1002,9 @@ namespace HtcSharp.HttpModule.Core.Http.Http2 {
             for (var i = 0; i < name.Length; i++) {
                 if (name[i] >= 65 && name[i] <= 90) {
                     if (_requestHeaderParsingState == RequestHeaderParsingState.Trailers) {
-                        throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorTrailerNameUppercase, Http2ErrorCode.PROTOCOL_ERROR);
+                        throw new Http2ConnectionErrorException("The client sent a trailer with uppercase characters in its name.", Http2ErrorCode.PROTOCOL_ERROR);
                     } else {
-                        throw new Http2ConnectionErrorException(CoreStrings.Http2ErrorHeaderNameUppercase, Http2ErrorCode.PROTOCOL_ERROR);
+                        throw new Http2ConnectionErrorException("The client sent a header with uppercase characters in its name.", Http2ErrorCode.PROTOCOL_ERROR);
                     }
                 }
             }

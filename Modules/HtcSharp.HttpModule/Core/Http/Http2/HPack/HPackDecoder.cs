@@ -111,7 +111,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
 
             if (endHeaders) {
                 if (_state != State.Ready) {
-                    throw new HPackDecodingException(CoreStrings.HPackErrorIncompleteHeaderBlock);
+                    throw new HPackDecodingException("The header block was incomplete and could not be fully decoded.");
                 }
 
                 _headersObserved = false;
@@ -173,7 +173,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
                         // update MUST occur at the beginning of the first header block
                         // following the change to the dynamic table size.
                         if (_headersObserved) {
-                            throw new HPackDecodingException(CoreStrings.HPackErrorDynamicTableSizeUpdateNotAtBeginningOfHeaderBlock);
+                            throw new HPackDecodingException("Dynamic tables size update did not occur at the beginning of the first header block.");
                         }
 
                         if (_integerDecoder.BeginTryDecode((byte)(b & ~DynamicTableSizeUpdateMask), DynamicTableSizeUpdatePrefix, out intResult)) {
@@ -294,7 +294,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
 
         private void OnStringLength(int length, State nextState) {
             if (length > _stringOctets.Length) {
-                throw new HPackDecodingException(CoreStrings.FormatHPackStringLengthTooLarge(length, _stringOctets.Length));
+                throw new HPackDecodingException($"Decoded string length of {length} octets is greater than the configured maximum length of {_stringOctets.Length} octets.");
             }
 
             _stringLength = length;
@@ -320,7 +320,7 @@ namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
                     _headerValueLength = Decode(_headerValueOctets);
                 }
             } catch (HuffmanDecodingException ex) {
-                throw new HPackDecodingException(CoreStrings.HPackHuffmanError, ex);
+                throw new HPackDecodingException("Huffman decoding error.", ex);
             }
 
             _state = nextState;
@@ -332,14 +332,13 @@ namespace HtcSharp.HttpModule.Core.Http.Http2.HPack {
                     ? StaticTable.Instance[index - 1]
                     : _dynamicTable[index - StaticTable.Instance.Count - 1];
             } catch (IndexOutOfRangeException ex) {
-                throw new HPackDecodingException(CoreStrings.FormatHPackErrorIndexOutOfRange(index), ex);
+                throw new HPackDecodingException($"Index {index} is outside the bounds of the header field table.", ex);
             }
         }
 
         private void SetDynamicHeaderTableSize(int size) {
             if (size > _maxDynamicTableSize) {
-                throw new HPackDecodingException(
-                    CoreStrings.FormatHPackErrorDynamicTableSizeUpdateTooLarge(size, _maxDynamicTableSize));
+                throw new HPackDecodingException($"A dynamic table size of {size} octets is greater than the configured maximum size of {_maxDynamicTableSize} octets.");
             }
 
             _dynamicTable.Resize(size);

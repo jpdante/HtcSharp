@@ -56,17 +56,11 @@ namespace HtcSharp.HttpModule.Infrastructure {
             var serverOptions = options.Value ?? new KestrelServerOptions();
             var logger = loggerFactory.CreateLogger("Microsoft.AspNetCore.Server.Kestrel");
             var trace = new KestrelTrace(logger);
-            var connectionManager = new ConnectionManager(
-                trace,
-                serverOptions.Limits.MaxConcurrentUpgradedConnections);
+            var connectionManager = new ConnectionManager(trace, serverOptions.Limits.MaxConcurrentUpgradedConnections);
 
             var heartbeatManager = new HeartbeatManager(connectionManager);
             var dateHeaderValueManager = new DateHeaderValueManager();
-            var heartbeat = new Heartbeat.Heartbeat(
-                new IHeartbeatHandler[] { dateHeaderValueManager, heartbeatManager },
-                new SystemClock(),
-                DebuggerWrapper.Singleton,
-                trace);
+            var heartbeat = new Heartbeat.Heartbeat(new IHeartbeatHandler[] { dateHeaderValueManager, heartbeatManager }, new SystemClock(), DebuggerWrapper.Singleton, trace);
 
             return new ServiceContext {
                 Log = trace,
