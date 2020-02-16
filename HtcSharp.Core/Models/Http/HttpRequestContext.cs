@@ -54,36 +54,41 @@ namespace HtcSharp.Core.Models.Http {
             foreach (var key in _request.Headers.Keys) {
                 Headers.Add(key, _request.Headers[key]);
             }
-            InputStream = new MemoryStream();
-            _request.Body.CopyTo(InputStream);
-            InputStream.Position = 0;
             if (Method != HttpMethod.POST) return;
             try {
                 switch (ContentType) {
                     case ContentType.FormUrlEncoded:
                     case ContentType.MultipartFormData: {
-                        foreach (var key in _request.Form.Keys) {
-                            Post.Add(key, _request.Form[key]);
-                        }
-                        foreach (var file in _request.Form.Files) {
-                            Files.Add(new HtcFile(file));
-                        }
-                        break;
-                    }
-                    case ContentType.JSON: {
-                        using (var reader = new StreamReader(InputStream, Encoding.UTF8, true, 2048, true)) {
-                            var json = reader.ReadToEnd();
-                            try {
-                                var post = JObject.Parse(json);
-                                foreach (var item in post) {
-                                    DoJsonAdd(item.Key, item.Value);
-                                }
-                            } catch {
+                            foreach (var key in _request.Form.Keys) {
+                                Post.Add(key, _request.Form[key]);
                             }
+                            foreach (var file in _request.Form.Files) {
+                                Files.Add(new HtcFile(file));
+                            }
+                            _request.Body.Position = 0;
+                            InputStream = new MemoryStream();
+                            _request.Body.CopyTo(InputStream);
+                            InputStream.Position = 0;
+                            break;
                         }
-                        InputStream.Position = 0;
-                        break;
-                    }
+                    case ContentType.JSON: {
+                            _request.Body.Position = 0;
+                            InputStream = new MemoryStream();
+                            _request.Body.CopyTo(InputStream);
+                            InputStream.Position = 0;
+                            using (var reader = new StreamReader(InputStream, Encoding.UTF8, true, 2048, true)) {
+                                var json = reader.ReadToEnd();
+                                try {
+                                    var post = JObject.Parse(json);
+                                    foreach (var item in post) {
+                                        DoJsonAdd(item.Key, item.Value);
+                                    }
+                                } catch {
+                                }
+                            }
+                            InputStream.Position = 0;
+                            break;
+                        }
                 }
             } catch {
             }
