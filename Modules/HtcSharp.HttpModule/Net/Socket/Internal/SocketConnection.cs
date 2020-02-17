@@ -14,6 +14,7 @@ using HtcSharp.HttpModule.IO.MemoryPool;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HtcSharp.HttpModule.Net.Connections.Transport;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Net.Socket.Internal {
     internal sealed class SocketConnection : TransportConnection {

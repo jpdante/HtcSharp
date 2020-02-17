@@ -5,10 +5,14 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Connections.Abstractions;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Net.Connections;
 using HtcSharp.HttpModule.Net.Socket.Internal;
 using HtcSharp.HttpModule.Options;
+using HtcSharp.HttpModule2.Net.Socket.Internal;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace HtcSharp.HttpModule.Net.Socket {
     public sealed class SocketTransportFactory : IConnectionListenerFactory {

@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Connections.Abstractions;
 using HtcSharp.HttpModule.Net.Connections;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HtcSharp.HttpModule.Net.Socket.Internal;

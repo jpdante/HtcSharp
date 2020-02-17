@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using HtcSharp.HttpModule.Http.Features;
+using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Net.Connections.Features;
 
 namespace HtcSharp.HttpModule.Net.Connections.Transport {
