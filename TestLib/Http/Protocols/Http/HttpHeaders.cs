@@ -349,11 +349,11 @@ namespace TestLib.Http.Protocols.Http {
         }
 
         private static void ThrowInvalidContentLengthException(long value) {
-            throw new ArgumentOutOfRangeException(CoreStrings.FormatInvalidContentLength_InvalidNumber(value));
+            throw new ArgumentOutOfRangeException($@"Invalid Content-Length: ""{value}"". Value must be a positive integral number.");
         }
 
         private static void ThrowInvalidHeaderCharacter(char ch) {
-            throw new InvalidOperationException(CoreStrings.FormatInvalidAsciiOrControlChar(string.Format("0x{0:X4}", (ushort)ch)));
+            throw new InvalidOperationException($@"Invalid non-ASCII or control character in header: {$"0x{(ushort) ch:X4}"}");
         }
 
         private static void ThrowInvalidEmptyHeaderName() {

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace TestLib.Logging {
+namespace TestLib.Logging.Abstractions {
     /// <summary>
     /// Represents a type used to configure the logging system and create instances of <see cref="ILogger"/> from
     /// the registered <see cref="ILoggerProvider"/>s.

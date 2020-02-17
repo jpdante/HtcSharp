@@ -11,6 +11,7 @@ using TestLib.Features;
 using TestLib.Http.Abstractions;
 using TestLib.Infrastructure;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 using TestLib.Net.Connections.Exceptions;
 
 namespace TestLib.Options {
@@ -84,7 +85,7 @@ namespace TestLib.Options {
             try {
                 await context.CreateBinding(endpoint).ConfigureAwait(false);
             } catch (AddressInUseException ex) {
-                throw new IOException(CoreStrings.FormatEndpointAlreadyInUse(endpoint), ex);
+                throw new IOException($@"Failed to bind to address {endpoint}: address already in use.", ex);
             }
 
             context.ListenOptions.Add(endpoint);
@@ -97,11 +98,11 @@ namespace TestLib.Options {
             if (parsedAddress.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
                 https = true;
             } else if (!parsedAddress.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase)) {
-                throw new InvalidOperationException(CoreStrings.FormatUnsupportedAddressScheme(address));
+                throw new InvalidOperationException($@"Unrecognized scheme in server address '{address}'. Only 'http://' is supported.");
             }
 
             if (!string.IsNullOrEmpty(parsedAddress.PathBase)) {
-                throw new InvalidOperationException(CoreStrings.FormatConfigurePathBaseFromMethodCall($"{nameof(IApplicationBuilder)}.UsePathBase()"));
+                throw new InvalidOperationException($@"A path base can only be configured using {nameof(IApplicationBuilder)}.UsePathBase().");
             }
 
             ListenOptions options = null;

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using TestLib.Logging.Abstractions;
 
 namespace TestLib.Logging {
     internal class Logger : ILogger {

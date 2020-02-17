@@ -10,6 +10,7 @@ using Microsoft.Extensions.Primitives;
 using TestLib.Http.Abstractions;
 using TestLib.Http.Features.Interfaces;
 using TestLib.Http.Headers;
+using TestLib.Http.Internal;
 using TestLib.Http.WebUtilities;
 
 namespace TestLib.Http.Features {

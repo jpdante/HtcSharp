@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TestLib.Connections.Abstractions;
 using TestLib.Http.Abstractions.Features;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 
 namespace TestLib.Infrastructure {
     internal class KestrelConnection : IConnectionHeartbeatFeature, IConnectionCompleteFeature, IConnectionLifetimeNotificationFeature, IThreadPoolWorkItem {

@@ -60,7 +60,7 @@ namespace TestLib.Infrastructure {
             get => _maxFrameSize;
             set {
                 if (value < Http2PeerSettings.MinAllowedMaxFrameSize || value > Http2PeerSettings.MaxAllowedMaxFrameSize) {
-                    throw new ArgumentOutOfRangeException(nameof(value), value, CoreStrings.FormatArgumentOutOfRange(Http2PeerSettings.MinAllowedMaxFrameSize, Http2PeerSettings.MaxAllowedMaxFrameSize));
+                    throw new ArgumentOutOfRangeException(nameof(value), value, $@"A value between {Http2PeerSettings.MinAllowedMaxFrameSize} and {Http2PeerSettings.MaxAllowedMaxFrameSize} is required.");
                 }
 
                 _maxFrameSize = value;
@@ -95,8 +95,7 @@ namespace TestLib.Infrastructure {
             get => _initialConnectionWindowSize;
             set {
                 if (value < Http2PeerSettings.DefaultInitialWindowSize || value > Http2PeerSettings.MaxWindowSize) {
-                    throw new ArgumentOutOfRangeException(nameof(value), value,
-                        CoreStrings.FormatArgumentOutOfRange(Http2PeerSettings.DefaultInitialWindowSize, Http2PeerSettings.MaxWindowSize));
+                    throw new ArgumentOutOfRangeException(nameof(value), value, $@"A value between {Http2PeerSettings.DefaultInitialWindowSize} and {Http2PeerSettings.MaxWindowSize} is required.");
                 }
 
                 _initialConnectionWindowSize = value;
@@ -114,8 +113,7 @@ namespace TestLib.Infrastructure {
             get => _initialStreamWindowSize;
             set {
                 if (value < Http2PeerSettings.DefaultInitialWindowSize || value > Http2PeerSettings.MaxWindowSize) {
-                    throw new ArgumentOutOfRangeException(nameof(value), value,
-                        CoreStrings.FormatArgumentOutOfRange(Http2PeerSettings.DefaultInitialWindowSize, Http2PeerSettings.MaxWindowSize));
+                    throw new ArgumentOutOfRangeException(nameof(value), value, $@"A value between {Http2PeerSettings.DefaultInitialWindowSize} and {Http2PeerSettings.MaxWindowSize} is required.");
                 }
 
                 _initialStreamWindowSize = value;

@@ -6,6 +6,7 @@ using TestLib.Http;
 using TestLib.Http.Protocols.Http2;
 using TestLib.Http.Protocols.Http2.HPack;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 using TestLib.Net.Connections.Exceptions;
 
 namespace TestLib.Infrastructure {

@@ -15,6 +15,7 @@ using TestLib.Http.Protocols.Http;
 using TestLib.Infrastructure;
 using TestLib.Infrastructure.Heart;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 using TestLib.Middleware;
 using TestLib.Options;
 using TestLib.Server.Abstractions;
@@ -185,14 +186,12 @@ namespace TestLib {
 
             if (Options.Limits.MaxRequestBufferSize.HasValue &&
                 Options.Limits.MaxRequestBufferSize < Options.Limits.MaxRequestLineSize) {
-                throw new InvalidOperationException(
-                    CoreStrings.FormatMaxRequestBufferSmallerThanRequestLineBuffer(Options.Limits.MaxRequestBufferSize.Value, Options.Limits.MaxRequestLineSize));
+                throw new InvalidOperationException($@"Maximum request buffer size ({Options.Limits.MaxRequestBufferSize.Value}) must be greater than or equal to maximum request line size ({Options.Limits.MaxRequestLineSize}).");
             }
 
             if (Options.Limits.MaxRequestBufferSize.HasValue &&
                 Options.Limits.MaxRequestBufferSize < Options.Limits.MaxRequestHeadersTotalSize) {
-                throw new InvalidOperationException(
-                    CoreStrings.FormatMaxRequestBufferSmallerThanRequestHeaderBuffer(Options.Limits.MaxRequestBufferSize.Value, Options.Limits.MaxRequestHeadersTotalSize));
+                throw new InvalidOperationException($@"Maximum request buffer size ({Options.Limits.MaxRequestBufferSize.Value}) must be greater than or equal to maximum request header size ({Options.Limits.MaxRequestHeadersTotalSize}).");
             }
         }
     }

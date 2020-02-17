@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TestLib.Logging.Abstractions;
 
 namespace TestLib.Logging {
     /// <summary>

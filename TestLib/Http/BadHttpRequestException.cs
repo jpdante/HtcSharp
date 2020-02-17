@@ -127,31 +127,31 @@ namespace TestLib.Http {
             BadHttpRequestException ex;
             switch (reason) {
                 case RequestRejectionReason.InvalidRequestLine:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_InvalidRequestLine_Detail(detail), StatusCodes.Status400BadRequest, reason);
+                    ex = new BadHttpRequestException($@"Invalid request line: '{detail}'", StatusCodes.Status400BadRequest, reason);
                     break;
                 case RequestRejectionReason.InvalidRequestTarget:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_InvalidRequestTarget_Detail(detail), StatusCodes.Status400BadRequest, reason);
+                    ex = new BadHttpRequestException($@"Invalid request target: '{detail}'", StatusCodes.Status400BadRequest, reason);
                     break;
                 case RequestRejectionReason.InvalidRequestHeader:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_InvalidRequestHeader_Detail(detail), StatusCodes.Status400BadRequest, reason);
+                    ex = new BadHttpRequestException($@"Invalid request header: '{detail}'", StatusCodes.Status400BadRequest, reason);
                     break;
                 case RequestRejectionReason.InvalidContentLength:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_InvalidContentLength_Detail(detail), StatusCodes.Status400BadRequest, reason);
+                    ex = new BadHttpRequestException($@"Invalid content length: {detail}", StatusCodes.Status400BadRequest, reason);
                     break;
                 case RequestRejectionReason.UnrecognizedHTTPVersion:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_UnrecognizedHTTPVersion(detail), StatusCodes.Status505HttpVersionNotsupported, reason);
+                    ex = new BadHttpRequestException($@"Unrecognized HTTP version: '{detail}'", StatusCodes.Status505HttpVersionNotsupported, reason);
                     break;
                 case RequestRejectionReason.FinalTransferCodingNotChunked:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_FinalTransferCodingNotChunked(detail), StatusCodes.Status400BadRequest, reason);
+                    ex = new BadHttpRequestException($@"The message body length cannot be determined because the final transfer coding was set to '{detail}' instead of 'chunked'.", StatusCodes.Status400BadRequest, reason);
                     break;
                 case RequestRejectionReason.LengthRequired:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_LengthRequired(detail), StatusCodes.Status411LengthRequired, reason);
+                    ex = new BadHttpRequestException($@"{detail} request contains no Content-Length or Transfer-Encoding header.", StatusCodes.Status411LengthRequired, reason);
                     break;
                 case RequestRejectionReason.LengthRequiredHttp10:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_LengthRequiredHttp10(detail), StatusCodes.Status400BadRequest, reason);
+                    ex = new BadHttpRequestException($@"{detail} request contains no Content-Length header.", StatusCodes.Status400BadRequest, reason);
                     break;
                 case RequestRejectionReason.InvalidHostHeader:
-                    ex = new BadHttpRequestException(CoreStrings.FormatBadRequest_InvalidHostHeader_Detail(detail), StatusCodes.Status400BadRequest, reason);
+                    ex = new BadHttpRequestException($@"Invalid Host header: '{detail}'", StatusCodes.Status400BadRequest, reason);
                     break;
                 default:
                     ex = new BadHttpRequestException(CoreStrings.BadRequest, StatusCodes.Status400BadRequest, reason);

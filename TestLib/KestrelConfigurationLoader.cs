@@ -13,6 +13,7 @@ using TestLib.Certificate;
 using TestLib.Hosting.Abstractions;
 using TestLib.Infrastructure;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 using TestLib.Options;
 
 namespace TestLib {
@@ -301,7 +302,7 @@ namespace TestLib {
 
         private X509Certificate2 LoadCertificate(CertificateConfig certInfo, string endpointName) {
             if (certInfo.IsFileCert && certInfo.IsStoreCert) {
-                throw new InvalidOperationException(CoreStrings.FormatMultipleCertificateSources(endpointName));
+                throw new InvalidOperationException($@"The endpoint {endpointName} specified multiple certificate sources.");
             } else if (certInfo.IsFileCert) {
                 var env = Options.ApplicationServices.GetRequiredService<IHostEnvironment>();
                 return new X509Certificate2(Path.Combine(env.ContentRootPath, certInfo.Path), certInfo.Password);

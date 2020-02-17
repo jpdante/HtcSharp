@@ -297,7 +297,7 @@ namespace TestLib.Http.Protocols.Http2.HPack {
 
         private void OnStringLength(int length, State nextState) {
             if (length > _stringOctets.Length) {
-                throw new HPackDecodingException(CoreStrings.FormatHPackStringLengthTooLarge(length, _stringOctets.Length));
+                throw new HPackDecodingException($@"Decoded string length of {length} octets is greater than the configured maximum length of {_stringOctets.Length} octets.");
             }
 
             _stringLength = length;
@@ -335,14 +335,13 @@ namespace TestLib.Http.Protocols.Http2.HPack {
                     ? StaticTable.Instance[index - 1]
                     : _dynamicTable[index - StaticTable.Instance.Count - 1];
             } catch (IndexOutOfRangeException ex) {
-                throw new HPackDecodingException(CoreStrings.FormatHPackErrorIndexOutOfRange(index), ex);
+                throw new HPackDecodingException($@"Index {index} is outside the bounds of the header field table.", ex);
             }
         }
 
         private void SetDynamicHeaderTableSize(int size) {
             if (size > _maxDynamicTableSize) {
-                throw new HPackDecodingException(
-                    CoreStrings.FormatHPackErrorDynamicTableSizeUpdateTooLarge(size, _maxDynamicTableSize));
+                throw new HPackDecodingException($@"A dynamic table size of {size} octets is greater than the configured maximum size of {_maxDynamicTableSize} octets.");
             }
 
             _dynamicTable.Resize(size);

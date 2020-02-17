@@ -156,8 +156,7 @@ namespace TestLib.Http.Protocols.Http2 {
             // - For now we'll restrict it to http/s and require it match the transport.
             // - We'll need to find some concrete scenarios to warrant unblocking this.
             if (!string.Equals(RequestHeaders[HeaderNames.Scheme], Scheme, StringComparison.OrdinalIgnoreCase)) {
-                ResetAndAbort(new ConnectionAbortedException(
-                    CoreStrings.FormatHttp2StreamErrorSchemeMismatch(RequestHeaders[HeaderNames.Scheme], Scheme)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($@"The request :scheme header '{RequestHeaders[HeaderNames.Scheme]}' does not match the transport scheme '{Scheme}'."), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -201,13 +200,13 @@ namespace TestLib.Http.Protocols.Http2 {
             Method = HttpUtilities.GetKnownMethod(_methodText);
 
             if (Method == HttpMethod.None) {
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2ErrorMethodInvalid(_methodText)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($@"The Method '{_methodText}' is invalid."), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
             if (Method == HttpMethod.Custom) {
                 if (HttpCharacters.IndexOfInvalidTokenChar(_methodText) >= 0) {
-                    ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2ErrorMethodInvalid(_methodText)), Http2ErrorCode.PROTOCOL_ERROR);
+                    ResetAndAbort(new ConnectionAbortedException($@"The Method '{_methodText}' is invalid."), Http2ErrorCode.PROTOCOL_ERROR);
                     return false;
                 }
             }
@@ -244,7 +243,7 @@ namespace TestLib.Http.Protocols.Http2 {
             hostText = host.ToString();
             if (host.Count > 1 || !HttpUtilities.IsHostHeaderValid(hostText)) {
                 // RST replaces 400
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatBadRequest_InvalidHostHeader_Detail(hostText)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($@"Invalid Host header: '{hostText}'"), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -254,7 +253,7 @@ namespace TestLib.Http.Protocols.Http2 {
         private bool TryValidatePath(ReadOnlySpan<char> pathSegment) {
             // Must start with a leading slash
             if (pathSegment.Length == 0 || pathSegment[0] != '/') {
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2StreamErrorPathInvalid(RawTarget)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($@"The request :path is invalid: '{RawTarget}'"), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -280,7 +279,7 @@ namespace TestLib.Http.Protocols.Http2 {
 
                 return true;
             } catch (InvalidOperationException) {
-                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2StreamErrorPathInvalid(RawTarget)), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException($@"The request :path is invalid: '{RawTarget}'"), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
         }

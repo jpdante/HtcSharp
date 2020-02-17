@@ -64,7 +64,7 @@ namespace TestLib.Http.Protocols.Http {
         public MemoryPool<byte> MemoryPool { get; }
 
         protected override void OnRequestProcessingEnded() {
-            TimeoutControlExtensions.StartDrainTimeout(MinResponseDataRate, ServerOptions.Limits.MaxResponseBufferSize);
+            TimeoutControl.StartDrainTimeout(MinResponseDataRate, ServerOptions.Limits.MaxResponseBufferSize);
 
             // Prevent RequestAborted from firing. Free up unneeded feature references.
             Reset();

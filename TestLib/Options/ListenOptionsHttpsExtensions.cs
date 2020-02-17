@@ -4,18 +4,18 @@
 using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.DependencyInjection;
 using TestLib.Hosting.Abstractions;
 using TestLib.Infrastructure;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 using TestLib.Middleware;
 
-namespace TestLib.Options
-{
+namespace TestLib.Options {
     /// <summary>
     /// Extension methods for <see cref="ListenOptions"/> that configure Kestrel to use HTTPS for a given endpoint.
     /// </summary>
-    public static class ListenOptionsHttpsExtensions
-    {
+    public static class ListenOptionsHttpsExtensions {
         /// <summary>
         /// Configure Kestrel to use HTTPS with the default certificate if available.
         /// This will throw if no default certificate is configured.
@@ -31,8 +31,7 @@ namespace TestLib.Options
         /// <param name="fileName">The name of a certificate file, relative to the directory that contains the application
         /// content files.</param>
         /// <returns>The <see cref="ListenOptions"/>.</returns>
-        public static ListenOptions UseHttps(this ListenOptions listenOptions, string fileName)
-        {
+        public static ListenOptions UseHttps(this ListenOptions listenOptions, string fileName) {
             var env = listenOptions.KestrelServerOptions.ApplicationServices.GetRequiredService<IHostEnvironment>();
             return listenOptions.UseHttps(new X509Certificate2(Path.Combine(env.ContentRootPath, fileName)));
         }
@@ -45,8 +44,7 @@ namespace TestLib.Options
         /// content files.</param>
         /// <param name="password">The password required to access the X.509 certificate data.</param>
         /// <returns>The <see cref="ListenOptions"/>.</returns>
-        public static ListenOptions UseHttps(this ListenOptions listenOptions, string fileName, string password)
-        {
+        public static ListenOptions UseHttps(this ListenOptions listenOptions, string fileName, string password) {
             var env = listenOptions.KestrelServerOptions.ApplicationServices.GetRequiredService<IHostEnvironment>();
             return listenOptions.UseHttps(new X509Certificate2(Path.Combine(env.ContentRootPath, fileName), password));
         }
@@ -60,8 +58,7 @@ namespace TestLib.Options
         /// <param name="configureOptions">An Action to configure the <see cref="HttpsConnectionAdapterOptions"/>.</param>
         /// <returns>The <see cref="ListenOptions"/>.</returns>
         public static ListenOptions UseHttps(this ListenOptions listenOptions, string fileName, string password,
-            Action<HttpsConnectionAdapterOptions> configureOptions)
-        {
+            Action<HttpsConnectionAdapterOptions> configureOptions) {
             var env = listenOptions.KestrelServerOptions.ApplicationServices.GetRequiredService<IHostEnvironment>();
             return listenOptions.UseHttps(new X509Certificate2(Path.Combine(env.ContentRootPath, fileName), password), configureOptions);
         }
@@ -110,8 +107,7 @@ namespace TestLib.Options
         /// <param name="configureOptions">An Action to configure the <see cref="HttpsConnectionAdapterOptions"/>.</param>
         /// <returns>The <see cref="ListenOptions"/>.</returns>
         public static ListenOptions UseHttps(this ListenOptions listenOptions, StoreName storeName, string subject, bool allowInvalid, StoreLocation location,
-            Action<HttpsConnectionAdapterOptions> configureOptions)
-        {
+            Action<HttpsConnectionAdapterOptions> configureOptions) {
             return listenOptions.UseHttps(CertificateLoader.LoadFromStoreCert(subject, storeName.ToString(), location, allowInvalid), configureOptions);
         }
 
@@ -121,15 +117,12 @@ namespace TestLib.Options
         /// <param name="listenOptions"> The <see cref="ListenOptions"/> to configure.</param>
         /// <param name="serverCertificate">The X.509 certificate.</param>
         /// <returns>The <see cref="ListenOptions"/>.</returns>
-        public static ListenOptions UseHttps(this ListenOptions listenOptions, X509Certificate2 serverCertificate)
-        {
-            if (serverCertificate == null)
-            {
+        public static ListenOptions UseHttps(this ListenOptions listenOptions, X509Certificate2 serverCertificate) {
+            if (serverCertificate == null) {
                 throw new ArgumentNullException(nameof(serverCertificate));
             }
 
-            return listenOptions.UseHttps(options =>
-            {
+            return listenOptions.UseHttps(options => {
                 options.ServerCertificate = serverCertificate;
             });
         }
@@ -142,20 +135,16 @@ namespace TestLib.Options
         /// <param name="configureOptions">An Action to configure the <see cref="HttpsConnectionAdapterOptions"/>.</param>
         /// <returns>The <see cref="ListenOptions"/>.</returns>
         public static ListenOptions UseHttps(this ListenOptions listenOptions, X509Certificate2 serverCertificate,
-            Action<HttpsConnectionAdapterOptions> configureOptions)
-        {
-            if (serverCertificate == null)
-            {
+            Action<HttpsConnectionAdapterOptions> configureOptions) {
+            if (serverCertificate == null) {
                 throw new ArgumentNullException(nameof(serverCertificate));
             }
 
-            if (configureOptions == null)
-            {
+            if (configureOptions == null) {
                 throw new ArgumentNullException(nameof(configureOptions));
             }
 
-            return listenOptions.UseHttps(options =>
-            {
+            return listenOptions.UseHttps(options => {
                 options.ServerCertificate = serverCertificate;
                 configureOptions(options);
             });
@@ -167,10 +156,8 @@ namespace TestLib.Options
         /// <param name="listenOptions">The <see cref="ListenOptions"/> to configure.</param>
         /// <param name="configureOptions">An action to configure options for HTTPS.</param>
         /// <returns>The <see cref="ListenOptions"/>.</returns>
-        public static ListenOptions UseHttps(this ListenOptions listenOptions, Action<HttpsConnectionAdapterOptions> configureOptions)
-        {
-            if (configureOptions == null)
-            {
+        public static ListenOptions UseHttps(this ListenOptions listenOptions, Action<HttpsConnectionAdapterOptions> configureOptions) {
+            if (configureOptions == null) {
                 throw new ArgumentNullException(nameof(configureOptions));
             }
 
@@ -179,8 +166,7 @@ namespace TestLib.Options
             configureOptions(options);
             listenOptions.KestrelServerOptions.ApplyDefaultCert(options);
 
-            if (options.ServerCertificate == null && options.ServerCertificateSelector == null)
-            {
+            if (options.ServerCertificate == null && options.ServerCertificateSelector == null) {
                 throw new InvalidOperationException(CoreStrings.NoCertSpecifiedNoDevelopmentCertificateFound);
             }
 
@@ -188,14 +174,12 @@ namespace TestLib.Options
         }
 
         // Use Https if a default cert is available
-        internal static bool TryUseHttps(this ListenOptions listenOptions)
-        {
+        internal static bool TryUseHttps(this ListenOptions listenOptions) {
             var options = new HttpsConnectionAdapterOptions();
             listenOptions.KestrelServerOptions.ApplyHttpsDefaults(options);
             listenOptions.KestrelServerOptions.ApplyDefaultCert(options);
 
-            if (options.ServerCertificate == null && options.ServerCertificateSelector == null)
-            {
+            if (options.ServerCertificate == null && options.ServerCertificateSelector == null) {
                 return false;
             }
 
@@ -209,13 +193,11 @@ namespace TestLib.Options
         /// <param name="listenOptions">The <see cref="ListenOptions"/> to configure.</param>
         /// <param name="httpsOptions">Options to configure HTTPS.</param>
         /// <returns>The <see cref="ListenOptions"/>.</returns>
-        public static ListenOptions UseHttps(this ListenOptions listenOptions, HttpsConnectionAdapterOptions httpsOptions)
-        {
+        public static ListenOptions UseHttps(this ListenOptions listenOptions, HttpsConnectionAdapterOptions httpsOptions) {
             var loggerFactory = listenOptions.KestrelServerOptions?.ApplicationServices.GetRequiredService<ILoggerFactory>() ?? NullLoggerFactory.Instance;
 
             listenOptions.IsTls = true;
-            listenOptions.Use(next =>
-            {
+            listenOptions.Use(next => {
                 // Set the list of protocols from listen options
                 httpsOptions.HttpProtocols = listenOptions.Protocols;
                 var middleware = new HttpsConnectionMiddleware(next, httpsOptions, loggerFactory);

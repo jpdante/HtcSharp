@@ -18,7 +18,7 @@ namespace TestLib.Options {
             try {
                 await base.BindAsync(context).ConfigureAwait(false);
             } catch (Exception ex) when (!(ex is IOException)) {
-                context.Logger.LogDebug(CoreStrings.FormatFallbackToIPv4Any(IPEndPoint.Port));
+                context.Logger.LogDebug($@"Failed to bind to http://[::]:{IPEndPoint.Port} (IPv6Any). Attempting to bind to http://0.0.0.0:{IPEndPoint.Port} instead.");
 
                 // for machines that do not support IPv6
                 EndPoint = new IPEndPoint(IPAddress.Any, IPEndPoint.Port);

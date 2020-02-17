@@ -21,6 +21,7 @@ using TestLib.Http.Headers;
 using TestLib.Infrastructure;
 using TestLib.IO.Tasks;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 using TestLib.Net.Connections.Exceptions;
 using TestLib.Server.Abstractions;
 
@@ -711,8 +712,7 @@ namespace TestLib.Http.Protocols.Http {
         [MethodImpl(MethodImplOptions.NoInlining)]
         private InvalidOperationException GetTooManyBytesWrittenException(int count) {
             var responseHeaders = HttpResponseHeaders;
-            return new InvalidOperationException(
-                CoreStrings.FormatTooManyBytesWritten(_responseBytesWritten + count, responseHeaders.ContentLength.Value));
+            return new InvalidOperationException($@"Response Content-Length mismatch: too many bytes written ({_responseBytesWritten + count} of {responseHeaders.ContentLength.Value}).");
         }
 
         private void CheckLastWrite() {
@@ -745,8 +745,7 @@ namespace TestLib.Http.Protocols.Http {
                     _keepAlive = false;
                 }
 
-                ex = new InvalidOperationException(
-                    CoreStrings.FormatTooFewBytesWritten(_responseBytesWritten, responseHeaders.ContentLength.Value));
+                ex = new InvalidOperationException($@"Response Content-Length mismatch: too few bytes written ({_responseBytesWritten} of {responseHeaders.ContentLength.Value}).");
                 return false;
             }
 
@@ -995,11 +994,11 @@ namespace TestLib.Http.Protocols.Http {
         }
 
         private static void ThrowResponseAlreadyStartedException(string value) {
-            throw new InvalidOperationException(CoreStrings.FormatParameterReadOnlyAfterResponseStarted(value));
+            throw new InvalidOperationException($@"{value} cannot be set because the response has already started.");
         }
 
         private void RejectNonBodyTransferEncodingResponse(bool appCompleted) {
-            var ex = new InvalidOperationException(CoreStrings.FormatHeaderNotAllowedOnResponse("Transfer-Encoding", StatusCode));
+            var ex = new InvalidOperationException($@"Setting the header Transfer-Encoding is not allowed on responses with status code {StatusCode}.");
             if (!appCompleted) {
                 // Back out of header creation surface exception in user code
                 _requestProcessingStatus = RequestProcessingStatus.AppStarted;
@@ -1050,7 +1049,7 @@ namespace TestLib.Http.Protocols.Http {
         [StackTraceHidden]
         private void ThrowWritingToResponseBodyNotSupported() {
             // Throw Exception for 204, 205, 304 responses.
-            throw new InvalidOperationException(CoreStrings.FormatWritingToResponseBodyNotSupported(StatusCode));
+            throw new InvalidOperationException($@"Writing to the response body is invalid for responses with status code {StatusCode}.");
         }
 
         [StackTraceHidden]

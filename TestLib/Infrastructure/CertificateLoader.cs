@@ -28,7 +28,7 @@ namespace TestLib.Infrastructure {
                         .FirstOrDefault();
 
                     if (foundCertificate == null) {
-                        throw new InvalidOperationException(CoreStrings.FormatCertNotFoundInStore(subject, storeLocation, storeName, allowInvalid));
+                        throw new InvalidOperationException($@"The requested certificate {subject} could not be found in {storeLocation}/{storeName} with AllowInvalid setting: {allowInvalid}.");
                     }
 
                     return foundCertificate;

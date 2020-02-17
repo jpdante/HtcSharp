@@ -7,6 +7,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 
 namespace TestLib.Options
 {
@@ -57,7 +58,7 @@ namespace TestLib.Options
 
             if (exceptions.Count == 2)
             {
-                throw new IOException(CoreStrings.FormatAddressBindingFailed(GetDisplayName()), new AggregateException(exceptions));
+                throw new IOException($"Failed to bind to address {GetDisplayName()}.", new AggregateException(exceptions));
             }
 
             // If StartLocalhost doesn't throw, there is at least one listener.

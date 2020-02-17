@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 
 namespace TestLib.Options
 {

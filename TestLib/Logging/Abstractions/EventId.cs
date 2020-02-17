@@ -1,7 +1,7 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace TestLib.Logging {
+namespace TestLib.Logging.Abstractions {
     /// <summary>
     /// Identifies a logging event. The primary identifier is the "Id" property, with the "Name" property providing a short description of this type of event.
     /// </summary>

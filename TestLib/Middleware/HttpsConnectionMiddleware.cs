@@ -20,6 +20,7 @@ using TestLib.Infrastructure;
 using TestLib.IO.MemoryPool;
 using TestLib.IO.Pipes;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 using TestLib.Options;
 
 namespace TestLib.Middleware {
@@ -223,7 +224,7 @@ namespace TestLib.Middleware {
 
         private static void EnsureCertificateIsAllowedForServerAuth(X509Certificate2 certificate) {
             if (!CertificateLoader.IsCertificateAllowedForServerAuth(certificate)) {
-                throw new InvalidOperationException(CoreStrings.FormatInvalidServerCertificateEku(certificate.Thumbprint));
+                throw new InvalidOperationException($@"Certificate {certificate.Thumbprint} cannot be used as an SSL server certificate. It has an Extended Key Usage extension but the usages do not include Server Authentication (OID 1.3.6.1.5.5.7.3.1).");
             }
         }
 

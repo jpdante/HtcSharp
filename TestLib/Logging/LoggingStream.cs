@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TestLib.Logging.Abstractions;
 
 namespace TestLib.Logging {
     internal sealed class LoggingStream : Stream {

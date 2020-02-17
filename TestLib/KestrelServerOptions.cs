@@ -13,6 +13,7 @@ using TestLib.Certificate;
 using TestLib.Http.Abstractions;
 using TestLib.Infrastructure;
 using TestLib.Logging;
+using TestLib.Logging.Abstractions;
 using TestLib.Options;
 
 namespace TestLib {

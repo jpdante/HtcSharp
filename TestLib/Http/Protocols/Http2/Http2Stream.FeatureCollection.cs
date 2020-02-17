@@ -45,7 +45,7 @@ namespace TestLib.Http.Protocols.Http2 {
         }
 
         void IHttpResetFeature.Reset(int errorCode) {
-            var abortReason = new ConnectionAbortedException(CoreStrings.FormatHttp2StreamResetByApplication((Http2ErrorCode)errorCode));
+            var abortReason = new ConnectionAbortedException($@"The HTTP/2 stream was reset by the application with error code {(Http2ErrorCode)errorCode}.");
             ResetAndAbort(abortReason, (Http2ErrorCode)errorCode);
         }
     }
