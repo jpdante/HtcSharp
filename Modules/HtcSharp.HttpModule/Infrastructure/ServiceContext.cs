@@ -1,12 +1,11 @@
 ﻿using System.IO.Pipelines;
-using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Core.Http.Http;
 using HtcSharp.HttpModule.Core.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Heart;
 using HtcSharp.HttpModule.Infrastructure.Interfaces;
 using HtcSharp.HttpModule.Infrastructure.Options;
 
-namespace HtcSharp.HttpModule {
+namespace HtcSharp.HttpModule.Infrastructure {
     internal class ServiceContext {
         public IKestrelTrace Log { get; set; }
 
