@@ -12,6 +12,7 @@ using HtcSharp.HttpModule.Http.Protocols.Http2;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HtcSharp.HttpModule.Server.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure
 {

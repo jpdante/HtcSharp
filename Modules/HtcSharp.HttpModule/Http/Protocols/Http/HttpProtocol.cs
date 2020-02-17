@@ -20,10 +20,10 @@ using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.IO.Tasks;
-using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HtcSharp.HttpModule.Server.Abstractions;
+using HtcSharp.HttpModule.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal abstract partial class HttpProtocol : IHttpResponseControl {

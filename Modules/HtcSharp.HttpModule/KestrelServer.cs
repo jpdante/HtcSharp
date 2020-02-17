@@ -15,10 +15,11 @@ using HtcSharp.HttpModule.Http.Protocols.Http;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Heart;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
 using HtcSharp.HttpModule.Middleware;
 using HtcSharp.HttpModule.Options;
 using HtcSharp.HttpModule.Server.Abstractions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace HtcSharp.HttpModule {
     public class KestrelServer : IDisposable {

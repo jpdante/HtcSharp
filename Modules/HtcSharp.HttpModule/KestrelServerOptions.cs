@@ -13,8 +13,8 @@ using HtcSharp.HttpModule.Certificate;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
 using HtcSharp.HttpModule.Options;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule {
     /// <summary>

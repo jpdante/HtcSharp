@@ -4,7 +4,7 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure
 {

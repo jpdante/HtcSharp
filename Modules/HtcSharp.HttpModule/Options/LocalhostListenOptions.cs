@@ -7,7 +7,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Options
 {

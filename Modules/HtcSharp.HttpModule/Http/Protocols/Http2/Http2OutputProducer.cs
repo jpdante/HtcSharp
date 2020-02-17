@@ -15,6 +15,7 @@ using HtcSharp.HttpModule.IO.Pipes;
 using HtcSharp.HttpModule.IO.Tasks;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http2
 {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions.Features;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure {
     internal class KestrelConnection : IConnectionHeartbeatFeature, IConnectionCompleteFeature, IConnectionLifetimeNotificationFeature, IThreadPoolWorkItem {

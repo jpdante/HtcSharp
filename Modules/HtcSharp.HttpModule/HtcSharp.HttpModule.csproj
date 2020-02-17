@@ -21,8 +21,17 @@
     <PackageReference Include="Microsoft.Extensions.Primitives" Version="3.1.1" />
     <PackageReference Include="System.IO.Pipelines" Version="4.7.0" />
     <PackageReference Include="System.Security.Cryptography.Cng" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Options\Options.cs" />
+    <Compile Remove="Options\IOptions.cs" />
+    <Compile Remove="Options\IOptionsFactory.cs" />
+    <Compile Remove="Options\OptionsWrapper.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Update="CoreStrings.Designer.cs">
       <DependentUpon>CoreStrings.resx</DependentUpon>
@@ -38,6 +47,9 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logging\" />
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(TargetPath) $(TargetFileName)" />
   </Target>

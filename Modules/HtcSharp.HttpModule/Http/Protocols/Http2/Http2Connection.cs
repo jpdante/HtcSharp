@@ -24,6 +24,7 @@ using HtcSharp.HttpModule.IO.MemoryPool;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HtcSharp.HttpModule.Server.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
     internal class Http2Connection : IHttp2StreamLifetimeHandler, IHttpHeadersHandler, IRequestProcessor {

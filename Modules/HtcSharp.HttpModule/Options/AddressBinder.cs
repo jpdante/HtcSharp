@@ -11,8 +11,8 @@ using HtcSharp.HttpModule.Features;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Options {
     internal class AddressBinder {

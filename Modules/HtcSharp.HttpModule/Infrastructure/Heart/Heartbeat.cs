@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using HtcSharp.HttpModule.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure.Heart {
     internal class Heartbeat : IDisposable {

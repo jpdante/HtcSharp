@@ -20,8 +20,9 @@ using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.IO.MemoryPool;
 using HtcSharp.HttpModule.IO.Pipes;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
 using HtcSharp.HttpModule.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HtcSharp.HttpModule.Middleware {
     internal class HttpsConnectionMiddleware {

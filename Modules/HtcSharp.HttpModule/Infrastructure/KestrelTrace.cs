@@ -6,8 +6,8 @@ using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Protocols.Http2;
 using HtcSharp.HttpModule.Http.Protocols.Http2.HPack;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Infrastructure {
     internal class KestrelTrace : IKestrelTrace {

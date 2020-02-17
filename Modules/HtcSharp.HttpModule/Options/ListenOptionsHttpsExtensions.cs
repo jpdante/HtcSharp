@@ -8,8 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using HtcSharp.HttpModule.Hosting.Abstractions;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Logging.Abstractions;
 using HtcSharp.HttpModule.Middleware;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Options {
     /// <summary>

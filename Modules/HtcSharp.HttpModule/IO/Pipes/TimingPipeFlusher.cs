@@ -9,6 +9,7 @@ using HtcSharp.HttpModule.Http.Protocols.Http;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Net.Connections.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.IO.Pipes {
     /// <summary>
