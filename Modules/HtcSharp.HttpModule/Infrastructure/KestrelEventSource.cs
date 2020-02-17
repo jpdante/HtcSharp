@@ -1,7 +1,10 @@
-﻿using System.Diagnostics.Tracing;
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
-using HtcSharp.HttpModule.Core;
-using HtcSharp.HttpModule.Core.Http.Http;
+using HtcSharp.HttpModule.Connections.Abstractions;
+using HtcSharp.HttpModule.Http.Protocols.Http;
 
 namespace HtcSharp.HttpModule.Infrastructure {
     [EventSource(Name = "Microsoft-AspNetCore-Server-Kestrel")]

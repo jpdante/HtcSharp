@@ -1,4 +1,4 @@
-/*using System.Reflection;
+using System.Reflection;
 using HtcSharp.Core.Engines;
 using HtcSharp.Core.Logging;
 
@@ -16,4 +16,4 @@ namespace HtcSharp.HttpModule {
         public override void Stop() {
         }
     }
-}*/
+}

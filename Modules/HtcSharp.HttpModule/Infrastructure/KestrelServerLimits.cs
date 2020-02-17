@@ -1,13 +1,10 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Threading;
-using HtcSharp.HttpModule.Core;
-using HtcSharp.HttpModule.Infrastructure.Features;
-using HtcSharp.HttpModule.Infrastructure.Heart;
 
 namespace HtcSharp.HttpModule.Infrastructure {
-
-    //TODO: Fix exceptions!
-
     public class KestrelServerLimits {
         // Matches the non-configurable default response buffer size for Kestrel in 1.0.0
         private long? _maxResponseBufferSize = 64 * 1024;
@@ -53,7 +50,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _maxResponseBufferSize;
             set {
                 if (value.HasValue && value.Value < 0) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.NonNegativeNumberOrNullRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.NonNegativeNumberOrNullRequired);
                 }
                 _maxResponseBufferSize = value;
             }
@@ -70,7 +67,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _maxRequestBufferSize;
             set {
                 if (value.HasValue && value.Value <= 0) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberOrNullRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberOrNullRequired);
                 }
                 _maxRequestBufferSize = value;
             }
@@ -88,7 +85,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _maxRequestLineSize;
             set {
                 if (value <= 0) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberRequired);
                 }
                 _maxRequestLineSize = value;
             }
@@ -104,7 +101,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _maxRequestHeadersTotalSize;
             set {
                 if (value <= 0) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberRequired);
                 }
                 _maxRequestHeadersTotalSize = value;
             }
@@ -120,7 +117,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _maxRequestHeaderCount;
             set {
                 if (value <= 0) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberRequired);
                 }
                 _maxRequestHeaderCount = value;
             }
@@ -139,7 +136,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _maxRequestBodySize;
             set {
                 if (value < 0) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.NonNegativeNumberOrNullRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.NonNegativeNumberOrNullRequired);
                 }
                 _maxRequestBodySize = value;
             }
@@ -155,7 +152,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _keepAliveTimeout;
             set {
                 if (value <= TimeSpan.Zero && value != Timeout.InfiniteTimeSpan) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveTimeSpanRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveTimeSpanRequired);
                 }
                 _keepAliveTimeout = value != Timeout.InfiniteTimeSpan ? value : TimeSpan.MaxValue;
             }
@@ -171,7 +168,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _requestHeadersTimeout;
             set {
                 if (value <= TimeSpan.Zero && value != Timeout.InfiniteTimeSpan) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveTimeSpanRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveTimeSpanRequired);
                 }
                 _requestHeadersTimeout = value != Timeout.InfiniteTimeSpan ? value : TimeSpan.MaxValue;
             }
@@ -193,7 +190,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _maxConcurrentConnections;
             set {
                 if (value.HasValue && value <= 0) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberOrNullRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.PositiveNumberOrNullRequired);
                 }
                 _maxConcurrentConnections = value;
             }
@@ -216,7 +213,7 @@ namespace HtcSharp.HttpModule.Infrastructure {
             get => _maxConcurrentUpgradedConnections;
             set {
                 if (value.HasValue && value < 0) {
-                    //throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.NonNegativeNumberOrNullRequired);
+                    throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.NonNegativeNumberOrNullRequired);
                 }
                 _maxConcurrentUpgradedConnections = value;
             }

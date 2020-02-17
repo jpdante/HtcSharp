@@ -1,9 +1,9 @@
-﻿using System.IO.Pipelines;
-using HtcSharp.HttpModule.Core.Http.Http;
-using HtcSharp.HttpModule.Core.Infrastructure;
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System.IO.Pipelines;
+using HtcSharp.HttpModule.Http.Protocols.Http;
 using HtcSharp.HttpModule.Infrastructure.Heart;
-using HtcSharp.HttpModule.Infrastructure.Interfaces;
-using HtcSharp.HttpModule.Infrastructure.Options;
 
 namespace HtcSharp.HttpModule.Infrastructure {
     internal class ServiceContext {

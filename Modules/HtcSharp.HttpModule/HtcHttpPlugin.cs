@@ -1,4 +1,4 @@
-﻿/*using HtcSharp.Core;
+﻿using HtcSharp.Core;
 using HtcSharp.Core.Interfaces.Plugin;
 
 namespace HtcSharp.HttpModule {
@@ -18,4 +18,4 @@ namespace HtcSharp.HttpModule {
             
         }
     }
-}*/
+}

@@ -1,10 +1,13 @@
-﻿using System;
-using HtcSharp.HttpModule.Core.Http;
-using HtcSharp.HttpModule.Core.Http.Http2;
-using HtcSharp.HttpModule.Core.Http.Http2.HPack;
-using HtcSharp.HttpModule.Infrastructure.Excpetions;
-using HtcSharp.HttpModule.Infrastructure.Interfaces;
-using Microsoft.Extensions.Logging;
+// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
+using HtcSharp.HttpModule.Http;
+using HtcSharp.HttpModule.Http.Protocols.Http2;
+using HtcSharp.HttpModule.Http.Protocols.Http2.HPack;
+using HtcSharp.HttpModule.Logging;
+using HtcSharp.HttpModule.Logging.Abstractions;
+using HtcSharp.HttpModule.Net.Connections.Exceptions;
 
 namespace HtcSharp.HttpModule.Infrastructure {
     internal class KestrelTrace : IKestrelTrace {
