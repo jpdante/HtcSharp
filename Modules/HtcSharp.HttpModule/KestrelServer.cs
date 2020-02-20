@@ -14,7 +14,6 @@ using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Protocols.Http;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Infrastructure.Heart;
-using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Middleware;
 using HtcSharp.HttpModule.Options;
 using HtcSharp.HttpModule.Server.Abstractions;
