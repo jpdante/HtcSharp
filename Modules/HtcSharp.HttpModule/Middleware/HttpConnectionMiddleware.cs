@@ -7,6 +7,7 @@ using HtcSharp.HttpModule.Connections.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions.Features;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Server.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Middleware {
     internal class HttpConnectionMiddleware<TContext> {
@@ -23,6 +24,10 @@ namespace HtcSharp.HttpModule.Middleware {
         public Task OnConnectionAsync(ConnectionContext connectionContext) {
             var memoryPoolFeature = connectionContext.Features.Get<IMemoryPoolFeature>();
 
+            if(memoryPoolFeature == null) _serviceContext.Log.LogError("Memory pool is null, there is something wrong here!!!");
+
+            _serviceContext.Log.LogError("Connection received, decoding request...");
+
             var httpConnectionContext = new HttpConnectionContext {
                 ConnectionId = connectionContext.ConnectionId,
                 ConnectionContext = connectionContext,
@@ -34,6 +39,8 @@ namespace HtcSharp.HttpModule.Middleware {
                 LocalEndPoint = connectionContext.LocalEndPoint as IPEndPoint,
                 RemoteEndPoint = connectionContext.RemoteEndPoint as IPEndPoint
             };
+
+            _serviceContext.Log.LogError("Request decoded!");
 
             var connection = new HttpConnection(httpConnectionContext);
 

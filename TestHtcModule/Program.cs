@@ -39,6 +39,9 @@ namespace TestHtcModule {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddTransient<IHttpContextFactory, DefaultHttpContextFactory>();
             serviceCollection.AddTransient<ILogger, Logger<KestrelServer>>();
+            var listener = new DiagnosticListener("HtcSharpServer");
+            serviceCollection.AddSingleton<DiagnosticListener>(listener);
+            serviceCollection.AddSingleton<DiagnosticSource>(listener);
             serviceCollection.AddOptions();
             serviceCollection.AddLogging();
             var serviceProvider = serviceCollection.BuildServiceProvider();

@@ -13,7 +13,13 @@ namespace TestHtcModule {
             }
 
             var message = formatter(state, exception);
-            Console.WriteLine(message);
+            if (exception == null) {
+                Console.WriteLine($@"[{logLevel}] [{eventId.Id}] {message}");
+            } else {
+                Console.WriteLine($@"[{logLevel}] [{eventId.Id}] {message}");
+                Console.WriteLine($@"{exception.Message}");
+                Console.WriteLine($@"{exception.StackTrace}");
+            }
         }
 
         public bool IsEnabled(LogLevel logLevel) {
