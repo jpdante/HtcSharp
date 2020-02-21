@@ -1,22 +1,13 @@
-﻿using HtcSharp.Core.Engines;
-using HtcSharp.Core.Helpers.Http;
-using HtcSharp.Core.IO;
-using HtcSharp.Core.Logging;
-using HtcSharp.Core.Managers;
-using HtcSharp.Core.Utils;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
-using HtcSharp.Core.Exceptions.Dictionary;
-using HtcSharp.Core.Models.Http.Pages;
-using KeyNotFoundException = HtcSharp.Core.Exceptions.Dictionary.KeyNotFoundException;
 
 namespace HtcSharp.Core {
     public class HtcServer {
-        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
+        /*private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
         private Dictionary<string, Type> _availableEngines;
         private List<Engine> _engines;
@@ -195,6 +186,6 @@ namespace HtcSharp.Core {
                     Logger.Info($"Unable to create, Engine '{engineName}' does not exist.");
                 }
             }
-        }
+        }*/
     }
 }

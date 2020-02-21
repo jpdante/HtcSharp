@@ -1,9 +1,9 @@
 ﻿using HtcSharp.Core;
-using HtcSharp.Core.Logging;
-using HtcSharp.Core.Logging.Loggers;
 using System;
 using System.IO;
 using System.Reflection;
+using HtcSharp.Core.Old.Logging;
+using HtcSharp.Core.Old.Logging.Loggers;
 
 namespace HtcSharp.Server {
     public class Program {
