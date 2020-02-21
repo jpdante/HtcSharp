@@ -14,10 +14,8 @@ using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HtcSharp.HttpModule.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 
-namespace HtcSharp.HttpModule.Infrastructure
-{
-    internal class HttpConnection : ITimeoutHandler
-    {
+namespace HtcSharp.HttpModule.Infrastructure {
+    internal class HttpConnection : ITimeoutHandler {
         // Use C#7.3's ReadOnlySpan<byte> optimization for static data https://vcsjones.com/2019/02/01/csharp-readonly-span-bytes-static/
         private static ReadOnlySpan<byte> Http2Id => new[] { (byte)'h', (byte)'2' };
 
@@ -30,8 +28,7 @@ namespace HtcSharp.HttpModule.Infrastructure
         private IRequestProcessor _requestProcessor;
         private Http1Connection _http1Connection;
 
-        public HttpConnection(HttpConnectionContext context)
-        {
+        public HttpConnection(HttpConnectionContext context) {
             _context = context;
             _systemClock = _context.ServiceContext.SystemClock;
 
@@ -43,17 +40,15 @@ namespace HtcSharp.HttpModule.Infrastructure
 
         private IKestrelTrace Log => _context.ServiceContext.Log;
 
-        public async Task ProcessRequestsAsync<TContext>(IHttpApplication<TContext> httpApplication)
-        {
-            try
-            {
+        public async Task ProcessRequestsAsync<TContext>(IHttpApplication<TContext> httpApplication) {
+            try {
                 // Ensure TimeoutControl._lastTimestamp is initialized before anything that could set timeouts runs.
+           
                 _timeoutControl.Initialize(_systemClock.UtcNowTicks);
 
                 IRequestProcessor requestProcessor = null;
 
-                switch (SelectProtocol())
-                {
+                switch (SelectProtocol()) {
                     case HttpProtocols.Http1:
                         // _http1Connection must be initialized before adding the connection to the connection manager
                         requestProcessor = _http1Connection = new Http1Connection<TContext>(_context);
@@ -76,8 +71,7 @@ namespace HtcSharp.HttpModule.Infrastructure
 
                 _requestProcessor = requestProcessor;
 
-                if (requestProcessor != null)
-                {
+                if (requestProcessor != null) {
                     var connectionHeartbeatFeature = _context.ConnectionFeatures.Get<IConnectionHeartbeatFeature>();
                     var connectionLifetimeNotificationFeature = _context.ConnectionFeatures.Get<IConnectionLifetimeNotificationFeature>();
 
@@ -99,46 +93,36 @@ namespace HtcSharp.HttpModule.Infrastructure
 
                     await requestProcessor.ProcessRequestsAsync(httpApplication);
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Log.LogCritical(0, ex, $"Unexpected exception in {nameof(HttpConnection)}.{nameof(ProcessRequestsAsync)}.");
-            }
-            finally
-            {
-                if (_http1Connection?.IsUpgraded == true)
-                {
+            } finally {
+                if (_http1Connection?.IsUpgraded == true) {
                     _context.ServiceContext.ConnectionManager.UpgradedConnectionCount.ReleaseOne();
                 }
             }
         }
 
         // For testing only
-        internal void Initialize(IRequestProcessor requestProcessor)
-        {
+        internal void Initialize(IRequestProcessor requestProcessor) {
             _requestProcessor = requestProcessor;
             _http1Connection = requestProcessor as Http1Connection;
             _protocolSelectionState = ProtocolSelectionState.Selected;
         }
 
-        private void StopProcessingNextRequest()
-        {
+        private void StopProcessingNextRequest() {
             ProtocolSelectionState previousState;
-            lock (_protocolSelectionLock)
-            {
+            lock (_protocolSelectionLock) {
                 previousState = _protocolSelectionState;
                 Debug.Assert(previousState != ProtocolSelectionState.Initializing, "The state should never be initializing");
 
-                switch (_protocolSelectionState)
-                {
+                switch (_protocolSelectionState) {
                     case ProtocolSelectionState.Selected:
                     case ProtocolSelectionState.Aborted:
                         break;
                 }
             }
 
-            switch (previousState)
-            {
+            switch (previousState) {
                 case ProtocolSelectionState.Selected:
                     _requestProcessor.StopProcessingNextRequest();
                     break;
@@ -147,24 +131,20 @@ namespace HtcSharp.HttpModule.Infrastructure
             }
         }
 
-        private void OnConnectionClosed()
-        {
+        private void OnConnectionClosed() {
             ProtocolSelectionState previousState;
-            lock (_protocolSelectionLock)
-            {
+            lock (_protocolSelectionLock) {
                 previousState = _protocolSelectionState;
                 Debug.Assert(previousState != ProtocolSelectionState.Initializing, "The state should never be initializing");
 
-                switch (_protocolSelectionState)
-                {
+                switch (_protocolSelectionState) {
                     case ProtocolSelectionState.Selected:
                     case ProtocolSelectionState.Aborted:
                         break;
                 }
             }
 
-            switch (previousState)
-            {
+            switch (previousState) {
                 case ProtocolSelectionState.Selected:
                     _requestProcessor.OnInputOrOutputCompleted();
                     break;
@@ -173,20 +153,17 @@ namespace HtcSharp.HttpModule.Infrastructure
             }
         }
 
-        private void Abort(ConnectionAbortedException ex)
-        {
+        private void Abort(ConnectionAbortedException ex) {
             ProtocolSelectionState previousState;
 
-            lock (_protocolSelectionLock)
-            {
+            lock (_protocolSelectionLock) {
                 previousState = _protocolSelectionState;
                 Debug.Assert(previousState != ProtocolSelectionState.Initializing, "The state should never be initializing");
 
                 _protocolSelectionState = ProtocolSelectionState.Aborted;
             }
 
-            switch (previousState)
-            {
+            switch (previousState) {
                 case ProtocolSelectionState.Selected:
                     _requestProcessor.Abort(ex);
                     break;
@@ -195,8 +172,7 @@ namespace HtcSharp.HttpModule.Infrastructure
             }
         }
 
-        private HttpProtocols SelectProtocol()
-        {
+        private HttpProtocols SelectProtocol() {
             var hasTls = _context.ConnectionFeatures.Get<ITlsConnectionFeature>() != null;
             var applicationProtocol = _context.ConnectionFeatures.Get<ITlsApplicationProtocolFeature>()?.ApplicationProtocol
                 ?? new ReadOnlyMemory<byte>();
@@ -205,24 +181,20 @@ namespace HtcSharp.HttpModule.Infrastructure
 
             string error = null;
 
-            if (_context.Protocols == HttpProtocols.None)
-            {
+            if (_context.Protocols == HttpProtocols.None) {
                 error = CoreStrings.EndPointRequiresAtLeastOneProtocol;
             }
 
-            if (!http1Enabled && http2Enabled && hasTls && !Http2Id.SequenceEqual(applicationProtocol.Span))
-            {
+            if (!http1Enabled && http2Enabled && hasTls && !Http2Id.SequenceEqual(applicationProtocol.Span)) {
                 error = CoreStrings.EndPointHttp2NotNegotiated;
             }
 
-            if (error != null)
-            {
+            if (error != null) {
                 Log.LogError(0, error);
                 return HttpProtocols.None;
             }
 
-            if (!hasTls && http1Enabled)
-            {
+            if (!hasTls && http1Enabled) {
                 // Even if Http2 was enabled, default to Http1 because it's ambiguous without ALPN.
                 return HttpProtocols.Http1;
             }
@@ -230,10 +202,8 @@ namespace HtcSharp.HttpModule.Infrastructure
             return http2Enabled && (!hasTls || Http2Id.SequenceEqual(applicationProtocol.Span)) ? HttpProtocols.Http2 : HttpProtocols.Http1;
         }
 
-        private void Tick()
-        {
-            if (_protocolSelectionState == ProtocolSelectionState.Aborted)
-            {
+        private void Tick() {
+            if (_protocolSelectionState == ProtocolSelectionState.Aborted) {
                 // It's safe to check for timeouts on a dead connection,
                 // but try not to in order to avoid extraneous logs.
                 return;
@@ -245,12 +215,10 @@ namespace HtcSharp.HttpModule.Infrastructure
             _requestProcessor.Tick(now);
         }
 
-        public void OnTimeout(TimeoutReason reason)
-        {
+        public void OnTimeout(TimeoutReason reason) {
             // In the cases that don't log directly here, we expect the setter of the timeout to also be the input
             // reader, so when the read is canceled or aborted, the reader should write the appropriate log.
-            switch (reason)
-            {
+            switch (reason) {
                 case TimeoutReason.KeepAlive:
                     _requestProcessor.StopProcessingNextRequest();
                     break;
@@ -274,8 +242,7 @@ namespace HtcSharp.HttpModule.Infrastructure
             }
         }
 
-        private enum ProtocolSelectionState
-        {
+        private enum ProtocolSelectionState {
             Initializing,
             Selected,
             Aborted

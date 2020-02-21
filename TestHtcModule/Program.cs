@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule;
@@ -99,10 +100,11 @@ namespace TestHtcModule {
             return hostContext;
         }
 
-        public Task ProcessRequestAsync(Context context) {
-            return new Task(() => {
-                _logger.LogWarning("Received http request");
-            });
+        public async Task ProcessRequestAsync(Context context) {
+            var response = context.HttpContext.Response;
+            response.StatusCode = 200;
+            Memory<byte> data = Encoding.UTF8.GetBytes("AAAA");
+            await response.BodyWriter.WriteAsync(data);
         }
 
         public void DisposeContext(Context context, Exception exception) {
