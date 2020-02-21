@@ -27,6 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="HtcHttpPlugin.cs" />
+    <Compile Remove="HttpEngine.cs" />
     <Compile Remove="Options\Options.cs" />
     <Compile Remove="Options\IOptions.cs" />
     <Compile Remove="Options\IOptionsFactory.cs" />
@@ -49,6 +51,11 @@
 
   <ItemGroup>
     <Folder Include="Logging\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="HtcHttpPlugin.cs" />
+    <None Include="HttpEngine.cs" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(TargetPath) $(TargetFileName)" />
