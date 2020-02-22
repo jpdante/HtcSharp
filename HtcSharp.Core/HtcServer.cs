@@ -4,9 +4,36 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
+using HtcSharp.Core.Engine;
+using HtcSharp.Core.Logging;
+using HtcSharp.Core.Logging.Abstractions;
+using HtcSharp.Core.Module;
+using HtcSharp.Core.Plugin;
 
 namespace HtcSharp.Core {
     public class HtcServer {
+
+        private ILogger _logger;
+        private EngineManager _engineManager;
+        private ModuleManager _moduleManager;
+        private PluginManager _pluginManager;
+
+        public HtcServer() {
+            _logger = new MultiLogger();
+            _engineManager = new EngineManager(_logger);
+            _moduleManager = new ModuleManager(this, _logger);
+            _pluginManager = new PluginManager(_logger);
+        }
+
+        public async Task Start() {
+
+        }
+
+        public async Task Stop() {
+
+        }
+
         /*private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
 
         private Dictionary<string, Type> _availableEngines;

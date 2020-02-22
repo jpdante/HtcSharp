@@ -21,8 +21,8 @@ namespace HtcSharp.Core.Logging {
             _streamWriter = new StreamWriter(_fileStream, Encoding.UTF8);
         }
 
-        public override void Log(LogLevel logLevel, Type type, object obj, Exception ex) {
-            _streamWriter.WriteLine(FormatLog(logLevel, type, obj, ex));
+        public override void Log(LogLevel logLevel, object obj, Exception ex) {
+            _streamWriter.WriteLine(FormatLog(logLevel, obj, ex));
             _streamWriter.Flush();
         }
 

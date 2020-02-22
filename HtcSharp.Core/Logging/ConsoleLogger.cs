@@ -14,8 +14,8 @@ namespace HtcSharp.Core.Logging {
             MinLogLevel = minLogLevel;
         }
 
-        public override void Log(LogLevel logLevel, Type type, object obj, Exception ex) {
-            Console.WriteLine(FormatLog(logLevel, type, obj, ex));
+        public override void Log(LogLevel logLevel, object obj, Exception ex) {
+            Console.WriteLine(FormatLog(logLevel, obj, ex));
         }
 
         public override bool IsEnabled(LogLevel logLevel) {

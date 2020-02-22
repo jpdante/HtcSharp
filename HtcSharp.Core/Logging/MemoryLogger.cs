@@ -11,8 +11,8 @@ namespace HtcSharp.Core.Logging {
             Logs = new List<LogEntry>();
         }
 
-        public void Log(LogLevel logLevel, Type type, object obj, Exception ex) {
-            Logs.Add(new LogEntry(logLevel, type, obj, ex));
+        public void Log(LogLevel logLevel, object obj, Exception ex) {
+            Logs.Add(new LogEntry(logLevel, obj, ex));
         }
 
         public bool IsEnabled(LogLevel logLevel) {
@@ -28,14 +28,12 @@ namespace HtcSharp.Core.Logging {
 
             public readonly DateTime DateTime;
             public readonly LogLevel LogLevel;
-            public readonly Type Type;
             public readonly object Object;
             public readonly Exception Exception;
 
-            public LogEntry(LogLevel logLevel, Type type, object obj, Exception ex) {
+            public LogEntry(LogLevel logLevel, object obj, Exception ex) {
                 DateTime = DateTime.Now;
                 LogLevel = logLevel;
-                Type = type;
                 Object = obj;
                 Exception = ex;
             }

@@ -2,7 +2,7 @@
 
 namespace HtcSharp.Core.Logging.Abstractions {
     public class NullLogger : ILogger {
-        public void Log(LogLevel logLevel, Type type, object obj, Exception ex) {
+        public void Log(LogLevel logLevel, object obj, Exception ex) {
             
         }
 

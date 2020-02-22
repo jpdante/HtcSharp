@@ -19,9 +19,9 @@ namespace HtcSharp.Core.Logging {
             _loggers.Remove(name);
         }
 
-        public void Log(LogLevel logLevel, Type type, object obj, Exception ex) {
+        public void Log(LogLevel logLevel, object obj, Exception ex) {
             foreach(var logger in _loggers.Values) {
-                logger.Log(logLevel, type, obj, ex);
+                logger.Log(logLevel, obj, ex);
             }
         }
 
