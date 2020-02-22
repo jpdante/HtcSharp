@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Pages {
     public class FilePageMessage : IPageMessage {
@@ -16,10 +18,10 @@ namespace HtcSharp.HttpModule.Routing.Pages {
         public string GetPageMessage(HttpContext httpContext) {
             var fileContent = File.ReadAllText(_pageFileName, Encoding.UTF8);
             fileContent = fileContent.Replace("{Request.Path}", httpContext.Request.Path);
-            fileContent = fileContent.Replace("{Request.Host}", httpContext.Request.Host);
+            fileContent = fileContent.Replace("{Request.Host}", httpContext.Request.Host.ToString());
             fileContent = fileContent.Replace("{Request.PathBase}", httpContext.Request.PathBase);
             fileContent = fileContent.Replace("{Request.Protocol}", httpContext.Request.Protocol);
-            fileContent = fileContent.Replace("{Request.QueryString}", httpContext.Request.QueryString);
+            fileContent = fileContent.Replace("{Request.QueryString}", httpContext.Request.QueryString.ToString());
             fileContent = fileContent.Replace("{Request.RequestFilePath}", httpContext.Request.RequestFilePath);
             fileContent = fileContent.Replace("{Request.RequestPath}", httpContext.Request.RequestPath);
             fileContent = fileContent.Replace("{Request.Scheme}", httpContext.Request.Scheme);
@@ -32,14 +34,14 @@ namespace HtcSharp.HttpModule.Routing.Pages {
             return fileContent;
         }
 
-        public void ExecutePageMessage(HttpContext httpContext) {
+        public async Task ExecutePageMessage(HttpContext httpContext) {
             if (httpContext.Response.HasStarted) return;
             var fileContent = File.ReadAllText(_pageFileName, Encoding.UTF8);
             fileContent = fileContent.Replace("{Request.Path}", httpContext.Request.Path);
-            fileContent = fileContent.Replace("{Request.Host}", httpContext.Request.Host);
+            fileContent = fileContent.Replace("{Request.Host}", httpContext.Request.Host.ToString());
             fileContent = fileContent.Replace("{Request.PathBase}", httpContext.Request.PathBase);
             fileContent = fileContent.Replace("{Request.Protocol}", httpContext.Request.Protocol);
-            fileContent = fileContent.Replace("{Request.QueryString}", httpContext.Request.QueryString);
+            fileContent = fileContent.Replace("{Request.QueryString}", httpContext.Request.QueryString.ToString());
             fileContent = fileContent.Replace("{Request.RequestFilePath}", httpContext.Request.RequestFilePath);
             fileContent = fileContent.Replace("{Request.RequestPath}", httpContext.Request.RequestPath);
             fileContent = fileContent.Replace("{Request.Scheme}", httpContext.Request.Scheme);
@@ -50,7 +52,7 @@ namespace HtcSharp.HttpModule.Routing.Pages {
             fileContent = fileContent.Replace("{Connection.RemoteIpAddress}", httpContext.Connection.RemoteIpAddress.ToString());
             fileContent = fileContent.Replace("{Connection.RemotePort}", httpContext.Connection.RemotePort.ToString());
             httpContext.Response.StatusCode = StatusCode;
-            httpContext.Response.WriteAsync(fileContent).GetAwaiter().GetResult();
+            await httpContext.Response.WriteAsync(fileContent);
         }
     }
 }

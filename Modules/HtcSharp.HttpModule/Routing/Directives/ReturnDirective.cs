@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
+using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class ReturnDirective : IDirective {
@@ -33,15 +35,15 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             }
         }
 
-        public void Execute(HttpContext context) {
+        public async Task Execute(HttpContext context) {
             if (_type == 1) {
-                context.ErrorMessageManager.SendError(context, _statusCode);
+                await ErrorMessageManager.SendError(context, _statusCode);
             } else if (_type == 2) {
                 context.Response.StatusCode = _statusCode;
                 context.Response.Headers.Add("Location", HttpIO.ReplaceVars(context, _data));
             } else if (_type == 3) {
                 context.Response.StatusCode = _statusCode;
-                context.Response.Write(HttpIO.ReplaceVars(context, _data));
+                await context.Response.WriteAsync(HttpIO.ReplaceVars(context, _data));
             }
         }
     }

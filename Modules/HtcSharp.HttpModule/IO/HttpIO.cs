@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO.Compression;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Routing;
 
 namespace HtcSharp.HttpModule.IO {
     public static class HttpIO {
-        public static void CallFile(HttpContext httpContext, string requestPath) {
+        public static async Task SendFile(HttpContext httpContext, string requestPath) {
 
             /*using (var fileBuffer = new FileBuffer(requestPath, 2048)) {
                 var contentType = ContentType.DEFAULT.FromExtension(requestPath);
@@ -63,7 +64,7 @@ namespace HtcSharp.HttpModule.IO {
         public static string ReplaceVars(HttpContext httpContext, string data) {
             data = data.Replace("$scheme", httpContext.Request.Scheme);
             data = data.Replace("$uri", httpContext.Request.RequestPath);
-            data = data.Replace("$host", httpContext.Request.Host);
+            data = data.Replace("$host", httpContext.Request.Host.ToString());
             return data;
         }
     }

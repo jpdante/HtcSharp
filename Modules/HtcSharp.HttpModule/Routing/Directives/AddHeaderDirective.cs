@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Routing.Abstractions;
 
@@ -14,8 +15,10 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             _value = header[2];
         }
 
-        public void Execute(HttpContext context) {
+#pragma warning disable 1998
+        public async Task Execute(HttpContext context) {
             context.Response.Headers.Add(_name, _value);
         }
     }
+#pragma warning restore 1998
 }

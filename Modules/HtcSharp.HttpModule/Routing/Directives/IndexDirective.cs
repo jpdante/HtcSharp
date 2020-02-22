@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
+using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class IndexDirective : IDirective {
@@ -16,7 +18,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             }
         }
 
-        public void Execute(HttpContext context) {
+        public async Task Execute(HttpContext context) {
             foreach (var i in _indexes) {
                 var index = HttpIO.ReplaceVars(context, i);
                 if (index.Equals("$internal_indexes")) {
@@ -27,13 +29,13 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         context.Request.RequestFilePath = indexPath;
                         if (UrlMapper.ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                             if (!plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower())) continue;
-                            context.ErrorMessageManager.SendError(context, 500);
+                            await ErrorMessageManager.SendError(context, 500);
                             return;
                         }
                         try {
-                            HttpIO.CallFile(context, indexPath);
+                            await HttpIO.SendFile(context, indexPath);
                         } catch {
-                            context.ErrorMessageManager.SendError(context, 500);
+                            await ErrorMessageManager.SendError(context, 500);
                         }
                         return;
                     }
@@ -44,13 +46,13 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                     context.Request.RequestFilePath = indexPath;
                     if (UrlMapper.ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                         if (!plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower())) continue;
-                        context.ErrorMessageManager.SendError(context, 500);
+                        await ErrorMessageManager.SendError(context, 500);
                         return;
                     }
                     try {
-                        HttpIO.CallFile(context, indexPath);
+                        await HttpIO.SendFile(context, indexPath);
                     } catch {
-                        context.ErrorMessageManager.SendError(context, 500);
+                        await ErrorMessageManager.SendError(context, 500);
                     }
                     return;
                 }

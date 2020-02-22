@@ -152,6 +152,10 @@ namespace HtcSharp.HttpModule.Http.Default {
             set { RouteValuesFeature.RouteValues = value; }
         }
 
+        public override string RequestPath { get; set; }
+        public override string RequestFilePath { get; set; }
+        public override string TranslatedPath { get; set; }
+
         public override PipeReader BodyReader {
             get { return RequestBodyPipeFeature.Reader; }
         }

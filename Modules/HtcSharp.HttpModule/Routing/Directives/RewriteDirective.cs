@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
@@ -18,7 +19,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             if (rewrite.Count == 4) _flag = rewrite[3];
         }
 
-        public void Execute(HttpContext context) {
+        public async Task Execute(HttpContext context) {
             var match = _pattern.Match(context.Request.Path);
             if (!match.Success) return;
             var newRequest = HttpIO.ReplaceVars(context, _rewriteData);

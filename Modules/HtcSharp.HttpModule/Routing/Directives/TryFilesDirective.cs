@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
+using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class TryFilesDirective : IDirective {
@@ -19,15 +21,15 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             }
         }
 
-        public void Execute(HttpContext context) {
+        public async Task Execute(HttpContext context) {
             foreach (var file in _files) {
                 var tempPath = HttpIO.ReplaceVars(context, file);
                 if (tempPath[0].Equals('=')) {
                     if (int.TryParse(tempPath.Remove(0, 1), out var statusCode)) {
-                        context.ErrorMessageManager.SendError(context, statusCode);
+                        await ErrorMessageManager.SendError(context, statusCode);
                         return;
                     }
-                    context.ErrorMessageManager.SendError(context, 500);
+                    await ErrorMessageManager.SendError(context, 500);
                     return;
                 }
                 if (tempPath[0].Equals('@')) {
@@ -42,13 +44,13 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                     var extension = Path.GetExtension(context.Request.TranslatedPath);
                     if (UrlMapper.ExtensionPlugins.ContainsKey(extension.ToLower())) {
                         if (UrlMapper.ExtensionPlugins[extension.ToLower()].OnHttpExtensionRequest(context, context.Request.TranslatedPath, extension.ToLower())) {
-                            context.ErrorMessageManager.SendError(context, 500);
+                            await ErrorMessageManager.SendError(context, 500);
                         }
                     } else {
                         try {
-                            HttpIO.CallFile(context, context.Request.TranslatedPath);
+                            await HttpIO.SendFile(context, context.Request.TranslatedPath);
                         } catch {
-                            context.ErrorMessageManager.SendError(context, 500);
+                            await ErrorMessageManager.SendError(context, 500);
                         }
                     }
                 } else if (Directory.Exists(context.Request.TranslatedPath)) {

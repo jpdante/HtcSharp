@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Routing.Abstractions;
 using HtcSharp.HttpModule.Routing.Pages;
 
 namespace HtcSharp.HttpModule.Routing.Error {
-    public static class ErrorMessagesManager {
+    public static class ErrorMessageManager {
         private static readonly Dictionary<int, IPageMessage> DefaultPages;
         private static readonly Dictionary<int, IPageMessage> OverridePages;
 
-        static ErrorMessagesManager() {
+        static ErrorMessageManager() {
             DefaultPages = new Dictionary<int, IPageMessage>();
             OverridePages = new Dictionary<int, IPageMessage>();
         }
@@ -32,14 +34,14 @@ namespace HtcSharp.HttpModule.Routing.Error {
             return DefaultPages.ContainsKey(statusCode) ? DefaultPages[statusCode].GetPageMessage(httpContext) : null;
         }
 
-        public static void SendError(HttpContext httpContext, int statusCode) {
-            if (OverridePages.ContainsKey(statusCode)) OverridePages[statusCode].ExecutePageMessage(httpContext);
-            else if (DefaultPages.ContainsKey(statusCode)) DefaultPages[statusCode].ExecutePageMessage(httpContext);
+        public static async Task SendError(HttpContext httpContext, int statusCode) {
+            if (OverridePages.ContainsKey(statusCode)) await OverridePages[statusCode].ExecutePageMessage(httpContext);
+            else if (DefaultPages.ContainsKey(statusCode)) await DefaultPages[statusCode].ExecutePageMessage(httpContext);
             else httpContext.Response.StatusCode = statusCode;
         }
 
-        public static void SendDefaultError(HttpContext httpContext, int statusCode) {
-            if (DefaultPages.ContainsKey(statusCode)) DefaultPages[statusCode].ExecutePageMessage(httpContext);
+        public static async Task SendDefaultError(HttpContext httpContext, int statusCode) {
+            if (DefaultPages.ContainsKey(statusCode)) await DefaultPages[statusCode].ExecutePageMessage(httpContext);
             else httpContext.Response.StatusCode = statusCode;
         }
     }
