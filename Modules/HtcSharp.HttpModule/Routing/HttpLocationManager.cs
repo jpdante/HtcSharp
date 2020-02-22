@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using Newtonsoft.Json.Linq;
 
@@ -17,15 +18,15 @@ namespace HtcSharp.HttpModule.Routing {
             }
         }
 
-        public void ProcessRequest(HttpContext context) {
+        public async Task ProcessRequest(HttpContext context) {
             context.Request.RequestPath = context.Request.Path;
             //context.Request.RequestFilePath = context.Request.Path;
             foreach (var locationConfig in Locations) {
                 if (!locationConfig.MatchLocation(context)) continue;
-                locationConfig.Execute(context);
+                await locationConfig.Execute(context);
                 break;
             }
-            if (!context.Response.HasStarted) DefaultConfig.Execute(context);
+            if (!context.Response.HasStarted) await DefaultConfig.Execute(context);
         }
     }
 }

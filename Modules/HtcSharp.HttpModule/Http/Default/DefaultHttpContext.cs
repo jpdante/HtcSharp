@@ -155,6 +155,8 @@ namespace HtcSharp.HttpModule.Http.Default {
             LifetimeFeature.Abort();
         }
 
+        public override HtcServerInfo ServerInfo { get; internal set; }
+
         private static IFeatureCollection ContextDisposed() {
             ThrowContextDisposed();
             return null;

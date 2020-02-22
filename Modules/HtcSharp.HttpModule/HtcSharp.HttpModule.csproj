@@ -51,12 +51,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Logging\" />
+    <None Include="HtcHttpPlugin.cs" />
+    <None Include="HttpEngine.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="HtcHttpPlugin.cs" />
-    <None Include="HttpEngine.cs" />
+    <ProjectReference Include="..\..\HtcSharp.Core\HtcSharp.Core.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(TargetPath) $(TargetFileName)" />

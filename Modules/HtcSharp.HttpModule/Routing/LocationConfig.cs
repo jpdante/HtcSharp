@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Routing.Abstractions;
 using HtcSharp.HttpModule.Routing.Directives;
@@ -93,9 +94,9 @@ namespace HtcSharp.HttpModule.Routing {
             }
         }
 
-        public void Execute(HttpContext context) {
+        public async Task Execute(HttpContext context) {
             foreach (var directive in _directives) {
-                if (!context.Response.HasStarted) directive.Execute(context);
+                if (!context.Response.HasStarted) await directive.Execute(context);
             }
         }
 
