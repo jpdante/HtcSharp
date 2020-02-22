@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using HtcSharp.Core.Old.Interfaces.Http;
-using HtcSharp.Core.Old.Utils.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.IO;
+using HtcSharp.HttpModule.Routing.Abstractions;
 
-namespace HtcSharp.Core.Old.Models.Http.Directives {
+namespace HtcSharp.HttpModule.Routing.Directives {
     public class ReWriteDirective : IDirective {
 
         private readonly Regex _pattern;
@@ -17,10 +18,10 @@ namespace HtcSharp.Core.Old.Models.Http.Directives {
             if (rewrite.Count == 4) _flag = rewrite[3];
         }
 
-        public void Execute(HtcHttpContext context) {
+        public void Execute(HttpContext context) {
             var match = _pattern.Match(context.Request.Path);
             if (!match.Success) return;
-            var newRequest = HttpIoUtils.ReplaceVars(context, _rewriteData);
+            var newRequest = HttpIO.ReplaceVars(context, _rewriteData);
             for (var i = 0; i < match.Captures.Count; i++) {
                 newRequest = newRequest.Replace($"${i + 1}", match.Captures[i].Value);
             }

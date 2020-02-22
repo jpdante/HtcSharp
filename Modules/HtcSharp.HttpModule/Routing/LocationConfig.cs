@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using HtcSharp.Core.Old.Components.Http;
-using HtcSharp.Core.Old.Interfaces.Http;
-using HtcSharp.Core.Old.Models.Http.Directives;
+using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Routing.Abstractions;
+using HtcSharp.HttpModule.Routing.Directives;
 using Newtonsoft.Json.Linq;
 
-namespace HtcSharp.Core.Old.Models.Http {
+namespace HtcSharp.HttpModule.Routing {
     public class LocationConfig {
 
         public readonly string Key = "";
@@ -83,7 +83,7 @@ namespace HtcSharp.Core.Old.Models.Http {
             }
         }
 
-        public bool MatchLocation(HtcHttpContext context) {
+        public bool MatchLocation(HttpContext context) {
             if (_isDefault) return true;
             switch (_modifier) {
                 case 4:
@@ -93,7 +93,7 @@ namespace HtcSharp.Core.Old.Models.Http {
             }
         }
 
-        public void Execute(HtcHttpContext context) {
+        public void Execute(HttpContext context) {
             foreach (var directive in _directives) {
                 if (!context.Response.HasStarted) directive.Execute(context);
             }

@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 
-namespace HtcSharp.Core.Old.Helpers.Http {
+namespace HtcSharp.HttpModule.Routing {
     public static class ContentTypeExtensions {
         private static readonly ConcurrentDictionary<string, int> ValueLookup;
         private static readonly ConcurrentDictionary<string, int> ValueCache;

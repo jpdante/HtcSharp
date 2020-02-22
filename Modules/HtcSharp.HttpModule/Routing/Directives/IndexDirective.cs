@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using HtcSharp.Core.Old.Helpers.Http;
-using HtcSharp.Core.Old.Interfaces.Http;
-using HtcSharp.Core.Old.Utils.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.IO;
+using HtcSharp.HttpModule.Routing.Abstractions;
 
-namespace HtcSharp.Core.Old.Models.Http.Directives {
+namespace HtcSharp.HttpModule.Routing.Directives {
     public class IndexDirective : IDirective {
 
         private readonly List<string> _indexes;
@@ -16,9 +16,9 @@ namespace HtcSharp.Core.Old.Models.Http.Directives {
             }
         }
 
-        public void Execute(HtcHttpContext context) {
+        public void Execute(HttpContext context) {
             foreach (var i in _indexes) {
-                var index = HttpIoUtils.ReplaceVars(context, i);
+                var index = HttpIO.ReplaceVars(context, i);
                 if (index.Equals("$internal_indexes")) {
                     foreach (var j in UrlMapper.IndexFiles) {
                         var indexPath = Path.Combine(context.ServerInfo.RootPath, j[0].Equals('/') ? j.Remove(0, 1) : Path.Combine(context.Request.Path, j).Remove(0, 1));
@@ -31,7 +31,7 @@ namespace HtcSharp.Core.Old.Models.Http.Directives {
                             return;
                         }
                         try {
-                            HttpIoUtils.CallFile(context, indexPath);
+                            HttpIO.CallFile(context, indexPath);
                         } catch {
                             context.ErrorMessageManager.SendError(context, 500);
                         }
@@ -48,7 +48,7 @@ namespace HtcSharp.Core.Old.Models.Http.Directives {
                         return;
                     }
                     try {
-                        HttpIoUtils.CallFile(context, indexPath);
+                        HttpIO.CallFile(context, indexPath);
                     } catch {
                         context.ErrorMessageManager.SendError(context, 500);
                     }

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using HtcSharp.Core.Old.Interfaces.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Routing.Abstractions;
 
-namespace HtcSharp.Core.Old.Models.Http.Directives {
+namespace HtcSharp.HttpModule.Routing.Directives {
     public class AddHeaderDirective : IDirective {
 
         private readonly string _name;
@@ -13,7 +14,7 @@ namespace HtcSharp.Core.Old.Models.Http.Directives {
             _value = header[2];
         }
 
-        public void Execute(HtcHttpContext context) {
+        public void Execute(HttpContext context) {
             context.Response.Headers.Add(_name, _value);
         }
     }

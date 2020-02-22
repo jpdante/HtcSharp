@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using HtcSharp.Core.Old.Models.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
 using Newtonsoft.Json.Linq;
 
-namespace HtcSharp.Core.Old.Components.Http {
+namespace HtcSharp.HttpModule.Routing {
     public class HttpLocationManager {
 
         internal readonly List<LocationConfig> Locations;
@@ -17,7 +17,7 @@ namespace HtcSharp.Core.Old.Components.Http {
             }
         }
 
-        public void ProcessRequest(HtcHttpContext context) {
+        public void ProcessRequest(HttpContext context) {
             context.Request.RequestPath = context.Request.Path;
             //context.Request.RequestFilePath = context.Request.Path;
             foreach (var locationConfig in Locations) {

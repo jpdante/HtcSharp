@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Net;
-using HtcSharp.Core.Old.Managers;
 
 namespace HtcSharp.Core.Old.Models.Http {
     public class HtcHttpContext {

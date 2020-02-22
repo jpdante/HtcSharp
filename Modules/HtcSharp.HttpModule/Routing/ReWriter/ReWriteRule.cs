@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using HtcSharp.Core.Old.Logging;
-using HtcSharp.Core.Old.Models.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
 
-namespace HtcSharp.Core.Old.Models.ReWriter {
+namespace HtcSharp.HttpModule.Routing.ReWriter {
     public class ReWriteRule {
-        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly byte _ruleType;
         private readonly Regex _pattern;
         private readonly string _rewriteData;
@@ -29,14 +25,14 @@ namespace HtcSharp.Core.Old.Models.ReWriter {
             } 
         }
 
-        public byte MatchRule(string request, HtcHttpContext context, out string newRequest) {
+        public byte MatchRule(string request, HttpContext context, out string newRequest) {
             if (_ruleType == 1) {
                 var requestParts = request.Split("/");
                 if (_pattern.IsMatch(request)) {
                     byte response = 0;
                     newRequest = _rewriteData;
                     newRequest = newRequest.Replace("$scheme", context.Request.Scheme);
-                    newRequest = newRequest.Replace("$host", context.Request.Host);
+                    newRequest = newRequest.Replace("$host", context.Request.Host.ToString());
                     foreach (Match match in _pattern.Matches(request)) {
                         newRequest = newRequest.Replace($"${match.Name}", match.Value);
                     }

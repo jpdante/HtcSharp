@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using System.Text;
+using HtcSharp.HttpModule.Http.Abstractions;
 
-namespace HtcSharp.Core.Old.Models.Http.Pages {
+namespace HtcSharp.HttpModule.Routing.Pages {
     public class FilePageMessage : IPageMessage {
 
         private readonly string _pageFileName;   
@@ -12,7 +13,7 @@ namespace HtcSharp.Core.Old.Models.Http.Pages {
             StatusCode = statusCode;
         }
 
-        public string GetPageMessage(HtcHttpContext httpContext) {
+        public string GetPageMessage(HttpContext httpContext) {
             var fileContent = File.ReadAllText(_pageFileName, Encoding.UTF8);
             fileContent = fileContent.Replace("{Request.Path}", httpContext.Request.Path);
             fileContent = fileContent.Replace("{Request.Host}", httpContext.Request.Host);
@@ -31,7 +32,7 @@ namespace HtcSharp.Core.Old.Models.Http.Pages {
             return fileContent;
         }
 
-        public void ExecutePageMessage(HtcHttpContext httpContext) {
+        public void ExecutePageMessage(HttpContext httpContext) {
             if (httpContext.Response.HasStarted) return;
             var fileContent = File.ReadAllText(_pageFileName, Encoding.UTF8);
             fileContent = fileContent.Replace("{Request.Path}", httpContext.Request.Path);

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using HtcSharp.Core.Old.Interfaces.Http;
-using HtcSharp.Core.Old.Utils.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.IO;
+using HtcSharp.HttpModule.Routing.Abstractions;
 
-namespace HtcSharp.Core.Old.Models.Http.Directives {
+namespace HtcSharp.HttpModule.Routing.Directives {
     public class ReturnDirective : IDirective {
 
         private readonly int _statusCode;
@@ -32,15 +33,15 @@ namespace HtcSharp.Core.Old.Models.Http.Directives {
             }
         }
 
-        public void Execute(HtcHttpContext context) {
+        public void Execute(HttpContext context) {
             if (_type == 1) {
                 context.ErrorMessageManager.SendError(context, _statusCode);
             } else if (_type == 2) {
                 context.Response.StatusCode = _statusCode;
-                context.Response.Headers.Add("Location", HttpIoUtils.ReplaceVars(context, _data));
+                context.Response.Headers.Add("Location", HttpIO.ReplaceVars(context, _data));
             } else if (_type == 3) {
                 context.Response.StatusCode = _statusCode;
-                context.Response.Write(HttpIoUtils.ReplaceVars(context, _data));
+                context.Response.Write(HttpIO.ReplaceVars(context, _data));
             }
         }
     }

@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using HtcSharp.Core.Old.Components.Http;
-using HtcSharp.Core.Old.Helpers.Http;
-using HtcSharp.Core.Old.Interfaces.Http;
-using HtcSharp.Core.Old.Logging;
-using HtcSharp.Core.Old.Utils.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.IO;
+using HtcSharp.HttpModule.Routing.Abstractions;
 
-namespace HtcSharp.Core.Old.Models.Http.Directives {
+namespace HtcSharp.HttpModule.Routing.Directives {
     public class TryFilesDirective : IDirective {
-
-        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly List<string> _files;
         private readonly HttpLocationManager _httpLocationManager;
 
@@ -24,9 +19,9 @@ namespace HtcSharp.Core.Old.Models.Http.Directives {
             }
         }
 
-        public void Execute(HtcHttpContext context) {
+        public void Execute(HttpContext context) {
             foreach (var file in _files) {
-                var tempPath = HttpIoUtils.ReplaceVars(context, file);
+                var tempPath = HttpIO.ReplaceVars(context, file);
                 if (tempPath[0].Equals('=')) {
                     if (int.TryParse(tempPath.Remove(0, 1), out var statusCode)) {
                         context.ErrorMessageManager.SendError(context, statusCode);
@@ -51,7 +46,7 @@ namespace HtcSharp.Core.Old.Models.Http.Directives {
                         }
                     } else {
                         try {
-                            HttpIoUtils.CallFile(context, context.Request.TranslatedPath);
+                            HttpIO.CallFile(context, context.Request.TranslatedPath);
                         } catch {
                             context.ErrorMessageManager.SendError(context, 500);
                         }

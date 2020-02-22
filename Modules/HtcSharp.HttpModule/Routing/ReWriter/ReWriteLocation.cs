@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using HtcSharp.Core.Old.Logging;
-using HtcSharp.Core.Old.Models.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
 
-namespace HtcSharp.Core.Old.Models.ReWriter {
+namespace HtcSharp.HttpModule.Routing.ReWriter {
     public class ReWriteLocation {
-        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly byte _actionType;
         private readonly string _data;
         private readonly List<ReWriteRule> _rules;
@@ -39,7 +36,7 @@ namespace HtcSharp.Core.Old.Models.ReWriter {
             }
         }
 
-        public byte MatchRules(string request, HtcHttpContext context, out string newRequest) {
+        public byte MatchRules(string request, HttpContext context, out string newRequest) {
             if (_actionType == 1) {
                 var remotePath = request.Equals("/") ? "/" : $"{Path.GetDirectoryName(request).Replace(@"\", @"/")}/".Replace(@"//", @"/");
                 if (_data.Equals(remotePath)) {

@@ -2,11 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Net.Socket.Internal;
 using Microsoft.Extensions.Logging;
 
-namespace HtcSharp.HttpModule2.Net.Socket.Internal {
+namespace HtcSharp.HttpModule.Net.Socket.Internal {
     internal class SocketsTrace : ISocketsTrace {
         // ConnectionRead: Reserved: 3
 
