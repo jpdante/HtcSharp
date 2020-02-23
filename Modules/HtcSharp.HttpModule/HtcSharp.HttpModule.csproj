@@ -28,8 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="HtcHttpPlugin.cs" />
-    <Compile Remove="HttpEngine.cs" />
     <Compile Remove="Options\Options.cs" />
     <Compile Remove="Options\IOptions.cs" />
     <Compile Remove="Options\IOptionsFactory.cs" />
@@ -48,11 +46,6 @@
       <LastGenOutput>CoreStrings.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="HtcHttpPlugin.cs" />
-    <None Include="HttpEngine.cs" />
   </ItemGroup>
 
   <ItemGroup>
