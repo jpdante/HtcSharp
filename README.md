@@ -23,8 +23,19 @@ To use this program you must have .Net Core 3.0 installed, in the future self-co
 
 ### Prerequisites
 *   [.Net Core 3.1](https://dotnet.microsoft.com/download)
-*   [Microsoft.AspNetCore](https://www.nuget.org/packages/Microsoft.AspNetCore/)
 *   [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/12.0.2)
+*   [CorePluginLoader](https://www.nuget.org/packages/CorePluginLoader/)
+*   [Microsoft.Extensions.Logging.Abstractions](https://www.nuget.org/packages/Microsoft.Extensions.Logging.Abstractions/)
+*   [Microsoft.Extensions.Configuration](https://www.nuget.org/packages/Microsoft.Extensions.Configuration/)
+*   [Microsoft.Extensions.Configuration.Abstractions](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Abstractions/)
+*   [Microsoft.Extensions.Configuration.Binder](https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Binder/)
+*   [Microsoft.Extensions.DependencyInjection.Abstractions](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection.Abstractions/)
+*   [Microsoft.Extensions.Logging](https://www.nuget.org/packages/Microsoft.Extensions.Logging/)
+*   [Microsoft.Extensions.ObjectPool](https://www.nuget.org/packages/Microsoft.Extensions.ObjectPool/)
+*   [Microsoft.Extensions.Options](https://www.nuget.org/packages/Microsoft.Extensions.Options/)
+*   [Microsoft.Extensions.Primitives](https://www.nuget.org/packages/Microsoft.Extensions.Primitives/)
+*   [System.IO.Pipelines](https://www.nuget.org/packages/System.IO.Pipelines/)
+*   [System.Security.Cryptography.Cng](https://www.nuget.org/packages/System.Security.Cryptography.Cng/)
 
 ### Prerequisites for compiling plugins:
 *   [MoonSharp](https://www.nuget.org/packages/MoonSharp/)
