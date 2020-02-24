@@ -5,7 +5,7 @@ using HtcSharp.Core.Module.Abstractions;
 using HtcSharp.Core.Plugin.Abstractions;
 
 namespace HtcSharp.HttpModule {
-    public class HtcHttpEngine : IModule {
+    public class HtcHttpModule : IModule {
         public string Name => "HtcHttp";
         public string Version => "1.0.1";
 

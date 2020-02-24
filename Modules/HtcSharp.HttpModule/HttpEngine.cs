@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.Core.Engine.Abstractions;
@@ -11,6 +12,7 @@ using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Default;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Net.Socket;
+using HtcSharp.HttpModule.Options;
 using HtcSharp.HttpModule.Routing;
 using HtcSharp.HttpModule.Routing.Error;
 using HtcSharp.HttpModule.Routing.Pages;
@@ -18,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using LogLevel = HtcSharp.Core.Logging.Abstractions.LogLevel;
 
 namespace HtcSharp.HttpModule {
     public class HttpEngine : IEngine {
@@ -35,8 +38,8 @@ namespace HtcSharp.HttpModule {
         internal Dictionary<string, HttpServerConfig> DomainDictionary;
 
         public Task Load(JObject config, Core.Logging.Abstractions.ILogger logger) {
-            Configure(config);
             _logger = logger;
+            Configure(config);
             UrlMapper.RegisterIndexFile("index.html");
             UrlMapper.RegisterIndexFile("index.htm");
             _serviceProvider = SetupServiceCollection().BuildServiceProvider();
@@ -99,20 +102,20 @@ namespace HtcSharp.HttpModule {
                 ServerConfigs.Add(serverConfig);
                 if (domains.Contains("*")) {
                     // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-                    foreach (string host in hosts) {
-                        string key = useSsl ? $"1*:{host}" : $"0*:{host}";
+                    //foreach (string host in hosts) {
+                        string key = useSsl ? $"1*" : $"0*";
                         if (DomainDictionary.ContainsKey(key)) continue;
                         DomainDictionary.Add(key, serverConfig);
-                    }
+                    //}
                 } else {
                     // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                     foreach (string domain in domains) {
                         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-                        foreach (string host in hosts) {
-                            string key = useSsl ? $"1{domain}:{host}" : $"0{domain}:{host}";
+                        //foreach (string host in hosts) {
+                            string key = useSsl ? $"1{domain}" : $"0{domain}";
                             if (DomainDictionary.ContainsKey(key)) continue;
                             DomainDictionary.Add(key, serverConfig);
-                        }
+                        //}
                     }
                 }
             }
@@ -124,9 +127,27 @@ namespace HtcSharp.HttpModule {
             return optionFactory;
         }
 
-        private static IOptions<KestrelServerOptions> GetKestrelServerOptions(JObject config, IServiceProvider serviceProvider) {
+        private IOptions<KestrelServerOptions> GetKestrelServerOptions(JObject config, IServiceProvider serviceProvider) {
+            var endpoints = new List<string>();
             var kestrelServerOptions = new KestrelServerOptions { ApplicationServices = serviceProvider };
-            kestrelServerOptions.Configure().AnyIPEndpoint(8080);
+            foreach (var serverConfig in ServerConfigs) {
+                if (serverConfig.UseSsl) {
+                    foreach (string endpoint in serverConfig.Endpoints) {
+                        if (endpoints.Contains(endpoint)) continue;
+                        endpoints.Add(endpoint);
+                        kestrelServerOptions.Listen(IPEndPoint.Parse(endpoint), options => {
+                            options.UseHttps(serverConfig.Certificate, serverConfig.CertificatePassword);
+                        });
+                    }
+                } else {
+                    foreach (string endpoint in serverConfig.Endpoints) {
+                        if (endpoints.Contains(endpoint)) continue;
+                        endpoints.Add(endpoint);
+                        kestrelServerOptions.Listen(IPEndPoint.Parse(endpoint));
+                    }
+                }
+            }
+            //kestrelServerOptions.Configure();
             IOptions<KestrelServerOptions> optionFactory = Microsoft.Extensions.Options.Options.Create(kestrelServerOptions);
             return optionFactory;
         }

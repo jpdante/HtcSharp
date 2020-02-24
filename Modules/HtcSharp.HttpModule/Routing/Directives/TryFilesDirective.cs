@@ -25,7 +25,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             foreach (string file in _files) {
                 string tempPath = HttpIO.ReplaceVars(context, file);
                 if (tempPath[0].Equals('=')) {
-                    if (int.TryParse(tempPath.Remove(0, 1), out var statusCode)) {
+                    if (int.TryParse(tempPath.Remove(0, 1), out int statusCode)) {
                         await context.ServerInfo.ErrorMessageManager.SendError(context, statusCode);
                         return;
                     }
@@ -41,7 +41,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 }
                 context.Request.TranslatedPath = Path.GetFullPath(Path.Combine(context.ServerInfo.RootPath, tempPath.Remove(0, 1)));
                 if (File.Exists(context.Request.TranslatedPath)) {
-                    string? extension = Path.GetExtension(context.Request.TranslatedPath);
+                    string extension = Path.GetExtension(context.Request.TranslatedPath);
                     if (UrlMapper.ExtensionPlugins.ContainsKey(extension.ToLower())) {
                         if (UrlMapper.ExtensionPlugins[extension.ToLower()].OnHttpExtensionRequest(context, context.Request.TranslatedPath, extension.ToLower())) {
                             await context.ServerInfo.ErrorMessageManager.SendError(context, 500);

@@ -21,10 +21,10 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         }
 
         public async Task Execute(HttpContext context) {
-            foreach (var file in _pages) {
-                var tempPath = HttpIO.ReplaceVars(context, file);
+            foreach (string file in _pages) {
+                string tempPath = HttpIO.ReplaceVars(context, file);
                 if (tempPath[0].Equals('=')) {
-                    if (int.TryParse(tempPath.Remove(0, 1), out var statusCode)) {
+                    if (int.TryParse(tempPath.Remove(0, 1), out int statusCode)) {
                         await context.ServerInfo.ErrorMessageManager.SendError(context, statusCode);
                         return;
                     }

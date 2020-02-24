@@ -7,6 +7,7 @@ using HtcSharp.HttpModule.Routing;
 namespace HtcSharp.HttpModule.IO {
     public static class HttpIO {
         public static async Task SendFile(HttpContext httpContext, string requestPath) {
+            //httpContext.Response.
 
             /*using (var fileBuffer = new FileBuffer(requestPath, 2048)) {
                 var contentType = ContentType.DEFAULT.FromExtension(requestPath);
