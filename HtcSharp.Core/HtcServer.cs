@@ -35,19 +35,20 @@ namespace HtcSharp.Core {
             Running = true;
             Logger.LogInfo("Loading HtcServer...", null);
             Logger.LogInfo("Loading Modules...", null);
-            _moduleManager.LoadModules(_config.GetValue("ModulesPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>());
+            _moduleManager.LoadModules(HtcIOUtils.ReplacePathTags(_config.GetValue("ModulesPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>()));
             await _moduleManager.CallLoad();
             Logger.LogInfo("Loading Engines...", null);
+            var enginesConfigs = (JObject)_config.GetValue("Engines", StringComparison.CurrentCultureIgnoreCase);
             foreach (string engineName in EngineManager.GetEnginesNames()) {
-                var enginesConfigs = (JObject) _config.GetValue("Engines", StringComparison.CurrentCultureIgnoreCase);
                 if (!enginesConfigs.ContainsKey(engineName)) continue;
                 var engineConfig = (JObject) enginesConfigs.GetValue(engineName, StringComparison.CurrentCultureIgnoreCase);
                 var engine = EngineManager.InstantiateEngine(engineName);
                 EngineManager.AddEngine(engine);
+                Logger.LogInfo($"Loading Engine {engineName}...", null);
                 await EngineManager.Load(engine, engineConfig);
             }
             Logger.LogInfo("Loading Plugins...", null);
-            _pluginManager.LoadPlugins(_config.GetValue("ModulesPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>());
+            _pluginManager.LoadPlugins(HtcIOUtils.ReplacePathTags(_config.GetValue("ModulesPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>()));
             await _pluginManager.CallLoad();
             Logger.LogInfo("Starting HtcServer...", null);
             Logger.LogInfo("Enabling Modules...", null);

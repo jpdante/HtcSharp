@@ -79,13 +79,13 @@ namespace HtcSharp.HttpModule {
                 var server = (JObject)jToken;
                 List<string> hosts = GetValues<string>(server, "Hosts");
                 List<string> domains = GetValues<string>(server, "Domains");
-                string root = HtcIoUtils.ReplacePathTags(GetValue<string>(server, "Root"));
+                string root = HtcIOUtils.ReplacePathTags(GetValue<string>(server, "Root"));
                 if (!Directory.Exists(root)) Directory.CreateDirectory(root);
                 var useSsl = GetValue<bool>(server, "SSL");
                 string certificate = null;
                 string password = null;
                 if (useSsl) {
-                    certificate = HtcIoUtils.ReplacePathTags(GetValue<string>(server, "Certificate"));
+                    certificate = HtcIOUtils.ReplacePathTags(GetValue<string>(server, "Certificate"));
                     password = GetValue<string>(server, "Password");
                 }
                 var locationManager = ContainsKey(server, "Locations") ? new HttpLocationManager(GetValue<JToken>(server, "Default"), GetValue<JObject>(server, "Locations")) : new HttpLocationManager(GetValue<JToken>(server, "Default"), null);

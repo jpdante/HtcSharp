@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using CorePluginLoader;
 using HtcSharp.Core.Logging.Abstractions;
-using HtcSharp.Core.Module.Abstractions;
 using HtcSharp.Core.Plugin.Abstractions;
 using HtcSharp.Core.Utils;
 
@@ -46,18 +45,21 @@ namespace HtcSharp.Core.Plugin {
 
         public async Task CallLoad() {
             foreach (var plugin in _modules.Values) {
+                _logger.LogInfo($"Loading Plugin {plugin.Name} {plugin.Version}...", null);
                 await plugin.Load(_logger);
             }
         }
 
         public async Task CallEnable() {
             foreach (var plugin in _modules.Values) {
+                _logger.LogInfo($"Enabling Plugin {plugin.Name} {plugin.Version}...", null);
                 await plugin.Enable();
             }
         }
 
         public async Task CallDisable() {
             foreach (var plugin in _modules.Values) {
+                _logger.LogInfo($"Disabling Plugin {plugin.Name} {plugin.Version}...", null);
                 await plugin.Disable();
             }
         }

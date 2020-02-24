@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using HtcSharp.Core.Logging;
 using HtcSharp.Core.Logging.Abstractions;
 
@@ -38,7 +39,16 @@ namespace HtcSharp.Server {
             HtcServer.Logger.AddLogger("Console", new ConsoleLogger());
             HtcServer.Logger.AddLogger("File", new FileLogger(Path.Combine(Directory.GetCurrentDirectory(), "HtcSharp.log")));
             await HtcServer.Start();
-            
+            while (HtcServer.Running) {
+                string line = Console.ReadLine();
+                if(string.IsNullOrEmpty(line)) continue;
+                switch (line.ToLower()) {
+                    case "exit":
+                    case "stop":
+                        await HtcServer.Stop();
+                        break;
+                }
+            }
         }
 
         private async void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {

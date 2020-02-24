@@ -22,8 +22,8 @@ namespace HtcSharp.Core.Engine {
         }
 
         public void RegisterEngine(string name, Type type) {
-            if(type == null) return;
-            if (!type.IsAssignableFrom(typeof(IEngine))) return;
+            if (type == null) return;
+            if (!typeof(IEngine).IsAssignableFrom(type)) return;
             _availableEngines.Add(name.ToLower(), type);
             _engineNames.Add(name.ToLower());
         }
