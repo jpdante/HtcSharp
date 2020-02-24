@@ -5,7 +5,7 @@ namespace HtcSharp.Core.Plugin.Abstractions {
     public interface IPlugin {
         string Name { get; }
         string Version { get; }
-        Task Load(ILogger logger);
+        Task Load(PluginServerContext pluginServerContext, ILogger logger);
         Task Enable();
         Task Disable();
         bool IsCompatible(int htcMajor, int htcMinor, int htcPatch);

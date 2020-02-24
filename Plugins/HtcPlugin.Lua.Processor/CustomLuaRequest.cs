@@ -1,35 +1,32 @@
 using System;
 using System.IO;
-using System.IO.Enumeration;
 using System.Text;
-using HtcSharp.Core.Models.Http;
+using HtcSharp.HttpModule.Http.Abstractions;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
-namespace HtcPlugin.LuaProcessor {
+namespace HtcPlugin.Lua.Processor {
     public class CustomLuaRequest {
-
-        private readonly string _luaFilename;
         private readonly Script _luaScript;
-        private readonly HtcHttpContext _httpContext;
-        private bool headerSent = false;
+        private readonly HttpContext _httpContext;
+        private bool _headerSent = false;
         private readonly DynValue _dynScript;
 
-        public CustomLuaRequest(string luaFilename, HtcHttpContext httpContext) {
-            _luaFilename = luaFilename;
+        public CustomLuaRequest(string luaFilename, HttpContext httpContext) {
+            string luaFilename1 = luaFilename;
             _httpContext = httpContext;
             _luaScript = new Script();
-            var luaIncludePath = Path.GetDirectoryName(_luaFilename).Replace(@"\", "/");
+            var luaIncludePath = Path.GetDirectoryName(luaFilename1).Replace(@"\", "/");
             ((ScriptLoaderBase)_luaScript.Options.ScriptLoader).ModulePaths = new string[] { $"{luaIncludePath}/?", $"{luaIncludePath}/?.lua" };
             _luaScript.Options.DebugPrint = data => {
-                if (!headerSent) {
-                    headerSent = true;
+                if (!_headerSent) {
+                    _headerSent = true;
                     //httpContext.Response.StatusCode = statusCode;
                     //httpContext.Response.ContentType = contentType;
                 }
-                httpContext.Response.OutputStream.Write(Encoding.UTF8.GetBytes(data));
+                httpContext.Response.Body.Write(Encoding.UTF8.GetBytes(data));
             };
-            _dynScript = _luaScript.LoadFile(_luaFilename);
+            _dynScript = _luaScript.LoadFile(luaFilename1);
         }
 
         public bool Request() {
@@ -46,22 +43,22 @@ namespace HtcPlugin.LuaProcessor {
         public void RemoveValue(DynValue key) => _luaScript.Globals.Remove(key);
         public void ClearValues() => _luaScript.Globals.Clear();
         
-        public static void ErrorHeaderAlreadySent(HtcHttpContext httpContext) {
-            httpContext.Response.OutputStream.Write(Encoding.UTF8.GetBytes("<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] attempt to set the header but it has already been sent to the client!</strong><br>"));
+        public static void ErrorHeaderAlreadySent(HttpContext httpContext) {
+            httpContext.Response.Body.Write(Encoding.UTF8.GetBytes("<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] attempt to set the header but it has already been sent to the client!</strong><br>"));
         }
 
-        public static void ErrorScriptRuntimeException(HtcHttpContext httpContext, ScriptRuntimeException ex, string filepath) {
+        public static void ErrorScriptRuntimeException(HttpContext httpContext, ScriptRuntimeException ex, string filepath) {
             if(ex.DecoratedMessage.Length == 0) {
-                httpContext.Response.OutputStream.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] {ex.Message}</strong><br>"));
+                httpContext.Response.Body.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] {ex.Message}</strong><br>"));
             } else {
-                var luaPath = ex.DecoratedMessage.Split(":(")[0];
-                var fileName = Path.GetFileName(filepath);
-                httpContext.Response.OutputStream.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] {ex.DecoratedMessage.Replace(filepath, fileName)}</strong><br>"));
+                string luaPath = ex.DecoratedMessage.Split(":(")[0];
+                string fileName = Path.GetFileName(filepath);
+                httpContext.Response.Body.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] {ex.DecoratedMessage.Replace(filepath, fileName)}</strong><br>"));
             }
         }
 
-        public static void ErrorUnknown(HtcHttpContext httpContext, Exception ex) {
-            httpContext.Response.OutputStream.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] exception occurred => {ex.Message}</strong><br>"));
+        public static void ErrorUnknown(HttpContext httpContext, Exception ex) {
+            httpContext.Response.Body.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] exception occurred => {ex.Message}</strong><br>"));
         }
         
     }

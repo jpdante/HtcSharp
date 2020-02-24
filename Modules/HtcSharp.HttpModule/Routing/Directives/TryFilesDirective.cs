@@ -43,9 +43,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 if (File.Exists(context.Request.TranslatedPath)) {
                     string extension = Path.GetExtension(context.Request.TranslatedPath);
                     if (UrlMapper.ExtensionPlugins.ContainsKey(extension.ToLower())) {
-                        if (UrlMapper.ExtensionPlugins[extension.ToLower()].OnHttpExtensionRequest(context, context.Request.TranslatedPath, extension.ToLower())) {
-                            await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
-                        }
+                        await UrlMapper.ExtensionPlugins[extension.ToLower()].OnHttpExtensionRequest(context, context.Request.TranslatedPath, extension.ToLower());
                     } else {
                         try {
                             await HttpIO.SendFile(context, context.Request.TranslatedPath);

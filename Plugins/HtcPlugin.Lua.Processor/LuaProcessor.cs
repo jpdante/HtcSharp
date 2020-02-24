@@ -1,17 +1,22 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using HtcPlugin.Lua.Processor.Models;
+using HtcSharp.Core.Logging.Abstractions;
+using HtcSharp.Core.Plugin;
 using HtcSharp.Core.Plugin.Abstractions;
 using HtcSharp.HttpModule;
+using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Routing;
-using Microsoft.Extensions.Logging;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
 namespace HtcPlugin.Lua.Processor {
     public class LuaProcessor : IPlugin, IHttpEvents {
+        public string Name => "HtcLuaProcessor";
+        public string Version => "0.1.2";
+
         public static LuaProcessor Context;
-        public string PluginName => "HtcLuaProcessor";
-        public string PluginVersion => "0.1.2";
+        public ILogger Logger;
         public readonly LuaLowLevelAccess LuaLowLevelAccess;
         public readonly CustomLuaLoader ScriptLoader;
 
@@ -21,38 +26,45 @@ namespace HtcPlugin.Lua.Processor {
             ScriptLoader = new CustomLuaLoader();
         }
 
-        public void OnLoad() {
+        public Task Load(PluginServerContext pluginServerContext, ILogger logger) {
+            Logger = logger;
             UserData.RegisterType<LuaLowLevelAccess>();
             UserData.RegisterType<LuaLowLevelClass>();
+            return Task.CompletedTask;
         }
 
-        public void OnEnable() {
+        public Task Enable() {
             UrlMapper.RegisterPluginExtension(".lua", this);
             UrlMapper.RegisterIndexFile("index.lua");
             ScriptLoader.Initialize();
+            return Task.CompletedTask;
         }
 
-        public void OnDisable() {
+        public Task Disable() {
             UrlMapper.UnRegisterPluginExtension(".lua");
             UrlMapper.UnRegisterIndexFile("index.lua");
             LuaLowLevelAccess.ClearLowLevelClasses();
+            return Task.CompletedTask;
         }
 
-        public bool OnHttpPageRequest(HtcHttpContext httpContext, string filename) {
-            Logger<>.Warn($"A custom page was called. This should not happen! {{FileName: \"{filename}\"}}");
-            httpContext.ErrorMessageManager.SendError(httpContext, 500);
-            return false;
+        public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
+            return true;
         }
 
-        public bool OnHttpExtensionRequest(HtcHttpContext httpContext, string filename, string extension) {
-            if (extension != ".lua") return true;
+        public async Task OnHttpPageRequest(HttpContext httpContext, string filename) {
+            Logger.LogWarn($"A custom page was called. This should not happen! {{FileName: \"{filename}\"}}");
+            await httpContext.ServerInfo.ErrorMessageManager.SendError(httpContext, 500);
+        }
+
+        public Task OnHttpExtensionRequest(HttpContext httpContext, string filename, string extension) {
+            if (extension != ".lua") return Task.CompletedTask;
             var luaScript = LuaRequest.NewScript();
             luaScript.Options.ScriptLoader = ScriptLoader;
             luaScript.Globals["__HtcLowLevel"] = LuaLowLevelAccess;
-            var luaIncludePath = Path.GetDirectoryName(filename).Replace(@"\", "/");
-            ((ScriptLoaderBase) luaScript.Options.ScriptLoader).ModulePaths = new[] { $"?.lua", $"{luaIncludePath}/?", $"{luaIncludePath}/?.lua", };
-            var result = LuaRequest.Request(httpContext, luaScript, filename);
-            return result;
+            string luaIncludePath = Path.GetDirectoryName(filename).Replace(@"\", "/");
+            ((ScriptLoaderBase)luaScript.Options.ScriptLoader).ModulePaths = new[] { $"?.lua", $"{luaIncludePath}/?", $"{luaIncludePath}/?.lua", };
+            bool result = LuaRequest.Request(httpContext, luaScript, filename);
+            return Task.CompletedTask;
         }
     }
 }

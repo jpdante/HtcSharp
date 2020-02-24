@@ -47,5 +47,9 @@ namespace HtcSharp.HttpModule.Http {
         public static void SetCommaSeparatedValues(this IHeaderDictionary headers, string key, params string[] values) {
             ParsingHelpers.SetHeaderJoined(headers, key, values);
         }
+
+        public static StringValues GetValueOrDefault(this IHeaderDictionary headers, string key) {
+            return headers.TryGetValue(key, out var value) ? value : default(StringValues);
+        }
     }
 }

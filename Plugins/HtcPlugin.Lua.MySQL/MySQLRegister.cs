@@ -10,12 +10,12 @@ namespace HtcPlugin.Lua.MySql {
         private readonly Processor.LuaProcessor _luaProcessor;
 
         public MySqlRegister(LuaMySql pluginContext) {
-            // TODO: Fix that
-            //foreach (var plugin in HtcServer.Context.PluginsManager.GetPlugins)
-                //if (plugin is Processor.LuaProcessor processor) _luaProcessor = processor;
+            foreach (var plugin in pluginContext.PluginServerContext.PluginManager.GetPlugins()) {
+                if (plugin is Processor.LuaProcessor processor) _luaProcessor = processor;
+            }
             if (_luaProcessor == null) {
                 pluginContext.Logger.LogError("Failed to initialize HtcPlugin.Lua.MySql, dependency context not found.");
-                //HtcServer.Context.PluginsManager.UnloadPlugin(pluginContext);
+                pluginContext.PluginServerContext.PluginManager.UnLoadPlugin(pluginContext.Name).GetAwaiter().GetResult();
                 return;
             }
             UserData.RegisterType<LuaSql>();

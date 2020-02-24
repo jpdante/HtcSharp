@@ -14,6 +14,7 @@ namespace HtcSharp.Core {
         private readonly JObject _config;
         private readonly ModuleManager _moduleManager;
         private readonly PluginManager _pluginManager;
+        private readonly PluginServerContext _pluginServerContext;
 
         public readonly EngineManager EngineManager;
         public readonly MultiLogger Logger;
@@ -26,7 +27,8 @@ namespace HtcSharp.Core {
             Logger = new MultiLogger();
             EngineManager = new EngineManager(Logger);
             _moduleManager = new ModuleManager(this, Logger);
-            _pluginManager = new PluginManager(Logger);
+            _pluginServerContext = new PluginServerContext(HtcIOUtils.ReplacePathTags(_config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>()), _pluginManager);
+            _pluginManager = new PluginManager(_pluginServerContext, Logger);
             Running = false;
         }
 
@@ -48,7 +50,7 @@ namespace HtcSharp.Core {
                 await EngineManager.Load(engine, engineConfig);
             }
             Logger.LogInfo("Loading Plugins...", null);
-            _pluginManager.LoadPlugins(HtcIOUtils.ReplacePathTags(_config.GetValue("ModulesPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>()));
+            _pluginManager.LoadPlugins(HtcIOUtils.ReplacePathTags(_config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>()));
             await _pluginManager.CallLoad();
             Logger.LogInfo("Starting HtcServer...", null);
             Logger.LogInfo("Enabling Modules...", null);

@@ -29,8 +29,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         string extension = Path.GetExtension(indexPath);
                         context.Request.RequestFilePath = indexPath;
                         if (UrlMapper.ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
-                            if (!plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower())) continue;
-                            await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
+                            await plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower());
                             return;
                         }
                         try {
@@ -46,8 +45,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                     string extension = Path.GetExtension(indexPath);
                     context.Request.RequestFilePath = indexPath;
                     if (UrlMapper.ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
-                        if (!plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower())) continue;
-                        await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
+                        await plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower());
                         return;
                     }
                     try {

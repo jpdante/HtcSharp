@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CorePluginLoader;
@@ -46,6 +47,10 @@ namespace HtcSharp.Core.Module {
                 await module.Disable();
                 _modules.Remove(name);
             }
+        }
+
+        public IModule[] GetModules() {
+            return _modules.Values.Select(c => c).ToArray();
         }
 
         public async Task CallLoad() {
