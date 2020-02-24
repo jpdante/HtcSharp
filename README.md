@@ -22,7 +22,7 @@ Despite the use of Asp Net, this technology does not please me since I have to r
 To use this program you must have .Net Core 3.0 installed, in the future self-contained releases will be published.
 
 ### Prerequisites
-*   [.Net Core 3.0](https://dotnet.microsoft.com/download)
+*   [.Net Core 3.1](https://dotnet.microsoft.com/download)
 *   [Microsoft.AspNetCore](https://www.nuget.org/packages/Microsoft.AspNetCore/)
 *   [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/12.0.2)
 
@@ -56,31 +56,30 @@ I tried my best to make the configuration look like Nginx, so I think it's easy 
 Example Configuration:
 ```json
 {
-    "Engines": [
-        {
-            "Engine": "http",
-            "Config": {
-                "Servers": [
-                    {
-                        "Hosts": [
-                            "0.0.0.0:80"
-                        ],
-                        "Domains": [
-                            "localhost"
-                        ],
-                        "Default": [
-                            "try_pages $uri",
-                            "try_files $uri",
-                            "index $internal_indexes",
-                            "return 404"
-                        ],
-                        "Root": "%workingpath%/www/",
-                        "SSL": false
-                    }
-                ]
-            }
+    "ModulesPath": "%WorkingPath%\\modules\\",
+    "PluginsPath": "%WorkingPath%\\plugins\\",
+    "Engines": {
+        "htc-http": {
+            "Servers": [
+                {
+                   "Hosts":[
+                      "0.0.0.0:8080"
+                   ],
+                   "Domains":[
+                      "*"
+                   ],
+                   "Default":[
+                      "try_pages $uri",
+                      "try_files $uri",
+                      "index $internal_indexes",
+                      "return 404"
+                   ],
+                   "Root":"%WorkingPath%/www/",
+                   "SSL":false
+                }
+             ]
         }
-    ]
+    }
 }
 ```
 
@@ -91,4 +90,4 @@ See the [wiki](https://github.com/jpdante/HtcSharp/wiki) for more information on
 See the [open issues](https://github.com/jpdante/HtcSharp/issues) for a list of proposed features (and known issues).
 
 ## License
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the Apache-2.0 License. See `LICENSE` for more information.
