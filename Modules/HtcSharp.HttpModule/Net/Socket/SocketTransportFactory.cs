@@ -10,7 +10,6 @@ using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Net.Connections;
 using HtcSharp.HttpModule.Net.Socket.Internal;
 using HtcSharp.HttpModule.Options;
-using HtcSharp.HttpModule2.Net.Socket.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

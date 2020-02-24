@@ -36,11 +36,7 @@ namespace HtcSharp.HttpModule {
 
         // For testing
         internal KestrelServer(IConnectionListenerFactory transportFactory, ServiceContext serviceContext) {
-            if (transportFactory == null) {
-                throw new ArgumentNullException(nameof(transportFactory));
-            }
-
-            _transportFactory = transportFactory;
+            _transportFactory = transportFactory ?? throw new ArgumentNullException(nameof(transportFactory));
             ServiceContext = serviceContext;
 
             Features = new FeatureCollection();

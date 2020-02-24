@@ -1,27 +1,33 @@
-﻿using System;
-using System.Reflection;
-using HtcPlugin.Lua.MySql.Models;
-using HtcSharp.Core;
-using HtcSharp.Core.Interfaces.Plugin;
-using HtcSharp.Core.Logging;
-using MoonSharp.Interpreter;
+﻿using System.Threading.Tasks;
+using HtcSharp.Core.Logging.Abstractions;
+using HtcSharp.Core.Plugin.Abstractions;
 
 namespace HtcPlugin.Lua.MySql {
-    public class LuaMySQL : IHtcPlugin {
-        public string PluginName => "HtcLuaMySql";
-        public string PluginVersion => "0.1.2";
-        private MySQLRegister _mySqlRegister;
+    public class LuaMySql : IPlugin {
 
-        public void OnLoad() {
+        public string Name => "HtcLuaMySql";
+        public string Version => "0.1.2";
 
+        internal MySqlRegister MySqlRegister;
+        internal ILogger Logger;
+
+        public Task Load(ILogger logger) {
+            Logger = logger;
+            return Task.CompletedTask;
         }
 
-        public void OnEnable() {
-            _mySqlRegister = new MySQLRegister(this);
+        public Task Enable() {
+            MySqlRegister = new MySqlRegister(this);
+            return Task.CompletedTask;
         }
 
-        public void OnDisable() {
-            _mySqlRegister.Uninitialized();
+        public Task Disable() {
+            MySqlRegister.Uninitialized();
+            return Task.CompletedTask;
+        }
+
+        public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
+            return true;
         }
     }
 }

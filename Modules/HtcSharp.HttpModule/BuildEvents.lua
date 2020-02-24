@@ -3,17 +3,17 @@ require("lua.io")
 
 if args[2] == "Debug" then
     print("[LuaBuildEvents] Running in Debug Mode\n")
-    pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/Debug/plugins]])
+    pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/Debug/modules]])
     if Directory.exists(pluginsPath) == false then
 	    Directory.createDirectory(pluginsPath)
 	end
-	File.copy(args[4], Path.combine(args[3], [[HtcSharp.Server/bin/Debug/plugins]], args[5]), true)
+	File.copy(args[4], Path.combine(args[3], [[HtcSharp.Server/bin/Debug/modules]], args[5]), true)
 elseif args[2] == "Release" then
     print("[LuaBuildEvents] Running in Release Mode\n")
-    pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/Release/plugins]])
+    pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/Release/modules]])
     if Directory.exists(pluginsPath) == false then
 	    Directory.createDirectory(pluginsPath)
 	end
-	File.copy(args[4], Path.combine(args[3], [[HtcSharp.Server/bin/Release/plugins]], args[5]), true)
+	File.copy(args[4], Path.combine(args[3], [[HtcSharp.Server/bin/Release/modules]], args[5]), true)
 end
 print("[LuaBuildEvents] Finishing HtcSharp.HttpModule PostBuild\n")

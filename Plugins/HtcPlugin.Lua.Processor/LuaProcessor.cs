@@ -1,16 +1,14 @@
 ﻿using System.IO;
-using System.Reflection;
 using HtcPlugin.Lua.Processor.Models;
-using HtcSharp.Core.Helpers.Http;
-using HtcSharp.Core.Interfaces.Plugin;
-using HtcSharp.Core.Logging;
-using HtcSharp.Core.Models.Http;
+using HtcSharp.Core.Plugin.Abstractions;
+using HtcSharp.HttpModule;
+using HtcSharp.HttpModule.Routing;
+using Microsoft.Extensions.Logging;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
 namespace HtcPlugin.Lua.Processor {
-    public class LuaProcessor : IHtcPlugin, IHttpEvents {
-        private static readonly Logger Logger = LogManager.GetILog(MethodBase.GetCurrentMethod().DeclaringType);
+    public class LuaProcessor : IPlugin, IHttpEvents {
         public static LuaProcessor Context;
         public string PluginName => "HtcLuaProcessor";
         public string PluginVersion => "0.1.2";
@@ -41,7 +39,7 @@ namespace HtcPlugin.Lua.Processor {
         }
 
         public bool OnHttpPageRequest(HtcHttpContext httpContext, string filename) {
-            Logger.Warn($"A custom page was called. This should not happen! {{FileName: \"{filename}\"}}");
+            Logger<>.Warn($"A custom page was called. This should not happen! {{FileName: \"{filename}\"}}");
             httpContext.ErrorMessageManager.SendError(httpContext, 500);
             return false;
         }
