@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using CorePluginLoader;
 using HtcSharp.Core.Logging.Abstractions;
 using HtcSharp.Core.Plugin.Abstractions;
 using HtcSharp.Core.Utils;
+using Newtonsoft.Json.Linq;
 
 namespace HtcSharp.Core.Plugin {
     public class PluginManager {
@@ -15,15 +17,15 @@ namespace HtcSharp.Core.Plugin {
         private readonly Dictionary<string, IPlugin> _plugins;
         private readonly PluginServerContext _pluginServerContext;
 
-        public PluginManager(PluginServerContext pluginServerContext, ILogger logger) {
+        public PluginManager(HtcServer htcServer, ILogger logger) {
             _logger = logger;
             _pluginLoader = new PluginLoader<IPlugin>();
             _plugins = new Dictionary<string, IPlugin>();
-            _pluginServerContext = pluginServerContext;
+            _pluginServerContext = new PluginServerContext(HtcIOUtils.ReplacePathTags(htcServer.Config.GetValue("PluginsPath", StringComparison.CurrentCultureIgnoreCase)?.Value<string>()), this); ;
         }
 
         public string[] SearchPlugins(string modulesPath) {
-            return FileUtils.GetFiles(modulesPath, "*.module.dll", SearchOption.AllDirectories);
+            return FileUtils.GetFiles(modulesPath, "*.plugin.dll", SearchOption.AllDirectories);
         }
 
         public void LoadPlugins(string modulesPath) {
