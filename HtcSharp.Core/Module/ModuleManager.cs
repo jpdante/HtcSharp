@@ -44,6 +44,7 @@ namespace HtcSharp.Core.Module {
         public async Task UnLoadModule(string name) {
             if (_modules.TryGetValue(name, out var module)) {
                 await module.Disable();
+                _modules.Remove(name);
             }
         }
 

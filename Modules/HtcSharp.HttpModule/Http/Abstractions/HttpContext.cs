@@ -75,6 +75,6 @@ namespace HtcSharp.HttpModule.Http.Abstractions
         /// </summary>
         public abstract void Abort();
 
-        public abstract HtcServerInfo ServerInfo { get; internal set; }
+        public abstract HttpServerInfo ServerInfo { get; internal set; }
     }
 }

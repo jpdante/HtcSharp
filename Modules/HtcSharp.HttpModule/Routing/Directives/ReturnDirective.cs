@@ -37,7 +37,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
 
         public async Task Execute(HttpContext context) {
             if (_type == 1) {
-                await ErrorMessageManager.SendError(context, _statusCode);
+                await context.ServerInfo.ErrorMessageManager.SendError(context, _statusCode);
             } else if (_type == 2) {
                 context.Response.StatusCode = _statusCode;
                 context.Response.Headers.Add("Location", HttpIO.ReplaceVars(context, _data));

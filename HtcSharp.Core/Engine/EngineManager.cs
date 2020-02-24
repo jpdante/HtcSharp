@@ -12,10 +12,12 @@ namespace HtcSharp.Core.Engine {
         private readonly ILogger _logger;
         private readonly List<IEngine> _engines;
         private readonly Dictionary<string, Type> _availableEngines;
+        private readonly List<string> _engineNames;
 
         public EngineManager(ILogger logger) {
             _logger = logger;
             _engines = new List<IEngine>();
+            _engineNames = new List<string>();
             _availableEngines = new Dictionary<string, Type>();
         }
 
@@ -23,42 +25,43 @@ namespace HtcSharp.Core.Engine {
             if(type == null) return;
             if (!type.IsAssignableFrom(typeof(IEngine))) return;
             _availableEngines.Add(name.ToLower(), type);
+            _engineNames.Add(name.ToLower());
         }
 
         public void UnRegisterEngine(string name) {
             _availableEngines.Remove(name.ToLower());
+            _engineNames.Remove(name.ToLower());
         }
 
-        public IEngine InstantiateEngine(string name) {
+        internal IEngine InstantiateEngine(string name) {
             if (!_availableEngines.TryGetValue(name, out var type)) return null;
-            try {
-                var engine = Activator.CreateInstance(type) as IEngine;
-                return engine;
-            } catch {
-                // ignored
-            }
-            return null;
+            var engine = Activator.CreateInstance(type) as IEngine;
+            return engine;
         }
 
-        public void AddEngine(IEngine engine) {
+        internal string[] GetEnginesNames() {
+            return _engineNames.ToArray();
+        }
+
+        internal void AddEngine(IEngine engine) {
             _engines.Add(engine);
         }
 
-        public void RemoveEngine(IEngine engine) {
+        internal void RemoveEngine(IEngine engine) {
             _engines.Remove(engine);
         }
 
-        public async Task Load(IEngine engine, JObject config) {
+        internal async Task Load(IEngine engine, JObject config) {
             await engine.Load(config, _logger);
         }
 
-        public async Task Start() {
+        internal async Task Start() {
             foreach (var engine in _engines) {
                 await engine.Start();
             }
         }
 
-        public async Task Stop() {
+        internal async Task Stop() {
             foreach (var engine in _engines) {
                 await engine.Stop();
             }

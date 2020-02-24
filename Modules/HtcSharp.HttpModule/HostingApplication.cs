@@ -9,12 +9,14 @@ using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule {
     internal class HostingApplication : IHttpApplication<HostingApplication.Context> {
-        private readonly IHttpContextFactory _httpContextFactory;
+        private readonly HttpEngine _httpEngine;
         private readonly ILogger _logger;
+        private readonly IHttpContextFactory _httpContextFactory;
 
-        public HostingApplication(ILogger logger, IHttpContextFactory httpContextFactory) {
-            _httpContextFactory = httpContextFactory;
+        public HostingApplication(HttpEngine httpEngine, ILogger logger, IHttpContextFactory httpContextFactory) {
+            _httpEngine = httpEngine;
             _logger = logger;
+            _httpContextFactory = httpContextFactory;
         }
 
         public Context CreateContext(IFeatureCollection contextFeatures) {

@@ -5,13 +5,16 @@ using HtcSharp.HttpModule.Routing.Abstractions;
 using HtcSharp.HttpModule.Routing.Pages;
 
 namespace HtcSharp.HttpModule.Routing.Error {
-    public static class ErrorMessageManager {
+    public class ErrorMessageManager {
         private static readonly Dictionary<int, IPageMessage> DefaultPages;
-        private static readonly Dictionary<int, IPageMessage> OverridePages;
+        private readonly Dictionary<int, IPageMessage> _overridePages;
 
         static ErrorMessageManager() {
             DefaultPages = new Dictionary<int, IPageMessage>();
-            OverridePages = new Dictionary<int, IPageMessage>();
+        }
+
+        public ErrorMessageManager() {
+            _overridePages = new Dictionary<int, IPageMessage>();
         }
 
         public static void RegisterDefaultPage(IPageMessage pageMessage) => DefaultPages[pageMessage.StatusCode] = pageMessage;
@@ -20,22 +23,21 @@ namespace HtcSharp.HttpModule.Routing.Error {
 
         public static void ClearDefaultPages() => DefaultPages.Clear();
 
-        public static void RegisterOverridePage(IPageMessage pageMessage) => OverridePages[pageMessage.StatusCode] = pageMessage;
+        public void RegisterOverridePage(IPageMessage pageMessage) => _overridePages[pageMessage.StatusCode] = pageMessage;
 
-        public static void UnRegisterOverridePage(int statusCode) => OverridePages.Remove(statusCode);
+        public void UnRegisterOverridePage(int statusCode) => _overridePages.Remove(statusCode);
 
-        public static string GetErrorMessage(HttpContext httpContext, int statusCode) {
-            if (OverridePages.ContainsKey(statusCode)) return OverridePages[statusCode].GetPageMessage(httpContext);
-            else if (DefaultPages.ContainsKey(statusCode)) return DefaultPages[statusCode].GetPageMessage(httpContext);
-            else return null;
+        public string GetErrorMessage(HttpContext httpContext, int statusCode) {
+            if (_overridePages.ContainsKey(statusCode)) return _overridePages[statusCode].GetPageMessage(httpContext);
+            return DefaultPages.ContainsKey(statusCode) ? DefaultPages[statusCode].GetPageMessage(httpContext) : null;
         }
 
         public static string GetDefaultErrorMessage(HttpContext httpContext, int statusCode) {
             return DefaultPages.ContainsKey(statusCode) ? DefaultPages[statusCode].GetPageMessage(httpContext) : null;
         }
 
-        public static async Task SendError(HttpContext httpContext, int statusCode) {
-            if (OverridePages.ContainsKey(statusCode)) await OverridePages[statusCode].ExecutePageMessage(httpContext);
+        public async Task SendError(HttpContext httpContext, int statusCode) {
+            if (_overridePages.ContainsKey(statusCode)) await _overridePages[statusCode].ExecutePageMessage(httpContext);
             else if (DefaultPages.ContainsKey(statusCode)) await DefaultPages[statusCode].ExecutePageMessage(httpContext);
             else httpContext.Response.StatusCode = statusCode;
         }

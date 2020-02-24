@@ -19,40 +19,40 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         }
 
         public async Task Execute(HttpContext context) {
-            foreach (var i in _indexes) {
-                var index = HttpIO.ReplaceVars(context, i);
+            foreach (string i in _indexes) {
+                string index = HttpIO.ReplaceVars(context, i);
                 if (index.Equals("$internal_indexes")) {
-                    foreach (var j in UrlMapper.IndexFiles) {
-                        var indexPath = Path.Combine(context.ServerInfo.RootPath, j[0].Equals('/') ? j.Remove(0, 1) : Path.Combine(context.Request.Path, j).Remove(0, 1));
+                    foreach (string j in UrlMapper.IndexFiles) {
+                        string indexPath = Path.Combine(context.ServerInfo.RootPath, j[0].Equals('/') ? j.Remove(0, 1) : Path.Combine(context.Request.Path, j).Remove(0, 1));
                         if (!File.Exists(indexPath)) continue;
-                        var extension = Path.GetExtension(indexPath);
+                        string extension = Path.GetExtension(indexPath);
                         context.Request.RequestFilePath = indexPath;
                         if (UrlMapper.ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                             if (!plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower())) continue;
-                            await ErrorMessageManager.SendError(context, 500);
+                            await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                             return;
                         }
                         try {
                             await HttpIO.SendFile(context, indexPath);
                         } catch {
-                            await ErrorMessageManager.SendError(context, 500);
+                            await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                         }
                         return;
                     }
                 } else {
-                    var indexPath = Path.Combine(context.ServerInfo.RootPath, index[0].Equals('/') ? index.Remove(0, 1) : Path.Combine(context.Request.Path, index).Remove(0, 1));
+                    string indexPath = Path.Combine(context.ServerInfo.RootPath, index[0].Equals('/') ? index.Remove(0, 1) : Path.Combine(context.Request.Path, index).Remove(0, 1));
                     if (!File.Exists(indexPath)) continue;
-                    var extension = Path.GetExtension(indexPath);
+                    string extension = Path.GetExtension(indexPath);
                     context.Request.RequestFilePath = indexPath;
                     if (UrlMapper.ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                         if (!plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower())) continue;
-                        await ErrorMessageManager.SendError(context, 500);
+                        await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                         return;
                     }
                     try {
                         await HttpIO.SendFile(context, indexPath);
                     } catch {
-                        await ErrorMessageManager.SendError(context, 500);
+                        await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                     }
                     return;
                 }

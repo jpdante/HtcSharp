@@ -20,17 +20,17 @@ namespace HtcSharp.Core.Plugin {
             _modules = new Dictionary<string, IPlugin>();
         }
 
-        public string[] SearchModules(string modulesPath) {
+        public string[] SearchPlugins(string modulesPath) {
             return FileUtils.GetFiles(modulesPath, "*.module.dll", SearchOption.AllDirectories);
         }
 
-        public void LoadModules(string modulesPath) {
-            foreach (var plugin in _pluginLoader.LoadPlugins(SearchModules(modulesPath))) {
+        public void LoadPlugins(string modulesPath) {
+            foreach (var plugin in _pluginLoader.LoadPlugins(SearchPlugins(modulesPath))) {
                 _modules.Add(plugin.Name, plugin);
             }
         }
 
-        public void LoadModule(string modulePath) {
+        public void LoadPlugin(string modulePath) {
             if (!File.Exists(modulePath)) return;
             foreach (var plugin in _pluginLoader.LoadPlugin(modulePath)) {
                 if (!plugin.IsCompatible(HtcVersion.Major, HtcVersion.Minor, HtcVersion.Patch)) continue;
@@ -38,7 +38,7 @@ namespace HtcSharp.Core.Plugin {
             }
         }
 
-        public async Task UnLoadModule(string name) {
+        public async Task UnLoadPlugin(string name) {
             if (_modules.TryGetValue(name, out var module)) {
                 await module.Disable();
             }

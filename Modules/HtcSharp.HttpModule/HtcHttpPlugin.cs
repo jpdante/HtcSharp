@@ -1,21 +1,29 @@
-﻿using HtcSharp.Core;
-using HtcSharp.Core.Interfaces.Plugin;
+﻿using System.Threading.Tasks;
+using HtcSharp.Core;
+using HtcSharp.Core.Logging.Abstractions;
+using HtcSharp.Core.Module.Abstractions;
+using HtcSharp.Core.Plugin.Abstractions;
 
 namespace HtcSharp.HttpModule {
-    public class HtcHttpEngine : IHtcPlugin {
-        public string PluginName => "HtcHttp";
-        public string PluginVersion => "1.0.1";
+    public class HtcHttpEngine : IModule {
+        public string Name => "HtcHttp";
+        public string Version => "1.0.1";
 
-        public void OnLoad() {
-            HtcServer.Context.RegisterEngine("htc-http", typeof(HttpEngine));
+        public Task Load(HtcServer htcServer, ILogger logger) {
+            htcServer.EngineManager.RegisterEngine("htc-http", typeof(HttpEngine));
+            return Task.CompletedTask;
         }
 
-        public void OnEnable() {
-            
+        public Task Enable() {
+            return Task.CompletedTask;
         }
 
-        public void OnDisable() {
-            
+        public Task Disable() {
+            return Task.CompletedTask;
+        }
+
+        public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
+            return true;
         }
     }
 }
