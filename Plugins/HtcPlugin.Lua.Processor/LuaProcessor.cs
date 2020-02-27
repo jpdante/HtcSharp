@@ -63,8 +63,7 @@ namespace HtcPlugin.Lua.Processor {
             luaScript.Globals["__HtcLowLevel"] = LuaLowLevelAccess;
             string luaIncludePath = Path.GetDirectoryName(filename).Replace(@"\", "/");
             ((ScriptLoaderBase)luaScript.Options.ScriptLoader).ModulePaths = new[] { $"?.lua", $"{luaIncludePath}/?", $"{luaIncludePath}/?.lua", };
-            bool result = LuaRequest.Request(httpContext, luaScript, filename);
-            return Task.CompletedTask;
+            return LuaRequest.Request(httpContext, luaScript, filename);
         }
     }
 }

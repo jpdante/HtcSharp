@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using MoonSharp.Interpreter;
 
@@ -8,20 +9,20 @@ namespace HtcPlugin.Lua.Processor.Utils {
     public static class LuaExceptionHandler {
         
         public static void ErrorHeaderAlreadySent(HttpContext httpContext) {
-            httpContext.Response.Body.Write(Encoding.UTF8.GetBytes(GenerateMessage("Failed to set the header, it has already been sent to the client!")));
+            httpContext.Response.WriteAsync(GenerateMessage("Failed to set the header, it has already been sent to the client!")).GetAwaiter().GetResult();
         }
 
         public static void ErrorScriptRuntimeException(HttpContext httpContext, ScriptRuntimeException ex, string filepath) {
             if (ex.DecoratedMessage.Length <= 0) {
-                httpContext.Response.Body.Write(Encoding.UTF8.GetBytes(GenerateMessage(ex.Message, "Fatal Error:")));
+                httpContext.Response.WriteAsync(GenerateMessage(ex.Message, "Fatal Error:")).GetAwaiter().GetResult();
             } else {
                 string fileName = Path.GetFileName(filepath);
-                httpContext.Response.Body.Write(Encoding.UTF8.GetBytes(GenerateMessage(ex.DecoratedMessage.Replace(filepath, fileName), "Fatal Error:")));
+                httpContext.Response.WriteAsync(GenerateMessage(ex.DecoratedMessage.Replace(filepath, fileName), "Fatal Error:")).GetAwaiter().GetResult();
             }
         }
 
         public static void ErrorUnknown(HttpContext httpContext, Exception ex) {
-            httpContext.Response.Body.Write(Encoding.UTF8.GetBytes(GenerateMessage(ex.Message, "Fatal Error:")));
+            httpContext.Response.WriteAsync(GenerateMessage(ex.Message, "Fatal Error:")).GetAwaiter().GetResult();
         }
 
         public static string GenerateMessage(string message, string type = "Error:") {

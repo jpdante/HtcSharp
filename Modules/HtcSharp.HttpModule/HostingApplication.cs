@@ -38,24 +38,28 @@ namespace HtcSharp.HttpModule {
         }
 
         public async Task ProcessRequestAsync(Context context) {
-            string currentKey = context.HttpContext.Request.IsHttps ? $"1{context.HttpContext.Request.Host.ToString()}" : $"0{context.HttpContext.Request.Host.ToString()}";
-            if (_httpEngine.DomainDictionary.TryGetValue(currentKey, out var value)) {
-                context.HttpContext.ServerInfo = value.HttpServerInfo;
-                await value.LocationManager.ProcessRequest(context.HttpContext);
-                return;
-            }
+            try {
+                string currentKey = context.HttpContext.Request.IsHttps ? $"1{context.HttpContext.Request.Host.ToString()}" : $"0{context.HttpContext.Request.Host.ToString()}";
+                if (_httpEngine.DomainDictionary.TryGetValue(currentKey, out var value)) {
+                    context.HttpContext.ServerInfo = value.HttpServerInfo;
+                    await value.LocationManager.ProcessRequest(context.HttpContext);
+                    return;
+                }
 
-            string anyKey = context.HttpContext.Request.IsHttps ? $"1*" : $"0*";
-            if (_httpEngine.DomainDictionary.TryGetValue(anyKey, out var value2)) {
-                context.HttpContext.ServerInfo = value2.HttpServerInfo;
-                await value2.LocationManager.ProcessRequest(context.HttpContext);
-                return;
-            }
+                string anyKey = context.HttpContext.Request.IsHttps ? $"1*" : $"0*";
+                if (_httpEngine.DomainDictionary.TryGetValue(anyKey, out var value2)) {
+                    context.HttpContext.ServerInfo = value2.HttpServerInfo;
+                    await value2.LocationManager.ProcessRequest(context.HttpContext);
+                    return;
+                }
 
-            var response = context.HttpContext.Response;
-            response.StatusCode = 503;
-            Memory<byte> data = Encoding.UTF8.GetBytes("No domain found!");
-            await response.BodyWriter.WriteAsync(data);
+                var response = context.HttpContext.Response;
+                response.StatusCode = 503;
+                Memory<byte> data = Encoding.UTF8.GetBytes("No domain found!");
+                await response.BodyWriter.WriteAsync(data);
+            } catch (Exception ex) {
+                _logger.LogError(ex, ex.Message);
+            }
         }
 
         public void DisposeContext(Context context, Exception exception) {

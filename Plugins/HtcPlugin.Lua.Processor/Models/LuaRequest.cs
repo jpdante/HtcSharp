@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using HtcPlugin.Lua.Processor.Utils;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Features;
@@ -10,18 +11,18 @@ using MoonSharp.Interpreter;
 namespace HtcPlugin.Lua.Processor.Models {
     public class LuaRequest {
 
-        public static bool Request(HttpContext httpContext, Script luaScript, string filename) {
+        public static Task Request(HttpContext httpContext, Script luaScript, string filename) {
             try {
                 var headerSent = false;
                 var statusCode = 200;
                 string contentType = ContentType.HTML.ToValue();
-                luaScript.Options.DebugPrint = data => {
+                luaScript.Options.DebugPrint = async data => {
                     if (!headerSent) {
                         headerSent = true;
                         httpContext.Response.StatusCode = statusCode;
                         httpContext.Response.ContentType = contentType;
                     }
-                    httpContext.Response.Body.Write(Encoding.UTF8.GetBytes(data));
+                    await httpContext.Response.WriteAsync(data);
                 };
                 Action<string, string, string> SetCookieAction = (arg1, arg2, arg3) => {
                     if (headerSent) {
@@ -104,7 +105,7 @@ namespace HtcPlugin.Lua.Processor.Models {
             } catch (Exception ex) {
                 LuaExceptionHandler.ErrorUnknown(httpContext, ex);
             }
-            return false;
+            return Task.CompletedTask;
         }
 
         public static Script NewScript() => new Script();

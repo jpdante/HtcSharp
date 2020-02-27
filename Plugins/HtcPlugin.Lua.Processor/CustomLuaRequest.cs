@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
@@ -18,13 +19,13 @@ namespace HtcPlugin.Lua.Processor {
             _luaScript = new Script();
             var luaIncludePath = Path.GetDirectoryName(luaFilename1).Replace(@"\", "/");
             ((ScriptLoaderBase)_luaScript.Options.ScriptLoader).ModulePaths = new string[] { $"{luaIncludePath}/?", $"{luaIncludePath}/?.lua" };
-            _luaScript.Options.DebugPrint = data => {
+            _luaScript.Options.DebugPrint = async data => {
                 if (!_headerSent) {
                     _headerSent = true;
                     //httpContext.Response.StatusCode = statusCode;
                     //httpContext.Response.ContentType = contentType;
                 }
-                httpContext.Response.Body.Write(Encoding.UTF8.GetBytes(data));
+                await httpContext.Response.WriteAsync(data);
             };
             _dynScript = _luaScript.LoadFile(luaFilename1);
         }
@@ -43,22 +44,22 @@ namespace HtcPlugin.Lua.Processor {
         public void RemoveValue(DynValue key) => _luaScript.Globals.Remove(key);
         public void ClearValues() => _luaScript.Globals.Clear();
         
-        public static void ErrorHeaderAlreadySent(HttpContext httpContext) {
-            httpContext.Response.Body.Write(Encoding.UTF8.GetBytes("<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] attempt to set the header but it has already been sent to the client!</strong><br>"));
+        public static async Task ErrorHeaderAlreadySent(HttpContext httpContext) {
+            await httpContext.Response.WriteAsync("<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] attempt to set the header but it has already been sent to the client!</strong><br>");
         }
 
-        public static void ErrorScriptRuntimeException(HttpContext httpContext, ScriptRuntimeException ex, string filepath) {
+        public static async Task ErrorScriptRuntimeException(HttpContext httpContext, ScriptRuntimeException ex, string filepath) {
             if(ex.DecoratedMessage.Length == 0) {
-                httpContext.Response.Body.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] {ex.Message}</strong><br>"));
+                await httpContext.Response.WriteAsync($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] {ex.Message}</strong><br>");
             } else {
                 string luaPath = ex.DecoratedMessage.Split(":(")[0];
                 string fileName = Path.GetFileName(filepath);
-                httpContext.Response.Body.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] {ex.DecoratedMessage.Replace(filepath, fileName)}</strong><br>"));
+                await httpContext.Response.WriteAsync($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] {ex.DecoratedMessage.Replace(filepath, fileName)}</strong><br>");
             }
         }
 
-        public static void ErrorUnknown(HttpContext httpContext, Exception ex) {
-            httpContext.Response.Body.Write(Encoding.UTF8.GetBytes($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] exception occurred => {ex.Message}</strong><br>"));
+        public static async Task ErrorUnknown(HttpContext httpContext, Exception ex) {
+            await httpContext.Response.WriteAsync($"<br><strong style=\"color: #d50000; font-family: Arial, Helvetica, sans-serif;\">[Lua] exception occurred => {ex.Message}</strong><br>");
         }
         
     }
