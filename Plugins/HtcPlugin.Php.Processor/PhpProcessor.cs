@@ -36,14 +36,14 @@ namespace HtcPlugin.Php.Processor {
                 using var fileStream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
                 using var streamWriter = new StreamWriter(fileStream);
                 streamWriter.Write(JsonConvert.SerializeObject(new {
-                    PhpCgiExec = "",
-                    PhpPath = "",
+                    PhpCgiExec = "%WorkingPath%\\plugins\\php\\php-cgi.exe",
+                    PhpPath = "%WorkingPath%\\plugins\\php",
                     Timeout = 10000
                 }, Formatting.Indented));
             }
             var config = JsonUtils.GetJsonFile(path);
-            PhpCgiExec = config.GetValue("PhpCgiExec", StringComparison.CurrentCultureIgnoreCase).ToObject<string>();
-            PhpPath = config.GetValue("PhpPath", StringComparison.CurrentCultureIgnoreCase).ToObject<string>();
+            PhpCgiExec = HtcIOUtils.ReplacePathTags(config.GetValue("PhpCgiExec", StringComparison.CurrentCultureIgnoreCase).ToObject<string>());
+            PhpPath = HtcIOUtils.ReplacePathTags(config.GetValue("PhpPath", StringComparison.CurrentCultureIgnoreCase).ToObject<string>());
             Timeout = config.GetValue("Timeout", StringComparison.CurrentCultureIgnoreCase).ToObject<int>();
             return Task.CompletedTask;
         }

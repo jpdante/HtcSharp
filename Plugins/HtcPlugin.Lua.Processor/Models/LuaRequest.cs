@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using HtcPlugin.Lua.Processor.Utils;
+using HtcSharp.Core.Logging.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Routing;
 using MoonSharp.Interpreter;
+// ReSharper disable ConditionIsAlwaysTrueOrFalse
 
 namespace HtcPlugin.Lua.Processor.Models {
     public class LuaRequest {
@@ -16,13 +18,13 @@ namespace HtcPlugin.Lua.Processor.Models {
                 var headerSent = false;
                 var statusCode = 200;
                 string contentType = ContentType.HTML.ToValue();
-                luaScript.Options.DebugPrint = async data => {
+                luaScript.Options.DebugPrint = data => {
                     if (!headerSent) {
                         headerSent = true;
                         httpContext.Response.StatusCode = statusCode;
                         httpContext.Response.ContentType = contentType;
                     }
-                    await httpContext.Response.WriteAsync(data);
+                    httpContext.Response.WriteAsync(data).GetAwaiter().GetResult();
                 };
                 Action<string, string, string> SetCookieAction = (arg1, arg2, arg3) => {
                     if (headerSent) {
@@ -70,15 +72,16 @@ namespace HtcPlugin.Lua.Processor.Models {
                     contentType = arg1;
                     httpContext.Response.ContentType = arg1;
                 };
-                luaScript.Globals["setcookie"] = SetCookieAction;
-                luaScript.Globals["unsetcookie"] = UnsetCookieAction;
+                luaScript.Globals["setCookie"] = SetCookieAction;
+                luaScript.Globals["unsetCookie"] = UnsetCookieAction;
                 luaScript.Globals["redirect"] = RedirectAction;
-                luaScript.Globals["setstatus"] = SetStatusAction;
-                luaScript.Globals["setheader"] = SetHeaderAction;
-                luaScript.Globals["setcontenttype"] = SetContentTypeAction;
+                luaScript.Globals["setStatus"] = SetStatusAction;
+                luaScript.Globals["setHeader"] = SetHeaderAction;
+                luaScript.Globals["setContentType"] = SetContentTypeAction;
                 luaScript.Globals["_HEADER"] = httpContext.Request.Headers;
                 luaScript.Globals["_COOKIE"] = httpContext.Request.Cookies;
-                luaScript.Globals["_POST"] = httpContext.Request.Form;
+                // TODO: Fix Later
+                //luaScript.Globals["_POST"] = httpContext.Request.Form;
                 luaScript.Globals["_GET"] = httpContext.Request.Query;
                 luaScript.Globals["_SERVER"] = new Dictionary<string, object>() {
                     {"SERVER_NAME", Environment.MachineName},
@@ -88,7 +91,7 @@ namespace HtcPlugin.Lua.Processor.Models {
                     {"REQUEST_METHOD", httpContext.Request.Method},
                     {"REQUEST_TIME", (int)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds()},
                     {"REQUEST_TIME_FLOAT", (float)new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds()},
-                    {"QUERY_STRING", httpContext.Request.QueryString},
+                    {"QUERY_STRING", httpContext.Request.QueryString.ToString()},
                     {"HTTPS", httpContext.Request.IsHttps},
                     {"REMOTE_ADDR", httpContext.Connection.RemoteIpAddress.ToString()},
                     {"REMOTE_PORT", httpContext.Connection.RemotePort},
@@ -98,7 +101,7 @@ namespace HtcPlugin.Lua.Processor.Models {
                     headerSent = true;
                     httpContext.Response.StatusCode = statusCode;
                     httpContext.Response.ContentType = contentType;
-                    httpContext.Response.Body.Write(Encoding.UTF8.GetBytes(""));
+                    httpContext.Response.WriteAsync("").GetAwaiter().GetResult();
                 }
             } catch (ScriptRuntimeException ex) {
                 LuaExceptionHandler.ErrorScriptRuntimeException(httpContext, ex, filename);

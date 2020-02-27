@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using HtcSharp.Core.Logging.Abstractions;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Features;
@@ -15,11 +17,11 @@ namespace HtcPlugin.Php.Processor.Models {
         public static async Task Request(HttpContext httpContext, string filename, int timeout) {
             //httpContext.Response.ContentType = "text/html; charset=utf-8";
             using var phpProcess = new Process {
-                StartInfo = {FileName = PhpProcessor.PhpCgiExec}
+                StartInfo = { FileName = PhpProcessor.PhpCgiExec }
             };
             //var pathVars = phpProcess.StartInfo.EnvironmentVariables["Path"];
             var queryString = httpContext.Request.QueryString.ToString();
-            if(!string.IsNullOrEmpty(queryString)) queryString = queryString.Remove(0,1);
+            if (!string.IsNullOrEmpty(queryString)) queryString = queryString.Remove(0, 1);
             //queryString = Uri.UnescapeDataString(queryString);
             //phpProcess.StartInfo.EnvironmentVariables.Clear();
             phpProcess.StartInfo.EnvironmentVariables.Add("PHPRC", PhpProcessor.PhpPath);
@@ -68,73 +70,82 @@ namespace HtcPlugin.Php.Processor.Models {
             phpProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
             var isResponse = false;
             phpProcess.Start();
-            httpContext.Request.Body.CopyTo(phpProcess.StandardInput.BaseStream);
+            await httpContext.Request.Body.CopyToAsync(phpProcess.StandardInput.BaseStream);
             phpProcess.StandardInput.BaseStream.Flush();
             phpProcess.StandardInput.Flush();
-            //try {
-            while (!phpProcess.StandardOutput.EndOfStream) {
-                string line = phpProcess.StandardOutput.ReadLine();
-                if (line == null) continue;
-                if (line == "" && isResponse == false) {
-                    isResponse = true;
-                    continue;
-                }
-                if (isResponse) await httpContext.Response.WriteAsync(line + Environment.NewLine);
-                else {
-                    //var tag = line.Split(new[] {':'}, 2);
-                    //tag[1] = tag[1].Remove(0, 1);
-                    //httpContext.Response.Headers.Add(tag[0], tag[1]);
-                    //Logger.Info($"{tag[0]}=>{tag[1]}");
-                    //Logger.Info($"{line}");
-                    string[] tag = line.Split(new[] {':'}, 2);
-                    tag[1] = tag[1].Remove(0, 1);
-                    switch (tag[0]) {
-                        case "Location":
-                            httpContext.Response.Redirect(tag[1]);
-                            break;
-                        case "Set-Cookie":
-                            var cookieOptions = new CookieOptions() {
-                                SameSite = SameSiteMode.None
-                            };
-                            string[] cookieData = tag[1].Split(';', 2);
-                            string[] cookieKeyValue = cookieData[0].Split('=', 2);
-                            var setCookieHeaderValue = new SetCookieHeaderValue(Uri.UnescapeDataString(cookieKeyValue[0]), Uri.UnescapeDataString(cookieKeyValue[1]));
-                            foreach (string cookieConfig in cookieData[1].Split(';')) {
-                                string[] config = cookieConfig.Split('=', 2);
-                                config[0] = config[0].Remove(0, 1);
-                                if (config[0].Equals("Max-Age", StringComparison.CurrentCultureIgnoreCase)) {
-                                    setCookieHeaderValue.MaxAge = TimeSpan.FromSeconds(int.Parse(config[1]));
-                                } else if (config[0].Equals("path", StringComparison.CurrentCultureIgnoreCase)) {
-                                    setCookieHeaderValue.Path = config[1];
-                                } else if (config[0].Equals("domain", StringComparison.CurrentCultureIgnoreCase)) {
-                                    setCookieHeaderValue.Domain = config[1];
-                                } else if (config[0].Equals("HttpOnly", StringComparison.CurrentCultureIgnoreCase)) {
-                                    setCookieHeaderValue.HttpOnly = true;
-                                } else if (config[0].Equals("expires", StringComparison.CurrentCultureIgnoreCase)) {
-                                    setCookieHeaderValue.Expires = DateTimeOffset.Parse(config[1]);
-                                } else if (config[0].Equals("SameSite", StringComparison.CurrentCultureIgnoreCase)) {
-                                    setCookieHeaderValue.SameSite = SameSiteMode.Lax;
+            try {
+                while (!phpProcess.StandardOutput.EndOfStream) {
+                    string line = phpProcess.StandardOutput.ReadLine();
+                    PhpProcessor.Context.Logger.LogInfo(line);
+                    if (line == null) continue;
+                    if (line == "" && isResponse == false) {
+                        isResponse = true;
+                        continue;
+                    }
+                    if (isResponse) await httpContext.Response.WriteAsync(line + Environment.NewLine);
+                    else {
+                        //var tag = line.Split(new[] {':'}, 2);
+                        //tag[1] = tag[1].Remove(0, 1);
+                        //httpContext.Response.Headers.Add(tag[0], tag[1]);
+                        //Logger.Info($"{tag[0]}=>{tag[1]}");
+                        //Logger.Info($"{line}");
+                        string[] tag = line.Split(new[] { ':' }, 2);
+                        if (tag.Length == 1) {
+                            await httpContext.Response.WriteAsync(line + Environment.NewLine);
+                            isResponse = true;
+                            continue;
+                        }
+                        tag[1] = tag[1].Remove(0, 1);
+                        if (httpContext.Response.HasStarted) return;
+                        switch (tag[0]) {
+                            case "Location":
+                                httpContext.Response.Redirect(tag[1]);
+                                break;
+                            case "Set-Cookie":
+                                var cookieOptions = new CookieOptions() {
+                                    SameSite = SameSiteMode.None
+                                };
+                                string[] cookieData = tag[1].Split(';', 2);
+                                string[] cookieKeyValue = cookieData[0].Split('=', 2);
+                                foreach (var a in cookieKeyValue) {
+                                    PhpProcessor.Context.Logger.LogInfo(a[0] + ": " + a[1]);
                                 }
-                            }
-                            if (cookieKeyValue[1] == "+") cookieKeyValue[1] = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString();
-                            //Logger.Info($"{Uri.UnescapeDataString(cookieKeyValue[0])}: {Uri.UnescapeDataString(cookieKeyValue[1])}");
-                            var cookieValue = setCookieHeaderValue.ToString();
-                            httpContext.Response.Headers[HeaderNames.SetCookie] = StringValues.Concat(httpContext.Response.Headers[HeaderNames.SetCookie], cookieValue);
-                            break;
-                        default:
-                            if (httpContext.Response.Headers.ContainsKey(tag[0])) {
-                                httpContext.Response.Headers[tag[0]] = string.Concat(httpContext.Response.Headers[tag[0]], tag[1]);
-                            } else {
-                                httpContext.Response.Headers.Add(tag[0], tag[1]);
-                            }
-                            break;
+                                /*var setCookieHeaderValue = new SetCookieHeaderValue(Uri.UnescapeDataString(cookieKeyValue[0]), Uri.UnescapeDataString(cookieKeyValue[1]));
+                                foreach (string cookieConfig in cookieData[1].Split(';')) {
+                                    string[] config = cookieConfig.Split('=', 2);
+                                    config[0] = config[0].Remove(0, 1);
+                                    if (config[0].Equals("Max-Age", StringComparison.CurrentCultureIgnoreCase)) {
+                                        setCookieHeaderValue.MaxAge = TimeSpan.FromSeconds(int.Parse(config[1]));
+                                    } else if (config[0].Equals("path", StringComparison.CurrentCultureIgnoreCase)) {
+                                        setCookieHeaderValue.Path = config[1];
+                                    } else if (config[0].Equals("domain", StringComparison.CurrentCultureIgnoreCase)) {
+                                        setCookieHeaderValue.Domain = config[1];
+                                    } else if (config[0].Equals("HttpOnly", StringComparison.CurrentCultureIgnoreCase)) {
+                                        setCookieHeaderValue.HttpOnly = true;
+                                    } else if (config[0].Equals("expires", StringComparison.CurrentCultureIgnoreCase)) {
+                                        setCookieHeaderValue.Expires = DateTimeOffset.Parse(config[1]);
+                                    } else if (config[0].Equals("SameSite", StringComparison.CurrentCultureIgnoreCase)) {
+                                        setCookieHeaderValue.SameSite = SameSiteMode.Lax;
+                                    }
+                                }
+                                if (cookieKeyValue[1] == "+") cookieKeyValue[1] = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString();
+                                //Logger.Info($"{Uri.UnescapeDataString(cookieKeyValue[0])}: {Uri.UnescapeDataString(cookieKeyValue[1])}");
+                                var cookieValue = setCookieHeaderValue.ToString();
+                                httpContext.Response.Headers[HeaderNames.SetCookie] = StringValues.Concat(httpContext.Response.Headers[HeaderNames.SetCookie], cookieValue);*/
+                                break;
+                            default:
+                                if (httpContext.Response.Headers.ContainsKey(tag[0])) {
+                                    httpContext.Response.Headers[tag[0]] = string.Concat(httpContext.Response.Headers[tag[0]], tag[1]);
+                                } else {
+                                    httpContext.Response.Headers.Add(tag[0], tag[1]);
+                                }
+                                break;
+                        }
                     }
                 }
+            } catch (Exception ex) {
+                PhpProcessor.Context.Logger.LogTrace(ex.StackTrace, ex);
             }
-            //} catch(Exception ex) {
-            //    throw ex;
-            //httpContext.Response.Write(phpProcess.StandardOutput.ReadToEnd());
-            //}
             phpProcess.WaitForExit();
         }
     }
