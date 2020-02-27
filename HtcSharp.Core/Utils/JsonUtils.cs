@@ -14,5 +14,9 @@ namespace HtcSharp.Core.Utils {
             var data = (JObject)JToken.ReadFrom(reader);
             return data;
         }
+
+        public static string SerializeObject(object obj, bool format = false) {
+            return JsonConvert.SerializeObject(obj, format ? Formatting.Indented : Formatting.None);
+        }
     }
 }

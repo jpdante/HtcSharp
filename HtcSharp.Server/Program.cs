@@ -11,10 +11,10 @@ namespace HtcSharp.Server {
         internal HtcServer HtcServer;
 
         private static void Main(string[] args) {
-            new Program().Start(args);
+            new Program().Start(args).GetAwaiter().GetResult();
         }
 
-        public async void Start(string[] args) {
+        public async Task Start(string[] args) {
             Console.CancelKeyPress += Console_CancelKeyPress;
             switch (args.Length) {
                 case 1 when args[0].Equals("daemon-mode", StringComparison.CurrentCultureIgnoreCase):
