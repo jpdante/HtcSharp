@@ -19,9 +19,9 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             if (rewrite.Count == 4) _flag = rewrite[3];
         }
 
-        public async Task Execute(HttpContext context) {
+        public Task Execute(HttpContext context) {
             var match = _pattern.Match(context.Request.Path);
-            if (!match.Success) return;
+            if (!match.Success) return Task.CompletedTask;
             var newRequest = HttpIO.ReplaceVars(context, _rewriteData);
             for (var i = 0; i < match.Captures.Count; i++) {
                 newRequest = newRequest.Replace($"${i + 1}", match.Captures[i].Value);
@@ -65,6 +65,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 context.Response.Headers.Add("Location", newRequest);
             }
             context.Request.RequestPath = newRequest;
+            return Task.CompletedTask;
         }
     }
 }
