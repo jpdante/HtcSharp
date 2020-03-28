@@ -26,20 +26,24 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 if (tempPath[0].Equals('=')) {
                     if (int.TryParse(tempPath.Remove(0, 1), out int statusCode)) {
                         await context.ServerInfo.ErrorMessageManager.SendError(context, statusCode);
+                        context.Response.HasFinished = true;
                         return;
                     }
                     await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
+                    context.Response.HasFinished = true;
                     return;
                 }
                 if (tempPath[0].Equals('@')) {
                     foreach (var location in _httpLocationManager.Locations) {
                         if (!location.Key.Equals(tempPath, StringComparison.CurrentCultureIgnoreCase)) continue;
                         await location.Execute(context);
+                        context.Response.HasFinished = true;
                         return;
                     }
                 }
                 if (!UrlMapper.RegisteredPages.ContainsKey(tempPath.ToLower())) continue;
                 await UrlMapper.RegisteredPages[tempPath.ToLower()].OnHttpPageRequest(context, tempPath.ToLower());
+                context.Response.HasFinished = true;
             }
         }
     }

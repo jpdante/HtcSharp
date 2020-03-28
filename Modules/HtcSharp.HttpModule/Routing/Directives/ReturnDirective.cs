@@ -38,12 +38,15 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         public async Task Execute(HttpContext context) {
             if (_type == 1) {
                 await context.ServerInfo.ErrorMessageManager.SendError(context, _statusCode);
+                context.Response.HasFinished = true;
             } else if (_type == 2) {
                 context.Response.StatusCode = _statusCode;
                 context.Response.Headers.Add("Location", HttpIO.ReplaceVars(context, _data));
+                context.Response.HasFinished = true;
             } else if (_type == 3) {
                 context.Response.StatusCode = _statusCode;
                 await context.Response.WriteAsync(HttpIO.ReplaceVars(context, _data));
+                context.Response.HasFinished = true;
             }
         }
     }

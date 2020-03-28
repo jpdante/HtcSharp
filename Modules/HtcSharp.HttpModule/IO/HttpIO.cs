@@ -14,15 +14,15 @@ namespace HtcSharp.HttpModule.IO {
             fileStream.Position = startRange;
             var contentType = ContentType.DEFAULT.FromExtension(requestPath);
             // 7 * 24 Hour * 60 Min * 60 Sec = 604800 Sec;
-            httpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            httpContext.Response.Headers.Add("Date", DateTime.Now.ToString("r"));
+            //httpContext.Response.Headers["Access-Control-Allow-Origin"] = "*";
+            httpContext.Response.Headers["Date"] = DateTime.Now.ToString("r");
             //context.Response.Headers.Add("Last-Modified", File.GetLastWriteTime(requestPath).ToString("r"));
-            httpContext.Response.Headers.Add("Server", "HtcSharp");
+            httpContext.Response.Headers["Server"] = "HtcSharp";
             //context.Response.Headers.Add("Cache-Control", "max-age=604800");
             httpContext.Response.ContentType = contentType.ToValue();
             httpContext.Response.StatusCode = 200;
             if (UseGzip(httpContext, fileStream.Length)) {
-                httpContext.Response.Headers.Add("Content-Encoding", "gzip");
+                httpContext.Response.Headers["Content-Encoding"] = "gzip";
                 await using var gzipStream = new GZipStream(httpContext.Response.Body, CompressionLevel.Fastest);
                 await StreamCopyOperationInternal.CopyToAsync(fileStream, gzipStream, endRange, httpContext.RequestAborted);
             } else {

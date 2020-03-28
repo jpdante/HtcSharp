@@ -67,6 +67,8 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
         /// </summary>
         public abstract bool HasStarted { get; }
 
+        internal bool HasFinished { get; set; }
+
         /// <summary>
         /// Adds a delegate to be invoked just before response headers will be sent to the client.
         /// </summary>

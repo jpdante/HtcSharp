@@ -96,7 +96,10 @@ namespace HtcSharp.HttpModule.Routing {
 
         public async Task Execute(HttpContext context) {
             foreach (var directive in _directives) {
-                if (!context.Response.HasStarted) await directive.Execute(context);
+                if (!context.Response.HasFinished) {
+                    await directive.Execute(context);
+                    Console.WriteLine(directive.GetType().FullName + " " + context.Response.StatusCode);
+                }
             }
         }
 

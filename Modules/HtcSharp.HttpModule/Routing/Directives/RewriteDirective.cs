@@ -59,10 +59,12 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             if (_flag.Equals("redirect", StringComparison.CurrentCultureIgnoreCase)) {
                 context.Response.StatusCode = 302;
                 context.Response.Headers.Add("Location", newRequest);
+                context.Response.HasFinished = true;
             }
             if (_flag.Equals("permanent", StringComparison.CurrentCultureIgnoreCase)) {
                 context.Response.StatusCode = 301;
                 context.Response.Headers.Add("Location", newRequest);
+                context.Response.HasFinished = true;
             }
             context.Request.RequestPath = newRequest;
             return Task.CompletedTask;

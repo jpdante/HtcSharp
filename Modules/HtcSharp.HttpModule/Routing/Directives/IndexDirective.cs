@@ -30,12 +30,15 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         context.Request.RequestFilePath = indexPath;
                         if (UrlMapper.ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                             await plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower());
+                            context.Response.HasFinished = true;
                             return;
                         }
                         try {
                             await HttpIO.SendFile(context, indexPath);
-                        } catch {
+                            context.Response.HasFinished = true;
+                        } catch(Exception) {
                             await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
+                            context.Response.HasFinished = true;
                         }
                         return;
                     }
@@ -46,12 +49,15 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                     context.Request.RequestFilePath = indexPath;
                     if (UrlMapper.ExtensionPlugins.TryGetValue(extension.ToLower(), out var plugin)) {
                         await plugin.OnHttpExtensionRequest(context, indexPath, extension.ToLower());
+                        context.Response.HasFinished = true;
                         return;
                     }
                     try {
                         await HttpIO.SendFile(context, indexPath);
+                        context.Response.HasFinished = true;
                     } catch {
                         await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
+                        context.Response.HasFinished = true;
                     }
                     return;
                 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Routing.Abstractions;
@@ -16,8 +17,10 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         }
 
 #pragma warning disable 1998
-        public async Task Execute(HttpContext context) {
-            context.Response.Headers.Add(_name, _value);
+        public Task Execute(HttpContext context) {
+            context.Response.StatusCode = 200;
+            context.Response.Headers[_name] = _value;
+            return Task.CompletedTask;
         }
     }
 #pragma warning restore 1998
