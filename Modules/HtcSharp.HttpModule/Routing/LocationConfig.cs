@@ -98,7 +98,6 @@ namespace HtcSharp.HttpModule.Routing {
             foreach (var directive in _directives) {
                 if (!context.Response.HasFinished) {
                     await directive.Execute(context);
-                    Console.WriteLine(directive.GetType().FullName + " " + context.Response.StatusCode);
                 }
             }
         }

@@ -55,21 +55,21 @@ namespace HtcSharp.Core.Module {
 
         public async Task CallLoad() {
             foreach (var module in _modules.Values) {
-                _logger.LogInfo($"Loading Module {module.Name} {module.Version}...", null);
+                _logger.LogInfo($"Loading Module {module.Name} {module.Version}", null);
                 await module.Load(_htcServer, _logger);
             }
         }
 
         public async Task CallEnable() {
             foreach (var module in _modules.Values) {
-                _logger.LogInfo($"Enabling Module {module.Name} {module.Version}...", null);
+                _logger.LogInfo($"Enabling Module {module.Name} {module.Version}", null);
                 await module.Enable();
             }
         }
 
         public async Task CallDisable() {
             foreach (var module in _modules.Values) {
-                _logger.LogInfo($"Disabling Module {module.Name} {module.Version}...", null);
+                _logger.LogInfo($"Disabling Module {module.Name} {module.Version}", null);
                 await module.Disable();
             }
         }

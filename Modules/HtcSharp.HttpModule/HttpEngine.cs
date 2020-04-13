@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using LoggerExtensions = HtcSharp.Core.Logging.Abstractions.LoggerExtensions;
 using LogLevel = HtcSharp.Core.Logging.Abstractions.LogLevel;
 
 namespace HtcSharp.HttpModule {
@@ -32,7 +33,8 @@ namespace HtcSharp.HttpModule {
         private ILoggerFactory _loggerFactory;
         private SocketTransportFactory _socketTransportFactory;
         private KestrelServer _kestrelServer;
-        private CancellationToken _cancellationToken;
+        private CancellationTokenSource _startCancellationToken;
+        private CancellationTokenSource _stopCancellationToken;
 
         internal List<HttpServerConfig> ServerConfigs;
         internal Dictionary<string, HttpServerConfig> DomainDictionary;
@@ -52,13 +54,14 @@ namespace HtcSharp.HttpModule {
         }
 
         public async Task Start() {
-            _cancellationToken = new CancellationToken();
+            _startCancellationToken = new CancellationTokenSource();
             var logger = _loggerFactory.CreateLogger("HtcLogger");
-            await _kestrelServer.StartAsync(new HostingApplication(this, logger, _serviceProvider.GetRequiredService<IHttpContextFactory>()), _cancellationToken);
+            await _kestrelServer.StartAsync(new HostingApplication(this, logger, _serviceProvider.GetRequiredService<IHttpContextFactory>()), _startCancellationToken.Token);
         }
 
         public async Task Stop() {
-            await _kestrelServer.StopAsync(_cancellationToken);
+            _stopCancellationToken = new CancellationTokenSource();
+            await _kestrelServer.StopAsync(_stopCancellationToken.Token);
         }
 
         private ServiceCollection SetupServiceCollection() {

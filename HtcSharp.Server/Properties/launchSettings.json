@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "HtcSharp.Server": {
+      "commandName": "Project"
+    }
+  }
+}

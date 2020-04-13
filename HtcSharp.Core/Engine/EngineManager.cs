@@ -57,12 +57,14 @@ namespace HtcSharp.Core.Engine {
 
         internal async Task Start() {
             foreach (var engine in _engines) {
+                _logger.LogInfo($"Starting Engine {engine.Name}");
                 await engine.Start();
             }
         }
 
         internal async Task Stop() {
             foreach (var engine in _engines) {
+                _logger.LogInfo($"Stopping Engine {engine.Name}");
                 await engine.Stop();
             }
         }

@@ -136,7 +136,6 @@ namespace HtcSharp.HttpModule {
                 await _stoppedTcs.Task.ConfigureAwait(false);
                 return;
             }
-
             try {
                 var tasks = new Task[_transports.Count];
                 for (int i = 0; i < _transports.Count; i++) {
@@ -148,7 +147,6 @@ namespace HtcSharp.HttpModule {
 
                 if (!await ConnectionManager.CloseAllConnectionsAsync(cancellationToken).ConfigureAwait(false)) {
                     Trace.NotAllConnectionsClosedGracefully();
-
                     if (!await ConnectionManager.AbortAllConnectionsAsync().ConfigureAwait(false)) {
                         Trace.NotAllConnectionsAborted();
                     }

@@ -54,21 +54,21 @@ namespace HtcSharp.Core.Plugin {
 
         public async Task CallLoad() {
             foreach (var plugin in _plugins.Values) {
-                _logger.LogInfo($"Loading Plugin {plugin.Name} {plugin.Version}...", null);
+                _logger.LogInfo($"Loading Plugin {plugin.Name} {plugin.Version}", null);
                 await plugin.Load(_pluginServerContext, _logger);
             }
         }
 
         public async Task CallEnable() {
             foreach (var plugin in _plugins.Values) {
-                _logger.LogInfo($"Enabling Plugin {plugin.Name} {plugin.Version}...", null);
+                _logger.LogInfo($"Enabling Plugin {plugin.Name} {plugin.Version}", null);
                 await plugin.Enable();
             }
         }
 
         public async Task CallDisable() {
             foreach (var plugin in _plugins.Values) {
-                _logger.LogInfo($"Disabling Plugin {plugin.Name} {plugin.Version}...", null);
+                _logger.LogInfo($"Disabling Plugin {plugin.Name} {plugin.Version}", null);
                 await plugin.Disable();
             }
         }
