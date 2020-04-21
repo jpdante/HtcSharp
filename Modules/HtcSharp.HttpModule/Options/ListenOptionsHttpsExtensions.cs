@@ -5,10 +5,10 @@ using System;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.DependencyInjection;
-using HtcSharp.HttpModule.Hosting.Abstractions;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Middleware;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
 

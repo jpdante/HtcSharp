@@ -6,10 +6,10 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "LuaBuildEvents/1.3.1": {
+      "LuaBuildEvents/1.3.2": {
         "dependencies": {
           "MoonSharp": "2.0.0",
-          "YamlDotNet": "8.0.0"
+          "YamlDotNet": "8.1.0"
         },
         "runtime": {
           "LuaBuildEvents.dll": {}
@@ -23,18 +23,18 @@
           }
         }
       },
-      "YamlDotNet/8.0.0": {
+      "YamlDotNet/8.1.0": {
         "runtime": {
           "lib/netstandard2.1/YamlDotNet.dll": {
             "assemblyVersion": "8.0.0.0",
-            "fileVersion": "8.0.0.0"
+            "fileVersion": "8.1.0.0"
           }
         }
       }
     }
   },
   "libraries": {
-    "LuaBuildEvents/1.3.1": {
+    "LuaBuildEvents/1.3.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -46,12 +46,12 @@
       "path": "moonsharp/2.0.0",
       "hashPath": "moonsharp.2.0.0.nupkg.sha512"
     },
-    "YamlDotNet/8.0.0": {
+    "YamlDotNet/8.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Ib8lKt7TlODREDFLOWef0OmxChsQlTsRSGGx7A6YH8d7Y+YrMg8Z/RneW5WAnDsfygg/Ao2r2ND1UNe0LLPMFw==",
-      "path": "yamldotnet/8.0.0",
-      "hashPath": "yamldotnet.8.0.0.nupkg.sha512"
+      "sha512": "sha512-U8UtsQJ7s6sHwt/4G7q6af0CuMzjPQcuS7/KuxqoLdDdMzwBilPldI0T3pUVwWYqrWfd3veokCrDyrGH/0tWAQ==",
+      "path": "yamldotnet/8.1.0",
+      "hashPath": "yamldotnet.8.1.0.nupkg.sha512"
     }
   }
 }

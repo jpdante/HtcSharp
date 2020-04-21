@@ -9,6 +9,7 @@ namespace HtcPlugin.Lua.MySql {
         public string Name => "HtcLuaMySql";
         public string Version => "0.1.2";
 
+        // Object is used to delay 
         internal MySqlRegister MySqlRegister;
         internal PluginServerContext PluginServerContext;
         internal ILogger Logger;

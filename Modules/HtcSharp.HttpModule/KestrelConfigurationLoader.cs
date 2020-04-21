@@ -10,10 +10,10 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using HtcSharp.HttpModule.Certificate;
-using HtcSharp.HttpModule.Hosting.Abstractions;
 using HtcSharp.HttpModule.Infrastructure;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.HttpModule.Options;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule {

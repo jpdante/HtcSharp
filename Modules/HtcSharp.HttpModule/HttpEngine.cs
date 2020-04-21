@@ -17,6 +17,9 @@ using HtcSharp.HttpModule.Routing;
 using HtcSharp.HttpModule.Routing.Error;
 using HtcSharp.HttpModule.Routing.Pages;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
@@ -68,6 +71,13 @@ namespace HtcSharp.HttpModule {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddTransient<IHttpContextFactory, DefaultHttpContextFactory>();
             serviceCollection.AddTransient<ILogger, Logger<KestrelServer>>();
+            var hostingEnvironment = new HostingEnvironment {
+                ApplicationName = "HtcSharp",
+                ContentRootPath = "",
+                EnvironmentName = "",
+                ContentRootFileProvider = new NullFileProvider()
+            };
+            serviceCollection.AddSingleton(hostingEnvironment);
             //var listener = new DiagnosticListener("HtcSharpServer");
             //serviceCollection.AddSingleton<DiagnosticListener>(listener);
             //serviceCollection.AddSingleton<DiagnosticSource>(listener);
