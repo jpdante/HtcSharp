@@ -27,18 +27,18 @@ namespace HtcSharp.Server {
                     _daemonMode = true;
                     break;
                 case 1:
-                    _htcServer = new HtcServer(args[0]);
+                    _htcServer = new HtcServer(args[0], false);
                     break;
                 case 2 when args[0].Equals("daemon-mode", StringComparison.CurrentCultureIgnoreCase):
-                    _htcServer = new HtcServer(args[1]);
+                    _htcServer = new HtcServer(args[1], false);
                     _daemonMode = true;
                     break;
                 case 2 when args[1].Equals("daemon-mode", StringComparison.CurrentCultureIgnoreCase):
-                    _htcServer = new HtcServer(args[0]);
+                    _htcServer = new HtcServer(args[0], false);
                     _daemonMode = true;
                     break;
                 case 2:
-                    _htcServer = new HtcServer(args[0]);
+                    _htcServer = new HtcServer(args[0], false);
                     break;
                 default:
                     _htcServer = new HtcServer(Path.Combine(Directory.GetCurrentDirectory(), "HtcConfig.json"));
@@ -70,7 +70,7 @@ namespace HtcSharp.Server {
             }
         }
 
-        private async void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
+        private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e) {
             _htcServer.Logger.LogInfo("Exiting system due to external CTRL-C, or process kill, or shutdown.", null);
             _shutdownEvent.Set();
             e.Cancel = true;

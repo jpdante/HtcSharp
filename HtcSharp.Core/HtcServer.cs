@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using HtcSharp.Core.Engine;
 using HtcSharp.Core.Logging;
@@ -19,7 +21,21 @@ namespace HtcSharp.Core {
         public readonly MultiLogger Logger;
         public bool Running { get; private set; }
 
-        public HtcServer(string configPath) : this(JsonUtils.GetJsonFile(configPath)) { }
+        public HtcServer(string configPath, bool createWhenNotExists = true) {
+            if (!File.Exists(configPath) && createWhenNotExists) {
+                File.WriteAllText(configPath, "{}", Encoding.UTF8);
+            }
+            try {
+                Config = JsonUtils.GetJsonFile(configPath);
+                Logger = new MultiLogger();
+                EngineManager = new EngineManager(Logger);
+                _moduleManager = new ModuleManager(this, Logger);
+                _pluginManager = new PluginManager(this, Logger);
+                Running = false;
+            } catch (Exception ex) {
+                Console.WriteLine(ex.ToString());
+            }
+        }
 
         public HtcServer(JObject config) {
             try {
