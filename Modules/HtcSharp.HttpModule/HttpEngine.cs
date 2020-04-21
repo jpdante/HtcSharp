@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.Core.Engine.Abstractions;
@@ -77,7 +78,7 @@ namespace HtcSharp.HttpModule {
                 EnvironmentName = "",
                 ContentRootFileProvider = new NullFileProvider()
             };
-            serviceCollection.AddSingleton(hostingEnvironment);
+            serviceCollection.AddSingleton<IHostEnvironment>(hostingEnvironment);
             //var listener = new DiagnosticListener("HtcSharpServer");
             //serviceCollection.AddSingleton<DiagnosticListener>(listener);
             //serviceCollection.AddSingleton<DiagnosticSource>(listener);
@@ -148,8 +149,9 @@ namespace HtcSharp.HttpModule {
                     foreach (string endpoint in serverConfig.Endpoints) {
                         if (endpoints.Contains(endpoint)) continue;
                         endpoints.Add(endpoint);
+                        var certificate = new X509Certificate2(serverConfig.Certificate, serverConfig.CertificatePassword);
                         kestrelServerOptions.Listen(IPEndPoint.Parse(endpoint), options => {
-                            options.UseHttps(serverConfig.Certificate, serverConfig.CertificatePassword);
+                            options.UseHttps(certificate);
                         });
                     }
                 } else {

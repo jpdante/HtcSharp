@@ -7,7 +7,7 @@ using HtcSharp.Core.Plugin.Abstractions;
 namespace HtcSharp.HttpModule {
     public class HtcHttpModule : IModule {
         public string Name => "HtcHttp";
-        public string Version => "1.0.2";
+        public string Version => "1.0.5";
 
         public Task Load(HtcServer htcServer, ILogger logger) {
             htcServer.EngineManager.RegisterEngine("htc-http", typeof(HttpEngine));
