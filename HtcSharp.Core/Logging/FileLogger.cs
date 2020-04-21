@@ -18,6 +18,7 @@ namespace HtcSharp.Core.Logging {
             FileName = fileName;
             MinLogLevel = minLogLevel;
             _fileStream = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+            _fileStream.Seek(_fileStream.Length, SeekOrigin.Begin);
             _streamWriter = new StreamWriter(_fileStream, Encoding.UTF8);
         }
 
