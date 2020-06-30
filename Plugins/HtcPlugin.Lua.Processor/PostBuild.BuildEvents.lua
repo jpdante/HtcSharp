@@ -50,7 +50,7 @@ end
 print("[LuaBuildEvents] Running in " .. args[2] .. " Mode\n")
 
 -- Create base directory
-pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/]] .. args[2] .. [[/plugins/lua-processor]])
+pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/]] .. args[6] .. "/" .. args[2] .. [[/plugins/lua-processor]])
 if Directory.exists(pluginsPath) == false then
   Directory.createDirectory(pluginsPath)
 end

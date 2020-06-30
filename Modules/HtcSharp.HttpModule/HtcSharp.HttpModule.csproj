@@ -69,7 +69,7 @@
     <ProjectReference Include="..\..\HtcSharp.Core\HtcSharp.Core.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir)" />
+    <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir) $(PlatformName)" />
   </Target>
 
 </Project>
