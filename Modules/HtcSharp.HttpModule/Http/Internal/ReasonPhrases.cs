@@ -221,9 +221,9 @@ namespace HtcSharp.HttpModule.Http.Internal {
                         return string.IsNullOrEmpty(predefinedReasonPhrase)
                             ? Encoding.ASCII.GetBytes(formattedStatusCode)
                             : Encoding.ASCII.GetBytes(formattedStatusCode + predefinedReasonPhrase);
-
                 }
             }
+
             return Encoding.ASCII.GetBytes(statusCode.ToString(CultureInfo.InvariantCulture) + " " + reasonPhrase);
         }
     }

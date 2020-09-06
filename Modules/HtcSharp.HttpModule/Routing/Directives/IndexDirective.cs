@@ -9,7 +9,6 @@ using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class IndexDirective : IDirective {
-
         private readonly List<string> _indexes;
 
         public IndexDirective(IReadOnlyList<string> index) {
@@ -33,13 +32,15 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                             context.Response.HasFinished = true;
                             return;
                         }
+
                         try {
                             await HttpIO.SendFile(context, indexPath);
                             context.Response.HasFinished = true;
-                        } catch(Exception) {
+                        } catch (Exception) {
                             await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                             context.Response.HasFinished = true;
                         }
+
                         return;
                     }
                 } else {
@@ -52,6 +53,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         context.Response.HasFinished = true;
                         return;
                     }
+
                     try {
                         await HttpIO.SendFile(context, indexPath);
                         context.Response.HasFinished = true;
@@ -59,6 +61,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                         context.Response.HasFinished = true;
                     }
+
                     return;
                 }
             }

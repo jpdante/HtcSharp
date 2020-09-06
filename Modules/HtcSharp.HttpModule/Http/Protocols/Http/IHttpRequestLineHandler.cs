@@ -3,10 +3,8 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http
-{
-    public interface IHttpRequestLineHandler
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http {
+    public interface IHttpRequestLineHandler {
         void OnStartLine(HttpMethod method, HttpVersion version, Span<byte> target, Span<byte> path, Span<byte> query, Span<byte> customMethod, bool pathEncoded);
     }
 }

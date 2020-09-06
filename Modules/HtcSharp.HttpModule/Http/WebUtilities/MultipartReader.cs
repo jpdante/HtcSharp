@@ -36,11 +36,12 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
             {
                 throw new ArgumentOutOfRangeException(nameof(bufferSize), bufferSize, "Insufficient buffer space, the buffer must be larger than the boundary: " + boundary);
             }
+
             _stream = new BufferedReadStream(stream, bufferSize);
             _boundary = new MultipartBoundary(boundary, false);
             // This stream will drain any preamble data and remove the first boundary marker.
             // TODO: HeadersLengthLimit can't be modified until after the constructor.
-            _currentStream = new MultipartReaderStream(_stream, _boundary) { LengthLimit = HeadersLengthLimit };
+            _currentStream = new MultipartReaderStream(_stream, _boundary) {LengthLimit = HeadersLengthLimit};
         }
 
         /// <summary>
@@ -67,11 +68,12 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 await _stream.DrainAsync(HeadersLengthLimit, cancellationToken);
                 return null;
             }
+
             var headers = await ReadHeadersAsync(cancellationToken);
             _boundary.ExpectLeadingCrlf = true;
-            _currentStream = new MultipartReaderStream(_stream, _boundary) { LengthLimit = BodyLengthLimit };
-            long? baseStreamOffset = _stream.CanSeek ? (long?)_stream.Position : null;
-            return new MultipartSection() { Headers = headers, Body = _currentStream, BaseStreamOffset = baseStreamOffset };
+            _currentStream = new MultipartReaderStream(_stream, _boundary) {LengthLimit = BodyLengthLimit};
+            long? baseStreamOffset = _stream.CanSeek ? (long?) _stream.Position : null;
+            return new MultipartSection() {Headers = headers, Body = _currentStream, BaseStreamOffset = baseStreamOffset};
         }
 
         private async Task<Dictionary<string, StringValues>> ReadHeadersAsync(CancellationToken cancellationToken) {
@@ -82,6 +84,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 if (HeadersLengthLimit - totalSize < line.Length) {
                     throw new InvalidDataException($"Multipart headers length limit {HeadersLengthLimit} exceeded.");
                 }
+
                 totalSize += line.Length;
                 int splitIndex = line.IndexOf(':');
                 if (splitIndex <= 0) {

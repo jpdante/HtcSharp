@@ -2,12 +2,12 @@
 using System.Text;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Http.Abstractions.Extensions;
 using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Pages {
     public class FilePageMessage : IPageMessage {
-
-        private readonly string _pageFileName;   
+        private readonly string _pageFileName;
         public int StatusCode { get; }
 
         public FilePageMessage(string fileName, int statusCode) {

@@ -93,6 +93,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
             if (ReadSucceeded()) {
                 return new KeyValuePair<string, string>(_currentKey, _currentValue);
             }
+
             return null;
         }
 
@@ -103,6 +104,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 if (_bufferCount == 0) {
                     Buffer();
                 }
+
                 if (TryReadNextPair()) {
                     break;
                 }
@@ -120,6 +122,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
             if (ReadSucceeded()) {
                 return new KeyValuePair<string, string>(_currentKey, _currentValue);
             }
+
             return null;
         }
 
@@ -130,6 +133,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 if (_bufferCount == 0) {
                     await BufferAsync(cancellationToken);
                 }
+
                 if (TryReadNextPair()) {
                     break;
                 }
@@ -157,6 +161,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -166,6 +171,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                     return true;
                 }
             } while (_bufferCount > 0);
+
             return false;
         }
 
@@ -183,9 +189,11 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 word = BuildWord();
                 return true;
             }
+
             if (_builder.Length >= limit) {
                 throw new InvalidDataException($"Form key or value length limit {limit} exceeded.");
             }
+
             _builder.Append(c);
             word = null;
             return false;
@@ -223,6 +231,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 ReadNextPairImpl();
                 Append(ref accumulator);
             }
+
             return accumulator.GetResults();
         }
 
@@ -237,6 +246,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 await ReadNextPairAsyncImpl(cancellationToken);
                 Append(ref accumulator);
             }
+
             return accumulator.GetResults();
         }
 

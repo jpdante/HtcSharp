@@ -19,10 +19,10 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
 
             if (i < (1 << n) - 1) {
                 buffer[j] &= MaskHigh(8 - n);
-                buffer[j++] |= (byte)i;
+                buffer[j++] |= (byte) i;
             } else {
                 buffer[j] &= MaskHigh(8 - n);
-                buffer[j++] |= (byte)((1 << n) - 1);
+                buffer[j++] |= (byte) ((1 << n) - 1);
 
                 if (j == buffer.Length) {
                     return false;
@@ -30,16 +30,17 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
 
                 i -= ((1 << n) - 1);
                 while (i >= 128) {
-                    var ui = (uint)i; // Use unsigned for optimizations
-                    buffer[j++] = (byte)((ui % 128) + 128);
+                    var ui = (uint) i; // Use unsigned for optimizations
+                    buffer[j++] = (byte) ((ui % 128) + 128);
 
                     if (j >= buffer.Length) {
                         return false;
                     }
 
-                    i = (int)(ui / 128); // Jit converts unsigned divide by power-of-2 constant to clean shift
+                    i = (int) (ui / 128); // Jit converts unsigned divide by power-of-2 constant to clean shift
                 }
-                buffer[j++] = (byte)i;
+
+                buffer[j++] = (byte) i;
             }
 
             length = j;
@@ -47,7 +48,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
         }
 
         private static byte MaskHigh(int n) {
-            return (byte)(sbyte.MinValue >> (n - 1));
+            return (byte) (sbyte.MinValue >> (n - 1));
         }
     }
 }

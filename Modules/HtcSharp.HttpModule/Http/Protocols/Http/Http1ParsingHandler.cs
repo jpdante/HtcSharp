@@ -3,45 +3,33 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http
-{
-    internal readonly struct Http1ParsingHandler : IHttpRequestLineHandler, IHttpHeadersHandler
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http {
+    internal readonly struct Http1ParsingHandler : IHttpRequestLineHandler, IHttpHeadersHandler {
         public readonly Http1Connection Connection;
         public readonly bool Trailers;
 
-        public Http1ParsingHandler(Http1Connection connection)
-        {
+        public Http1ParsingHandler(Http1Connection connection) {
             Connection = connection;
             Trailers = false;
         }
 
-        public Http1ParsingHandler(Http1Connection connection, bool trailers)
-        {
+        public Http1ParsingHandler(Http1Connection connection, bool trailers) {
             Connection = connection;
             Trailers = trailers;
         }
 
-        public void OnHeader(Span<byte> name, Span<byte> value)
-        {
-            if (Trailers)
-            {
+        public void OnHeader(Span<byte> name, Span<byte> value) {
+            if (Trailers) {
                 Connection.OnTrailer(name, value);
-            }
-            else
-            {
+            } else {
                 Connection.OnHeader(name, value);
             }
         }
 
-        public void OnHeadersComplete()
-        {
-            if (Trailers)
-            {
+        public void OnHeadersComplete() {
+            if (Trailers) {
                 Connection.OnTrailersComplete();
-            }
-            else
-            {
+            } else {
                 Connection.OnHeadersComplete();
             }
         }

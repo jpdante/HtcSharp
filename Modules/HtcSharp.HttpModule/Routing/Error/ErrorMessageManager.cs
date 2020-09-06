@@ -37,14 +37,19 @@ namespace HtcSharp.HttpModule.Routing.Error {
         }
 
         public async Task SendError(HttpContext httpContext, int statusCode) {
-            if (_overridePages.ContainsKey(statusCode)) await _overridePages[statusCode].ExecutePageMessage(httpContext);
-            else if (DefaultPages.ContainsKey(statusCode)) await DefaultPages[statusCode].ExecutePageMessage(httpContext);
-            else httpContext.Response.StatusCode = statusCode;
+            if (_overridePages.ContainsKey(statusCode))
+                await _overridePages[statusCode].ExecutePageMessage(httpContext);
+            else if (DefaultPages.ContainsKey(statusCode))
+                await DefaultPages[statusCode].ExecutePageMessage(httpContext);
+            else
+                httpContext.Response.StatusCode = statusCode;
         }
 
         public static async Task SendDefaultError(HttpContext httpContext, int statusCode) {
-            if (DefaultPages.ContainsKey(statusCode)) await DefaultPages[statusCode].ExecutePageMessage(httpContext);
-            else httpContext.Response.StatusCode = statusCode;
+            if (DefaultPages.ContainsKey(statusCode))
+                await DefaultPages[statusCode].ExecutePageMessage(httpContext);
+            else
+                httpContext.Response.StatusCode = statusCode;
         }
     }
 }

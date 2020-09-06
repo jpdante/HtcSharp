@@ -47,7 +47,9 @@ namespace HtcSharp.HttpModule.Http.Default {
         private IResponseCookiesFeature ResponseCookiesFeature =>
             _features.Fetch(ref _features.Cache.Cookies, _newResponseCookiesFeature);
 
-        public override HttpContext HttpContext { get { return _context; } }
+        public override HttpContext HttpContext {
+            get { return _context; }
+        }
 
         public override int StatusCode {
             get { return HttpResponseFeature.StatusCode; }
@@ -85,9 +87,7 @@ namespace HtcSharp.HttpModule.Http.Default {
         }
 
         public override string ContentType {
-            get {
-                return Headers[HeaderNames.ContentType];
-            }
+            get { return Headers[HeaderNames.ContentType]; }
             set {
                 if (string.IsNullOrEmpty(value)) {
                     HttpResponseFeature.Headers.Remove(HeaderNames.ContentType);

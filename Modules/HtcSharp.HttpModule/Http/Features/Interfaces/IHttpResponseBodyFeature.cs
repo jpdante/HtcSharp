@@ -6,13 +6,11 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// An aggregate of the different ways to interact with the response body.
     /// </summary>
-    public interface IHttpResponseBodyFeature
-    {
+    public interface IHttpResponseBodyFeature {
         /// <summary>
         /// The <see cref="System.IO.Stream"/> for writing the response body.
         /// </summary>

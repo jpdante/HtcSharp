@@ -7,20 +7,17 @@ using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Logging {
     class HtcLoggerProvider : ILoggerProvider, ISupportExternalScope {
-
         private readonly ConcurrentDictionary<string, HtcLogger> _loggers;
         private IExternalScopeProvider _scopeProvider;
-        private readonly Core.Logging.Abstractions.ILogger _logger;
+        private readonly HtcSharp.Core.Logging.Abstractions.ILogger _logger;
 
-        public HtcLoggerProvider(Core.Logging.Abstractions.ILogger logger) {
+        public HtcLoggerProvider(HtcSharp.Core.Logging.Abstractions.ILogger logger) {
             _logger = logger;
             _loggers = new ConcurrentDictionary<string, HtcLogger>();
         }
 
         public ILogger CreateLogger(string categoryName) {
-            return _loggers.GetOrAdd(categoryName, loggerName => new HtcLogger(_logger) {
-                ScopeProvider = _scopeProvider
-            });
+            return _loggers.GetOrAdd(categoryName, loggerName => new HtcLogger(_logger) {ScopeProvider = _scopeProvider});
         }
 
         public void Dispose() {

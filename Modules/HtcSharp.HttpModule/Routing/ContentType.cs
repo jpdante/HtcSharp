@@ -17,9 +17,9 @@ namespace HtcSharp.HttpModule.Routing {
             foreach (var contentType in Enum.GetValues(typeof(ContentType)).Cast<ContentType>()) {
                 var key = contentType.ToValue();
                 var ext = contentType.ToString();
-                if (!ValueLookup.ContainsKey(key)) ValueLookup[key] = (int)contentType;
-                if (!ValueCache.ContainsKey(key)) ValueCache[key] = (int)contentType;
-                ExtensionLookup[ext] = (int)contentType;
+                if (!ValueLookup.ContainsKey(key)) ValueLookup[key] = (int) contentType;
+                if (!ValueCache.ContainsKey(key)) ValueCache[key] = (int) contentType;
+                ExtensionLookup[ext] = (int) contentType;
             }
         }
 
@@ -45,14 +45,14 @@ namespace HtcSharp.HttpModule.Routing {
             if (string.IsNullOrWhiteSpace(contentType)) return ContentType.CUSTOM_TEXT;
             contentType = contentType.Trim();
 
-            if (ValueCache.ContainsKey(contentType)) return (ContentType)ValueCache[contentType];
+            if (ValueCache.ContainsKey(contentType)) return (ContentType) ValueCache[contentType];
 
             foreach (var part in contentType.Split(';', ',')) {
                 var contentType2 = part.Trim();
                 if (!ValueLookup.ContainsKey(contentType2)) continue;
-                var tct = (ContentType)ValueLookup[contentType2];
+                var tct = (ContentType) ValueLookup[contentType2];
 
-                ValueCache[contentType] = (int)tct;
+                ValueCache[contentType] = (int) tct;
                 return tct;
             }
 
@@ -63,7 +63,7 @@ namespace HtcSharp.HttpModule.Routing {
         public static ContentType FromExtension(this ContentType ct, string filename) {
             var ext = Path.GetExtension(filename)?.ToUpper().TrimStart('.');
             if (ext == null) return 0;
-            return ExtensionLookup.ContainsKey(ext) ? (ContentType)ExtensionLookup[ext] : 0;
+            return ExtensionLookup.ContainsKey(ext) ? (ContentType) ExtensionLookup[ext] : 0;
         }
     }
 
@@ -71,10 +71,12 @@ namespace HtcSharp.HttpModule.Routing {
     internal class ContentTypeMetadata : Attribute {
         public string Value { get; set; }
         public bool IsText { get; set; }
+
         public bool IsBinary {
             get => !IsText;
             set => IsText = !value;
         }
+
         public ContentTypeMetadata() {
             Value = "text/plain";
             IsText = true;

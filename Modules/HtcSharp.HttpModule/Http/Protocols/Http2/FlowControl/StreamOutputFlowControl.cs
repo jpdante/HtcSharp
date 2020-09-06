@@ -28,7 +28,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl {
 
         public int AdvanceUpToAndWait(long bytes, out OutputFlowControlAwaitable awaitable) {
             var leastAvailableFlow = _connectionLevelFlowControl.Available < _streamLevelFlowControl.Available
-                ? _connectionLevelFlowControl : _streamLevelFlowControl;
+                ? _connectionLevelFlowControl
+                : _streamLevelFlowControl;
 
             // Clamp ~= Math.Clamp from netcoreapp >= 2.0
             var actual = Clamp(leastAvailableFlow.Available, 0, bytes);
@@ -74,7 +75,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl {
             if (value < min) {
                 return min;
             } else if (value > max) {
-                return (int)max;
+                return (int) max;
             }
 
             return value;

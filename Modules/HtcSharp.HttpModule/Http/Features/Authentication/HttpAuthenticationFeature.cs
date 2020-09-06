@@ -3,14 +3,8 @@
 
 using System.Security.Claims;
 
-namespace HtcSharp.HttpModule.Http.Features.Authentication
-{
-    public class HttpAuthenticationFeature : IHttpAuthenticationFeature
-    {
-        public ClaimsPrincipal User
-        {
-            get;
-            set;
-        }
+namespace HtcSharp.HttpModule.Http.Features.Authentication {
+    public class HttpAuthenticationFeature : IHttpAuthenticationFeature {
+        public ClaimsPrincipal User { get; set; }
     }
 }

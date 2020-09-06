@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 
 namespace HtcSharp.HttpModule.Routing {
     public class HttpLocationManager {
-
         internal readonly List<LocationConfig> Locations;
         internal readonly LocationConfig DefaultConfig;
 
@@ -13,7 +12,7 @@ namespace HtcSharp.HttpModule.Routing {
             DefaultConfig = new LocationConfig(null, defaultConfig as JArray, this, true);
             Locations = new List<LocationConfig>();
             if (locationConfigs == null) return;
-            foreach(var (key, value) in locationConfigs) {
+            foreach (var (key, value) in locationConfigs) {
                 Locations.Add(new LocationConfig(key, value as JArray, this));
             }
         }
@@ -26,6 +25,7 @@ namespace HtcSharp.HttpModule.Routing {
                 await locationConfig.Execute(context);
                 break;
             }
+
             if (!context.Response.HasStarted) await DefaultConfig.Execute(context);
         }
     }

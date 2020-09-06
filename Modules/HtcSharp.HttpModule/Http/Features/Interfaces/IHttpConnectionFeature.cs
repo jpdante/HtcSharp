@@ -3,13 +3,11 @@
 
 using System.Net;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// Information regarding the TCP/IP connection carrying the request.
     /// </summary>
-    public interface IHttpConnectionFeature
-    {
+    public interface IHttpConnectionFeature {
         /// <summary>
         /// The unique identifier for the connection the request was received on. This is primarily for diagnostic purposes.
         /// </summary>

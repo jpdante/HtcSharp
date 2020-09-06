@@ -36,9 +36,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
 
             Name = HeaderUtilities.RemoveQuotes(_contentDispositionHeader.Name).ToString();
             FileName = HeaderUtilities.RemoveQuotes(
-                    _contentDispositionHeader.FileNameStar.HasValue ?
-                        _contentDispositionHeader.FileNameStar :
-                        _contentDispositionHeader.FileName).ToString();
+                _contentDispositionHeader.FileNameStar.HasValue ? _contentDispositionHeader.FileNameStar : _contentDispositionHeader.FileName).ToString();
         }
 
         /// <summary>
@@ -60,6 +58,5 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
         /// Gets the name of the file from the section
         /// </summary>
         public string FileName { get; }
-
     }
 }

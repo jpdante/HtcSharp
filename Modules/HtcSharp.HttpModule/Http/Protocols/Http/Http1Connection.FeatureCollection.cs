@@ -1,12 +1,12 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using HtcSharp.HttpModule.Features;
-using HtcSharp.HttpModule.Infrastructure;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Features;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal partial class Http1Connection : IHttpMinRequestBodyDataRateFeature,
-                                             IHttpMinResponseDataRateFeature {
+        IHttpMinResponseDataRateFeature {
         MinDataRate IHttpMinRequestBodyDataRateFeature.MinDataRate {
             get => MinRequestBodyDataRate;
             set => MinRequestBodyDataRate = value;

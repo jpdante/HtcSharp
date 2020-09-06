@@ -3,11 +3,9 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
     [Flags]
-    internal enum Http2HeadersFrameFlags : byte
-    {
+    internal enum Http2HeadersFrameFlags : byte {
         NONE = 0x0,
         END_STREAM = 0x1,
         END_HEADERS = 0x4,

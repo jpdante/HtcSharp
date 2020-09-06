@@ -1,14 +1,12 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// Used to query, grant, and withdraw user consent regarding the storage of user
     /// information related to site activity and functionality.
     /// </summary>
-    public interface ITrackingConsentFeature
-    {
+    public interface ITrackingConsentFeature {
         /// <summary>
         /// Indicates if consent is required for the given request.
         /// </summary>

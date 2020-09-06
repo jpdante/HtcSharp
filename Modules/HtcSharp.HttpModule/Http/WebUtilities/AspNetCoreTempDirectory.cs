@@ -4,24 +4,18 @@
 using System;
 using System.IO;
 
-namespace HtcSharp.HttpModule.Http.WebUtilities
-{
-    internal static class AspNetCoreTempDirectory
-    {
+namespace HtcSharp.HttpModule.Http.WebUtilities {
+    internal static class AspNetCoreTempDirectory {
         private static string _tempDirectory;
 
-        public static string TempDirectory
-        {
-            get
-            {
-                if (_tempDirectory == null)
-                {
+        public static string TempDirectory {
+            get {
+                if (_tempDirectory == null) {
                     // Look for folders in the following order.
                     var temp = Environment.GetEnvironmentVariable("ASPNETCORE_TEMP") ?? // ASPNETCORE_TEMP - User set temporary location.
-                               Path.GetTempPath();                                      // Fall back.
+                               Path.GetTempPath(); // Fall back.
 
-                    if (!Directory.Exists(temp))
-                    {
+                    if (!Directory.Exists(temp)) {
                         throw new DirectoryNotFoundException(temp);
                     }
 

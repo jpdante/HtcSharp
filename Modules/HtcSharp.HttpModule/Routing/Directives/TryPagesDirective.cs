@@ -8,7 +8,6 @@ using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class TryPagesDirective : IDirective {
-
         private readonly List<string> _pages;
         private readonly HttpLocationManager _httpLocationManager;
 
@@ -29,10 +28,12 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         context.Response.HasFinished = true;
                         return;
                     }
+
                     await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                     context.Response.HasFinished = true;
                     return;
                 }
+
                 if (tempPath[0].Equals('@')) {
                     foreach (var location in _httpLocationManager.Locations) {
                         if (!location.Key.Equals(tempPath, StringComparison.CurrentCultureIgnoreCase)) continue;
@@ -41,6 +42,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         return;
                     }
                 }
+
                 if (!UrlMapper.RegisteredPages.ContainsKey(tempPath.ToLower())) continue;
                 await UrlMapper.RegisteredPages[tempPath.ToLower()].OnHttpPageRequest(context, tempPath.ToLower());
                 context.Response.HasFinished = true;

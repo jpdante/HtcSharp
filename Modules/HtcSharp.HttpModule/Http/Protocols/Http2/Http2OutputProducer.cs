@@ -6,21 +6,18 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Attributes;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core.Internal;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure.PipeWriterHelpers;
 using HtcSharp.HttpModule.Http.Protocols.Http;
 using HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl;
-using HtcSharp.HttpModule.Infrastructure;
-using HtcSharp.HttpModule.IO.MemoryPool;
-using HtcSharp.HttpModule.IO.Pipes;
-using HtcSharp.HttpModule.IO.Tasks;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
+using HtcSharp.HttpModule.Shared.ValueTaskExtensions;
 using Microsoft.Extensions.Logging;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
-    internal class Http2OutputProducer : IHttpOutputProducer, IHttpOutputAborter
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
+    internal class Http2OutputProducer : IHttpOutputProducer, IHttpOutputAborter {
         private readonly int _streamId;
         private readonly Http2FrameWriter _frameWriter;
         private readonly TimingPipeFlusher _flusher;
@@ -49,8 +46,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             StreamOutputFlowControl flowControl,
             MemoryPool<byte> pool,
             Http2Stream stream,
-            IKestrelTrace log)
-        {
+            IKestrelTrace log) {
             _streamId = streamId;
             _frameWriter = frameWriter;
             _flowControl = flowControl;
@@ -69,12 +65,9 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             _dataWriteProcessingTask = ProcessDataWrites();
         }
 
-        public void Dispose()
-        {
-            lock (_dataWriterLock)
-            {
-                if (_disposed)
-                {
+        public void Dispose() {
+            lock (_dataWriterLock) {
+                if (_disposed) {
                     return;
                 }
 
@@ -85,8 +78,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
                 // Make sure the writing side is completed.
                 _pipeWriter.Complete();
 
-                if (_fakeMemoryOwner != null)
-                {
+                if (_fakeMemoryOwner != null) {
                     _fakeMemoryOwner.Dispose();
                     _fakeMemoryOwner = null;
                 }
@@ -95,35 +87,27 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
 
         // This is called when a CancellationToken fires mid-write. In HTTP/1.x, this aborts the entire connection.
         // For HTTP/2 we abort the stream.
-        void IHttpOutputAborter.Abort(ConnectionAbortedException abortReason)
-        {
+        void IHttpOutputAborter.Abort(ConnectionAbortedException abortReason) {
             _stream.ResetAndAbort(abortReason, Http2ErrorCode.INTERNAL_ERROR);
         }
 
-        public ValueTask<FlushResult> FlushAsync(CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
+        public ValueTask<FlushResult> FlushAsync(CancellationToken cancellationToken) {
+            if (cancellationToken.IsCancellationRequested) {
                 return new ValueTask<FlushResult>(Task.FromCanceled<FlushResult>(cancellationToken));
             }
 
-            lock (_dataWriterLock)
-            {
+            lock (_dataWriterLock) {
                 ThrowIfSuffixSentOrDisposed();
 
-                if (_completed)
-                {
+                if (_completed) {
                     return default;
                 }
 
-                if (_startedWritingDataFrames)
-                {
+                if (_startedWritingDataFrames) {
                     // If there's already been response data written to the stream, just wait for that. Any header
                     // should be in front of the data frames in the connection pipe. Trailers could change things.
                     return _flusher.FlushAsync(this, cancellationToken);
-                }
-                else
-                {
+                } else {
                     // Flushing the connection pipe ensures headers already in the pipe are flushed even if no data
                     // frames have been written.
                     return _frameWriter.FlushAsync(this, cancellationToken);
@@ -131,14 +115,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public ValueTask<FlushResult> Write100ContinueAsync()
-        {
-            lock (_dataWriterLock)
-            {
+        public ValueTask<FlushResult> Write100ContinueAsync() {
+            lock (_dataWriterLock) {
                 ThrowIfSuffixSentOrDisposed();
 
-                if (_completed)
-                {
+                if (_completed) {
                     return default;
                 }
 
@@ -146,14 +127,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public void WriteResponseHeaders(int statusCode, string ReasonPhrase, HttpResponseHeaders responseHeaders, bool autoChunk, bool appCompleted)
-        {
-            lock (_dataWriterLock)
-            {
+        public void WriteResponseHeaders(int statusCode, string ReasonPhrase, HttpResponseHeaders responseHeaders, bool autoChunk, bool appCompleted) {
+            lock (_dataWriterLock) {
                 // The HPACK header compressor is stateful, if we compress headers for an aborted stream we must send them.
                 // Optimize for not compressing or sending them.
-                if (_completed)
-                {
+                if (_completed) {
                     return;
                 }
 
@@ -166,14 +144,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
                 // 2. There is no trailing HEADERS frame.
                 Http2HeadersFrameFlags http2HeadersFrame;
 
-                if (appCompleted && !_startedWritingDataFrames && (_stream.ResponseTrailers == null || _stream.ResponseTrailers.Count == 0))
-                {
+                if (appCompleted && !_startedWritingDataFrames && (_stream.ResponseTrailers == null || _stream.ResponseTrailers.Count == 0)) {
                     _streamEnded = true;
                     _stream.DecrementActiveClientStreamCount();
                     http2HeadersFrame = Http2HeadersFrameFlags.END_STREAM;
-                }
-                else
-                {
+                } else {
                     http2HeadersFrame = Http2HeadersFrameFlags.NONE;
                 }
 
@@ -181,21 +156,17 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public Task WriteDataAsync(ReadOnlySpan<byte> data, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
+        public Task WriteDataAsync(ReadOnlySpan<byte> data, CancellationToken cancellationToken) {
+            if (cancellationToken.IsCancellationRequested) {
                 return Task.FromCanceled(cancellationToken);
             }
 
-            lock (_dataWriterLock)
-            {
+            lock (_dataWriterLock) {
                 ThrowIfSuffixSentOrDisposed();
 
                 // This length check is important because we don't want to set _startedWritingDataFrames unless a data
                 // frame will actually be written causing the headers to be flushed.
-                if (_completed || data.Length == 0)
-                {
+                if (_completed || data.Length == 0) {
                     return Task.CompletedTask;
                 }
 
@@ -206,12 +177,9 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public ValueTask<FlushResult> WriteStreamSuffixAsync()
-        {
-            lock (_dataWriterLock)
-            {
-                if (_completed)
-                {
+        public ValueTask<FlushResult> WriteStreamSuffixAsync() {
+            lock (_dataWriterLock) {
+                if (_completed) {
                     return _dataWriteProcessingTask;
                 }
 
@@ -223,10 +191,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public ValueTask<FlushResult> WriteRstStreamAsync(Http2ErrorCode error)
-        {
-            lock (_dataWriterLock)
-            {
+        public ValueTask<FlushResult> WriteRstStreamAsync(Http2ErrorCode error) {
+            lock (_dataWriterLock) {
                 // Always send the reset even if the response body is _completed. The request body may not have completed yet.
                 Stop();
 
@@ -234,14 +200,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public void Advance(int bytes)
-        {
-            lock (_dataWriterLock)
-            {
+        public void Advance(int bytes) {
+            lock (_dataWriterLock) {
                 ThrowIfSuffixSentOrDisposed();
 
-                if (_completed)
-                {
+                if (_completed) {
                     return;
                 }
 
@@ -251,14 +214,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public Span<byte> GetSpan(int sizeHint = 0)
-        {
-            lock (_dataWriterLock)
-            {
+        public Span<byte> GetSpan(int sizeHint = 0) {
+            lock (_dataWriterLock) {
                 ThrowIfSuffixSentOrDisposed();
 
-                if (_completed)
-                {
+                if (_completed) {
                     return GetFakeMemory(sizeHint).Span;
                 }
 
@@ -266,14 +226,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public Memory<byte> GetMemory(int sizeHint = 0)
-        {
-            lock (_dataWriterLock)
-            {
+        public Memory<byte> GetMemory(int sizeHint = 0) {
+            lock (_dataWriterLock) {
                 ThrowIfSuffixSentOrDisposed();
 
-                if (_completed)
-                {
+                if (_completed) {
                     return GetFakeMemory(sizeHint);
                 }
 
@@ -281,12 +238,9 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public void CancelPendingFlush()
-        {
-            lock (_dataWriterLock)
-            {
-                if (_completed)
-                {
+        public void CancelPendingFlush() {
+            lock (_dataWriterLock) {
+                if (_completed) {
                     return;
                 }
 
@@ -294,21 +248,17 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public ValueTask<FlushResult> WriteDataToPipeAsync(ReadOnlySpan<byte> data, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
+        public ValueTask<FlushResult> WriteDataToPipeAsync(ReadOnlySpan<byte> data, CancellationToken cancellationToken) {
+            if (cancellationToken.IsCancellationRequested) {
                 return new ValueTask<FlushResult>(Task.FromCanceled<FlushResult>(cancellationToken));
             }
 
-            lock (_dataWriterLock)
-            {
+            lock (_dataWriterLock) {
                 ThrowIfSuffixSentOrDisposed();
 
                 // This length check is important because we don't want to set _startedWritingDataFrames unless a data
                 // frame will actually be written causing the headers to be flushed.
-                if (_completed || data.Length == 0)
-                {
+                if (_completed || data.Length == 0) {
                     return default;
                 }
 
@@ -319,32 +269,25 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public ValueTask<FlushResult> FirstWriteAsync(int statusCode, string reasonPhrase, HttpResponseHeaders responseHeaders, bool autoChunk, ReadOnlySpan<byte> data, CancellationToken cancellationToken)
-        {
-            lock (_dataWriterLock)
-            {
+        public ValueTask<FlushResult> FirstWriteAsync(int statusCode, string reasonPhrase, HttpResponseHeaders responseHeaders, bool autoChunk, ReadOnlySpan<byte> data, CancellationToken cancellationToken) {
+            lock (_dataWriterLock) {
                 WriteResponseHeaders(statusCode, reasonPhrase, responseHeaders, autoChunk, appCompleted: false);
 
                 return WriteDataToPipeAsync(data, cancellationToken);
             }
         }
 
-        ValueTask<FlushResult> IHttpOutputProducer.WriteChunkAsync(ReadOnlySpan<byte> data, CancellationToken cancellationToken)
-        {
+        ValueTask<FlushResult> IHttpOutputProducer.WriteChunkAsync(ReadOnlySpan<byte> data, CancellationToken cancellationToken) {
             throw new NotImplementedException();
         }
 
-        public ValueTask<FlushResult> FirstWriteChunkedAsync(int statusCode, string reasonPhrase, HttpResponseHeaders responseHeaders, bool autoChunk, ReadOnlySpan<byte> data, CancellationToken cancellationToken)
-        {
+        public ValueTask<FlushResult> FirstWriteChunkedAsync(int statusCode, string reasonPhrase, HttpResponseHeaders responseHeaders, bool autoChunk, ReadOnlySpan<byte> data, CancellationToken cancellationToken) {
             throw new NotImplementedException();
         }
 
-        public void Stop()
-        {
-            lock (_dataWriterLock)
-            {
-                if (_completed)
-                {
+        public void Stop() {
+            lock (_dataWriterLock) {
+                if (_completed) {
                     return;
                 }
 
@@ -356,64 +299,49 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public void Reset()
-        {
+        public void Reset() {
         }
 
-        private async ValueTask<FlushResult> ProcessDataWrites()
-        {
+        private async ValueTask<FlushResult> ProcessDataWrites() {
             FlushResult flushResult = default;
-            try
-            {
+            try {
                 ReadResult readResult;
 
-                do
-                {
+                do {
                     readResult = await _pipeReader.ReadAsync();
 
-                    if (readResult.IsCanceled)
-                    {
+                    if (readResult.IsCanceled) {
                         // Response body is aborted, break and complete reader.
                         break;
-                    }
-                    else if (readResult.IsCompleted && _stream.ResponseTrailers?.Count > 0)
-                    {
+                    } else if (readResult.IsCompleted && _stream.ResponseTrailers?.Count > 0) {
                         // Output is ending and there are trailers to write
                         // Write any remaining content then write trailers
-                        if (readResult.Buffer.Length > 0)
-                        {
+                        if (readResult.Buffer.Length > 0) {
                             flushResult = await _frameWriter.WriteDataAsync(_streamId, _flowControl, readResult.Buffer, endStream: false);
                         }
 
                         _stream.ResponseTrailers.SetReadOnly();
                         _stream.DecrementActiveClientStreamCount();
                         flushResult = await _frameWriter.WriteResponseTrailers(_streamId, _stream.ResponseTrailers);
-                    }
-                    else if (readResult.IsCompleted && _streamEnded)
-                    {
-                        if (readResult.Buffer.Length != 0)
-                        {
+                    } else if (readResult.IsCompleted && _streamEnded) {
+                        if (readResult.Buffer.Length != 0) {
                             ThrowUnexpectedState();
                         }
 
                         // Headers have already been written and there is no other content to write
                         flushResult = await _frameWriter.FlushAsync(outputAborter: null, cancellationToken: default);
-                    }
-                    else
-                    {
+                    } else {
                         var endStream = readResult.IsCompleted;
-                        if (endStream)
-                        {
+                        if (endStream) {
                             _stream.DecrementActiveClientStreamCount();
                         }
+
                         flushResult = await _frameWriter.WriteDataAsync(_streamId, _flowControl, readResult.Buffer, endStream);
                     }
 
                     _pipeReader.AdvanceTo(readResult.Buffer.End);
                 } while (!readResult.IsCompleted);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 _log.LogCritical(ex, nameof(Http2OutputProducer) + "." + nameof(ProcessDataWrites) + " observed an unexpected exception.");
             }
 
@@ -421,16 +349,13 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
 
             return flushResult;
 
-            static void ThrowUnexpectedState()
-            {
+            static void ThrowUnexpectedState() {
                 throw new InvalidOperationException(nameof(Http2OutputProducer) + "." + nameof(ProcessDataWrites) + " observed an unexpected state where the streams output ended with data still remaining in the pipe.");
             }
         }
 
-        private Memory<byte> GetFakeMemory(int sizeHint)
-        {
-            if (_fakeMemoryOwner == null)
-            {
+        private Memory<byte> GetFakeMemory(int sizeHint) {
+            if (_fakeMemoryOwner == null) {
                 _fakeMemoryOwner = _memoryPool.Rent(sizeHint);
             }
 
@@ -438,28 +363,23 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
         }
 
         [StackTraceHidden]
-        private void ThrowIfSuffixSentOrDisposed()
-        {
-            if (_suffixSent)
-            {
+        private void ThrowIfSuffixSentOrDisposed() {
+            if (_suffixSent) {
                 ThrowSuffixSent();
             }
 
-            if (_disposed)
-            {
+            if (_disposed) {
                 ThrowDisposed();
             }
         }
 
         [StackTraceHidden]
-        private static void ThrowSuffixSent()
-        {
+        private static void ThrowSuffixSent() {
             throw new InvalidOperationException("Writing is not allowed after writer was completed.");
         }
 
         [StackTraceHidden]
-        private static void ThrowDisposed()
-        {
+        private static void ThrowDisposed() {
             throw new InvalidOperationException("Cannot write to response after the request has completed.");
         }
 

@@ -5,41 +5,30 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
-namespace HtcSharp.HttpModule.Http.WebUtilities
-{
-    public struct KeyValueAccumulator
-    {
+namespace HtcSharp.HttpModule.Http.WebUtilities {
+    public struct KeyValueAccumulator {
         private Dictionary<string, StringValues> _accumulator;
         private Dictionary<string, List<string>> _expandingAccumulator;
 
-        public void Append(string key, string value)
-        {
-            if (_accumulator == null)
-            {
+        public void Append(string key, string value) {
+            if (_accumulator == null) {
                 _accumulator = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
             }
 
             StringValues values;
-            if (_accumulator.TryGetValue(key, out values))
-            {
-                if (values.Count == 0)
-                {
+            if (_accumulator.TryGetValue(key, out values)) {
+                if (values.Count == 0) {
                     // Marker entry for this key to indicate entry already in expanding list dictionary
                     _expandingAccumulator[key].Add(value);
-                }
-                else if (values.Count == 1)
-                {
+                } else if (values.Count == 1) {
                     // Second value for this key
-                    _accumulator[key] = new string[] { values[0], value };
-                }
-                else
-                {
+                    _accumulator[key] = new string[] {values[0], value};
+                } else {
                     // Third value for this key
                     // Add zero count entry and move to data to expanding list dictionary
                     _accumulator[key] = default(StringValues);
 
-                    if (_expandingAccumulator == null)
-                    {
+                    if (_expandingAccumulator == null) {
                         _expandingAccumulator = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
                     }
 
@@ -53,9 +42,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities
 
                     _expandingAccumulator[key] = list;
                 }
-            }
-            else
-            {
+            } else {
                 // First value for this key
                 _accumulator[key] = new StringValues(value);
             }
@@ -69,13 +56,10 @@ namespace HtcSharp.HttpModule.Http.WebUtilities
 
         public int ValueCount { get; private set; }
 
-        public Dictionary<string, StringValues> GetResults()
-        {
-            if (_expandingAccumulator != null)
-            {
+        public Dictionary<string, StringValues> GetResults() {
+            if (_expandingAccumulator != null) {
                 // Coalesce count 3+ multi-value entries into _accumulator dictionary
-                foreach (var entry in _expandingAccumulator)
-                {
+                foreach (var entry in _expandingAccumulator) {
                     _accumulator[entry.Key] = new StringValues(entry.Value.ToArray());
                 }
             }

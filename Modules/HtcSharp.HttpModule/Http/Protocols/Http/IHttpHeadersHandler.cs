@@ -3,10 +3,8 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http
-{
-    public interface IHttpHeadersHandler
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http {
+    public interface IHttpHeadersHandler {
         void OnHeader(Span<byte> name, Span<byte> value);
         void OnHeadersComplete();
     }

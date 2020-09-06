@@ -4,9 +4,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HtcSharp.HttpModule.Core.Features;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Features.Authentication;
-using HtcSharp.HttpModule.Features;
 using HtcSharp.HttpModule.Http.Abstractions.Routing;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {

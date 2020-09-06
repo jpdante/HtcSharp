@@ -3,13 +3,11 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// This feature exposes HTTP request trailer headers, either for HTTP/1.1 chunked bodies or HTTP/2 trailing headers.
     /// </summary>
-    public interface IHttpRequestTrailersFeature
-    {
+    public interface IHttpRequestTrailersFeature {
         /// <summary>
         /// Indicates if the <see cref="Trailers"/> are available yet. They may not be available until the
         /// request body is fully read.

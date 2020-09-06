@@ -4,17 +4,13 @@
 using System.Diagnostics.Contracts;
 using Microsoft.Extensions.Primitives;
 
-namespace HtcSharp.HttpModule.Http.Headers
-{
-    internal sealed class CookieHeaderParser : HttpHeaderParser<CookieHeaderValue>
-    {
+namespace HtcSharp.HttpModule.Http.Headers {
+    internal sealed class CookieHeaderParser : HttpHeaderParser<CookieHeaderValue> {
         internal CookieHeaderParser(bool supportsMultipleValues)
-            : base(supportsMultipleValues)
-        {
+            : base(supportsMultipleValues) {
         }
 
-        public override bool TryParseValue(StringSegment value, ref int index, out CookieHeaderValue parsedValue)
-        {
+        public override bool TryParseValue(StringSegment value, ref int index, out CookieHeaderValue parsedValue) {
             parsedValue = null;
 
             // If multiple values are supported (i.e. list of values), then accept an empty string: The header may
@@ -22,38 +18,33 @@ namespace HtcSharp.HttpModule.Http.Headers
             //  Accept: text/xml; q=1
             //  Accept:
             //  Accept: text/plain; q=0.2
-            if (StringSegment.IsNullOrEmpty(value) || (index == value.Length))
-            {
+            if (StringSegment.IsNullOrEmpty(value) || (index == value.Length)) {
                 return SupportsMultipleValues;
             }
 
             var current = GetNextNonEmptyOrWhitespaceIndex(value, index, SupportsMultipleValues, out bool separatorFound);
 
-            if (separatorFound && !SupportsMultipleValues)
-            {
+            if (separatorFound && !SupportsMultipleValues) {
                 return false; // leading separators not allowed if we don't support multiple values.
             }
 
-            if (current == value.Length)
-            {
-                if (SupportsMultipleValues)
-                {
+            if (current == value.Length) {
+                if (SupportsMultipleValues) {
                     index = current;
                 }
+
                 return SupportsMultipleValues;
             }
 
             CookieHeaderValue result = null;
-            if (!CookieHeaderValue.TryGetCookieLength(value, ref current, out result))
-            {
+            if (!CookieHeaderValue.TryGetCookieLength(value, ref current, out result)) {
                 return false;
             }
 
             current = GetNextNonEmptyOrWhitespaceIndex(value, current, SupportsMultipleValues, out separatorFound);
 
             // If we support multiple values and we've not reached the end of the string, then we must have a separator.
-            if ((separatorFound && !SupportsMultipleValues) || (!separatorFound && (current < value.Length)))
-            {
+            if ((separatorFound && !SupportsMultipleValues) || (!separatorFound && (current < value.Length))) {
                 return false;
             }
 
@@ -62,16 +53,14 @@ namespace HtcSharp.HttpModule.Http.Headers
             return true;
         }
 
-        private static int GetNextNonEmptyOrWhitespaceIndex(StringSegment input, int startIndex, bool skipEmptyValues, out bool separatorFound)
-        {
+        private static int GetNextNonEmptyOrWhitespaceIndex(StringSegment input, int startIndex, bool skipEmptyValues, out bool separatorFound) {
             Contract.Requires(input != null);
             Contract.Requires(startIndex <= input.Length); // it's OK if index == value.Length.
 
             separatorFound = false;
             var current = startIndex + HttpRuleParser.GetWhitespaceLength(input, startIndex);
 
-            if ((current == input.Length) || (input[current] != ',' && input[current] != ';'))
-            {
+            if ((current == input.Length) || (input[current] != ',' && input[current] != ';')) {
                 return current;
             }
 
@@ -81,11 +70,9 @@ namespace HtcSharp.HttpModule.Http.Headers
             current++; // skip delimiter.
             current = current + HttpRuleParser.GetWhitespaceLength(input, current);
 
-            if (skipEmptyValues)
-            {
+            if (skipEmptyValues) {
                 // Most headers only split on ',', but cookies primarily split on ';'
-                while ((current < input.Length) && ((input[current] == ',') || (input[current] == ';')))
-                {
+                while ((current < input.Length) && ((input[current] == ',') || (input[current] == ';'))) {
                     current++; // skip delimiter.
                     current = current + HttpRuleParser.GetWhitespaceLength(input, current);
                 }

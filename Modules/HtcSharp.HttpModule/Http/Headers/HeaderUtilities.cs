@@ -29,7 +29,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
-                var qualityString = ((double)value).ToString("0.0##", NumberFormatInfo.InvariantInfo);
+                var qualityString = ((double) value).ToString("0.0##", NumberFormatInfo.InvariantInfo);
                 if (qualityParameter != null) {
                     qualityParameter.Value = qualityString;
                 } else {
@@ -54,6 +54,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                     return qualityValue;
                 }
             }
+
             return null;
         }
 
@@ -106,6 +107,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                             break;
                         }
                     }
+
                     i++;
                 }
 
@@ -230,6 +232,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                     }
                 }
             }
+
             value = null;
             return false;
         }
@@ -288,6 +291,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                 result = 0;
                 return false;
             }
+
             startIndex++;
 
             // Trim trailing whitespace
@@ -325,11 +329,11 @@ namespace HtcSharp.HttpModule.Http.Headers {
 
             result = 0;
             fixed (char* ptr = value.Buffer) {
-                var ch = (ushort*)ptr + value.Offset;
+                var ch = (ushort*) ptr + value.Offset;
                 var end = ch + value.Length;
 
                 ushort digit = 0;
-                while (ch < end && (digit = (ushort)(*ch - 0x30)) <= 9) {
+                while (ch < end && (digit = (ushort) (*ch - 0x30)) <= 9) {
                     // Check for overflow
                     if ((result = result * 10 + digit) < 0) {
                         result = 0;
@@ -343,6 +347,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                     result = 0;
                     return false;
                 }
+
                 return true;
             }
         }
@@ -370,11 +375,11 @@ namespace HtcSharp.HttpModule.Http.Headers {
 
             result = 0;
             fixed (char* ptr = value.Buffer) {
-                var ch = (ushort*)ptr + value.Offset;
+                var ch = (ushort*) ptr + value.Offset;
                 var end = ch + value.Length;
 
                 ushort digit = 0;
-                while (ch < end && (digit = (ushort)(*ch - 0x30)) <= 9) {
+                while (ch < end && (digit = (ushort) (*ch - 0x30)) <= 9) {
                     // Check for overflow
                     if ((result = result * 10 + digit) < 0) {
                         result = 0;
@@ -388,6 +393,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                     result = 0;
                     return false;
                 }
+
                 return true;
             }
         }
@@ -452,7 +458,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
             }
 
             if (decPart != 0) {
-                quality = intPart + decPart / (double)decPow;
+                quality = intPart + decPart / (double) decPow;
             } else {
                 quality = intPart;
             }
@@ -487,10 +493,9 @@ namespace HtcSharp.HttpModule.Http.Headers {
             do {
                 // Consider using Math.DivRem() if available
                 var quotient = value / 10;
-                charBuffer[--position] = (char)(0x30 + (value - quotient * 10)); // 0x30 = '0'
+                charBuffer[--position] = (char) (0x30 + (value - quotient * 10)); // 0x30 = '0'
                 value = quotient;
-            }
-            while (value != 0);
+            } while (value != 0);
 
             return new string(charBuffer, position, _int64MaxStringLength - position);
         }
@@ -518,6 +523,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
             if (IsQuoted(input)) {
                 input = input.Subsegment(1, input.Length - 2);
             }
+
             return input;
         }
 
@@ -544,9 +550,9 @@ namespace HtcSharp.HttpModule.Http.Headers {
             return string.Create(input.Length - backSlashCount, input, (span, segment) => {
                 var spanIndex = 0;
                 var spanLength = span.Length;
-                for (var i = 0; i < segment.Length && (uint)spanIndex < (uint)spanLength; i++) {
+                for (var i = 0; i < segment.Length && (uint) spanIndex < (uint) spanLength; i++) {
                     int nextIndex = i + 1;
-                    if ((uint)nextIndex < (uint)segment.Length && segment[i] == '\\') {
+                    if ((uint) nextIndex < (uint) segment.Length && segment[i] == '\\') {
                         // If there is an backslash character as the last character in the string,
                         // we will assume that it should be included literally in the unescaped string
                         // Ex: "hello\\" => "hello\\"
@@ -578,9 +584,11 @@ namespace HtcSharp.HttpModule.Http.Headers {
                         // Only count escaped backslashes once
                         i++;
                     }
+
                     numberBackSlashes++;
                 }
             }
+
             return numberBackSlashes;
         }
 
@@ -614,6 +622,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                         // below 0x1F (except for 0x09 (TAB)) and 0x7F.
                         throw new FormatException($"Invalid control character '{segment[i]}' in input.");
                     }
+
                     span[spanIndex++] = segment[i];
                 }
             });
@@ -626,6 +635,7 @@ namespace HtcSharp.HttpModule.Http.Headers {
                     numberOfCharactersNeedingEscaping++;
                 }
             }
+
             return numberOfCharactersNeedingEscaping;
         }
 

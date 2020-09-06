@@ -5,13 +5,11 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// Represents the fields and state of an HTTP response.
     /// </summary>
-    public interface IHttpResponseFeature
-    {
+    public interface IHttpResponseFeature {
         /// <summary>
         /// The status-code as defined in RFC 7230. The default value is 200.
         /// </summary>

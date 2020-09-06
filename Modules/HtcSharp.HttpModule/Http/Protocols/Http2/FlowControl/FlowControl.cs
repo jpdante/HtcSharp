@@ -8,7 +8,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl {
         public FlowControl(uint initialWindowSize) {
             Debug.Assert(initialWindowSize <= Http2PeerSettings.MaxWindowSize, $"{nameof(initialWindowSize)} too large.");
 
-            Available = (int)initialWindowSize;
+            Available = (int) initialWindowSize;
             IsAborted = false;
         }
 

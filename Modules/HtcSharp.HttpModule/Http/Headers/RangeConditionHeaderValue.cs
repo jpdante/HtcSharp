@@ -5,30 +5,24 @@ using System;
 using System.Diagnostics.Contracts;
 using Microsoft.Extensions.Primitives;
 
-namespace HtcSharp.HttpModule.Http.Headers
-{
-    public class RangeConditionHeaderValue
-    {
+namespace HtcSharp.HttpModule.Http.Headers {
+    public class RangeConditionHeaderValue {
         private static readonly HttpHeaderParser<RangeConditionHeaderValue> Parser
             = new GenericHeaderParser<RangeConditionHeaderValue>(false, GetRangeConditionLength);
 
         private DateTimeOffset? _lastModified;
         private EntityTagHeaderValue _entityTag;
 
-        private RangeConditionHeaderValue()
-        {
+        private RangeConditionHeaderValue() {
             // Used by the parser to create a new instance of this type.
         }
 
-        public RangeConditionHeaderValue(DateTimeOffset lastModified)
-        {
+        public RangeConditionHeaderValue(DateTimeOffset lastModified) {
             _lastModified = lastModified;
         }
 
-        public RangeConditionHeaderValue(EntityTagHeaderValue entityTag)
-        {
-            if (entityTag == null)
-            {
+        public RangeConditionHeaderValue(EntityTagHeaderValue entityTag) {
+            if (entityTag == null) {
                 throw new ArgumentNullException(nameof(entityTag));
             }
 
@@ -36,77 +30,64 @@ namespace HtcSharp.HttpModule.Http.Headers
         }
 
         public RangeConditionHeaderValue(string entityTag)
-            : this(new EntityTagHeaderValue(entityTag))
-        {
+            : this(new EntityTagHeaderValue(entityTag)) {
         }
 
-        public DateTimeOffset? LastModified
-        {
+        public DateTimeOffset? LastModified {
             get { return _lastModified; }
         }
 
-        public EntityTagHeaderValue EntityTag
-        {
+        public EntityTagHeaderValue EntityTag {
             get { return _entityTag; }
         }
 
-        public override string ToString()
-        {
-            if (_entityTag == null)
-            {
+        public override string ToString() {
+            if (_entityTag == null) {
                 return HeaderUtilities.FormatDate(_lastModified.GetValueOrDefault());
             }
+
             return _entityTag.ToString();
         }
 
-        public override bool Equals(object obj)
-        {
+        public override bool Equals(object obj) {
             var other = obj as RangeConditionHeaderValue;
 
-            if (other == null)
-            {
+            if (other == null) {
                 return false;
             }
 
-            if (_entityTag == null)
-            {
+            if (_entityTag == null) {
                 return (other._lastModified != null) && (_lastModified.GetValueOrDefault() == other._lastModified.GetValueOrDefault());
             }
 
             return _entityTag.Equals(other._entityTag);
         }
 
-        public override int GetHashCode()
-        {
-            if (_entityTag == null)
-            {
+        public override int GetHashCode() {
+            if (_entityTag == null) {
                 return _lastModified.GetValueOrDefault().GetHashCode();
             }
 
             return _entityTag.GetHashCode();
         }
 
-        public static RangeConditionHeaderValue Parse(StringSegment input)
-        {
+        public static RangeConditionHeaderValue Parse(StringSegment input) {
             var index = 0;
             return Parser.ParseValue(input, ref index);
         }
 
-        public static bool TryParse(StringSegment input, out RangeConditionHeaderValue parsedValue)
-        {
+        public static bool TryParse(StringSegment input, out RangeConditionHeaderValue parsedValue) {
             var index = 0;
             return Parser.TryParseValue(input, ref index, out parsedValue);
         }
 
-        private static int GetRangeConditionLength(StringSegment input, int startIndex, out RangeConditionHeaderValue parsedValue)
-        {
+        private static int GetRangeConditionLength(StringSegment input, int startIndex, out RangeConditionHeaderValue parsedValue) {
             Contract.Requires(startIndex >= 0);
 
             parsedValue = null;
 
             // Make sure we have at least 2 characters
-            if (StringSegment.IsNullOrEmpty(input) || (startIndex + 1 >= input.Length))
-            {
+            if (StringSegment.IsNullOrEmpty(input) || (startIndex + 1 >= input.Length)) {
                 return 0;
             }
 
@@ -121,13 +102,11 @@ namespace HtcSharp.HttpModule.Http.Headers
             var firstChar = input[current];
             var secondChar = input[current + 1];
 
-            if ((firstChar == '\"') || (((firstChar == 'w') || (firstChar == 'W')) && (secondChar == '/')))
-            {
+            if ((firstChar == '\"') || (((firstChar == 'w') || (firstChar == 'W')) && (secondChar == '/'))) {
                 // trailing whitespaces are removed by GetEntityTagLength()
                 var entityTagLength = EntityTagHeaderValue.GetEntityTagLength(input, current, out entityTag);
 
-                if (entityTagLength == 0)
-                {
+                if (entityTagLength == 0) {
                     return 0;
                 }
 
@@ -135,15 +114,11 @@ namespace HtcSharp.HttpModule.Http.Headers
 
                 // RangeConditionHeaderValue only allows 1 value. There must be no delimiter/other chars after an
                 // entity tag.
-                if (current != input.Length)
-                {
+                if (current != input.Length) {
                     return 0;
                 }
-            }
-            else
-            {
-                if (!HttpRuleParser.TryStringToDate(input.Subsegment(current), out date))
-                {
+            } else {
+                if (!HttpRuleParser.TryStringToDate(input.Subsegment(current), out date)) {
                     return 0;
                 }
 
@@ -152,12 +127,9 @@ namespace HtcSharp.HttpModule.Http.Headers
             }
 
             parsedValue = new RangeConditionHeaderValue();
-            if (entityTag == null)
-            {
+            if (entityTag == null) {
                 parsedValue._lastModified = date;
-            }
-            else
-            {
+            } else {
                 parsedValue._entityTag = entityTag;
             }
 

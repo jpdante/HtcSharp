@@ -25,7 +25,9 @@ namespace HtcSharp.HttpModule.Http.Features {
             get { return _containerRevision + (_defaults?.Revision ?? 0); }
         }
 
-        public bool IsReadOnly { get { return false; } }
+        public bool IsReadOnly {
+            get { return false; }
+        }
 
         public object this[Type key] {
             get {
@@ -45,12 +47,14 @@ namespace HtcSharp.HttpModule.Http.Features {
                     if (_features != null && _features.Remove(key)) {
                         _containerRevision++;
                     }
+
                     return;
                 }
 
                 if (_features == null) {
                     _features = new Dictionary<Type, object>();
                 }
+
                 _features[key] = value;
                 _containerRevision++;
             }
@@ -76,7 +80,7 @@ namespace HtcSharp.HttpModule.Http.Features {
         }
 
         public TFeature Get<TFeature>() {
-            return (TFeature)this[typeof(TFeature)];
+            return (TFeature) this[typeof(TFeature)];
         }
 
         public void Set<TFeature>(TFeature instance) {

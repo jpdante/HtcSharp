@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics.X86;
+using HtcSharp.HttpModule.Core;
 using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
@@ -25,6 +26,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (value.HasValue && value.Value < 0) {
                     ThrowInvalidContentLengthException(value.Value);
                 }
+
                 _contentLength = value;
             }
         }
@@ -38,9 +40,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (_isReadOnly) {
                     ThrowHeadersReadOnlyException();
                 }
+
                 if (string.IsNullOrEmpty(key)) {
                     ThrowInvalidEmptyHeaderName();
                 }
+
                 if (value.Count == 0) {
                     RemoveFast(key);
                 } else {
@@ -55,11 +59,10 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (!TryGetValueFast(key, out var value)) {
                     ThrowKeyNotFoundException();
                 }
+
                 return value;
             }
-            set {
-                ((IHeaderDictionary)this)[key] = value;
-            }
+            set { ((IHeaderDictionary) this)[key] = value; }
         }
 
         protected static void ThrowHeadersReadOnlyException() {
@@ -82,9 +85,9 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
 
         bool ICollection<KeyValuePair<string, StringValues>>.IsReadOnly => _isReadOnly;
 
-        ICollection<string> IDictionary<string, StringValues>.Keys => ((IDictionary<string, StringValues>)this).Select(pair => pair.Key).ToList();
+        ICollection<string> IDictionary<string, StringValues>.Keys => ((IDictionary<string, StringValues>) this).Select(pair => pair.Key).ToList();
 
-        ICollection<StringValues> IDictionary<string, StringValues>.Values => ((IDictionary<string, StringValues>)this).Select(pair => pair.Value).ToList();
+        ICollection<StringValues> IDictionary<string, StringValues>.Values => ((IDictionary<string, StringValues>) this).Select(pair => pair.Value).ToList();
 
         public void SetReadOnly() {
             _isReadOnly = true;
@@ -108,30 +111,47 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
         [MethodImpl(MethodImplOptions.NoInlining)]
         protected bool RemoveUnknown(string key) => MaybeUnknown?.Remove(key) ?? false;
 
-        protected virtual int GetCountFast() { throw new NotImplementedException(); }
+        protected virtual int GetCountFast() {
+            throw new NotImplementedException();
+        }
 
-        protected virtual bool TryGetValueFast(string key, out StringValues value) { throw new NotImplementedException(); }
+        protected virtual bool TryGetValueFast(string key, out StringValues value) {
+            throw new NotImplementedException();
+        }
 
-        protected virtual void SetValueFast(string key, StringValues value) { throw new NotImplementedException(); }
+        protected virtual void SetValueFast(string key, StringValues value) {
+            throw new NotImplementedException();
+        }
 
-        protected virtual bool AddValueFast(string key, StringValues value) { throw new NotImplementedException(); }
+        protected virtual bool AddValueFast(string key, StringValues value) {
+            throw new NotImplementedException();
+        }
 
-        protected virtual bool RemoveFast(string key) { throw new NotImplementedException(); }
+        protected virtual bool RemoveFast(string key) {
+            throw new NotImplementedException();
+        }
 
-        protected virtual void ClearFast() { throw new NotImplementedException(); }
+        protected virtual void ClearFast() {
+            throw new NotImplementedException();
+        }
 
-        protected virtual bool CopyToFast(KeyValuePair<string, StringValues>[] array, int arrayIndex) { throw new NotImplementedException(); }
+        protected virtual bool CopyToFast(KeyValuePair<string, StringValues>[] array, int arrayIndex) {
+            throw new NotImplementedException();
+        }
 
-        protected virtual IEnumerator<KeyValuePair<string, StringValues>> GetEnumeratorFast() { throw new NotImplementedException(); }
+        protected virtual IEnumerator<KeyValuePair<string, StringValues>> GetEnumeratorFast() {
+            throw new NotImplementedException();
+        }
 
         void ICollection<KeyValuePair<string, StringValues>>.Add(KeyValuePair<string, StringValues> item) {
-            ((IDictionary<string, StringValues>)this).Add(item.Key, item.Value);
+            ((IDictionary<string, StringValues>) this).Add(item.Key, item.Value);
         }
 
         void IDictionary<string, StringValues>.Add(string key, StringValues value) {
             if (_isReadOnly) {
                 ThrowHeadersReadOnlyException();
             }
+
             if (string.IsNullOrEmpty(key)) {
                 ThrowInvalidEmptyHeaderName();
             }
@@ -145,6 +165,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             if (_isReadOnly) {
                 ThrowHeadersReadOnlyException();
             }
+
             ClearFast();
         }
 
@@ -183,6 +204,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             if (_isReadOnly) {
                 ThrowHeadersReadOnlyException();
             }
+
             return RemoveFast(key);
         }
 

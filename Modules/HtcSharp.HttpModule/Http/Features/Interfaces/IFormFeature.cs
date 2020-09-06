@@ -4,10 +4,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
-    public interface IFormFeature
-    {
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
+    public interface IFormFeature {
         /// <summary>
         /// Indicates if the request has a supported form content-type.
         /// </summary>

@@ -8,9 +8,9 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using HtcSharp.HttpModule.Core.Internal;
 using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Http.Headers;
-using HtcSharp.HttpModule.IO.Buffers;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
 

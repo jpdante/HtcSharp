@@ -5,8 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
-namespace HtcSharp.HttpModule.Http.Headers
-{
+namespace HtcSharp.HttpModule.Http.Headers {
     /// <summary>
     /// Implementation of <see cref="IComparer{T}"/> that can compare content negotiation header fields
     /// based on their quality values (a.k.a q-values). This applies to values used in accept-charset,
@@ -14,17 +13,14 @@ namespace HtcSharp.HttpModule.Http.Headers
     /// <see cref="MediaTypeHeaderValueComparer"/> for a comparer for media type
     /// q-values.
     /// </summary>
-    public class StringWithQualityHeaderValueComparer : IComparer<StringWithQualityHeaderValue>
-    {
+    public class StringWithQualityHeaderValueComparer : IComparer<StringWithQualityHeaderValue> {
         private static readonly StringWithQualityHeaderValueComparer _qualityComparer =
             new StringWithQualityHeaderValueComparer();
 
-        private StringWithQualityHeaderValueComparer()
-        {
+        private StringWithQualityHeaderValueComparer() {
         }
 
-        public static StringWithQualityHeaderValueComparer QualityComparer
-        {
+        public static StringWithQualityHeaderValueComparer QualityComparer {
             get { return _qualityComparer; }
         }
 
@@ -41,38 +37,28 @@ namespace HtcSharp.HttpModule.Http.Headers
         /// <returns>The result of the comparison.</returns>
         public int Compare(
             StringWithQualityHeaderValue stringWithQuality1,
-            StringWithQualityHeaderValue stringWithQuality2)
-        {
-            if (stringWithQuality1 == null)
-            {
+            StringWithQualityHeaderValue stringWithQuality2) {
+            if (stringWithQuality1 == null) {
                 throw new ArgumentNullException(nameof(stringWithQuality1));
             }
 
-            if (stringWithQuality2 == null)
-            {
+            if (stringWithQuality2 == null) {
                 throw new ArgumentNullException(nameof(stringWithQuality2));
             }
 
             var quality1 = stringWithQuality1.Quality ?? HeaderQuality.Match;
             var quality2 = stringWithQuality2.Quality ?? HeaderQuality.Match;
             var qualityDifference = quality1 - quality2;
-            if (qualityDifference < 0)
-            {
+            if (qualityDifference < 0) {
                 return -1;
-            }
-            else if (qualityDifference > 0)
-            {
+            } else if (qualityDifference > 0) {
                 return 1;
             }
 
-            if (!StringSegment.Equals(stringWithQuality1.Value, stringWithQuality2.Value, StringComparison.OrdinalIgnoreCase))
-            {
-                if (StringSegment.Equals(stringWithQuality1.Value, "*", StringComparison.Ordinal))
-                {
+            if (!StringSegment.Equals(stringWithQuality1.Value, stringWithQuality2.Value, StringComparison.OrdinalIgnoreCase)) {
+                if (StringSegment.Equals(stringWithQuality1.Value, "*", StringComparison.Ordinal)) {
                     return -1;
-                }
-                else if (StringSegment.Equals(stringWithQuality2.Value, "*", StringComparison.Ordinal))
-                {
+                } else if (StringSegment.Equals(stringWithQuality2.Value, "*", StringComparison.Ordinal)) {
                     return 1;
                 }
             }

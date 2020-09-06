@@ -6,9 +6,10 @@ using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal sealed class HttpRequestStream : Stream {
@@ -81,19 +82,20 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             if (callback != null) {
                 task.ContinueWith(t => callback.Invoke(t));
             }
+
             return task;
         }
 
         /// <inheritdoc />
         public override int EndRead(IAsyncResult asyncResult) {
-            return ((Task<int>)asyncResult).GetAwaiter().GetResult();
+            return ((Task<int>) asyncResult).GetAwaiter().GetResult();
         }
 
         private Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken, object state) {
             var tcs = new TaskCompletionSource<int>(state);
             var task = ReadAsync(buffer, offset, count, cancellationToken);
             task.ContinueWith((task2, state2) => {
-                var tcs2 = (TaskCompletionSource<int>)state2;
+                var tcs2 = (TaskCompletionSource<int>) state2;
                 if (task2.IsCanceled) {
                     tcs2.SetCanceled();
                 } else if (task2.IsFaulted) {
@@ -127,7 +129,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 var consumed = readableBuffer.End;
                 try {
                     if (readableBufferLength != 0) {
-                        var actual = (int)Math.Min(readableBufferLength, buffer.Length);
+                        var actual = (int) Math.Min(readableBufferLength, buffer.Length);
 
                         var slice = actual == readableBufferLength ? readableBuffer : readableBuffer.Slice(0, actual);
                         consumed = slice.End;
@@ -143,7 +145,6 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                     _pipeReader.AdvanceTo(consumed);
                 }
             }
-
         }
 
         /// <inheritdoc />

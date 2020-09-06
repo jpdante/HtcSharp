@@ -3,13 +3,11 @@
 
 using System.IO.Pipelines;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// Represents the HttpRequestBody as a PipeReader.
     /// </summary>
-    public interface IRequestBodyPipeFeature
-    {
+    public interface IRequestBodyPipeFeature {
         /// <summary>
         /// A <see cref="PipeReader"/> representing the request body, if any.
         /// </summary>

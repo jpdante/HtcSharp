@@ -3,15 +3,17 @@
 
 using System.IO;
 using System.Runtime.CompilerServices;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using Microsoft.Extensions.Primitives;
-using HtcSharp.HttpModule.Attributes;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Protocols.Http;
 
 namespace HtcSharp.HttpModule.Http {
     public sealed class BadHttpRequestException : IOException {
         private BadHttpRequestException(string message, int statusCode, RequestRejectionReason reason)
-            : this(message, statusCode, reason, null) { }
+            : this(message, statusCode, reason, null) {
+        }
 
         private BadHttpRequestException(string message, int statusCode, RequestRejectionReason reason, HttpMethod? requiredMethod)
             : base(message) {
@@ -109,6 +111,7 @@ namespace HtcSharp.HttpModule.Http {
                     ex = new BadHttpRequestException(CoreStrings.BadRequest, StatusCodes.Status400BadRequest, reason);
                     break;
             }
+
             return ex;
         }
 
@@ -157,6 +160,7 @@ namespace HtcSharp.HttpModule.Http {
                     ex = new BadHttpRequestException(CoreStrings.BadRequest, StatusCodes.Status400BadRequest, reason);
                     break;
             }
+
             return ex;
         }
     }

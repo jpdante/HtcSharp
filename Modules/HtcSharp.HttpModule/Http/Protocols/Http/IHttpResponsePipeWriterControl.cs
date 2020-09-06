@@ -6,10 +6,8 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http
-{
-    internal interface IHttpResponsePipeWriterControl
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http {
+    internal interface IHttpResponsePipeWriterControl {
         void ProduceContinue();
         Memory<byte> GetMemory(int sizeHint = 0);
         Span<byte> GetSpan(int sizeHint = 0);

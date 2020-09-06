@@ -34,9 +34,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
         public void Append(string key, string value) {
             var setCookieHeaderValue = new SetCookieHeaderValue(
                 Uri.EscapeDataString(key),
-                Uri.EscapeDataString(value)) {
-                Path = "/"
-            };
+                Uri.EscapeDataString(value)) {Path = "/"};
             var cookieValue = setCookieHeaderValue.ToString();
 
             Headers[HeaderNames.SetCookie] = StringValues.Concat(Headers[HeaderNames.SetCookie], cookieValue);
@@ -56,7 +54,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 Expires = options.Expires,
                 MaxAge = options.MaxAge,
                 Secure = options.Secure,
-                SameSite = (SameSiteMode)options.SameSite,
+                SameSite = (SameSiteMode) options.SameSite,
                 HttpOnly = options.HttpOnly
             };
 
@@ -67,7 +65,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
 
         /// <inheritdoc />
         public void Delete(string key) {
-            Delete(key, new CookieOptions() { Path = "/" });
+            Delete(key, new CookieOptions() {Path = "/"});
         }
 
         /// <inheritdoc />
@@ -84,11 +82,11 @@ namespace HtcSharp.HttpModule.Http.Internal {
             if (domainHasValue) {
                 rejectPredicate = (value, encKeyPlusEquals, opts) =>
                     value.StartsWith(encKeyPlusEquals, StringComparison.OrdinalIgnoreCase) &&
-                        value.IndexOf($"domain={opts.Domain}", StringComparison.OrdinalIgnoreCase) != -1;
+                    value.IndexOf($"domain={opts.Domain}", StringComparison.OrdinalIgnoreCase) != -1;
             } else if (pathHasValue) {
                 rejectPredicate = (value, encKeyPlusEquals, opts) =>
                     value.StartsWith(encKeyPlusEquals, StringComparison.OrdinalIgnoreCase) &&
-                        value.IndexOf($"path={opts.Path}", StringComparison.OrdinalIgnoreCase) != -1;
+                    value.IndexOf($"path={opts.Path}", StringComparison.OrdinalIgnoreCase) != -1;
             } else {
                 rejectPredicate = (value, encKeyPlusEquals, opts) => value.StartsWith(encKeyPlusEquals, StringComparison.OrdinalIgnoreCase);
             }

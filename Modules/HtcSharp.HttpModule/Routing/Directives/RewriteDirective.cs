@@ -8,7 +8,6 @@ using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class ReWriteDirective : IDirective {
-
         private readonly Regex _pattern;
         private readonly string _rewriteData;
         private readonly string _flag;
@@ -26,6 +25,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             for (var i = 0; i < match.Captures.Count; i++) {
                 newRequest = newRequest.Replace($"${i + 1}", match.Captures[i].Value);
             }
+
             /*foreach (Match match in _pattern.Matches(context.Request.Path)) {
                 newRequest = newRequest.Replace($"${match.Name}", match.Value);
             }*/
@@ -61,11 +61,13 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 context.Response.Headers.Add("Location", newRequest);
                 context.Response.HasFinished = true;
             }
+
             if (_flag.Equals("permanent", StringComparison.CurrentCultureIgnoreCase)) {
                 context.Response.StatusCode = 301;
                 context.Response.Headers.Add("Location", newRequest);
                 context.Response.HasFinished = true;
             }
+
             context.Request.RequestPath = newRequest;
             return Task.CompletedTask;
         }

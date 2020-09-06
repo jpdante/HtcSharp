@@ -1,6 +1,8 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using HtcSharp.HttpModule.Core;
+
 namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
     /// <summary>
     /// The maximum we will decode is Int32.MaxValue, which is also the maximum request header field size.

@@ -23,6 +23,7 @@ namespace HtcSharp.HttpModule.Http {
             if (request == null) {
                 throw new ArgumentNullException(nameof(request));
             }
+
             if (options == null) {
                 throw new ArgumentNullException(nameof(options));
             }
@@ -37,6 +38,7 @@ namespace HtcSharp.HttpModule.Http {
                 // We haven't read the form yet, replace the reader with one using our own options.
                 features.Set<IFormFeature>(new FormFeature(request, options));
             }
+
             return request.ReadFormAsync(cancellationToken);
         }
     }

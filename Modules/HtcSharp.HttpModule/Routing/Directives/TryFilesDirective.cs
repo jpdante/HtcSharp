@@ -30,10 +30,12 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         context.Response.HasFinished = true;
                         return;
                     }
+
                     await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                     context.Response.HasFinished = true;
                     return;
                 }
+
                 if (tempPath[0].Equals('@')) {
                     foreach (var location in _httpLocationManager.Locations) {
                         if (!location.Key.Equals(tempPath, StringComparison.CurrentCultureIgnoreCase)) continue;
@@ -42,6 +44,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         return;
                     }
                 }
+
                 context.Request.TranslatedPath = Path.GetFullPath(Path.Combine(context.ServerInfo.RootPath, tempPath.Remove(0, 1)));
                 if (File.Exists(context.Request.TranslatedPath)) {
                     string extension = Path.GetExtension(context.Request.TranslatedPath);
@@ -62,6 +65,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         context.Response.Redirect(context.Request.RequestPath + "/");
                         context.Response.HasFinished = true;
                     }
+
                     //context.ErrorMessageManager.SendError(context, 404);
                     // Do indexer
                 }

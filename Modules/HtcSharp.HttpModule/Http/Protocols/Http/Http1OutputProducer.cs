@@ -8,27 +8,29 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Attributes;
 using HtcSharp.HttpModule.Connections.Abstractions;
-using HtcSharp.HttpModule.Features;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core.Features;
+using HtcSharp.HttpModule.Core.Internal;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure.PipeWriterHelpers;
 using HtcSharp.HttpModule.Http.Internal;
-using HtcSharp.HttpModule.Infrastructure;
-using HtcSharp.HttpModule.IO.Buffers;
-using HtcSharp.HttpModule.IO.Pipes;
-using HtcSharp.HttpModule.IO.Tasks;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
+using HtcSharp.HttpModule.Shared.ValueTaskExtensions;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal class Http1OutputProducer : IHttpOutputProducer, IHttpOutputAborter, IDisposable {
         // Use C#7.3's ReadOnlySpan<byte> optimization for static data https://vcsjones.com/2019/02/01/csharp-readonly-span-bytes-static/
         // "HTTP/1.1 100 Continue\r\n\r\n"
-        private static ReadOnlySpan<byte> ContinueBytes => new byte[] { (byte)'H', (byte)'T', (byte)'T', (byte)'P', (byte)'/', (byte)'1', (byte)'.', (byte)'1', (byte)' ', (byte)'1', (byte)'0', (byte)'0', (byte)' ', (byte)'C', (byte)'o', (byte)'n', (byte)'t', (byte)'i', (byte)'n', (byte)'u', (byte)'e', (byte)'\r', (byte)'\n', (byte)'\r', (byte)'\n' };
+        private static ReadOnlySpan<byte> ContinueBytes => new byte[] {(byte) 'H', (byte) 'T', (byte) 'T', (byte) 'P', (byte) '/', (byte) '1', (byte) '.', (byte) '1', (byte) ' ', (byte) '1', (byte) '0', (byte) '0', (byte) ' ', (byte) 'C', (byte) 'o', (byte) 'n', (byte) 't', (byte) 'i', (byte) 'n', (byte) 'u', (byte) 'e', (byte) '\r', (byte) '\n', (byte) '\r', (byte) '\n'};
+
         // "HTTP/1.1 "
-        private static ReadOnlySpan<byte> HttpVersion11Bytes => new byte[] { (byte)'H', (byte)'T', (byte)'T', (byte)'P', (byte)'/', (byte)'1', (byte)'.', (byte)'1', (byte)' ' };
+        private static ReadOnlySpan<byte> HttpVersion11Bytes => new byte[] {(byte) 'H', (byte) 'T', (byte) 'T', (byte) 'P', (byte) '/', (byte) '1', (byte) '.', (byte) '1', (byte) ' '};
+
         // "\r\n\r\n"
-        private static ReadOnlySpan<byte> EndHeadersBytes => new byte[] { (byte)'\r', (byte)'\n', (byte)'\r', (byte)'\n' };
+        private static ReadOnlySpan<byte> EndHeadersBytes => new byte[] {(byte) '\r', (byte) '\n', (byte) '\r', (byte) '\n'};
+
         // "0\r\n\r\n"
-        private static ReadOnlySpan<byte> EndChunkedResponseBytes => new byte[] { (byte)'0', (byte)'\r', (byte)'\n', (byte)'\r', (byte)'\n' };
+        private static ReadOnlySpan<byte> EndChunkedResponseBytes => new byte[] {(byte) '0', (byte) '\r', (byte) '\n', (byte) '\r', (byte) '\n'};
 
         private const int MaxBeginChunkLength = 10;
         private const int EndChunkLength = 2;
@@ -225,6 +227,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                     if (_advancedBytesForChunk > _currentChunkMemory.Length - _currentMemoryPrefixBytes - EndChunkLength - bytes) {
                         throw new ArgumentOutOfRangeException("Can't advance past buffer size.");
                     }
+
                     _advancedBytesForChunk += bytes;
                 } else {
                     _pipeWriter.Advance(bytes);
@@ -263,7 +266,6 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             }
 
             if (buffer.Length > 0) {
-
                 writer.WriteBeginChunkBytes(buffer.Length);
                 writer.Write(buffer);
                 writer.WriteEndChunkBytes();
@@ -311,6 +313,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                         writer.Write(segment.Span);
                         writer.Commit();
                     }
+
                     segment.Return();
                 }
 
@@ -521,6 +524,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             if (sliceOne) {
                 _currentChunkMemory = _currentChunkMemory.Slice(0, _currentChunkMemory.Length - 1);
             }
+
             _currentChunkMemoryUpdated = true;
         }
 
@@ -549,6 +553,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             if (_fakeMemoryOwner == null) {
                 _fakeMemoryOwner = _memoryPool.Rent(sizeHint);
             }
+
             return _fakeMemoryOwner.Memory;
         }
 

@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Shared;
+using HtcSharp.HttpModule.Shared.UrlDecoder;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
     /// <summary>
@@ -27,8 +28,8 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
         private const int DefaultValueLengthLimit = 1024 * 1024 * 4;
 
         // Used for UTF8/ASCII (precalculated for fast path)
-        private static ReadOnlySpan<byte> UTF8EqualEncoded => new byte[] { (byte)'=' };
-        private static ReadOnlySpan<byte> UTF8AndEncoded => new byte[] { (byte)'&' };
+        private static ReadOnlySpan<byte> UTF8EqualEncoded => new byte[] {(byte) '='};
+        private static ReadOnlySpan<byte> UTF8AndEncoded => new byte[] {(byte) '&'};
 
         // Used for other encodings
         private byte[] _otherEqualEncoding;
@@ -92,6 +93,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                     if (!buffer.IsEmpty) {
                         throw new InvalidOperationException("End of body before form was fully parsed.");
                     }
+
                     break;
                 }
 
@@ -148,9 +150,10 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                     // If we're not in the final block, then consume nothing
                     if (!isFinalBlock) {
                         // Don't buffer indefinately
-                        if ((uint)span.Length > (uint)KeyLengthLimit + (uint)ValueLengthLimit) {
+                        if ((uint) span.Length > (uint) KeyLengthLimit + (uint) ValueLengthLimit) {
                             ThrowKeyOrValueTooLargeException();
                         }
+
                         return;
                     }
 
@@ -206,9 +209,10 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 if (!sequenceReader.TryReadTo(out keyValuePair, andDelimiter)) {
                     if (!isFinalBlock) {
                         // Don't buffer indefinately
-                        if ((uint)(sequenceReader.Consumed - consumedBytes) > (uint)KeyLengthLimit + (uint)ValueLengthLimit) {
+                        if ((uint) (sequenceReader.Consumed - consumedBytes) > (uint) KeyLengthLimit + (uint) ValueLengthLimit) {
                             ThrowKeyOrValueTooLargeException();
                         }
+
                         break;
                     }
 
@@ -278,14 +282,14 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
             }
 
             if (ros.Length < StackAllocThreshold) {
-                Span<byte> buffer = stackalloc byte[(int)ros.Length];
+                Span<byte> buffer = stackalloc byte[(int) ros.Length];
                 ros.CopyTo(buffer);
                 return GetDecodedString(buffer);
             } else {
-                var byteArray = ArrayPool<byte>.Shared.Rent((int)ros.Length);
+                var byteArray = ArrayPool<byte>.Shared.Rent((int) ros.Length);
 
                 try {
-                    Span<byte> buffer = byteArray.AsSpan(0, (int)ros.Length);
+                    Span<byte> buffer = byteArray.AsSpan(0, (int) ros.Length);
                     ros.CopyTo(buffer);
                     return GetDecodedString(buffer);
                 } finally {

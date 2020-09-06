@@ -20,6 +20,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 request.Body = fileStream;
                 request.HttpContext.Response.RegisterForDispose(fileStream);
             }
+
             return request;
         }
 
@@ -28,6 +29,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
             if (section == null) {
                 throw new ArgumentNullException(nameof(section));
             }
+
             if (registerForDispose == null) {
                 throw new ArgumentNullException(nameof(registerForDispose));
             }
@@ -38,6 +40,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 section.Body = fileStream;
                 registerForDispose(fileStream);
             }
+
             return section;
         }
     }

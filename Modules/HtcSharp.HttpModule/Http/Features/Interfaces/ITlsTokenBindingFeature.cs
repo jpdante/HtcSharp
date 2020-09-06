@@ -1,8 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// Provides information regarding TLS token binding parameters.
     /// </summary>
@@ -12,8 +11,7 @@ namespace HtcSharp.HttpModule.Http.Features.Interfaces
     /// client's machine. See https://datatracker.ietf.org/doc/draft-popov-token-binding/
     /// for more information.
     /// </remarks>
-    public interface ITlsTokenBindingFeature
-    {
+    public interface ITlsTokenBindingFeature {
         /// <summary>
         /// Gets the 'provided' token binding identifier associated with the request.
         /// </summary>

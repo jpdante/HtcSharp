@@ -13,7 +13,7 @@ namespace HtcSharp.HttpModule.Routing.ReWriter {
         public ReWriteLocation(string location, IEnumerable<string> rules) {
             _rules = new List<ReWriteRule>();
             var locationParts = location.Split(" ");
-            if(locationParts[0].Equals("location", StringComparison.CurrentCultureIgnoreCase)) {
+            if (locationParts[0].Equals("location", StringComparison.CurrentCultureIgnoreCase)) {
                 switch (locationParts.Length) {
                     case 2:
                         _actionType = 1;
@@ -31,6 +31,7 @@ namespace HtcSharp.HttpModule.Routing.ReWriter {
                         throw new ArgumentOutOfRangeException(nameof(locationParts));
                 }
             }
+
             foreach (var rule in rules) {
                 _rules.Add(new ReWriteRule(rule));
             }
@@ -59,6 +60,7 @@ namespace HtcSharp.HttpModule.Routing.ReWriter {
                     }
                 }
             }
+
             newRequest = request;
             return 0;
         }

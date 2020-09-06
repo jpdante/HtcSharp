@@ -15,7 +15,9 @@ namespace HtcSharp.HttpModule.Http {
     public class HeaderDictionary : IHeaderDictionary {
         private static readonly string[] EmptyKeys = Array.Empty<string>();
         private static readonly StringValues[] EmptyValues = Array.Empty<StringValues>();
+
         private static readonly Enumerator EmptyEnumerator = new Enumerator();
+
         // Pre-box
         private static readonly IEnumerator<KeyValuePair<string, StringValues>> EmptyIEnumeratorType = EmptyEnumerator;
         private static readonly IEnumerator EmptyIEnumerator = EmptyEnumerator;
@@ -54,12 +56,14 @@ namespace HtcSharp.HttpModule.Http {
                 if (TryGetValue(key, out value)) {
                     return value;
                 }
+
                 return StringValues.Empty;
             }
             set {
                 if (key == null) {
                     throw new ArgumentNullException(nameof(key));
                 }
+
                 ThrowIfReadOnly();
 
                 if (value.Count == 0) {
@@ -123,6 +127,7 @@ namespace HtcSharp.HttpModule.Http {
                 if (Store == null) {
                     return EmptyKeys;
                 }
+
                 return Store.Keys;
             }
         }
@@ -132,6 +137,7 @@ namespace HtcSharp.HttpModule.Http {
                 if (Store == null) {
                     return EmptyValues;
                 }
+
                 return Store.Values;
             }
         }
@@ -144,6 +150,7 @@ namespace HtcSharp.HttpModule.Http {
             if (item.Key == null) {
                 throw new ArgumentNullException("The key is null");
             }
+
             ThrowIfReadOnly();
             EnsureStore(1);
             Store.Add(item.Key, item.Value);
@@ -158,6 +165,7 @@ namespace HtcSharp.HttpModule.Http {
             if (key == null) {
                 throw new ArgumentNullException(nameof(key));
             }
+
             ThrowIfReadOnly();
             EnsureStore(1);
             Store.Add(key, value);
@@ -183,6 +191,7 @@ namespace HtcSharp.HttpModule.Http {
                 !StringValues.Equals(value, item.Value)) {
                 return false;
             }
+
             return true;
         }
 
@@ -195,6 +204,7 @@ namespace HtcSharp.HttpModule.Http {
             if (Store == null) {
                 return false;
             }
+
             return Store.ContainsKey(key);
         }
 
@@ -230,6 +240,7 @@ namespace HtcSharp.HttpModule.Http {
             if (Store.TryGetValue(item.Key, out value) && StringValues.Equals(item.Value, value)) {
                 return Store.Remove(item.Key);
             }
+
             return false;
         }
 
@@ -243,6 +254,7 @@ namespace HtcSharp.HttpModule.Http {
             if (Store == null) {
                 return false;
             }
+
             return Store.Remove(key);
         }
 
@@ -257,6 +269,7 @@ namespace HtcSharp.HttpModule.Http {
                 value = default(StringValues);
                 return false;
             }
+
             return Store.TryGetValue(key, out value);
         }
 
@@ -269,6 +282,7 @@ namespace HtcSharp.HttpModule.Http {
                 // Non-boxed Enumerator
                 return EmptyEnumerator;
             }
+
             return new Enumerator(Store.GetEnumerator());
         }
 
@@ -281,6 +295,7 @@ namespace HtcSharp.HttpModule.Http {
                 // Non-boxed Enumerator
                 return EmptyIEnumeratorType;
             }
+
             return Store.GetEnumerator();
         }
 
@@ -293,6 +308,7 @@ namespace HtcSharp.HttpModule.Http {
                 // Non-boxed Enumerator
                 return EmptyIEnumerator;
             }
+
             return Store.GetEnumerator();
         }
 
@@ -316,6 +332,7 @@ namespace HtcSharp.HttpModule.Http {
                 if (_notEmpty) {
                     return _dictionaryEnumerator.MoveNext();
                 }
+
                 return false;
             }
 
@@ -324,6 +341,7 @@ namespace HtcSharp.HttpModule.Http {
                     if (_notEmpty) {
                         return _dictionaryEnumerator.Current;
                     }
+
                     return default(KeyValuePair<string, StringValues>);
                 }
             }
@@ -332,14 +350,12 @@ namespace HtcSharp.HttpModule.Http {
             }
 
             object IEnumerator.Current {
-                get {
-                    return Current;
-                }
+                get { return Current; }
             }
 
             void IEnumerator.Reset() {
                 if (_notEmpty) {
-                    ((IEnumerator)_dictionaryEnumerator).Reset();
+                    ((IEnumerator) _dictionaryEnumerator).Reset();
                 }
             }
         }

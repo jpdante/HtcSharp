@@ -3,11 +3,9 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http
-{
+namespace HtcSharp.HttpModule.Http.Protocols.Http {
     [Flags]
-    internal enum ConnectionOptions
-    {
+    internal enum ConnectionOptions {
         None = 0,
         Close = 1,
         KeepAlive = 2,

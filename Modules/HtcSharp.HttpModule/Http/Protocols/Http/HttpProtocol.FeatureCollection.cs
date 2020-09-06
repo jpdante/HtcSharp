@@ -7,28 +7,29 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Features;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Features;
+using HtcSharp.HttpModule.Core.Internal;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions.Routing;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Headers;
-using HtcSharp.HttpModule.IO.MemoryPool;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal partial class HttpProtocol : IHttpRequestFeature,
-                                          IHttpResponseFeature,
-                                          IHttpResponseBodyFeature,
-                                          IRequestBodyPipeFeature,
-                                          IHttpUpgradeFeature,
-                                          IHttpConnectionFeature,
-                                          IHttpRequestLifetimeFeature,
-                                          IHttpRequestIdentifierFeature,
-                                          IHttpRequestTrailersFeature,
-                                          IHttpBodyControlFeature,
-                                          IHttpMaxRequestBodySizeFeature,
-                                          IEndpointFeature,
-                                          IRouteValuesFeature {
+        IHttpResponseFeature,
+        IHttpResponseBodyFeature,
+        IRequestBodyPipeFeature,
+        IHttpUpgradeFeature,
+        IHttpConnectionFeature,
+        IHttpRequestLifetimeFeature,
+        IHttpRequestIdentifierFeature,
+        IHttpRequestTrailersFeature,
+        IHttpBodyControlFeature,
+        IHttpMaxRequestBodySizeFeature,
+        IEndpointFeature,
+        IRouteValuesFeature {
         // NOTE: When feature interfaces are added to or removed from this HttpProtocol class implementation,
         // then the list of `implementedFeatures` in the generated code project MUST also be updated.
         // See also: tools/CodeGenerator/HttpProtocolFeatureCollection.cs
@@ -52,9 +53,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 _methodText = HttpUtilities.MethodToString(Method) ?? string.Empty;
                 return _methodText;
             }
-            set {
-                _methodText = value;
-            }
+            set { _methodText = value; }
         }
 
         string IHttpRequestFeature.PathBase {
@@ -94,7 +93,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                     RequestBodyPipeReader = PipeReader.Create(RequestBody, new StreamPipeReaderOptions(_context.MemoryPool, _context.MemoryPool.GetMinimumSegmentSize(), _context.MemoryPool.GetMinimumAllocSize()));
 
                     OnCompleted((self) => {
-                        ((PipeReader)self).Complete();
+                        ((PipeReader) self).Complete();
                         return Task.CompletedTask;
                     }, RequestBodyPipeReader);
                 }
@@ -110,6 +109,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (!RequestTrailersAvailable) {
                     throw new InvalidOperationException(CoreStrings.RequestTrailersNotAvailable);
                 }
+
                 return RequestTrailers;
             }
         }
@@ -181,9 +181,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (HasStartedConsumingRequestBody) {
                     throw new InvalidOperationException(CoreStrings.MaxRequestBodySizeCannotBeModifiedAfterRead);
                 }
+
                 if (IsUpgraded) {
                     throw new InvalidOperationException(CoreStrings.MaxRequestBodySizeCannotBeModifiedForUpgradedRequests);
                 }
+
                 if (value < 0) {
                     throw new ArgumentOutOfRangeException(nameof(value), CoreStrings.NonNegativeNumberOrNullRequired);
                 }

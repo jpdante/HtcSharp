@@ -9,14 +9,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.Core.Engine.Abstractions;
 using HtcSharp.Core.Utils;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Hosting.Internal;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Default;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Net.Socket;
-using HtcSharp.HttpModule.Options;
 using HtcSharp.HttpModule.Routing;
 using HtcSharp.HttpModule.Routing.Error;
 using HtcSharp.HttpModule.Routing.Pages;
+using HtcSharp.HttpModule.Transport.Sockets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -29,10 +30,9 @@ using LogLevel = HtcSharp.Core.Logging.Abstractions.LogLevel;
 
 namespace HtcSharp.HttpModule {
     public class HttpEngine : IEngine {
-
         public string Name => "HtcHttp";
 
-        private Core.Logging.Abstractions.ILogger _logger;
+        private HtcSharp.Core.Logging.Abstractions.ILogger _logger;
         private IServiceProvider _serviceProvider;
         private ILoggerFactory _loggerFactory;
         private SocketTransportFactory _socketTransportFactory;
@@ -43,15 +43,13 @@ namespace HtcSharp.HttpModule {
         internal List<HttpServerConfig> ServerConfigs;
         internal Dictionary<string, HttpServerConfig> DomainDictionary;
 
-        public Task Load(JObject config, Core.Logging.Abstractions.ILogger logger) {
+        public Task Load(JObject config, HtcSharp.Core.Logging.Abstractions.ILogger logger) {
             _logger = logger;
             Configure(config);
             UrlMapper.RegisterIndexFile("index.html");
             UrlMapper.RegisterIndexFile("index.htm");
             _serviceProvider = SetupServiceCollection().BuildServiceProvider();
-            _loggerFactory = LoggerFactory.Create(builder => {
-                builder.AddProvider(new HtcLoggerProvider(_logger));
-            });
+            _loggerFactory = LoggerFactory.Create(builder => { builder.AddProvider(new HtcLoggerProvider(_logger)); });
             _socketTransportFactory = new SocketTransportFactory(GetSocketTransportOptions(config), _loggerFactory);
             _kestrelServer = new KestrelServer(GetKestrelServerOptions(config, _serviceProvider), _socketTransportFactory, _loggerFactory);
             return Task.CompletedTask;
@@ -72,12 +70,7 @@ namespace HtcSharp.HttpModule {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddTransient<IHttpContextFactory, DefaultHttpContextFactory>();
             serviceCollection.AddTransient<ILogger, Logger<KestrelServer>>();
-            var hostingEnvironment = new HostingEnvironment {
-                ApplicationName = "HtcSharp",
-                ContentRootPath = "",
-                EnvironmentName = "",
-                ContentRootFileProvider = new NullFileProvider()
-            };
+            var hostingEnvironment = new HostingEnvironment {ApplicationName = "HtcSharp", ContentRootPath = "", EnvironmentName = "", ContentRootFileProvider = new NullFileProvider()};
             serviceCollection.AddSingleton<IHostEnvironment>(hostingEnvironment);
             //var listener = new DiagnosticListener("HtcSharpServer");
             //serviceCollection.AddSingleton<DiagnosticListener>(listener);
@@ -93,7 +86,7 @@ namespace HtcSharp.HttpModule {
             var servers = config.GetValue("Servers", StringComparison.CurrentCultureIgnoreCase)?.Value<JArray>();
             if (servers == null) return;
             foreach (var jToken in servers) {
-                var server = (JObject)jToken;
+                var server = (JObject) jToken;
                 List<string> hosts = GetValues<string>(server, "Hosts");
                 List<string> domains = GetValues<string>(server, "Domains");
                 string root = HtcIOUtils.ReplacePathTags(GetValue<string>(server, "Root"));
@@ -105,6 +98,7 @@ namespace HtcSharp.HttpModule {
                     certificate = HtcIOUtils.ReplacePathTags(GetValue<string>(server, "Certificate"));
                     password = GetValue<string>(server, "Password");
                 }
+
                 var locationManager = ContainsKey(server, "Locations") ? new HttpLocationManager(GetValue<JToken>(server, "Default"), GetValue<JObject>(server, "Locations")) : new HttpLocationManager(GetValue<JToken>(server, "Default"), null);
                 var errorMessageManager = new ErrorMessageManager();
                 if (ContainsKey(server, "ErrorPages")) {
@@ -112,23 +106,24 @@ namespace HtcSharp.HttpModule {
                         if (int.TryParse(key, out int pageStatusCode)) errorMessageManager.RegisterOverridePage(new FilePageMessage(value.Value<string>(), pageStatusCode));
                     }
                 }
+
                 var serverConfig = new HttpServerConfig(hosts, domains, root, useSsl, certificate, password, locationManager, errorMessageManager);
                 ServerConfigs.Add(serverConfig);
                 if (domains.Contains("*")) {
                     // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                     //foreach (string host in hosts) {
-                        string key = useSsl ? $"1*" : $"0*";
-                        if (DomainDictionary.ContainsKey(key)) continue;
-                        DomainDictionary.Add(key, serverConfig);
+                    string key = useSsl ? $"1*" : $"0*";
+                    if (DomainDictionary.ContainsKey(key)) continue;
+                    DomainDictionary.Add(key, serverConfig);
                     //}
                 } else {
                     // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                     foreach (string domain in domains) {
                         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                         //foreach (string host in hosts) {
-                            string key = useSsl ? $"1{domain}" : $"0{domain}";
-                            if (DomainDictionary.ContainsKey(key)) continue;
-                            DomainDictionary.Add(key, serverConfig);
+                        string key = useSsl ? $"1{domain}" : $"0{domain}";
+                        if (DomainDictionary.ContainsKey(key)) continue;
+                        DomainDictionary.Add(key, serverConfig);
                         //}
                     }
                 }
@@ -143,16 +138,14 @@ namespace HtcSharp.HttpModule {
 
         private IOptions<KestrelServerOptions> GetKestrelServerOptions(JObject config, IServiceProvider serviceProvider) {
             var endpoints = new List<string>();
-            var kestrelServerOptions = new KestrelServerOptions { ApplicationServices = serviceProvider };
+            var kestrelServerOptions = new KestrelServerOptions {ApplicationServices = serviceProvider};
             foreach (var serverConfig in ServerConfigs) {
                 if (serverConfig.UseSsl) {
                     foreach (string endpoint in serverConfig.Endpoints) {
                         if (endpoints.Contains(endpoint)) continue;
                         endpoints.Add(endpoint);
                         var certificate = new X509Certificate2(serverConfig.Certificate, serverConfig.CertificatePassword);
-                        kestrelServerOptions.Listen(IPEndPoint.Parse(endpoint), options => {
-                            options.UseHttps(certificate);
-                        });
+                        kestrelServerOptions.Listen(IPEndPoint.Parse(endpoint), options => { options.UseHttps(certificate); });
                     }
                 } else {
                     foreach (string endpoint in serverConfig.Endpoints) {
@@ -162,6 +155,7 @@ namespace HtcSharp.HttpModule {
                     }
                 }
             }
+
             //kestrelServerOptions.Configure();
             IOptions<KestrelServerOptions> optionFactory = Microsoft.Extensions.Options.Options.Create(kestrelServerOptions);
             return optionFactory;

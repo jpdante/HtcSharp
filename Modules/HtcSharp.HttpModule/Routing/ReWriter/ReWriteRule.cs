@@ -12,17 +12,17 @@ namespace HtcSharp.HttpModule.Routing.ReWriter {
 
         public ReWriteRule(string rule) {
             var ruleParts = rule.Split(" ");
-            if(ruleParts[0].Equals("rewrite", StringComparison.CurrentCultureIgnoreCase)) {
+            if (ruleParts[0].Equals("rewrite", StringComparison.CurrentCultureIgnoreCase)) {
                 _ruleType = 1;
                 _pattern = new Regex(ruleParts[1]);
                 _rewriteData = ruleParts[2];
                 if (ruleParts.Length == 4) _flag = ruleParts[3];
-            } else if(ruleParts[0].Equals("return", StringComparison.CurrentCultureIgnoreCase)) {
+            } else if (ruleParts[0].Equals("return", StringComparison.CurrentCultureIgnoreCase)) {
                 _ruleType = 2;
                 _statusCode = int.Parse(ruleParts[1]);
                 _rewriteData = ruleParts[2];
                 _flag = string.Empty;
-            } 
+            }
         }
 
         public byte MatchRule(string request, HttpContext context, out string newRequest) {
@@ -36,6 +36,7 @@ namespace HtcSharp.HttpModule.Routing.ReWriter {
                     foreach (Match match in _pattern.Matches(request)) {
                         newRequest = newRequest.Replace($"${match.Name}", match.Value);
                     }
+
                     /*var rewriteQuery = _rewriteData.Split("?");
                     request = rewriteQuery[0].Replace("$scheme", context.Request.Scheme);
                     if (rewriteQuery.Length == 1) {
@@ -67,6 +68,7 @@ namespace HtcSharp.HttpModule.Routing.ReWriter {
                 newRequest = request;
                 return 0;
             }
+
             newRequest = request;
             return 0;
         }

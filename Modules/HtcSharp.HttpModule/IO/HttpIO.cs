@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Http.Shared;
 using HtcSharp.HttpModule.Routing;
 using HtcSharp.HttpModule.Shared;
 
@@ -43,12 +44,14 @@ namespace HtcSharp.HttpModule.IO {
                     endRange = 0;
                     return;
                 }
+
                 if (range[1].Trim().Length > 0) long.TryParse(range[1], out endRange);
                 if (endRange >= length) {
                     startRange = length;
                     endRange = 0;
                     return;
                 }
+
                 if (endRange == -1) endRange = length;
             } else {
                 startRange = 0;
@@ -62,6 +65,7 @@ namespace HtcSharp.HttpModule.IO {
                     return httpContext.Request.Headers[key];
                 }
             }
+
             return null;
         }
 

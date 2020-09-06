@@ -5,9 +5,9 @@ using System;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Attributes;
-using HtcSharp.HttpModule.Infrastructure;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal abstract class Http1MessageBody : MessageBody {

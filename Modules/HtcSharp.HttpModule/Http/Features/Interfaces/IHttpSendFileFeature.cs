@@ -6,14 +6,12 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// Provides an efficient mechanism for transferring files from disk to the network.
     /// </summary>
     [Obsolete("Use IHttpResponseBodyFeature instead.", error: true)]
-    public interface IHttpSendFileFeature
-    {
+    public interface IHttpSendFileFeature {
         /// <summary>
         /// Sends the requested file in the response body. This may bypass the IHttpResponseFeature.Body
         /// <see cref="Stream"/>. A response may include multiple writes.

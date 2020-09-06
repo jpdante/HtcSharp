@@ -3,10 +3,8 @@
 
 using System.Threading;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
-    public interface IHttpRequestLifetimeFeature
-    {
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
+    public interface IHttpRequestLifetimeFeature {
         /// <summary>
         /// A <see cref="CancellationToken"/> that fires if the request is aborted and
         /// the application should cease processing. The token will not fire if the request

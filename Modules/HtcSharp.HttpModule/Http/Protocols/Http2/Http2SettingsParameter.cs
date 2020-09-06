@@ -1,10 +1,8 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
-    internal enum Http2SettingsParameter : ushort
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
+    internal enum Http2SettingsParameter : ushort {
         SETTINGS_HEADER_TABLE_SIZE = 0x1,
         SETTINGS_ENABLE_PUSH = 0x2,
         SETTINGS_MAX_CONCURRENT_STREAMS = 0x3,

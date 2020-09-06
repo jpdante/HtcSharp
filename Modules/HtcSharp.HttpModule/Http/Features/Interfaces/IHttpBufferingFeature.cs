@@ -3,11 +3,9 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     [Obsolete("See IHttpRequestBodyFeature or IHttpResponseBodyFeature DisableBuffering", error: true)]
-    public interface IHttpBufferingFeature
-    {
+    public interface IHttpBufferingFeature {
         void DisableRequestBuffering();
         void DisableResponseBuffering();
     }

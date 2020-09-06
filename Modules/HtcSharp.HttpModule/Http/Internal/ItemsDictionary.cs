@@ -8,7 +8,8 @@ namespace HtcSharp.HttpModule.Http.Internal {
     internal class ItemsDictionary : IDictionary<object, object> {
         private IDictionary<object, object> _items;
 
-        public ItemsDictionary() { }
+        public ItemsDictionary() {
+        }
 
         public ItemsDictionary(IDictionary<object, object> items) {
             _items = items;
@@ -22,6 +23,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 if (_items != null && _items.TryGetValue(key, out var value)) {
                     return value;
                 }
+
                 return null;
             }
             set {
@@ -97,6 +99,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
             if (_items.TryGetValue(item.Key, out var value) && Equals(item.Value, value)) {
                 return _items.Remove(item.Key);
             }
+
             return false;
         }
 
@@ -118,11 +121,13 @@ namespace HtcSharp.HttpModule.Http.Internal {
 
             object IEnumerator.Current => null;
 
-            public void Dispose() { }
+            public void Dispose() {
+            }
 
             public bool MoveNext() => false;
 
-            public void Reset() { }
+            public void Reset() {
+            }
         }
 
         private static class EmptyDictionary {

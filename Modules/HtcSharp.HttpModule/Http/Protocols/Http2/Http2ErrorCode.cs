@@ -2,10 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
-    internal enum Http2ErrorCode : uint
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
+    internal enum Http2ErrorCode : uint {
         NO_ERROR = 0x0,
         PROTOCOL_ERROR = 0x1,
         INTERNAL_ERROR = 0x2,

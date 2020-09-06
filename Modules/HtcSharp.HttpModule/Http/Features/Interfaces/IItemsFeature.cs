@@ -3,10 +3,8 @@
 
 using System.Collections.Generic;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
-    public interface IItemsFeature
-    {
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
+    public interface IItemsFeature {
         IDictionary<object, object> Items { get; set; }
     }
 }

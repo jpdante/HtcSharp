@@ -5,10 +5,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
-    public interface ISession
-    {
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
+    public interface ISession {
         /// <summary>
         /// Indicate whether the current session has loaded.
         /// </summary>

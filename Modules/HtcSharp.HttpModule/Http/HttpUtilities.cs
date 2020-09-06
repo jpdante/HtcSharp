@@ -50,7 +50,7 @@ namespace HtcSharp.HttpModule.Http {
             var bytes = Encoding.ASCII.GetBytes(str);
 
             fixed (byte* ptr = &bytes[0]) {
-                return *(ulong*)ptr;
+                return *(ulong*) ptr;
             }
         }
 
@@ -60,7 +60,7 @@ namespace HtcSharp.HttpModule.Http {
             var bytes = Encoding.ASCII.GetBytes(str);
 
             fixed (byte* ptr = &bytes[0]) {
-                return *(uint*)ptr;
+                return *(uint*) ptr;
             }
         }
 
@@ -68,7 +68,7 @@ namespace HtcSharp.HttpModule.Http {
             Debug.Assert(bytes.Length == 8, "Mask must be exactly 8 bytes long.");
 
             fixed (byte* ptr = bytes) {
-                return *(ulong*)ptr;
+                return *(ulong*) ptr;
             }
         }
 
@@ -107,6 +107,7 @@ namespace HtcSharp.HttpModule.Http {
                     throw new InvalidOperationException();
                 }
             }
+
             return asciiString;
         }
 
@@ -123,7 +124,7 @@ namespace HtcSharp.HttpModule.Http {
                 // in the string
                 if (!StringUtilities.TryGetAsciiString(buffer, output, span.Length)) {
                     // null characters are considered invalid
-                    if (span.IndexOf((byte)0) != -1) {
+                    if (span.IndexOf((byte) 0) != -1) {
                         throw new InvalidOperationException();
                     }
 
@@ -134,6 +135,7 @@ namespace HtcSharp.HttpModule.Http {
                     }
                 }
             }
+
             return resultString;
         }
 
@@ -142,7 +144,7 @@ namespace HtcSharp.HttpModule.Http {
 
             for (var i = 0; i < Math.Min(span.Length, maxChars); i++) {
                 var ch = span[i];
-                sb.Append(ch < 0x20 || ch >= 0x7F ? $"\\x{ch:X2}" : ((char)ch).ToString());
+                sb.Append(ch < 0x20 || ch >= 0x7F ? $"\\x{ch:X2}" : ((char) ch).ToString());
             }
 
             if (span.Length > maxChars) {
@@ -177,13 +179,13 @@ namespace HtcSharp.HttpModule.Http {
             methodLength = 0;
             if (length < sizeof(uint)) {
                 return HttpMethod.Custom;
-            } else if (*(uint*)data == _httpGetMethodInt) {
+            } else if (*(uint*) data == _httpGetMethodInt) {
                 methodLength = 3;
                 return HttpMethod.Get;
             } else if (length < sizeof(ulong)) {
                 return HttpMethod.Custom;
             } else {
-                var value = *(ulong*)data;
+                var value = *(ulong*) data;
                 var key = GetKnownMethodIndex(value);
                 var x = _knownMethods[key];
 
@@ -291,8 +293,8 @@ namespace HtcSharp.HttpModule.Http {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static unsafe HttpVersion GetKnownVersion(byte* location, int length) {
             HttpVersion knownVersion;
-            var version = *(ulong*)location;
-            if (length < sizeof(ulong) + 1 || location[sizeof(ulong)] != (byte)'\r') {
+            var version = *(ulong*) location;
+            if (length < sizeof(ulong) + 1 || location[sizeof(ulong)] != (byte) '\r') {
                 knownVersion = HttpVersion.Unknown;
             } else if (version == _http11VersionLong) {
                 knownVersion = HttpVersion.Http11;
@@ -321,7 +323,7 @@ namespace HtcSharp.HttpModule.Http {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe bool GetKnownHttpScheme(byte* location, int length, out HttpScheme knownScheme) {
             if (length >= sizeof(ulong)) {
-                var scheme = *(ulong*)location;
+                var scheme = *(ulong*) location;
                 if ((scheme & _mask7Chars) == _httpSchemeLong) {
                     knownScheme = HttpScheme.Http;
                     return true;
@@ -332,30 +334,31 @@ namespace HtcSharp.HttpModule.Http {
                     return true;
                 }
             }
+
             knownScheme = HttpScheme.Unknown;
             return false;
         }
 
         public static string VersionToString(HttpVersion httpVersion) {
-            return httpVersion switch
-            {
+            return httpVersion switch {
                 HttpVersion.Http10 => Http10Version,
                 HttpVersion.Http11 => Http11Version,
                 _ => null,
             };
         }
+
         public static string MethodToString(HttpMethod method) {
-            var methodIndex = (int)method;
+            var methodIndex = (int) method;
             var methodNames = _methodNames;
-            if ((uint)methodIndex < (uint)methodNames.Length) {
+            if ((uint) methodIndex < (uint) methodNames.Length) {
                 return methodNames[methodIndex];
             }
+
             return null;
         }
 
         public static string SchemeToString(HttpScheme scheme) {
-            return scheme switch
-            {
+            return scheme switch {
                 HttpScheme.Http => HttpUriScheme,
                 HttpScheme.Https => HttpsUriScheme,
                 _ => null,
@@ -400,6 +403,7 @@ namespace HtcSharp.HttpModule.Http {
                         // Tail call
                         return IsHostPortValid(hostText, i + 1);
                     }
+
                     return true;
                 }
 
@@ -437,25 +441,26 @@ namespace HtcSharp.HttpModule.Http {
             // Subtract start of range '0'
             // Cast to uint to change negative numbers to large numbers
             // Check if less than 10 representing chars '0' - '9'
-            return (uint)(ch - '0') < 10u;
+            return (uint) (ch - '0') < 10u;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsHex(char ch) {
             return IsNumeric(ch)
-                // || ('a' <= ch && ch <= 'f')
-                // || ('A' <= ch && ch <= 'F');
+                   // || ('a' <= ch && ch <= 'f')
+                   // || ('A' <= ch && ch <= 'F');
 
-                // Lowercase indiscriminately (or with 32)
-                // Subtract start of range 'a'
-                // Cast to uint to change negative numbers to large numbers
-                // Check if less than 6 representing chars 'a' - 'f'
-                || (uint)((ch | 32) - 'a') < 6u;
+                   // Lowercase indiscriminately (or with 32)
+                   // Subtract start of range 'a'
+                   // Cast to uint to change negative numbers to large numbers
+                   // Check if less than 6 representing chars 'a' - 'f'
+                   || (uint) ((ch | 32) - 'a') < 6u;
         }
 
         // Allow for de-virtualization (see https://github.com/dotnet/coreclr/pull/9230)
         private sealed class UTF8EncodingSealed : UTF8Encoding {
-            public UTF8EncodingSealed() : base(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true) { }
+            public UTF8EncodingSealed() : base(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true) {
+            }
 
             public override byte[] GetPreamble() => Array.Empty<byte>();
         }

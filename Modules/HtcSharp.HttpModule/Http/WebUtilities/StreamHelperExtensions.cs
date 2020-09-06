@@ -30,6 +30,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                     if (limit.HasValue && limit.GetValueOrDefault() - total < read) {
                         throw new InvalidDataException($"The stream exceeded the data limit {limit.GetValueOrDefault()}.");
                     }
+
                     total += read;
                     read = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
                 }

@@ -8,6 +8,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
         public HPackDecodingException(string message)
             : base(message) {
         }
+
         public HPackDecodingException(string message, Exception innerException)
             : base(message, innerException) {
         }

@@ -27,6 +27,7 @@ namespace HtcSharp.HttpModule.Http.Features {
 
             Form = form;
         }
+
         public FormFeature(HttpRequest request)
             : this(request, FormOptions.Default) {
         }
@@ -35,6 +36,7 @@ namespace HtcSharp.HttpModule.Http.Features {
             if (request == null) {
                 throw new ArgumentNullException(nameof(request));
             }
+
             if (options == null) {
                 throw new ArgumentNullException(nameof(options));
             }
@@ -96,6 +98,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                     _parsedFormTask = InnerReadFormAsync(cancellationToken);
                 }
             }
+
             return _parsedFormTask;
         }
 
@@ -118,26 +121,18 @@ namespace HtcSharp.HttpModule.Http.Features {
             FormFileCollection files = null;
 
             // Some of these code paths use StreamReader which does not support cancellation tokens.
-            using (cancellationToken.Register((state) => ((HttpContext)state).Abort(), _request.HttpContext)) {
+            using (cancellationToken.Register((state) => ((HttpContext) state).Abort(), _request.HttpContext)) {
                 var contentType = ContentType;
                 // Check the content-type
                 if (HasApplicationFormContentType(contentType)) {
                     var encoding = FilterEncoding(contentType.Encoding);
-                    var formReader = new FormPipeReader(_request.BodyReader, encoding) {
-                        ValueCountLimit = _options.ValueCountLimit,
-                        KeyLengthLimit = _options.KeyLengthLimit,
-                        ValueLengthLimit = _options.ValueLengthLimit,
-                    };
+                    var formReader = new FormPipeReader(_request.BodyReader, encoding) {ValueCountLimit = _options.ValueCountLimit, KeyLengthLimit = _options.KeyLengthLimit, ValueLengthLimit = _options.ValueLengthLimit,};
                     formFields = new FormCollection(await formReader.ReadFormAsync(cancellationToken));
                 } else if (HasMultipartFormContentType(contentType)) {
                     var formAccumulator = new KeyValueAccumulator();
 
                     var boundary = GetBoundary(contentType, _options.MultipartBoundaryLengthLimit);
-                    var multipartReader = new MultipartReader(boundary, _request.Body) {
-                        HeadersCountLimit = _options.MultipartHeadersCountLimit,
-                        HeadersLengthLimit = _options.MultipartHeadersLengthLimit,
-                        BodyLengthLimit = _options.MultipartBodyLengthLimit,
-                    };
+                    var multipartReader = new MultipartReader(boundary, _request.Body) {HeadersCountLimit = _options.MultipartHeadersCountLimit, HeadersLengthLimit = _options.MultipartHeadersLengthLimit, BodyLengthLimit = _options.MultipartBodyLengthLimit,};
                     var section = await multipartReader.ReadNextSectionAsync(cancellationToken);
                     while (section != null) {
                         // Parse the content disposition here and pass it further to avoid reparsings
@@ -167,14 +162,17 @@ namespace HtcSharp.HttpModule.Http.Features {
                                 // Individually buffered file body
                                 file = new FormFile(section.Body, 0, section.Body.Length, name, fileName);
                             }
+
                             file.Headers = new HeaderDictionary(section.Headers);
 
                             if (files == null) {
                                 files = new FormFileCollection();
                             }
+
                             if (files.Count >= _options.ValueCountLimit) {
                                 throw new InvalidDataException($"Form value count limit {_options.ValueCountLimit} exceeded.");
                             }
+
                             files.Add(file);
                         } else if (contentDisposition.IsFormDisposition()) {
                             var formDataSection = new FormMultipartSection(section, contentDisposition);
@@ -225,6 +223,7 @@ namespace HtcSharp.HttpModule.Http.Features {
             if (encoding == null || Encoding.UTF7.Equals(encoding)) {
                 return Encoding.UTF8;
             }
+
             return encoding;
         }
 
@@ -241,13 +240,13 @@ namespace HtcSharp.HttpModule.Http.Features {
         private bool HasFormDataContentDisposition(ContentDispositionHeaderValue contentDisposition) {
             // Content-Disposition: form-data; name="key";
             return contentDisposition != null && contentDisposition.DispositionType.Equals("form-data")
-                && StringSegment.IsNullOrEmpty(contentDisposition.FileName) && StringSegment.IsNullOrEmpty(contentDisposition.FileNameStar);
+                                              && StringSegment.IsNullOrEmpty(contentDisposition.FileName) && StringSegment.IsNullOrEmpty(contentDisposition.FileNameStar);
         }
 
         private bool HasFileContentDisposition(ContentDispositionHeaderValue contentDisposition) {
             // Content-Disposition: form-data; name="myfile1"; filename="Misc 002.jpg"
             return contentDisposition != null && contentDisposition.DispositionType.Equals("form-data")
-                && (!StringSegment.IsNullOrEmpty(contentDisposition.FileName) || !StringSegment.IsNullOrEmpty(contentDisposition.FileNameStar));
+                                              && (!StringSegment.IsNullOrEmpty(contentDisposition.FileName) || !StringSegment.IsNullOrEmpty(contentDisposition.FileNameStar));
         }
 
         // Content-Type: multipart/form-data; boundary="----WebKitFormBoundarymx2fSWqWSd0OxQqq"
@@ -257,9 +256,11 @@ namespace HtcSharp.HttpModule.Http.Features {
             if (StringSegment.IsNullOrEmpty(boundary)) {
                 throw new InvalidDataException("Missing content-type boundary.");
             }
+
             if (boundary.Length > lengthLimit) {
                 throw new InvalidDataException($"Multipart boundary length limit {lengthLimit} exceeded.");
             }
+
             return boundary.ToString();
         }
     }

@@ -5,11 +5,12 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using HtcSharp.HttpModule.Shared;
+using HtcSharp.HttpModule.Shared.UrlDecoder;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal static class PathNormalizer {
-        private const byte ByteSlash = (byte)'/';
-        private const byte ByteDot = (byte)'.';
+        private const byte ByteSlash = (byte) '/';
+        private const byte ByteDot = (byte) '.';
 
         public static string DecodePath(Span<byte> path, bool pathEncoded, string rawTarget, int queryLength) {
             int pathLength;
@@ -54,7 +55,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
 
         public static unsafe int RemoveDotSegments(byte* start, byte* end) {
             if (!ContainsDotSegments(start, end)) {
-                return (int)(end - start);
+                return (int) (end - start);
             }
 
             var src = start;
@@ -156,7 +157,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 *dst++ = ByteSlash;
             }
 
-            return (int)(dst - start);
+            return (int) (dst - start);
         }
 
         public static unsafe bool ContainsDotSegments(byte* start, byte* end) {

@@ -18,6 +18,7 @@ namespace HtcSharp.HttpModule.Http.Features {
             if (context == null) {
                 throw new ArgumentNullException(nameof(context));
             }
+
             _context = context;
         }
 
@@ -29,7 +30,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                     _internalPipeReader = PipeReader.Create(_context.Request.Body);
 
                     _context.Response.OnCompleted((self) => {
-                        ((PipeReader)self).Complete();
+                        ((PipeReader) self).Complete();
                         return Task.CompletedTask;
                     }, _internalPipeReader);
                 }

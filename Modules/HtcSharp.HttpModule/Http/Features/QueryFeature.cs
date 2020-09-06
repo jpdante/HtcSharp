@@ -41,6 +41,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                     if (_parsedValues == null) {
                         _parsedValues = QueryCollection.Empty;
                     }
+
                     return _parsedValues;
                 }
 
@@ -56,6 +57,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                         _parsedValues = new QueryCollection(result);
                     }
                 }
+
                 return _parsedValues;
             }
             set {

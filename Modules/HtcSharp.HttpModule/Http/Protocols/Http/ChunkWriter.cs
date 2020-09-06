@@ -5,7 +5,7 @@ using System;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using System.Text;
-using HtcSharp.HttpModule.IO.Buffers;
+using HtcSharp.HttpModule.Core.Internal;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal static class ChunkWriter {
@@ -34,8 +34,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 offset++;
             }
 
-            span[count - 2] = (byte)'\r';
-            span[count - 1] = (byte)'\n';
+            span[count - 2] = (byte) '\r';
+            span[count - 1] = (byte) '\n';
 
             return count;
         }
@@ -57,11 +57,13 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                         if (length == 21) {
                             sliceOneByte = true;
                         }
+
                         return 3;
                     } else {
                         if (length == 262) {
                             sliceOneByte = true;
                         }
+
                         return 4;
                     }
                 } else {
@@ -69,11 +71,13 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                         if (length == 4103) {
                             sliceOneByte = true;
                         }
+
                         return 5;
                     } else {
                         if (length == 65544) {
                             sliceOneByte = true;
                         }
+
                         return 6;
                     }
                 }
@@ -83,11 +87,13 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                         if (length == 1048585) {
                             sliceOneByte = true;
                         }
+
                         return 7;
                     } else {
                         if (length == 16777226) {
                             sliceOneByte = true;
                         }
+
                         return 8;
                     }
                 } else {
@@ -95,6 +101,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                         if (length == 268435467) {
                             sliceOneByte = true;
                         }
+
                         return 9;
                     } else {
                         return 10;
@@ -117,8 +124,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             var span = start.Span;
 
             // CRLF done in reverse order so the 1st index will elide the bounds check for the 0th index
-            span[1] = (byte)'\n';
-            span[0] = (byte)'\r';
+            span[1] = (byte) '\n';
+            span[0] = (byte) '\r';
             start.Advance(2);
         }
     }

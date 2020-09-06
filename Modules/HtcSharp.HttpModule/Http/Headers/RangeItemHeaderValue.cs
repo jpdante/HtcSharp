@@ -7,29 +7,25 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using Microsoft.Extensions.Primitives;
 
-namespace HtcSharp.HttpModule.Http.Headers
-{
-    public class RangeItemHeaderValue
-    {
+namespace HtcSharp.HttpModule.Http.Headers {
+    public class RangeItemHeaderValue {
         private long? _from;
         private long? _to;
 
-        public RangeItemHeaderValue(long? from, long? to)
-        {
-            if (!from.HasValue && !to.HasValue)
-            {
+        public RangeItemHeaderValue(long? from, long? to) {
+            if (!from.HasValue && !to.HasValue) {
                 throw new ArgumentException("Invalid header range.");
             }
-            if (from.HasValue && (from.GetValueOrDefault() < 0))
-            {
+
+            if (from.HasValue && (from.GetValueOrDefault() < 0)) {
                 throw new ArgumentOutOfRangeException(nameof(from));
             }
-            if (to.HasValue && (to.GetValueOrDefault() < 0))
-            {
+
+            if (to.HasValue && (to.GetValueOrDefault() < 0)) {
                 throw new ArgumentOutOfRangeException(nameof(to));
             }
-            if (from.HasValue && to.HasValue && (from.GetValueOrDefault() > to.GetValueOrDefault()))
-            {
+
+            if (from.HasValue && to.HasValue && (from.GetValueOrDefault() > to.GetValueOrDefault())) {
                 throw new ArgumentOutOfRangeException(nameof(from));
             }
 
@@ -37,50 +33,40 @@ namespace HtcSharp.HttpModule.Http.Headers
             _to = to;
         }
 
-        public long? From
-        {
+        public long? From {
             get { return _from; }
         }
 
-        public long? To
-        {
+        public long? To {
             get { return _to; }
         }
 
-        public override string ToString()
-        {
-            if (!_from.HasValue)
-            {
+        public override string ToString() {
+            if (!_from.HasValue) {
                 return "-" + _to.GetValueOrDefault().ToString(NumberFormatInfo.InvariantInfo);
-            }
-            else if (!_to.HasValue)
-            {
+            } else if (!_to.HasValue) {
                 return _from.GetValueOrDefault().ToString(NumberFormatInfo.InvariantInfo) + "-";
             }
+
             return _from.GetValueOrDefault().ToString(NumberFormatInfo.InvariantInfo) + "-" +
-                _to.GetValueOrDefault().ToString(NumberFormatInfo.InvariantInfo);
+                   _to.GetValueOrDefault().ToString(NumberFormatInfo.InvariantInfo);
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is RangeItemHeaderValue other)
-            {
+        public override bool Equals(object obj) {
+            if (obj is RangeItemHeaderValue other) {
                 return ((_from == other._from) && (_to == other._to));
             }
 
             return false;
         }
 
-        public override int GetHashCode()
-        {
-            if (!_from.HasValue)
-            {
+        public override int GetHashCode() {
+            if (!_from.HasValue) {
                 return _to.GetValueOrDefault().GetHashCode();
-            }
-            else if (!_to.HasValue)
-            {
+            } else if (!_to.HasValue) {
                 return _from.GetValueOrDefault().GetHashCode();
             }
+
             return _from.GetValueOrDefault().GetHashCode() ^ _to.GetValueOrDefault().GetHashCode();
         }
 
@@ -89,15 +75,13 @@ namespace HtcSharp.HttpModule.Http.Headers
         internal static int GetRangeItemListLength(
             StringSegment input,
             int startIndex,
-            ICollection<RangeItemHeaderValue> rangeCollection)
-        {
+            ICollection<RangeItemHeaderValue> rangeCollection) {
             Contract.Requires(rangeCollection != null);
             Contract.Requires(startIndex >= 0);
             Contract.Ensures((Contract.Result<int>() == 0) || (rangeCollection.Count > 0),
                 "If we can parse the string, then we expect to have at least one range item.");
 
-            if ((StringSegment.IsNullOrEmpty(input)) || (startIndex >= input.Length))
-            {
+            if ((StringSegment.IsNullOrEmpty(input)) || (startIndex >= input.Length)) {
                 return 0;
             }
 
@@ -106,18 +90,15 @@ namespace HtcSharp.HttpModule.Http.Headers
             var current = HeaderUtilities.GetNextNonEmptyOrWhitespaceIndex(input, startIndex, true, out separatorFound);
             // It's OK if we didn't find leading separator characters. Ignore 'separatorFound'.
 
-            if (current == input.Length)
-            {
+            if (current == input.Length) {
                 return 0;
             }
 
             RangeItemHeaderValue range = null;
-            while (true)
-            {
+            while (true) {
                 var rangeLength = GetRangeItemLength(input, current, out range);
 
-                if (rangeLength == 0)
-                {
+                if (rangeLength == 0) {
                     return 0;
                 }
 
@@ -128,28 +109,24 @@ namespace HtcSharp.HttpModule.Http.Headers
 
                 // If the string is not consumed, we must have a delimiter, otherwise the string is not a valid
                 // range list.
-                if ((current < input.Length) && !separatorFound)
-                {
+                if ((current < input.Length) && !separatorFound) {
                     return 0;
                 }
 
-                if (current == input.Length)
-                {
+                if (current == input.Length) {
                     return current - startIndex;
                 }
             }
         }
 
-        internal static int GetRangeItemLength(StringSegment input, int startIndex, out RangeItemHeaderValue parsedValue)
-        {
+        internal static int GetRangeItemLength(StringSegment input, int startIndex, out RangeItemHeaderValue parsedValue) {
             Contract.Requires(startIndex >= 0);
 
             // This parser parses number ranges: e.g. '1-2', '1-', '-2'.
 
             parsedValue = null;
 
-            if (StringSegment.IsNullOrEmpty(input) || (startIndex >= input.Length))
-            {
+            if (StringSegment.IsNullOrEmpty(input) || (startIndex >= input.Length)) {
                 return 0;
             }
 
@@ -160,8 +137,7 @@ namespace HtcSharp.HttpModule.Http.Headers
             var fromStartIndex = current;
             var fromLength = HttpRuleParser.GetNumberLength(input, current, false);
 
-            if (fromLength > HttpRuleParser.MaxInt64Digits)
-            {
+            if (fromLength > HttpRuleParser.MaxInt64Digits) {
                 return 0;
             }
 
@@ -169,8 +145,7 @@ namespace HtcSharp.HttpModule.Http.Headers
             current = current + HttpRuleParser.GetWhitespaceLength(input, current);
 
             // After the first value, the '-' character must follow.
-            if ((current == input.Length) || (input[current] != '-'))
-            {
+            if ((current == input.Length) || (input[current] != '-')) {
                 // We need a '-' character otherwise this can't be a valid range.
                 return 0;
             }
@@ -182,12 +157,10 @@ namespace HtcSharp.HttpModule.Http.Headers
             var toLength = 0;
 
             // If we didn't reach the end of the string, try parse the second value of the range.
-            if (current < input.Length)
-            {
+            if (current < input.Length) {
                 toLength = HttpRuleParser.GetNumberLength(input, current, false);
 
-                if (toLength > HttpRuleParser.MaxInt64Digits)
-                {
+                if (toLength > HttpRuleParser.MaxInt64Digits) {
                     return 0;
                 }
 
@@ -195,33 +168,29 @@ namespace HtcSharp.HttpModule.Http.Headers
                 current = current + HttpRuleParser.GetWhitespaceLength(input, current);
             }
 
-            if ((fromLength == 0) && (toLength == 0))
-            {
+            if ((fromLength == 0) && (toLength == 0)) {
                 return 0; // At least one value must be provided in order to be a valid range.
             }
 
             // Try convert first value to int64
             long from = 0;
-            if ((fromLength > 0) && !HeaderUtilities.TryParseNonNegativeInt64(input.Subsegment(fromStartIndex, fromLength), out from))
-            {
+            if ((fromLength > 0) && !HeaderUtilities.TryParseNonNegativeInt64(input.Subsegment(fromStartIndex, fromLength), out from)) {
                 return 0;
             }
 
             // Try convert second value to int64
             long to = 0;
-            if ((toLength > 0) && !HeaderUtilities.TryParseNonNegativeInt64(input.Subsegment(toStartIndex, toLength), out to))
-            {
+            if ((toLength > 0) && !HeaderUtilities.TryParseNonNegativeInt64(input.Subsegment(toStartIndex, toLength), out to)) {
                 return 0;
             }
 
             // 'from' must not be greater than 'to'
-            if ((fromLength > 0) && (toLength > 0) && (from > to))
-            {
+            if ((fromLength > 0) && (toLength > 0) && (from > to)) {
                 return 0;
             }
 
-            parsedValue = new RangeItemHeaderValue((fromLength == 0 ? (long?)null : (long?)from),
-                (toLength == 0 ? (long?)null : (long?)to));
+            parsedValue = new RangeItemHeaderValue((fromLength == 0 ? (long?) null : (long?) from),
+                (toLength == 0 ? (long?) null : (long?) to));
             return current - startIndex;
         }
     }

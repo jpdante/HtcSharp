@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Diagnostics;
+using HtcSharp.HttpModule.Core;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl {
     internal class InputFlowControl {
@@ -17,8 +18,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl {
             Debug.Assert(initialWindowSize >= minWindowSizeIncrement, "minWindowSizeIncrement is greater than the window size.");
 
             _flow = new FlowControl(initialWindowSize);
-            _initialWindowSize = (int)initialWindowSize;
-            _minWindowSizeIncrement = (int)minWindowSizeIncrement;
+            _initialWindowSize = (int) initialWindowSize;
+            _minWindowSizeIncrement = (int) minWindowSizeIncrement;
         }
 
         public bool IsAvailabilityLow => _flow.Available < _minWindowSizeIncrement;

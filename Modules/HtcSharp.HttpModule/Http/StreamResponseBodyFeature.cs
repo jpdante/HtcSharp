@@ -81,6 +81,7 @@ namespace HtcSharp.HttpModule.Http {
             if (!_started) {
                 await StartAsync(cancellationToken);
             }
+
             await SendFileFallback.SendFileAsync(Stream, path, offset, count, cancellationToken);
         }
 
@@ -94,6 +95,7 @@ namespace HtcSharp.HttpModule.Http {
                 _started = true;
                 return Stream.FlushAsync(cancellationToken);
             }
+
             return Task.CompletedTask;
         }
 
@@ -108,6 +110,7 @@ namespace HtcSharp.HttpModule.Http {
             if (_disposed) {
                 return;
             }
+
             if (_completed) {
                 return;
             }

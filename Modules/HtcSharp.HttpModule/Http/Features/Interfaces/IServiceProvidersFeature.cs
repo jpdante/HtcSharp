@@ -3,10 +3,8 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
-    public interface IServiceProvidersFeature
-    {
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
+    public interface IServiceProvidersFeature {
         IServiceProvider RequestServices { get; set; }
     }
 }

@@ -13,16 +13,17 @@ using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Http.Abstractions.Features;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Connections.Abstractions.Features;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Internal;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Http.Protocols.Http;
 using HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl;
 using HtcSharp.HttpModule.Http.Protocols.Http2.HPack;
-using HtcSharp.HttpModule.Infrastructure;
-using HtcSharp.HttpModule.IO.MemoryPool;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HtcSharp.HttpModule.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -106,14 +107,14 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
 
             _hpackDecoder = new HPackDecoder(http2Limits.HeaderTableSize, http2Limits.MaxRequestHeaderFieldSize);
 
-            var connectionWindow = (uint)http2Limits.InitialConnectionWindowSize;
+            var connectionWindow = (uint) http2Limits.InitialConnectionWindowSize;
             _inputFlowControl = new InputFlowControl(connectionWindow, connectionWindow / 2);
 
-            _serverSettings.MaxConcurrentStreams = (uint)http2Limits.MaxStreamsPerConnection;
-            _serverSettings.MaxFrameSize = (uint)http2Limits.MaxFrameSize;
-            _serverSettings.HeaderTableSize = (uint)http2Limits.HeaderTableSize;
-            _serverSettings.MaxHeaderListSize = (uint)httpLimits.MaxRequestHeadersTotalSize;
-            _serverSettings.InitialWindowSize = (uint)http2Limits.InitialStreamWindowSize;
+            _serverSettings.MaxConcurrentStreams = (uint) http2Limits.MaxStreamsPerConnection;
+            _serverSettings.MaxFrameSize = (uint) http2Limits.MaxFrameSize;
+            _serverSettings.HeaderTableSize = (uint) http2Limits.HeaderTableSize;
+            _serverSettings.MaxHeaderListSize = (uint) httpLimits.MaxRequestHeadersTotalSize;
+            _serverSettings.InitialWindowSize = (uint) http2Limits.InitialStreamWindowSize;
             _inputTask = ReadInputAsync();
         }
 
@@ -182,7 +183,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                     // Inform the client that the connection window is larger than the default. It can't be lowered here,
                     // It can only be lowered by not issuing window updates after data is received.
                     var connectionWindow = _context.ServiceContext.ServerOptions.Limits.Http2.InitialConnectionWindowSize;
-                    var diff = connectionWindow - (int)Http2PeerSettings.DefaultInitialWindowSize;
+                    var diff = connectionWindow - (int) Http2PeerSettings.DefaultInitialWindowSize;
                     if (diff > 0) {
                         await _frameWriter.WriteWindowUpdateAsync(0, diff);
                     }
@@ -250,7 +251,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                 errorCode = Http2ErrorCode.INTERNAL_ERROR;
             } finally {
                 var connectionError = error as ConnectionAbortedException
-                    ?? new ConnectionAbortedException(CoreStrings.Http2ConnectionFaulted, error);
+                                      ?? new ConnectionAbortedException(CoreStrings.Http2ConnectionFaulted, error);
 
                 try {
                     if (TryClose()) {
@@ -357,8 +358,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                 throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with even stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
             }
 
-            return _incomingFrame.Type switch
-            {
+            return _incomingFrame.Type switch {
                 Http2FrameType.DATA => ProcessDataFrameAsync(payload),
                 Http2FrameType.HEADERS => ProcessHeadersFrameAsync(application, payload),
                 Http2FrameType.PRIORITY => ProcessPriorityFrameAsync(),
@@ -585,7 +585,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
 
             try {
                 // int.MaxValue is the largest allowed windows size.
-                var previousInitialWindowSize = (int)_clientSettings.InitialWindowSize;
+                var previousInitialWindowSize = (int) _clientSettings.InitialWindowSize;
                 var previousMaxFrameSize = _clientSettings.MaxFrameSize;
 
                 _clientSettings.Update(Http2FrameReader.ReadSettings(payload));
@@ -599,7 +599,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                 }
 
                 // This difference can be negative.
-                var windowSizeDifference = (int)_clientSettings.InitialWindowSize - previousInitialWindowSize;
+                var windowSizeDifference = (int) _clientSettings.InitialWindowSize - previousInitialWindowSize;
 
                 if (windowSizeDifference != 0) {
                     foreach (var stream in _streams.Values) {
@@ -786,6 +786,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                 // TODO consider making when to send ENHANCE_YOUR_CALM configurable?
                 throw new Http2StreamErrorException(_currentHeadersStream.StreamId, CoreStrings.Http2TellClientToCalmDown, Http2ErrorCode.ENHANCE_YOUR_CALM);
             }
+
             // This must be initialized before we offload the request or else we may start processing request body frames without it.
             _currentHeadersStream.InputRemaining = _currentHeadersStream.RequestHeaders.ContentLength;
 
@@ -905,7 +906,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                     // If we're awaiting headers, either a new stream will be started, or there will be a connection
                     // error possibly due to a request header timeout, so no need to start a keep-alive timeout.
                     Debug.Assert(TimeoutControl.TimerReason == TimeoutReason.RequestHeaders ||
-                        TimeoutControl.TimerReason == TimeoutReason.KeepAlive);
+                                 TimeoutControl.TimerReason == TimeoutReason.KeepAlive);
                 }
             }
         }
@@ -1017,7 +1018,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
         private bool IsPseudoHeaderField(Span<byte> name, out PseudoHeaderFields headerField) {
             headerField = PseudoHeaderFields.None;
 
-            if (name.IsEmpty || name[0] != (byte)':') {
+            if (name.IsEmpty || name[0] != (byte) ':') {
                 return false;
             }
 
@@ -1075,7 +1076,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
 
                     var outputBuffer = writer.GetMemory(_minAllocBufferSize);
 
-                    var copyAmount = (int)Math.Min(outputBuffer.Length, readResult.Buffer.Length);
+                    var copyAmount = (int) Math.Min(outputBuffer.Length, readResult.Buffer.Length);
                     var bufferSlice = readResult.Buffer.Slice(0, copyAmount);
 
                     bufferSlice.CopyTo(outputBuffer.Span);

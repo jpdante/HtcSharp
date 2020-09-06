@@ -12,18 +12,19 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using Microsoft.Extensions.Primitives;
-using HtcSharp.HttpModule.Attributes;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions.Routing;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Headers;
-using HtcSharp.HttpModule.Infrastructure;
-using HtcSharp.HttpModule.IO.Tasks;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HtcSharp.HttpModule.Server.Abstractions;
 using HtcSharp.HttpModule.Logging;
 using Microsoft.Extensions.Logging;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Internal;
+using HtcSharp.HttpModule.Shared.ValueTaskExtensions;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal abstract partial class HttpProtocol : IHttpResponseControl {
@@ -47,6 +48,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
         // Keep-alive is default for HTTP/1.1 and HTTP/2; parsing and errors will change its value
         // volatile, see: https://msdn.microsoft.com/en-us/library/x13ttww7.aspx
         protected volatile bool _keepAlive = true;
+
         // _canWriteResponseBody is set in CreateResponseHeaders.
         // If we are writing with GetMemory/Advance before calling StartAsync, assume we can write and throw away contents if we can't.
         private bool _canWriteResponseBody = true;
@@ -91,7 +93,9 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
         public IHttpOutputProducer Output { get; protected set; }
 
         protected IKestrelTrace Log => ServiceContext.Log;
+
         private DateHeaderValueManager DateHeaderValueManager => ServiceContext.DateHeaderValueManager;
+
         // Hold direct reference to ServerOptions since this is used very often in the request processing path
         protected KestrelServerOptions ServerOptions { get; }
         protected string ConnectionId => _context.ConnectionId;
@@ -112,6 +116,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (_requestId == null) {
                     _requestId = CreateRequestId();
                 }
+
                 return _requestId;
             }
         }
@@ -140,9 +145,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (_httpVersion == Http.HttpVersion.Http11) {
                     return HttpUtilities.Http11Version;
                 }
+
                 if (_httpVersion == Http.HttpVersion.Http10) {
                     return HttpUtilities.Http10Version;
                 }
+
                 if (_httpVersion == Http.HttpVersion.Http2) {
                     return HttpUtilities.Http2Version;
                 }
@@ -187,6 +194,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
         public HtcSharp.HttpModule.Http.Protocols.Http.HttpResponseTrailers ResponseTrailers { get; set; }
 
         private int _statusCode;
+
         public int StatusCode {
             get => _statusCode;
             set {
@@ -409,7 +417,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
 
             if (shouldScheduleCancellation) {
                 // Potentially calling user code. CancelRequestAbortedToken logs any exceptions.
-                ServiceContext.Scheduler.Schedule(state => ((HtcSharp.HttpModule.Http.Protocols.Http.HttpProtocol)state).CancelRequestAbortedToken(), this);
+                ServiceContext.Scheduler.Schedule(state => ((HtcSharp.HttpModule.Http.Protocols.Http.HttpProtocol) state).CancelRequestAbortedToken(), this);
             }
         }
 
@@ -602,6 +610,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             if (_onStarting == null) {
                 _onStarting = new Stack<KeyValuePair<Func<object, Task>, object>>();
             }
+
             _onStarting.Push(new KeyValuePair<Func<object, Task>, object>(callback, state));
         }
 
@@ -609,6 +618,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             if (_onCompleted == null) {
                 _onCompleted = new Stack<KeyValuePair<Func<object, Task>, object>>();
             }
+
             _onCompleted.Push(new KeyValuePair<Func<object, Task>, object>(callback, state));
         }
 
@@ -931,25 +941,25 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (StatusCode == StatusCodes.Status101SwitchingProtocols) {
                     _keepAlive = false;
                 } else if ((appCompleted || !_canWriteResponseBody) && !_hasAdvanced) // Avoid setting contentLength of 0 if we wrote data before calling CreateResponseHeaders
-                  {
+                {
                     // Don't set the Content-Length header automatically for HEAD requests, 204 responses, or 304 responses.
                     if (CanAutoSetContentLengthZeroResponseHeader()) {
                         // Since the app has completed writing or cannot write to the response, we can safely set the Content-Length to 0.
                         responseHeaders.ContentLength = 0;
                     }
                 }
-                  // Note for future reference: never change this to set _autoChunk to true on HTTP/1.0
-                  // connections, even if we were to infer the client supports it because an HTTP/1.0 request
-                  // was received that used chunked encoding. Sending a chunked response to an HTTP/1.0
-                  // client would break compliance with RFC 7230 (section 3.3.1):
-                  //
-                  // A server MUST NOT send a response containing Transfer-Encoding unless the corresponding
-                  // request indicates HTTP/1.1 (or later).
-                  //
-                  // This also covers HTTP/2, which forbids chunked encoding in RFC 7540 (section 8.1:
-                  //
-                  // The chunked transfer encoding defined in Section 4.1 of [RFC7230] MUST NOT be used in HTTP/2.
-                  else if (_httpVersion == HtcSharp.HttpModule.Http.Protocols.Http.HttpVersion.Http11) {
+                // Note for future reference: never change this to set _autoChunk to true on HTTP/1.0
+                // connections, even if we were to infer the client supports it because an HTTP/1.0 request
+                // was received that used chunked encoding. Sending a chunked response to an HTTP/1.0
+                // client would break compliance with RFC 7230 (section 3.3.1):
+                //
+                // A server MUST NOT send a response containing Transfer-Encoding unless the corresponding
+                // request indicates HTTP/1.1 (or later).
+                //
+                // This also covers HTTP/2, which forbids chunked encoding in RFC 7540 (section 8.1:
+                //
+                // The chunked transfer encoding defined in Section 4.1 of [RFC7230] MUST NOT be used in HTTP/2.
+                else if (_httpVersion == HtcSharp.HttpModule.Http.Protocols.Http.HttpVersion.Http11) {
                     _autoChunk = true;
                     responseHeaders.SetRawTransferEncoding("chunked", _bytesTransferEncodingChunked);
                 } else {

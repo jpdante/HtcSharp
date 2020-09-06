@@ -8,14 +8,16 @@ using System.Globalization;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Internal;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
-using HtcSharp.HttpModule.Infrastructure;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal partial class Http1Connection : HttpProtocol, IRequestProcessor {
-        private const byte ByteAsterisk = (byte)'*';
-        private const byte ByteForwardSlash = (byte)'/';
+        private const byte ByteAsterisk = (byte) '*';
+        private const byte ByteForwardSlash = (byte) '/';
         private const string Asterisk = "*";
         private const string ForwardSlash = "/";
 
@@ -145,6 +147,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                     if (TakeMessageHeaders(buffer, trailers: false, out consumed, out examined)) {
                         _requestProcessingStatus = RequestProcessingStatus.AppStarted;
                     }
+
                     break;
             }
 
@@ -168,7 +171,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             return _parser.ParseRequestLine(new Http1ParsingHandler(this), buffer, out consumed, out examined);
 
             bool TrimAndTakeStartLine(in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined) {
-                var trimmedBuffer = buffer.Slice(buffer.Start, (int)ServerOptions.Limits.MaxRequestLineSize);
+                var trimmedBuffer = buffer.Slice(buffer.Start, (int) ServerOptions.Limits.MaxRequestLineSize);
 
                 if (!_parser.ParseRequestLine(new Http1ParsingHandler(this), trimmedBuffer, out consumed, out examined)) {
                     // We read the maximum allowed but didn't complete the start line.
@@ -198,7 +201,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 return result;
             } finally {
                 consumed = reader.Position;
-                _remainingRequestHeadersBytesAllowed -= (int)reader.Consumed;
+                _remainingRequestHeadersBytesAllowed -= (int) reader.Consumed;
 
                 if (result) {
                     examined = consumed;
@@ -225,7 +228,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                     return result;
                 } finally {
                     consumed = reader.Position;
-                    _remainingRequestHeadersBytesAllowed -= (int)reader.Consumed;
+                    _remainingRequestHeadersBytesAllowed -= (int) reader.Consumed;
 
                     if (result) {
                         examined = consumed;
@@ -264,7 +267,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             _httpVersion = version;
 
             Debug.Assert(RawTarget != null, "RawTarget was not set");
-            Debug.Assert(((IHttpRequestFeature)this).Method != null, "Method was not set");
+            Debug.Assert(((IHttpRequestFeature) this).Method != null, "Method was not set");
             Debug.Assert(Path != null, "Path was not set");
             Debug.Assert(QueryString != null, "QueryString was not set");
             Debug.Assert(HttpVersion != null, "HttpVersion was not set");
@@ -456,6 +459,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (_httpVersion == Http.HttpVersion.Http10) {
                     return;
                 }
+
                 BadHttpRequestException.Throw(RequestRejectionReason.MissingHostHeader);
             } else if (hostCount > 1) {
                 BadHttpRequestException.Throw(RequestRejectionReason.MultipleHostHeaders);
@@ -535,6 +539,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (_requestProcessingStatus == RequestProcessingStatus.ParsingHeaders) {
                     BadHttpRequestException.Throw(RequestRejectionReason.MalformedRequestInvalidHeaders);
                 }
+
                 throw;
             } finally {
                 Input.AdvanceTo(consumed, examined);
@@ -572,6 +577,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             }
         }
 
-        void IRequestProcessor.Tick(DateTimeOffset now) { }
+        void IRequestProcessor.Tick(DateTimeOffset now) {
+        }
     }
 }

@@ -5,7 +5,7 @@ using System;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Infrastructure;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal abstract class MessageBody {
@@ -132,7 +132,6 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
         }
 
         protected ValueTask<ReadResult> StartTimingReadAsync(ValueTask<ReadResult> readAwaitable, CancellationToken cancellationToken) {
-
             if (!readAwaitable.IsCompleted && _timingEnabled) {
                 TryProduceContinue();
 

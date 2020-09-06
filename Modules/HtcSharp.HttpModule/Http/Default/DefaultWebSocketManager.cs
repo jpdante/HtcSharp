@@ -41,22 +41,19 @@ namespace HtcSharp.HttpModule.Http.Default {
             _features.Fetch(ref _features.Cache.WebSockets, _nullWebSocketFeature);
 
         public override bool IsWebSocketRequest {
-            get {
-                return WebSocketFeature != null && WebSocketFeature.IsWebSocketRequest;
-            }
+            get { return WebSocketFeature != null && WebSocketFeature.IsWebSocketRequest; }
         }
 
         public override IList<string> WebSocketRequestedProtocols {
-            get {
-                return HttpRequestFeature.Headers.GetCommaSeparatedValues(HeaderNames.WebSocketSubProtocols);
-            }
+            get { return HttpRequestFeature.Headers.GetCommaSeparatedValues(HeaderNames.WebSocketSubProtocols); }
         }
 
         public override Task<WebSocket> AcceptWebSocketAsync(string subProtocol) {
             if (WebSocketFeature == null) {
                 throw new NotSupportedException("WebSockets are not supported");
             }
-            return WebSocketFeature.AcceptAsync(new WebSocketAcceptContext() { SubProtocol = subProtocol });
+
+            return WebSocketFeature.AcceptAsync(new WebSocketAcceptContext() {SubProtocol = subProtocol});
         }
 
         struct FeatureInterfaces {

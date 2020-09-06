@@ -3,11 +3,9 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
     [Flags]
-    internal enum Http2ContinuationFrameFlags : byte
-    {
+    internal enum Http2ContinuationFrameFlags : byte {
         NONE = 0x0,
         END_HEADERS = 0x4,
     }

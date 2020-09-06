@@ -34,7 +34,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 return false;
             }
 
-            return obj is HeaderSegment && Equals((HeaderSegment)obj);
+            return obj is HeaderSegment && Equals((HeaderSegment) obj);
         }
 
         public override int GetHashCode() {

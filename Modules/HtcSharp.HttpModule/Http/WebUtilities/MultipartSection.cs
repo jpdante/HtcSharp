@@ -14,6 +14,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 if (Headers.TryGetValue(HeaderNames.ContentType, out values)) {
                     return values;
                 }
+
                 return null;
             }
         }
@@ -24,6 +25,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 if (Headers.TryGetValue(HeaderNames.ContentDisposition, out values)) {
                     return values;
                 }
+
                 return null;
             }
         }

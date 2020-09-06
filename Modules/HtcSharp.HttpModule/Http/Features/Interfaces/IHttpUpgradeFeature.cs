@@ -4,10 +4,8 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
-    public interface IHttpUpgradeFeature
-    {
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
+    public interface IHttpUpgradeFeature {
         /// <summary>
         /// Indicates if the server can upgrade this request to an opaque, bidirectional stream.
         /// </summary>

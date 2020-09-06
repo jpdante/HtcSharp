@@ -78,8 +78,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
         }
 
         public static byte[] ToStatusBytes(int statusCode) {
-            return statusCode switch
-            {
+            return statusCode switch {
                 Abstractions.StatusCodes.Status100Continue => _bytesStatus100,
                 Abstractions.StatusCodes.Status101SwitchingProtocols => _bytesStatus101,
                 Abstractions.StatusCodes.Status102Processing => _bytesStatus102,

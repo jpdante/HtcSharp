@@ -105,6 +105,7 @@ namespace HtcSharp.HttpModule.Http.Default {
                     user = new ClaimsPrincipal(new ClaimsIdentity());
                     HttpAuthenticationFeature.User = user;
                 }
+
                 return user;
             }
             set { HttpAuthenticationFeature.User = value; }
@@ -135,13 +136,12 @@ namespace HtcSharp.HttpModule.Http.Default {
                 var feature = SessionFeatureOrNull;
                 if (feature == null) {
                     throw new InvalidOperationException("Session has not been configured for this application " +
-                        "or request.");
+                                                        "or request.");
                 }
+
                 return feature.Session;
             }
-            set {
-                SessionFeature.Session = value;
-            }
+            set { SessionFeature.Session = value; }
         }
 
         // This property exists because of backwards compatibility.

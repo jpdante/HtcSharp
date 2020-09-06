@@ -3,11 +3,9 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http
-{
+namespace HtcSharp.HttpModule.Http.Protocols.Http {
     [Flags]
-    internal enum TransferCoding
-    {
+    internal enum TransferCoding {
         None,
         Chunked,
         Other

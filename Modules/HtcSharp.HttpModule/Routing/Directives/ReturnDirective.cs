@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Http.Abstractions.Extensions;
 using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
 using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class ReturnDirective : IDirective {
-
         private readonly int _statusCode;
         private readonly string _data;
         private readonly byte _type;
@@ -27,10 +27,14 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 _statusCode = statusCode;
                 if (returnData[2][0].Equals('"') && returnData[returnData.Count - 1][returnData[returnData.Count - 1].Length - 1].Equals('"')) {
                     _type = 3;
-                    for (var i = 2; i < returnData.Count; i++) { _data = i == returnData.Count - 1 ? $"{returnData[i]}" : $"{returnData[i]} "; }
+                    for (var i = 2; i < returnData.Count; i++) {
+                        _data = i == returnData.Count - 1 ? $"{returnData[i]}" : $"{returnData[i]} ";
+                    }
                 } else {
                     _type = 2;
-                    for (var i = 2; i < returnData.Count; i++) { _data = i == returnData.Count - 1 ? $"{returnData[i]}" : $"{returnData[i]} "; }
+                    for (var i = 2; i < returnData.Count; i++) {
+                        _data = i == returnData.Count - 1 ? $"{returnData[i]}" : $"{returnData[i]} ";
+                    }
                 }
             }
         }

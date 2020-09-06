@@ -28,6 +28,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                     _requestServices = _scope.ServiceProvider;
                     _requestServicesSet = true;
                 }
+
                 return _requestServices;
             }
 
@@ -44,6 +45,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                     if (!vt.IsCompletedSuccessfully) {
                         return Awaited(this, vt);
                     }
+
                     // If its a IValueTaskSource backed ValueTask,
                     // inform it its result has been read so it can reset
                     vt.GetAwaiter().GetResult();

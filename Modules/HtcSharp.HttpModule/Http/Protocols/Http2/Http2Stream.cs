@@ -8,11 +8,12 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Internal;
 using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Http.Protocols.Http;
 using HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl;
-using HtcSharp.HttpModule.IO.MemoryPool;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
 using HeaderNames = HtcSharp.HttpModule.Http.Headers.HeaderNames;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
@@ -108,7 +109,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
         }
 
         protected override string CreateRequestId()
-            => StringUtilities.ConcatAsHexSuffix(ConnectionId, ':', (uint)StreamId);
+            => StringUtilities.ConcatAsHexSuffix(ConnectionId, ':', (uint) StreamId);
 
         protected override MessageBody CreateMessageBody()
             => Http2MessageBody.For(this);
@@ -272,7 +273,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                     var ch = pathSegment[i];
                     // The header parser should already be checking this
                     Debug.Assert(32 < ch && ch < 127);
-                    pathBuffer[i] = (byte)ch;
+                    pathBuffer[i] = (byte) ch;
                 }
 
                 Path = PathNormalizer.DecodePath(pathBuffer, pathEncoded, RawTarget, QueryString.Length);
@@ -304,7 +305,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                         _inputFlowControl.StopWindowUpdates();
                     }
 
-                    _inputFlowControl.Advance((int)dataPayload.Length);
+                    _inputFlowControl.Advance((int) dataPayload.Length);
 
                     // This check happens after flow control so that when we throw and abort, the byte count is returned to the connection
                     // level accounting.

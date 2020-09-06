@@ -24,12 +24,15 @@ namespace HtcSharp.HttpModule.Http {
             for (var c = '0'; c <= '9'; c++) {
                 alphaNumeric[c] = true;
             }
+
             for (var c = 'A'; c <= 'Z'; c++) {
                 alphaNumeric[c] = true;
             }
+
             for (var c = 'a'; c <= 'z'; c++) {
                 alphaNumeric[c] = true;
             }
+
             return alphaNumeric;
         }
 
@@ -100,6 +103,7 @@ namespace HtcSharp.HttpModule.Http {
             {
                 fieldValue[c] = true;
             }
+
             return fieldValue;
         }
 
@@ -109,7 +113,7 @@ namespace HtcSharp.HttpModule.Http {
 
             for (var i = 0; i < s.Length; i++) {
                 var c = s[i];
-                if (c >= (uint)authority.Length || !authority[c]) {
+                if (c >= (uint) authority.Length || !authority[c]) {
                     return true;
                 }
             }
@@ -123,7 +127,7 @@ namespace HtcSharp.HttpModule.Http {
 
             for (var i = 0; i < s.Length; i++) {
                 var c = s[i];
-                if (c >= (uint)host.Length || !host[c]) {
+                if (c >= (uint) host.Length || !host[c]) {
                     return i;
                 }
             }
@@ -137,7 +141,7 @@ namespace HtcSharp.HttpModule.Http {
 
             for (var i = 0; i < s.Length; i++) {
                 var c = s[i];
-                if (c >= (uint)token.Length || !token[c]) {
+                if (c >= (uint) token.Length || !token[c]) {
                     return i;
                 }
             }
@@ -151,7 +155,7 @@ namespace HtcSharp.HttpModule.Http {
 
             for (var i = 0; i < length; i++) {
                 var c = s[i];
-                if (c >= (uint)token.Length || !token[c]) {
+                if (c >= (uint) token.Length || !token[c]) {
                     return i;
                 }
             }
@@ -165,7 +169,7 @@ namespace HtcSharp.HttpModule.Http {
 
             for (var i = 0; i < s.Length; i++) {
                 var c = s[i];
-                if (c >= (uint)fieldValue.Length || !fieldValue[c]) {
+                if (c >= (uint) fieldValue.Length || !fieldValue[c]) {
                     return i;
                 }
             }

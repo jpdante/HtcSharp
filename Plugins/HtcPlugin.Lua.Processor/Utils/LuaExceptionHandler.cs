@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Http.Abstractions.Extensions;
 using MoonSharp.Interpreter;
 
 namespace HtcPlugin.Lua.Processor.Utils {

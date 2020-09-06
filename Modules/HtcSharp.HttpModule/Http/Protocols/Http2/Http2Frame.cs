@@ -1,8 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
     /* https://tools.ietf.org/html/rfc7540#section-4.1
         +-----------------------------------------------+
         |                 Length (24)                   |
@@ -14,8 +13,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
         |                   Frame Payload (0...)                      ...
         +---------------------------------------------------------------+
     */
-    internal partial class Http2Frame
-    {
+    internal partial class Http2Frame {
         public int PayloadLength { get; set; }
 
         public Http2FrameType Type { get; set; }
@@ -24,10 +22,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
 
         public int StreamId { get; set; }
 
-        internal object ShowFlags()
-        {
-            switch (Type)
-            {
+        internal object ShowFlags() {
+            switch (Type) {
                 case Http2FrameType.CONTINUATION:
                     return ContinuationFlags;
                 case Http2FrameType.DATA:
@@ -52,8 +48,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
             }
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return $"{Type} Stream: {StreamId} Length: {PayloadLength} Flags: {ShowFlags()}";
         }
     }

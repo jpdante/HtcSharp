@@ -4,10 +4,8 @@
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
-    public interface IHttpWebSocketFeature
-    {
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
+    public interface IHttpWebSocketFeature {
         /// <summary>
         /// Indicates if this is a WebSocket upgrade request.
         /// </summary>

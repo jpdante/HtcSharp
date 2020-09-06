@@ -30,7 +30,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
             }
 
             return AddQueryString(
-                uri, new[] { new KeyValuePair<string, string>(name, value) });
+                uri, new[] {new KeyValuePair<string, string>(name, value)});
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 throw new ArgumentNullException(nameof(queryString));
             }
 
-            return AddQueryString(uri, (IEnumerable<KeyValuePair<string, string>>)queryString);
+            return AddQueryString(uri, (IEnumerable<KeyValuePair<string, string>>) queryString);
         }
 
         private static string AddQueryString(
@@ -126,15 +126,18 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
             if (equalIndex == -1) {
                 equalIndex = textLength;
             }
+
             while (scanIndex < textLength) {
                 int delimiterIndex = queryString.IndexOf('&', scanIndex);
                 if (delimiterIndex == -1) {
                     delimiterIndex = textLength;
                 }
+
                 if (equalIndex < delimiterIndex) {
                     while (scanIndex != equalIndex && char.IsWhiteSpace(queryString[scanIndex])) {
                         ++scanIndex;
                     }
+
                     string name = queryString.Substring(scanIndex, equalIndex - scanIndex);
                     string value = queryString.Substring(equalIndex + 1, delimiterIndex - equalIndex - 1);
                     accumulator.Append(
@@ -149,6 +152,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                         accumulator.Append(queryString.Substring(scanIndex, delimiterIndex - scanIndex), string.Empty);
                     }
                 }
+
                 scanIndex = delimiterIndex + 1;
             }
 

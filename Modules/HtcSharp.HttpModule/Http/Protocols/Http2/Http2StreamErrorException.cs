@@ -3,13 +3,10 @@
 
 using System;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
-    internal sealed class Http2StreamErrorException : Exception
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
+    internal sealed class Http2StreamErrorException : Exception {
         public Http2StreamErrorException(int streamId, string message, Http2ErrorCode errorCode)
-            : base($"HTTP/2 stream ID {streamId} error ({errorCode}): {message}")
-        {
+            : base($"HTTP/2 stream ID {streamId} error ({errorCode}): {message}") {
             StreamId = streamId;
             ErrorCode = errorCode;
         }

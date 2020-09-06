@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HtcPlugin.Lua.Processor.Utils;
 using HtcSharp.Core.Logging.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Http.Abstractions.Extensions;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Routing;
 using MoonSharp.Interpreter;

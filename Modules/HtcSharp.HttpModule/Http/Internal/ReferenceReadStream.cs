@@ -52,6 +52,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 if (value < 0 || value > Length) {
                     throw new ArgumentOutOfRangeException(nameof(value), value, "The Position must be within the length of the Stream: " + Length.ToString());
                 }
+
                 VerifyPosition();
                 _position = value;
                 _inner.Position = _innerOffset + _position;
@@ -72,9 +73,10 @@ namespace HtcSharp.HttpModule.Http.Internal {
             } else if (origin == SeekOrigin.End) {
                 Position = Length + offset;
             } else // if (origin == SeekOrigin.Current)
-              {
+            {
                 Position = Position + offset;
             }
+
             return Position;
         }
 
@@ -82,7 +84,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
             ThrowIfDisposed();
             VerifyPosition();
             var toRead = Math.Min(count, _length - _position);
-            var read = _inner.Read(buffer, offset, (int)toRead);
+            var read = _inner.Read(buffer, offset, (int) toRead);
             _position += read;
             return read;
         }
@@ -91,7 +93,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
             ThrowIfDisposed();
             VerifyPosition();
             var toRead = Math.Min(count, _length - _position);
-            var read = await _inner.ReadAsync(buffer, offset, (int)toRead, cancellationToken);
+            var read = await _inner.ReadAsync(buffer, offset, (int) toRead, cancellationToken);
             _position += read;
             return read;
         }
@@ -99,6 +101,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
         public override void Write(byte[] buffer, int offset, int count) {
             throw new NotSupportedException();
         }
+
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) {
             throw new NotSupportedException();
         }

@@ -42,6 +42,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                     if (_parsedValues == null) {
                         _parsedValues = RequestCookieCollection.Empty;
                     }
+
                     return _parsedValues;
                 }
 
@@ -69,6 +70,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                         foreach (var pair in _parsedValues) {
                             headers.Add(new CookieHeaderValue(pair.Key, pair.Value).ToString());
                         }
+
                         _original = headers.ToArray();
                         HttpRequestFeature.Headers[HeaderNames.Cookie] = _original;
                     }

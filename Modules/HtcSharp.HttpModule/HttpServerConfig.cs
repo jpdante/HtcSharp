@@ -7,7 +7,6 @@ using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule {
     internal class HttpServerConfig {
-
         public List<string> Endpoints { get; }
         public List<string> Domains { get; }
         public string RootPath { get; }
@@ -29,11 +28,9 @@ namespace HtcSharp.HttpModule {
             ErrorMessageManager = errorMessageManager;
             HttpServerInfo = new HttpServerInfo(Endpoints.AsReadOnly(), Domains.AsReadOnly(), RootPath, UseSsl, LocationManager, ErrorMessageManager);
         }
-
     }
 
     public class HttpServerInfo {
-
         public IReadOnlyCollection<string> Endpoints { get; }
         public IReadOnlyCollection<string> Domains { get; }
         public string RootPath { get; }

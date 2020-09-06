@@ -15,7 +15,9 @@ namespace HtcSharp.HttpModule.Http {
         public static readonly QueryCollection Empty = new QueryCollection();
         private static readonly string[] EmptyKeys = Array.Empty<string>();
         private static readonly StringValues[] EmptyValues = Array.Empty<StringValues>();
+
         private static readonly Enumerator EmptyEnumerator = new Enumerator();
+
         // Pre-box
         private static readonly IEnumerator<KeyValuePair<string, StringValues>> EmptyIEnumeratorType = EmptyEnumerator;
         private static readonly IEnumerator EmptyIEnumerator = EmptyEnumerator;
@@ -52,6 +54,7 @@ namespace HtcSharp.HttpModule.Http {
                 if (TryGetValue(key, out value)) {
                     return value;
                 }
+
                 return StringValues.Empty;
             }
         }
@@ -65,6 +68,7 @@ namespace HtcSharp.HttpModule.Http {
                 if (Store == null) {
                     return 0;
                 }
+
                 return Store.Count;
             }
         }
@@ -74,6 +78,7 @@ namespace HtcSharp.HttpModule.Http {
                 if (Store == null) {
                     return EmptyKeys;
                 }
+
                 return Store.Keys;
             }
         }
@@ -87,6 +92,7 @@ namespace HtcSharp.HttpModule.Http {
             if (Store == null) {
                 return false;
             }
+
             return Store.ContainsKey(key);
         }
 
@@ -101,6 +107,7 @@ namespace HtcSharp.HttpModule.Http {
                 value = default(StringValues);
                 return false;
             }
+
             return Store.TryGetValue(key, out value);
         }
 
@@ -113,6 +120,7 @@ namespace HtcSharp.HttpModule.Http {
                 // Non-boxed Enumerator
                 return EmptyEnumerator;
             }
+
             return new Enumerator(Store.GetEnumerator());
         }
 
@@ -125,6 +133,7 @@ namespace HtcSharp.HttpModule.Http {
                 // Non-boxed Enumerator
                 return EmptyIEnumeratorType;
             }
+
             return Store.GetEnumerator();
         }
 
@@ -137,6 +146,7 @@ namespace HtcSharp.HttpModule.Http {
                 // Non-boxed Enumerator
                 return EmptyIEnumerator;
             }
+
             return Store.GetEnumerator();
         }
 
@@ -154,6 +164,7 @@ namespace HtcSharp.HttpModule.Http {
                 if (_notEmpty) {
                     return _dictionaryEnumerator.MoveNext();
                 }
+
                 return false;
             }
 
@@ -162,6 +173,7 @@ namespace HtcSharp.HttpModule.Http {
                     if (_notEmpty) {
                         return _dictionaryEnumerator.Current;
                     }
+
                     return default(KeyValuePair<string, StringValues>);
                 }
             }
@@ -170,14 +182,12 @@ namespace HtcSharp.HttpModule.Http {
             }
 
             object IEnumerator.Current {
-                get {
-                    return Current;
-                }
+                get { return Current; }
             }
 
             void IEnumerator.Reset() {
                 if (_notEmpty) {
-                    ((IEnumerator)_dictionaryEnumerator).Reset();
+                    ((IEnumerator) _dictionaryEnumerator).Reset();
                 }
             }
         }

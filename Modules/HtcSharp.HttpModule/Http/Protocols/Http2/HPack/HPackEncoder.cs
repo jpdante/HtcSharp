@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using HtcSharp.HttpModule.Core;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
     internal class HPackEncoder {
@@ -38,6 +39,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
                     if (length == 0 && throwIfNoneEncoded) {
                         throw new HPackEncodingException(CoreStrings.HPackErrorNotEnoughBuffer);
                     }
+
                     return false;
                 }
 
@@ -56,15 +58,15 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
                 case 400:
                 case 404:
                 case 500:
-                    buffer[0] = (byte)(0x80 | StaticTable.Instance.StatusIndex[statusCode]);
+                    buffer[0] = (byte) (0x80 | StaticTable.Instance.StatusIndex[statusCode]);
                     return 1;
                 default:
                     // Send as Literal Header Field Without Indexing - Indexed Name
                     buffer[0] = 0x08;
 
                     var statusBytes = StatusCodes.ToStatusBytes(statusCode);
-                    buffer[1] = (byte)statusBytes.Length;
-                    ((Span<byte>)statusBytes).CopyTo(buffer.Slice(2));
+                    buffer[1] = (byte) statusBytes.Length;
+                    ((Span<byte>) statusBytes).CopyTo(buffer.Slice(2));
 
                     return 2 + statusBytes.Length;
             }
@@ -128,7 +130,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
                     return false;
                 }
 
-                buffer[i++] = (byte)(s[j] | (lowercase && s[j] >= (byte)'A' && s[j] <= (byte)'Z' ? toLowerMask : 0));
+                buffer[i++] = (byte) (s[j] | (lowercase && s[j] >= (byte) 'A' && s[j] <= (byte) 'Z' ? toLowerMask : 0));
             }
 
             length = i;

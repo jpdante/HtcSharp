@@ -6,64 +6,51 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
-namespace HtcSharp.HttpModule.Http.Internal
-{
-    internal readonly struct HeaderSegmentCollection : IEnumerable<HeaderSegment>, IEquatable<HeaderSegmentCollection>
-    {
+namespace HtcSharp.HttpModule.Http.Internal {
+    internal readonly struct HeaderSegmentCollection : IEnumerable<HeaderSegment>, IEquatable<HeaderSegmentCollection> {
         private readonly StringValues _headers;
 
-        public HeaderSegmentCollection(StringValues headers)
-        {
+        public HeaderSegmentCollection(StringValues headers) {
             _headers = headers;
         }
 
-        public bool Equals(HeaderSegmentCollection other)
-        {
+        public bool Equals(HeaderSegmentCollection other) {
             return StringValues.Equals(_headers, other._headers);
         }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
+        public override bool Equals(object obj) {
+            if (ReferenceEquals(null, obj)) {
                 return false;
             }
 
-            return obj is HeaderSegmentCollection && Equals((HeaderSegmentCollection)obj);
+            return obj is HeaderSegmentCollection && Equals((HeaderSegmentCollection) obj);
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return (!StringValues.IsNullOrEmpty(_headers) ? _headers.GetHashCode() : 0);
         }
 
-        public static bool operator ==(HeaderSegmentCollection left, HeaderSegmentCollection right)
-        {
+        public static bool operator ==(HeaderSegmentCollection left, HeaderSegmentCollection right) {
             return left.Equals(right);
         }
 
-        public static bool operator !=(HeaderSegmentCollection left, HeaderSegmentCollection right)
-        {
+        public static bool operator !=(HeaderSegmentCollection left, HeaderSegmentCollection right) {
             return !left.Equals(right);
         }
 
-        public Enumerator GetEnumerator()
-        {
+        public Enumerator GetEnumerator() {
             return new Enumerator(_headers);
         }
 
-        IEnumerator<HeaderSegment> IEnumerable<HeaderSegment>.GetEnumerator()
-        {
+        IEnumerator<HeaderSegment> IEnumerable<HeaderSegment>.GetEnumerator() {
             return GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
+        IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
 
-        public struct Enumerator : IEnumerator<HeaderSegment>
-        {
+        public struct Enumerator : IEnumerator<HeaderSegment> {
             private readonly StringValues _headers;
             private int _index;
 
@@ -79,8 +66,7 @@ namespace HtcSharp.HttpModule.Http.Internal
 
             private Mode _mode;
 
-            public Enumerator(StringValues headers)
-            {
+            public Enumerator(StringValues headers) {
                 _headers = headers;
                 _header = string.Empty;
                 _headerLength = -1;
@@ -94,8 +80,7 @@ namespace HtcSharp.HttpModule.Http.Internal
                 _mode = Mode.Leading;
             }
 
-            private enum Mode
-            {
+            private enum Mode {
                 Leading,
                 Value,
                 ValueQuoted,
@@ -103,39 +88,31 @@ namespace HtcSharp.HttpModule.Http.Internal
                 Produce,
             }
 
-            private enum Attr
-            {
+            private enum Attr {
                 Value,
                 Quote,
                 Delimiter,
                 Whitespace
             }
 
-            public HeaderSegment Current
-            {
-                get
-                {
+            public HeaderSegment Current {
+                get {
                     return new HeaderSegment(
                         new StringSegment(_header, _leadingStart, _leadingEnd - _leadingStart),
                         new StringSegment(_header, _valueStart, _valueEnd - _valueStart));
                 }
             }
 
-            object IEnumerator.Current
-            {
+            object IEnumerator.Current {
                 get { return Current; }
             }
 
-            public void Dispose()
-            {
+            public void Dispose() {
             }
 
-            public bool MoveNext()
-            {
-                while (true)
-                {
-                    if (_mode == Mode.Produce)
-                    {
+            public bool MoveNext() {
+                while (true) {
+                    if (_mode == Mode.Produce) {
                         _leadingStart = _trailingStart;
                         _leadingEnd = -1;
                         _valueStart = -1;
@@ -144,18 +121,17 @@ namespace HtcSharp.HttpModule.Http.Internal
 
                         if (_offset == _headerLength &&
                             _leadingStart != -1 &&
-                            _leadingStart != _offset)
-                        {
+                            _leadingStart != _offset) {
                             // Also produce trailing whitespace
                             _leadingEnd = _offset;
                             return true;
                         }
+
                         _mode = Mode.Leading;
                     }
 
                     // if end of a string
-                    if (_offset == _headerLength)
-                    {
+                    if (_offset == _headerLength) {
                         ++_index;
                         _offset = -1;
                         _leadingStart = 0;
@@ -165,8 +141,7 @@ namespace HtcSharp.HttpModule.Http.Internal
                         _trailingStart = -1;
 
                         // if that was the last string
-                        if (_index == _headers.Count)
-                        {
+                        if (_index == _headers.Count) {
                             // no more move nexts
                             return false;
                         }
@@ -175,18 +150,16 @@ namespace HtcSharp.HttpModule.Http.Internal
                         _header = _headers[_index] ?? string.Empty;
                         _headerLength = _header.Length;
                     }
-                    while (true)
-                    {
-                        ++_offset;
-                        char ch = _offset == _headerLength ? (char)0 : _header[_offset];
-                        // todo - array of attrs
-                        Attr attr = char.IsWhiteSpace(ch) ? Attr.Whitespace : ch == '\"' ? Attr.Quote : (ch == ',' || ch == (char)0) ? Attr.Delimiter : Attr.Value;
 
-                        switch (_mode)
-                        {
+                    while (true) {
+                        ++_offset;
+                        char ch = _offset == _headerLength ? (char) 0 : _header[_offset];
+                        // todo - array of attrs
+                        Attr attr = char.IsWhiteSpace(ch) ? Attr.Whitespace : ch == '\"' ? Attr.Quote : (ch == ',' || ch == (char) 0) ? Attr.Delimiter : Attr.Value;
+
+                        switch (_mode) {
                             case Mode.Leading:
-                                switch (attr)
-                                {
+                                switch (attr) {
                                     case Attr.Delimiter:
                                         _valueStart = _valueStart == -1 ? _offset : _valueStart;
                                         _valueEnd = _valueEnd == -1 ? _offset : _valueEnd;
@@ -208,10 +181,10 @@ namespace HtcSharp.HttpModule.Http.Internal
                                         // more
                                         break;
                                 }
+
                                 break;
                             case Mode.Value:
-                                switch (attr)
-                                {
+                                switch (attr) {
                                     case Attr.Quote:
                                         _mode = Mode.ValueQuoted;
                                         break;
@@ -229,30 +202,30 @@ namespace HtcSharp.HttpModule.Http.Internal
                                         _mode = Mode.Trailing;
                                         break;
                                 }
+
                                 break;
                             case Mode.ValueQuoted:
-                                switch (attr)
-                                {
+                                switch (attr) {
                                     case Attr.Quote:
                                         _mode = Mode.Value;
                                         break;
                                     case Attr.Delimiter:
-                                        if (ch == (char)0)
-                                        {
+                                        if (ch == (char) 0) {
                                             _valueEnd = _offset;
                                             _trailingStart = _offset;
                                             _mode = Mode.Produce;
                                         }
+
                                         break;
                                     case Attr.Value:
                                     case Attr.Whitespace:
                                         // more
                                         break;
                                 }
+
                                 break;
                             case Mode.Trailing:
-                                switch (attr)
-                                {
+                                switch (attr) {
                                     case Attr.Delimiter:
                                         _mode = Mode.Produce;
                                         break;
@@ -272,18 +245,18 @@ namespace HtcSharp.HttpModule.Http.Internal
                                         // more
                                         break;
                                 }
+
                                 break;
                         }
-                        if (_mode == Mode.Produce)
-                        {
+
+                        if (_mode == Mode.Produce) {
                             return true;
                         }
                     }
                 }
             }
 
-            public void Reset()
-            {
+            public void Reset() {
                 _index = 0;
                 _offset = 0;
                 _leadingStart = 0;
@@ -293,5 +266,4 @@ namespace HtcSharp.HttpModule.Http.Internal
             }
         }
     }
-
 }

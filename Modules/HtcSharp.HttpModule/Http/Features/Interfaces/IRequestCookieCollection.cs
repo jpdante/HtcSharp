@@ -3,13 +3,11 @@
 
 using System.Collections.Generic;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// Represents the HttpRequest cookie collection
     /// </summary>
-    public interface IRequestCookieCollection : IEnumerable<KeyValuePair<string, string>>
-    {
+    public interface IRequestCookieCollection : IEnumerable<KeyValuePair<string, string>> {
         /// <summary>
         ///     Gets the number of elements contained in the <see cref="IRequestCookieCollection" />.
         /// </summary>

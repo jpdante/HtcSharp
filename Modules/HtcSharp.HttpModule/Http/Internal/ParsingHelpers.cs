@@ -47,6 +47,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
             }
+
             if (StringValues.IsNullOrEmpty(value)) {
                 headers.Remove(key);
             } else {
@@ -61,6 +62,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 (value[0] != '"' || value[value.Length - 1] != '"')) {
                 return $"\"{value}\"";
             }
+
             return value;
         }
 
@@ -81,6 +83,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
             if (string.IsNullOrEmpty(key)) {
                 throw new ArgumentNullException(nameof(key));
             }
+
             if (!values.HasValue || StringValues.IsNullOrEmpty(values.GetValueOrDefault())) {
                 headers.Remove(key);
             } else {

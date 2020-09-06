@@ -2,18 +2,18 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using HtcSharp.HttpModule.Features;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Features;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Protocols.Http;
-using HtcSharp.HttpModule.Infrastructure;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
     internal partial class Http2Stream : IHttp2StreamIdFeature,
-                                         IHttpMinRequestBodyDataRateFeature,
-                                         IHttpResetFeature,
-                                         IHttpResponseTrailersFeature {
+        IHttpMinRequestBodyDataRateFeature,
+        IHttpResetFeature,
+        IHttpResponseTrailersFeature {
         private IHeaderDictionary _userTrailers;
 
         IHeaderDictionary IHttpResponseTrailersFeature.Trailers {
@@ -24,11 +24,10 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
                         ResponseTrailers.SetReadOnly();
                     }
                 }
+
                 return _userTrailers ?? ResponseTrailers;
             }
-            set {
-                _userTrailers = value;
-            }
+            set { _userTrailers = value; }
         }
 
         int IHttp2StreamIdFeature.StreamId => _context.StreamId;
@@ -45,8 +44,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
         }
 
         void IHttpResetFeature.Reset(int errorCode) {
-            var abortReason = new ConnectionAbortedException($@"The HTTP/2 stream was reset by the application with error code {(Http2ErrorCode)errorCode}.");
-            ResetAndAbort(abortReason, (Http2ErrorCode)errorCode);
+            var abortReason = new ConnectionAbortedException($@"The HTTP/2 stream was reset by the application with error code {(Http2ErrorCode) errorCode}.");
+            ResetAndAbort(abortReason, (Http2ErrorCode) errorCode);
         }
     }
 }

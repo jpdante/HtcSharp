@@ -5,8 +5,9 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Http.Features.Interfaces;
-using HtcSharp.HttpModule.IO.Tasks;
+using HtcSharp.HttpModule.Shared.ValueTaskExtensions;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     internal sealed class HttpResponseStream : Stream {
@@ -40,7 +41,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             => throw new NotSupportedException();
 
         public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-          => throw new NotSupportedException();
+            => throw new NotSupportedException();
 
         public override void Flush() {
             if (!_bodyControl.AllowSynchronousIO) {
@@ -77,18 +78,19 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             if (callback != null) {
                 task.ContinueWith(t => callback.Invoke(t));
             }
+
             return task;
         }
 
         public override void EndWrite(IAsyncResult asyncResult) {
-            ((Task<object>)asyncResult).GetAwaiter().GetResult();
+            ((Task<object>) asyncResult).GetAwaiter().GetResult();
         }
 
         private Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken, object state) {
             var tcs = new TaskCompletionSource<object>(state);
             var task = WriteAsync(buffer, offset, count, cancellationToken);
             task.ContinueWith((task2, state2) => {
-                var tcs2 = (TaskCompletionSource<object>)state2;
+                var tcs2 = (TaskCompletionSource<object>) state2;
                 if (task2.IsCanceled) {
                     tcs2.SetCanceled();
                 } else if (task2.IsFaulted) {

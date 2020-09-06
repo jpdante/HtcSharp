@@ -7,12 +7,11 @@ using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Primitives;
 
-namespace HtcSharp.HttpModule.Http.Headers
-{
-    internal static class HttpRuleParser
-    {
+namespace HtcSharp.HttpModule.Http.Headers {
+    internal static class HttpRuleParser {
         private static readonly bool[] TokenChars = CreateTokenChars();
         private const int MaxNestedCount = 5;
+
         private static readonly string[] DateFormats = new string[] {
             // "r", // RFC 1123, required output format but too strict for input
             "ddd, d MMM yyyy H:m:s 'GMT'", // RFC 1123 (r, except it allows both 1 and 01 for date and time)
@@ -45,8 +44,7 @@ namespace HtcSharp.HttpModule.Http.Headers
         // iso-8859-1, Western European (ISO)
         internal static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
 
-        private static bool[] CreateTokenChars()
-        {
+        private static bool[] CreateTokenChars() {
             // token = 1*<any CHAR except CTLs or separators>
             // CTL = <any US-ASCII control character (octets 0 - 31) and DEL (127)>
 
@@ -58,32 +56,30 @@ namespace HtcSharp.HttpModule.Http.Headers
             }
 
             // remove separators: these are not valid token characters
-            tokenChars[(byte)'('] = false;
-            tokenChars[(byte)')'] = false;
-            tokenChars[(byte)'<'] = false;
-            tokenChars[(byte)'>'] = false;
-            tokenChars[(byte)'@'] = false;
-            tokenChars[(byte)','] = false;
-            tokenChars[(byte)';'] = false;
-            tokenChars[(byte)':'] = false;
-            tokenChars[(byte)'\\'] = false;
-            tokenChars[(byte)'"'] = false;
-            tokenChars[(byte)'/'] = false;
-            tokenChars[(byte)'['] = false;
-            tokenChars[(byte)']'] = false;
-            tokenChars[(byte)'?'] = false;
-            tokenChars[(byte)'='] = false;
-            tokenChars[(byte)'{'] = false;
-            tokenChars[(byte)'}'] = false;
+            tokenChars[(byte) '('] = false;
+            tokenChars[(byte) ')'] = false;
+            tokenChars[(byte) '<'] = false;
+            tokenChars[(byte) '>'] = false;
+            tokenChars[(byte) '@'] = false;
+            tokenChars[(byte) ','] = false;
+            tokenChars[(byte) ';'] = false;
+            tokenChars[(byte) ':'] = false;
+            tokenChars[(byte) '\\'] = false;
+            tokenChars[(byte) '"'] = false;
+            tokenChars[(byte) '/'] = false;
+            tokenChars[(byte) '['] = false;
+            tokenChars[(byte) ']'] = false;
+            tokenChars[(byte) '?'] = false;
+            tokenChars[(byte) '='] = false;
+            tokenChars[(byte) '{'] = false;
+            tokenChars[(byte) '}'] = false;
 
             return tokenChars;
         }
 
-        internal static bool IsTokenChar(char character)
-        {
+        internal static bool IsTokenChar(char character) {
             // Must be between 'space' (32) and 'DEL' (127)
-            if (character > 127)
-            {
+            if (character > 127) {
                 return false;
             }
 
@@ -91,60 +87,51 @@ namespace HtcSharp.HttpModule.Http.Headers
         }
 
         [Pure]
-        internal static int GetTokenLength(StringSegment input, int startIndex)
-        {
+        internal static int GetTokenLength(StringSegment input, int startIndex) {
             Contract.Requires(input != null);
             Contract.Ensures((Contract.Result<int>() >= 0) && (Contract.Result<int>() <= (input.Length - startIndex)));
 
-            if (startIndex >= input.Length)
-            {
+            if (startIndex >= input.Length) {
                 return 0;
             }
 
             var current = startIndex;
 
-            while (current < input.Length)
-            {
-                if (!IsTokenChar(input[current]))
-                {
+            while (current < input.Length) {
+                if (!IsTokenChar(input[current])) {
                     return current - startIndex;
                 }
+
                 current++;
             }
+
             return input.Length - startIndex;
         }
 
-        internal static int GetWhitespaceLength(StringSegment input, int startIndex)
-        {
+        internal static int GetWhitespaceLength(StringSegment input, int startIndex) {
             Contract.Requires(input != null);
             Contract.Ensures((Contract.Result<int>() >= 0) && (Contract.Result<int>() <= (input.Length - startIndex)));
 
-            if (startIndex >= input.Length)
-            {
+            if (startIndex >= input.Length) {
                 return 0;
             }
 
             var current = startIndex;
 
             char c;
-            while (current < input.Length)
-            {
+            while (current < input.Length) {
                 c = input[current];
 
-                if ((c == SP) || (c == Tab))
-                {
+                if ((c == SP) || (c == Tab)) {
                     current++;
                     continue;
                 }
 
-                if (c == CR)
-                {
+                if (c == CR) {
                     // If we have a #13 char, it must be followed by #10 and then at least one SP or HT.
-                    if ((current + 2 < input.Length) && (input[current + 1] == LF))
-                    {
+                    if ((current + 2 < input.Length) && (input[current + 1] == LF)) {
                         char spaceOrTab = input[current + 2];
-                        if ((spaceOrTab == SP) || (spaceOrTab == Tab))
-                        {
+                        if ((spaceOrTab == SP) || (spaceOrTab == Tab)) {
                             current += 3;
                             continue;
                         }
@@ -158,8 +145,7 @@ namespace HtcSharp.HttpModule.Http.Headers
             return input.Length - startIndex;
         }
 
-        internal static int GetNumberLength(StringSegment input, int startIndex, bool allowDecimal)
-        {
+        internal static int GetNumberLength(StringSegment input, int startIndex, bool allowDecimal) {
             Contract.Requires(input != null);
             Contract.Requires((startIndex >= 0) && (startIndex < input.Length));
             Contract.Ensures((Contract.Result<int>() >= 0) && (Contract.Result<int>() <= (input.Length - startIndex)));
@@ -176,26 +162,19 @@ namespace HtcSharp.HttpModule.Http.Headers
             // values.
             // The RFC only allows decimal dots not ',' characters as decimal separators. Therefore value "1,23" is
             // considered invalid and must be represented as "1.23".
-            if (input[current] == '.')
-            {
+            if (input[current] == '.') {
                 return 0;
             }
 
-            while (current < input.Length)
-            {
+            while (current < input.Length) {
                 c = input[current];
-                if ((c >= '0') && (c <= '9'))
-                {
+                if ((c >= '0') && (c <= '9')) {
                     current++;
-                }
-                else if (!haveDot && (c == '.'))
-                {
+                } else if (!haveDot && (c == '.')) {
                     // Note that value "1." is valid.
                     haveDot = true;
                     current++;
-                }
-                else
-                {
+                } else {
                     break;
                 }
             }
@@ -203,32 +182,28 @@ namespace HtcSharp.HttpModule.Http.Headers
             return current - startIndex;
         }
 
-        internal static HttpParseResult GetQuotedStringLength(StringSegment input, int startIndex, out int length)
-        {
+        internal static HttpParseResult GetQuotedStringLength(StringSegment input, int startIndex, out int length) {
             var nestedCount = 0;
             return GetExpressionLength(input, startIndex, '"', '"', false, ref nestedCount, out length);
         }
 
         // quoted-pair = "\" CHAR
         // CHAR = <any US-ASCII character (octets 0 - 127)>
-        internal static HttpParseResult GetQuotedPairLength(StringSegment input, int startIndex, out int length)
-        {
+        internal static HttpParseResult GetQuotedPairLength(StringSegment input, int startIndex, out int length) {
             Contract.Requires(input != null);
             Contract.Requires((startIndex >= 0) && (startIndex < input.Length));
             Contract.Ensures((Contract.ValueAtReturn(out length) >= 0) &&
-                (Contract.ValueAtReturn(out length) <= (input.Length - startIndex)));
+                             (Contract.ValueAtReturn(out length) <= (input.Length - startIndex)));
 
             length = 0;
 
-            if (input[startIndex] != '\\')
-            {
+            if (input[startIndex] != '\\') {
                 return HttpParseResult.NotParsed;
             }
 
             // Quoted-char has 2 characters. Check whether there are 2 chars left ('\' + char)
             // If so, check whether the character is in the range 0-127. If not, it's an invalid value.
-            if ((startIndex + 2 > input.Length) || (input[startIndex + 1] > 127))
-            {
+            if ((startIndex + 2 > input.Length) || (input[startIndex + 1] > 127)) {
                 return HttpParseResult.InvalidFormat;
             }
 
@@ -261,29 +236,25 @@ namespace HtcSharp.HttpModule.Http.Headers
             char closeChar,
             bool supportsNesting,
             ref int nestedCount,
-            out int length)
-        {
+            out int length) {
             Contract.Requires(input != null);
             Contract.Requires((startIndex >= 0) && (startIndex < input.Length));
             Contract.Ensures((Contract.Result<HttpParseResult>() != HttpParseResult.Parsed) ||
-                (Contract.ValueAtReturn<int>(out length) > 0));
+                             (Contract.ValueAtReturn<int>(out length) > 0));
 
             length = 0;
 
-            if (input[startIndex] != openChar)
-            {
+            if (input[startIndex] != openChar) {
                 return HttpParseResult.NotParsed;
             }
 
             var current = startIndex + 1; // Start parsing with the character next to the first open-char
-            while (current < input.Length)
-            {
+            while (current < input.Length) {
                 // Only check whether we have a quoted char, if we have at least 3 characters left to read (i.e.
                 // quoted char + closing char). Otherwise the closing char may be considered part of the quoted char.
                 var quotedPairLength = 0;
                 if ((current + 2 < input.Length) &&
-                    (GetQuotedPairLength(input, current, out quotedPairLength) == HttpParseResult.Parsed))
-                {
+                    (GetQuotedPairLength(input, current, out quotedPairLength) == HttpParseResult.Parsed)) {
                     // We ignore invalid quoted-pairs. Invalid quoted-pairs may mean that it looked like a quoted pair,
                     // but we actually have a quoted-string: e.g. "\ü" ('\' followed by a char >127 - quoted-pair only
                     // allows ASCII chars after '\'; qdtext allows both '\' and >127 chars).
@@ -292,14 +263,11 @@ namespace HtcSharp.HttpModule.Http.Headers
                 }
 
                 // If we support nested expressions and we find an open-char, then parse the nested expressions.
-                if (supportsNesting && (input[current] == openChar))
-                {
+                if (supportsNesting && (input[current] == openChar)) {
                     nestedCount++;
-                    try
-                    {
+                    try {
                         // Check if we exceeded the number of nested calls.
-                        if (nestedCount > MaxNestedCount)
-                        {
+                        if (nestedCount > MaxNestedCount) {
                             return HttpParseResult.InvalidFormat;
                         }
 
@@ -307,16 +275,15 @@ namespace HtcSharp.HttpModule.Http.Headers
                         HttpParseResult nestedResult = GetExpressionLength(input, current, openChar, closeChar,
                             supportsNesting, ref nestedCount, out nestedLength);
 
-                        switch (nestedResult)
-                        {
+                        switch (nestedResult) {
                             case HttpParseResult.Parsed:
                                 current += nestedLength; // add the length of the nested expression and continue.
                                 break;
 
                             case HttpParseResult.NotParsed:
                                 Contract.Assert(false, "'NotParsed' is unexpected: We started nested expression " +
-                                    "parsing, because we found the open-char. So either it's a valid nested " +
-                                    "expression or it has invalid format.");
+                                                       "parsing, because we found the open-char. So either it's a valid nested " +
+                                                       "expression or it has invalid format.");
                                 break;
 
                             case HttpParseResult.InvalidFormat:
@@ -327,18 +294,16 @@ namespace HtcSharp.HttpModule.Http.Headers
                                 Contract.Assert(false, "Unknown enum result: " + nestedResult);
                                 break;
                         }
-                    }
-                    finally
-                    {
+                    } finally {
                         nestedCount--;
                     }
                 }
 
-                if (input[current] == closeChar)
-                {
+                if (input[current] == closeChar) {
                     length = current - startIndex + 1;
                     return HttpParseResult.Parsed;
                 }
+
                 current++;
             }
 

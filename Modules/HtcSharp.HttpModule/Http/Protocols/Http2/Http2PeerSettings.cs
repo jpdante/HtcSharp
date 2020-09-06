@@ -3,10 +3,8 @@
 
 using System.Collections.Generic;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
-    internal class Http2PeerSettings
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
+    internal class Http2PeerSettings {
         // Note these are protocol defaults, not Kestrel defaults.
         public const uint DefaultHeaderTableSize = 4096;
         public const bool DefaultEnablePush = true;
@@ -31,20 +29,16 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
         public uint MaxHeaderListSize { get; set; } = DefaultMaxHeaderListSize;
 
         // TODO: Return the diff so we can react
-        public void Update(IList<Http2PeerSetting> settings)
-        {
-            foreach (var setting in settings)
-            {
+        public void Update(IList<Http2PeerSetting> settings) {
+            foreach (var setting in settings) {
                 var value = setting.Value;
 
-                switch (setting.Parameter)
-                {
+                switch (setting.Parameter) {
                     case Http2SettingsParameter.SETTINGS_HEADER_TABLE_SIZE:
                         HeaderTableSize = value;
                         break;
                     case Http2SettingsParameter.SETTINGS_ENABLE_PUSH:
-                        if (value != 0 && value != 1)
-                        {
+                        if (value != 0 && value != 1) {
                             throw new Http2SettingsParameterOutOfRangeException(Http2SettingsParameter.SETTINGS_ENABLE_PUSH,
                                 lowerBound: 0,
                                 upperBound: 1);
@@ -56,8 +50,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
                         MaxConcurrentStreams = value;
                         break;
                     case Http2SettingsParameter.SETTINGS_INITIAL_WINDOW_SIZE:
-                        if (value > MaxWindowSize)
-                        {
+                        if (value > MaxWindowSize) {
                             throw new Http2SettingsParameterOutOfRangeException(Http2SettingsParameter.SETTINGS_INITIAL_WINDOW_SIZE,
                                 lowerBound: 0,
                                 upperBound: MaxWindowSize);
@@ -66,8 +59,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
                         InitialWindowSize = value;
                         break;
                     case Http2SettingsParameter.SETTINGS_MAX_FRAME_SIZE:
-                        if (value < MinAllowedMaxFrameSize || value > MaxAllowedMaxFrameSize)
-                        {
+                        if (value < MinAllowedMaxFrameSize || value > MaxAllowedMaxFrameSize) {
                             throw new Http2SettingsParameterOutOfRangeException(Http2SettingsParameter.SETTINGS_MAX_FRAME_SIZE,
                                 lowerBound: MinAllowedMaxFrameSize,
                                 upperBound: MaxAllowedMaxFrameSize);
@@ -88,37 +80,30 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2
         }
 
         // Gets the settings that are different from the protocol defaults (as opposed to the server defaults).
-        internal IList<Http2PeerSetting> GetNonProtocolDefaults()
-        {
+        internal IList<Http2PeerSetting> GetNonProtocolDefaults() {
             var list = new List<Http2PeerSetting>(1);
 
-            if (HeaderTableSize != DefaultHeaderTableSize)
-            {
+            if (HeaderTableSize != DefaultHeaderTableSize) {
                 list.Add(new Http2PeerSetting(Http2SettingsParameter.SETTINGS_HEADER_TABLE_SIZE, HeaderTableSize));
             }
 
-            if (EnablePush != DefaultEnablePush)
-            {
+            if (EnablePush != DefaultEnablePush) {
                 list.Add(new Http2PeerSetting(Http2SettingsParameter.SETTINGS_ENABLE_PUSH, EnablePush ? 1u : 0));
             }
 
-            if (MaxConcurrentStreams != DefaultMaxConcurrentStreams)
-            {
+            if (MaxConcurrentStreams != DefaultMaxConcurrentStreams) {
                 list.Add(new Http2PeerSetting(Http2SettingsParameter.SETTINGS_MAX_CONCURRENT_STREAMS, MaxConcurrentStreams));
             }
 
-            if (InitialWindowSize != DefaultInitialWindowSize)
-            {
+            if (InitialWindowSize != DefaultInitialWindowSize) {
                 list.Add(new Http2PeerSetting(Http2SettingsParameter.SETTINGS_INITIAL_WINDOW_SIZE, InitialWindowSize));
             }
 
-            if (MaxFrameSize != DefaultMaxFrameSize)
-            {
+            if (MaxFrameSize != DefaultMaxFrameSize) {
                 list.Add(new Http2PeerSetting(Http2SettingsParameter.SETTINGS_MAX_FRAME_SIZE, MaxFrameSize));
             }
 
-            if (MaxHeaderListSize != DefaultMaxHeaderListSize)
-            {
+            if (MaxHeaderListSize != DefaultMaxHeaderListSize) {
                 list.Add(new Http2PeerSetting(Http2SettingsParameter.SETTINGS_MAX_HEADER_LIST_SIZE, MaxHeaderListSize));
             }
 

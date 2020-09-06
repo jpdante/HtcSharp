@@ -1,13 +1,11 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// This feature provides access to request server variables set.
     /// </summary>
-    public interface IServerVariablesFeature
-    {
+    public interface IServerVariablesFeature {
         /// <summary>
         /// Gets or sets the value of a server variable for the current request.
         /// </summary>

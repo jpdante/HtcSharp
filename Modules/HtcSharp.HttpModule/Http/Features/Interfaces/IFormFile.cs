@@ -5,13 +5,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Http.Features.Interfaces
-{
+namespace HtcSharp.HttpModule.Http.Features.Interfaces {
     /// <summary>
     /// Represents a file sent with the HttpRequest.
     /// </summary>
-    public interface IFormFile
-    {
+    public interface IFormFile {
         /// <summary>
         /// Gets the raw Content-Type header of the uploaded file.
         /// </summary>

@@ -15,7 +15,7 @@ namespace HtcSharp.HttpModule.Logging {
     internal class LogValuesFormatter {
         private const string NullValue = "(null)";
         private static readonly object[] EmptyArray = new object[0];
-        private static readonly char[] FormatDelimiters = { ',', ':' };
+        private static readonly char[] FormatDelimiters = {',', ':'};
         private readonly string _format;
         private readonly List<string> _valueNames = new List<string>();
 
@@ -159,6 +159,5 @@ namespace HtcSharp.HttpModule.Logging {
 
             return value;
         }
-
     }
 }

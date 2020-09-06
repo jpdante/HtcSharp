@@ -4,7 +4,7 @@
 using System;
 using System.Text;
 using System.Threading;
-using HtcSharp.HttpModule.Infrastructure.Heart;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HeaderUtilities = HtcSharp.HttpModule.Http.Headers.HeaderUtilities;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
@@ -38,10 +38,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             Buffer.BlockCopy(_datePreambleBytes, 0, dateBytes, 0, _datePreambleBytes.Length);
             Encoding.ASCII.GetBytes(dateValue, 0, dateValue.Length, dateBytes, _datePreambleBytes.Length);
 
-            var dateValues = new DateHeaderValues {
-                Bytes = dateBytes,
-                String = dateValue
-            };
+            var dateValues = new DateHeaderValues {Bytes = dateBytes, String = dateValue};
             Volatile.Write(ref _dateValues, dateValues);
         }
 

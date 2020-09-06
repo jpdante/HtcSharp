@@ -6,7 +6,6 @@ using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class AddHeaderDirective : IDirective {
-
         private readonly string _name;
         private readonly string _value;
 

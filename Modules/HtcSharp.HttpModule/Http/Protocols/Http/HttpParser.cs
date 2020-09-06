@@ -5,8 +5,7 @@ using System;
 using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using HtcSharp.HttpModule.Attributes;
-using HtcSharp.HttpModule.Infrastructure;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http {
     public class HttpParser<TRequestHandler> : IHttpParser<TRequestHandler> where TRequestHandler : IHttpHeadersHandler, IHttpRequestLineHandler {
@@ -20,13 +19,13 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
         }
 
         // byte types don't have a data type annotation so we pre-cast them; to avoid in-place casts
-        private const byte ByteCR = (byte)'\r';
-        private const byte ByteLF = (byte)'\n';
-        private const byte ByteColon = (byte)':';
-        private const byte ByteSpace = (byte)' ';
-        private const byte ByteTab = (byte)'\t';
-        private const byte ByteQuestionMark = (byte)'?';
-        private const byte BytePercentage = (byte)'%';
+        private const byte ByteCR = (byte) '\r';
+        private const byte ByteLF = (byte) '\n';
+        private const byte ByteColon = (byte) ':';
+        private const byte ByteSpace = (byte) ' ';
+        private const byte ByteTab = (byte) '\t';
+        private const byte ByteQuestionMark = (byte) '?';
+        private const byte BytePercentage = (byte) '%';
 
         public unsafe bool ParseRequestLine(TRequestHandler handler, in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined) {
             consumed = buffer.Start;
@@ -149,8 +148,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
             while (!reader.End) {
                 var span = reader.UnreadSpan;
                 while (span.Length > 0) {
-                    var ch1 = (byte)0;
-                    var ch2 = (byte)0;
+                    var ch1 = (byte) 0;
+                    var ch2 = (byte) 0;
                     var readAhead = 0;
 
                     // Fast path, we're still looking at the same span
@@ -158,7 +157,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                         ch1 = span[0];
                         ch2 = span[1];
                     } else if (reader.TryRead(out ch1)) // Possibly split across spans
-                      {
+                    {
                         // Note if we read ahead by 1 or 2 bytes
                         readAhead = (reader.TryRead(out ch2)) ? 2 : 1;
                     }
@@ -196,6 +195,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                             fixed (byte* pHeader = span) {
                                 TakeSingleHeader(pHeader, length, handler);
                             }
+
                             // Read the header sucessfully, skip the reader forward past the header line.
                             reader.Advance(length);
                             span = span.Slice(length);
@@ -259,6 +259,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http {
                 if (ch == ByteColon) {
                     break;
                 }
+
                 if (ch == ByteTab || ch == ByteSpace || ch == ByteCR) {
                     sawWhitespace = true;
                 }

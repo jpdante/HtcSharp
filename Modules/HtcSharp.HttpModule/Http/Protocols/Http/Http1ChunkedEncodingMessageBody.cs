@@ -8,18 +8,18 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.IO.MemoryPool;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Internal;
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http
-{
+namespace HtcSharp.HttpModule.Http.Protocols.Http {
     /// <summary>
     ///   http://tools.ietf.org/html/rfc2616#section-3.6.1
     /// </summary>
-    internal sealed class Http1ChunkedEncodingMessageBody : Http1MessageBody
-    {
+    internal sealed class Http1ChunkedEncodingMessageBody : Http1MessageBody {
         // byte consts don't have a data type annotation so we pre-cast it
-        private const byte ByteCR = (byte)'\r';
+        private const byte ByteCR = (byte) '\r';
+
         // "7FFFFFFF\r\n" is the largest chunk size that could be returned as an int.
         private const int MaxChunkPrefixBytes = 10;
 
@@ -32,32 +32,27 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
         private ReadResult _readResult;
 
         public Http1ChunkedEncodingMessageBody(bool keepAlive, Http1Connection context)
-            : base(context)
-        {
+            : base(context) {
             RequestKeepAlive = keepAlive;
             _requestBodyPipe = CreateRequestBodyPipe(context);
         }
 
-        public override void AdvanceTo(SequencePosition consumed)
-        {
+        public override void AdvanceTo(SequencePosition consumed) {
             AdvanceTo(consumed, consumed);
         }
 
-        public override void AdvanceTo(SequencePosition consumed, SequencePosition examined)
-        {
+        public override void AdvanceTo(SequencePosition consumed, SequencePosition examined) {
             OnAdvance(_readResult, consumed, examined);
             _requestBodyPipe.Reader.AdvanceTo(consumed, examined);
         }
 
-        public override bool TryRead(out ReadResult readResult)
-        {
+        public override bool TryRead(out ReadResult readResult) {
             ThrowIfCompleted();
 
             return TryReadInternal(out readResult);
         }
 
-        public override bool TryReadInternal(out ReadResult readResult)
-        {
+        public override bool TryReadInternal(out ReadResult readResult) {
             TryStart();
 
             var boolResult = _requestBodyPipe.Reader.TryRead(out _readResult);
@@ -65,77 +60,63 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             readResult = _readResult;
             CountBytesRead(readResult.Buffer.Length);
 
-            if (_readResult.IsCompleted)
-            {
+            if (_readResult.IsCompleted) {
                 TryStop();
             }
 
             return boolResult;
         }
 
-        public override ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default)
-        {
+        public override ValueTask<ReadResult> ReadAsync(CancellationToken cancellationToken = default) {
             ThrowIfCompleted();
             return ReadAsyncInternal(cancellationToken);
         }
 
-        public override async ValueTask<ReadResult> ReadAsyncInternal(CancellationToken cancellationToken = default)
-        {
+        public override async ValueTask<ReadResult> ReadAsyncInternal(CancellationToken cancellationToken = default) {
             TryStart();
 
-            try
-            {
+            try {
                 var readAwaitable = _requestBodyPipe.Reader.ReadAsync(cancellationToken);
 
                 _readResult = await StartTimingReadAsync(readAwaitable, cancellationToken);
-            }
-            catch (ConnectionAbortedException ex)
-            {
+            } catch (ConnectionAbortedException ex) {
                 throw new TaskCanceledException("The request was aborted", ex);
             }
 
             StopTimingRead(_readResult.Buffer.Length);
 
-            if (_readResult.IsCompleted)
-            {
+            if (_readResult.IsCompleted) {
                 TryStop();
             }
 
             return _readResult;
         }
 
-        public override void Complete(Exception exception)
-        {
+        public override void Complete(Exception exception) {
             _completed = true;
             _context.ReportApplicationError(exception);
         }
 
-        public override void CancelPendingRead()
-        {
+        public override void CancelPendingRead() {
             _requestBodyPipe.Reader.CancelPendingRead();
         }
 
-        private async Task PumpAsync()
-        {
+        private async Task PumpAsync() {
             Debug.Assert(!RequestUpgrade, "Upgraded connections should never use this code path!");
 
             Exception error = null;
 
-            try
-            {
+            try {
                 var awaitable = _context.Input.ReadAsync();
 
-                if (!awaitable.IsCompleted)
-                {
+                if (!awaitable.IsCompleted) {
                     TryProduceContinue();
                 }
 
-                while (true)
-                {
+                while (true) {
                     var result = await awaitable;
 
-                    if (_context.RequestTimedOut)
-                    {
+                    if (_context.RequestTimedOut) {
                         BadHttpRequestException.Throw(RequestRejectionReason.RequestBodyTimeout);
                     }
 
@@ -143,54 +124,41 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
                     var consumed = readableBuffer.Start;
                     var examined = readableBuffer.Start;
 
-                    try
-                    {
-                        if (_canceled)
-                        {
+                    try {
+                        if (_canceled) {
                             break;
                         }
 
-                        if (!readableBuffer.IsEmpty)
-                        {
+                        if (!readableBuffer.IsEmpty) {
                             bool done;
                             done = Read(readableBuffer, _requestBodyPipe.Writer, out consumed, out examined);
 
                             await _requestBodyPipe.Writer.FlushAsync();
 
-                            if (done)
-                            {
+                            if (done) {
                                 break;
                             }
                         }
 
                         // Read() will have already have greedily consumed the entire request body if able.
-                        if (result.IsCompleted)
-                        {
+                        if (result.IsCompleted) {
                             ThrowUnexpectedEndOfRequestContent();
                         }
-                    }
-                    finally
-                    {
+                    } finally {
                         _context.Input.AdvanceTo(consumed, examined);
                     }
 
                     awaitable = _context.Input.ReadAsync();
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 error = ex;
-            }
-            finally
-            {
+            } finally {
                 _requestBodyPipe.Writer.Complete(error);
             }
         }
 
-        protected override Task OnStopAsync()
-        {
-            if (!_context.HasStartedConsumingRequestBody)
-            {
+        protected override Task OnStopAsync() {
+            if (!_context.HasStartedConsumingRequestBody) {
                 return Task.CompletedTask;
             }
 
@@ -198,8 +166,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             _requestBodyPipe.Reader.Complete();
 
             // PumpTask catches all Exceptions internally.
-            if (_pumpTask.IsCompleted)
-            {
+            if (_pumpTask.IsCompleted) {
                 // At this point both the request body pipe reader and writer should be completed.
                 _requestBodyPipe.Reset();
                 return Task.CompletedTask;
@@ -209,8 +176,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             return StopAsyncAwaited();
         }
 
-        private async Task StopAsyncAwaited()
-        {
+        private async Task StopAsyncAwaited() {
             _canceled = true;
             _context.Input.CancelPendingRead();
             await _pumpTask;
@@ -219,75 +185,59 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             _requestBodyPipe.Reset();
         }
 
-        private void Copy(in ReadOnlySequence<byte> readableBuffer, PipeWriter writableBuffer)
-        {
-            if (readableBuffer.IsSingleSegment)
-            {
+        private void Copy(in ReadOnlySequence<byte> readableBuffer, PipeWriter writableBuffer) {
+            if (readableBuffer.IsSingleSegment) {
                 writableBuffer.Write(readableBuffer.First.Span);
-            }
-            else
-            {
-                foreach (var memory in readableBuffer)
-                {
+            } else {
+                foreach (var memory in readableBuffer) {
                     writableBuffer.Write(memory.Span);
                 }
             }
         }
 
-        protected override void OnReadStarted()
-        {
+        protected override void OnReadStarted() {
             _pumpTask = PumpAsync();
         }
 
-        private bool Read(ReadOnlySequence<byte> readableBuffer, PipeWriter writableBuffer, out SequencePosition consumed, out SequencePosition examined)
-        {
+        private bool Read(ReadOnlySequence<byte> readableBuffer, PipeWriter writableBuffer, out SequencePosition consumed, out SequencePosition examined) {
             consumed = default;
             examined = default;
 
-            while (_mode < Mode.Trailer)
-            {
-                if (_mode == Mode.Prefix)
-                {
+            while (_mode < Mode.Trailer) {
+                if (_mode == Mode.Prefix) {
                     ParseChunkedPrefix(readableBuffer, out consumed, out examined);
 
-                    if (_mode == Mode.Prefix)
-                    {
+                    if (_mode == Mode.Prefix) {
                         return false;
                     }
 
                     readableBuffer = readableBuffer.Slice(consumed);
                 }
 
-                if (_mode == Mode.Extension)
-                {
+                if (_mode == Mode.Extension) {
                     ParseExtension(readableBuffer, out consumed, out examined);
 
-                    if (_mode == Mode.Extension)
-                    {
+                    if (_mode == Mode.Extension) {
                         return false;
                     }
 
                     readableBuffer = readableBuffer.Slice(consumed);
                 }
 
-                if (_mode == Mode.Data)
-                {
+                if (_mode == Mode.Data) {
                     ReadChunkedData(readableBuffer, writableBuffer, out consumed, out examined);
 
-                    if (_mode == Mode.Data)
-                    {
+                    if (_mode == Mode.Data) {
                         return false;
                     }
 
                     readableBuffer = readableBuffer.Slice(consumed);
                 }
 
-                if (_mode == Mode.Suffix)
-                {
+                if (_mode == Mode.Suffix) {
                     ParseChunkedSuffix(readableBuffer, out consumed, out examined);
 
-                    if (_mode == Mode.Suffix)
-                    {
+                    if (_mode == Mode.Suffix) {
                         return false;
                     }
 
@@ -296,12 +246,10 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             }
 
             // Chunks finished, parse trailers
-            if (_mode == Mode.Trailer)
-            {
+            if (_mode == Mode.Trailer) {
                 ParseChunkedTrailer(readableBuffer, out consumed, out examined);
 
-                if (_mode == Mode.Trailer)
-                {
+                if (_mode == Mode.Trailer) {
                     return false;
                 }
 
@@ -309,10 +257,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             }
 
             // _consumedBytes aren't tracked for trailer headers, since headers have separate limits.
-            if (_mode == Mode.TrailerHeaders)
-            {
-                if (_context.TakeMessageHeaders(readableBuffer, trailers: true, out consumed, out examined))
-                {
+            if (_mode == Mode.TrailerHeaders) {
+                if (_context.TakeMessageHeaders(readableBuffer, trailers: true, out consumed, out examined)) {
                     _mode = Mode.Complete;
                 }
             }
@@ -320,13 +266,11 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             return _mode == Mode.Complete;
         }
 
-        private void ParseChunkedPrefix(in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined)
-        {
+        private void ParseChunkedPrefix(in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined) {
             consumed = buffer.Start;
             var reader = new SequenceReader<byte>(buffer);
 
-            if (!reader.TryRead(out var ch1) || !reader.TryRead(out var ch2))
-            {
+            if (!reader.TryRead(out var ch1) || !reader.TryRead(out var ch2)) {
                 examined = reader.Position;
                 return;
             }
@@ -337,10 +281,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             var chunkSize = CalculateChunkSize(ch1, 0);
             ch1 = ch2;
 
-            while (reader.Consumed < MaxChunkPrefixBytes)
-            {
-                if (ch1 == ';')
-                {
+            while (reader.Consumed < MaxChunkPrefixBytes) {
+                if (ch1 == ';') {
                     consumed = reader.Position;
                     examined = reader.Position;
 
@@ -350,8 +292,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
                     return;
                 }
 
-                if (!reader.TryRead(out ch2))
-                {
+                if (!reader.TryRead(out ch2)) {
                     examined = reader.Position;
                     return;
                 }
@@ -359,8 +300,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
                 // Advance examined before possibly throwing, so we don't risk examining less than the previous call to ParseChunkedPrefix.
                 examined = reader.Position;
 
-                if (ch1 == '\r' && ch2 == '\n')
-                {
+                if (ch1 == '\r' && ch2 == '\n') {
                     consumed = reader.Position;
 
                     AddAndCheckConsumedBytes(reader.Consumed);
@@ -377,30 +317,28 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             BadHttpRequestException.Throw(RequestRejectionReason.BadChunkSizeData);
         }
 
-        private void ParseExtension(ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined)
-        {
+        private void ParseExtension(ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined) {
             // Chunk-extensions not currently parsed
             // Just drain the data
             examined = buffer.Start;
 
-            do
-            {
+            do {
                 SequencePosition? extensionCursorPosition = buffer.PositionOf(ByteCR);
-                if (extensionCursorPosition == null)
-                {
+                if (extensionCursorPosition == null) {
                     // End marker not found yet
                     consumed = buffer.End;
                     examined = buffer.End;
                     AddAndCheckConsumedBytes(buffer.Length);
                     return;
-                };
+                }
+
+                ;
 
                 var extensionCursor = extensionCursorPosition.Value;
                 var charsToByteCRExclusive = buffer.Slice(0, extensionCursor).Length;
 
                 var suffixBuffer = buffer.Slice(extensionCursor);
-                if (suffixBuffer.Length < 2)
-                {
+                if (suffixBuffer.Length < 2) {
                     consumed = extensionCursor;
                     examined = buffer.End;
                     AddAndCheckConsumedBytes(charsToByteCRExclusive);
@@ -410,17 +348,14 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
                 suffixBuffer = suffixBuffer.Slice(0, 2);
                 var suffixSpan = suffixBuffer.ToSpan();
 
-                if (suffixSpan[1] == '\n')
-                {
+                if (suffixSpan[1] == '\n') {
                     // We consumed the \r\n at the end of the extension, so switch modes.
                     _mode = _inputLength > 0 ? Mode.Data : Mode.Trailer;
 
                     consumed = suffixBuffer.End;
                     examined = suffixBuffer.End;
                     AddAndCheckConsumedBytes(charsToByteCRExclusive + 2);
-                }
-                else
-                {
+                } else {
                     // Don't consume suffixSpan[1] in case it is also a \r.
                     buffer = buffer.Slice(charsToByteCRExclusive + 1);
                     consumed = extensionCursor;
@@ -429,8 +364,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             } while (_mode == Mode.Extension);
         }
 
-        private void ReadChunkedData(in ReadOnlySequence<byte> buffer, PipeWriter writableBuffer, out SequencePosition consumed, out SequencePosition examined)
-        {
+        private void ReadChunkedData(in ReadOnlySequence<byte> buffer, PipeWriter writableBuffer, out SequencePosition consumed, out SequencePosition examined) {
             var actual = Math.Min(buffer.Length, _inputLength);
             consumed = buffer.GetPosition(actual);
             examined = consumed;
@@ -440,18 +374,15 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             _inputLength -= actual;
             AddAndCheckConsumedBytes(actual);
 
-            if (_inputLength == 0)
-            {
+            if (_inputLength == 0) {
                 _mode = Mode.Suffix;
             }
         }
 
-        private void ParseChunkedSuffix(in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined)
-        {
+        private void ParseChunkedSuffix(in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined) {
             consumed = buffer.Start;
 
-            if (buffer.Length < 2)
-            {
+            if (buffer.Length < 2) {
                 examined = buffer.End;
                 return;
             }
@@ -462,24 +393,19 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             // Advance examined before possibly throwing, so we don't risk examining less than the previous call to ParseChunkedSuffix.
             examined = suffixBuffer.End;
 
-            if (suffixSpan[0] == '\r' && suffixSpan[1] == '\n')
-            {
+            if (suffixSpan[0] == '\r' && suffixSpan[1] == '\n') {
                 consumed = suffixBuffer.End;
                 AddAndCheckConsumedBytes(2);
                 _mode = Mode.Prefix;
-            }
-            else
-            {
+            } else {
                 BadHttpRequestException.Throw(RequestRejectionReason.BadChunkSuffix);
             }
         }
 
-        private void ParseChunkedTrailer(in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined)
-        {
+        private void ParseChunkedTrailer(in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined) {
             consumed = buffer.Start;
 
-            if (buffer.Length < 2)
-            {
+            if (buffer.Length < 2) {
                 examined = buffer.End;
                 return;
             }
@@ -490,42 +416,29 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             // Advance examined before possibly throwing, so we don't risk examining less than the previous call to ParseChunkedTrailer.
             examined = trailerBuffer.End;
 
-            if (trailerSpan[0] == '\r' && trailerSpan[1] == '\n')
-            {
+            if (trailerSpan[0] == '\r' && trailerSpan[1] == '\n') {
                 consumed = trailerBuffer.End;
                 AddAndCheckConsumedBytes(2);
                 _mode = Mode.Complete;
                 // No trailers
                 _context.OnTrailersComplete();
-            }
-            else
-            {
+            } else {
                 _mode = Mode.TrailerHeaders;
             }
         }
 
-        private int CalculateChunkSize(int extraHexDigit, int currentParsedSize)
-        {
-            try
-            {
-                checked
-                {
-                    if (extraHexDigit >= '0' && extraHexDigit <= '9')
-                    {
+        private int CalculateChunkSize(int extraHexDigit, int currentParsedSize) {
+            try {
+                checked {
+                    if (extraHexDigit >= '0' && extraHexDigit <= '9') {
                         return currentParsedSize * 0x10 + (extraHexDigit - '0');
-                    }
-                    else if (extraHexDigit >= 'A' && extraHexDigit <= 'F')
-                    {
+                    } else if (extraHexDigit >= 'A' && extraHexDigit <= 'F') {
                         return currentParsedSize * 0x10 + (extraHexDigit - ('A' - 10));
-                    }
-                    else if (extraHexDigit >= 'a' && extraHexDigit <= 'f')
-                    {
+                    } else if (extraHexDigit >= 'a' && extraHexDigit <= 'f') {
                         return currentParsedSize * 0x10 + (extraHexDigit - ('a' - 10));
                     }
                 }
-            }
-            catch (OverflowException ex)
-            {
+            } catch (OverflowException ex) {
                 throw new IOException(CoreStrings.BadRequest_BadChunkSizeData, ex);
             }
 
@@ -533,8 +446,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http
             return -1; // can't happen, but compiler complains
         }
 
-        private enum Mode
-        {
+        private enum Mode {
             Prefix,
             Extension,
             Data,

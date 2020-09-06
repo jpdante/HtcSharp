@@ -9,7 +9,6 @@ using Newtonsoft.Json.Linq;
 
 namespace HtcSharp.HttpModule.Routing {
     public class LocationConfig {
-
         public readonly string Key = "";
         private readonly byte _modifier;
         private readonly Regex _matchRegex;
@@ -27,6 +26,7 @@ namespace HtcSharp.HttpModule.Routing {
                         if (keyData[1][0].Equals('@')) {
                             Key = keyData[1];
                         }
+
                         _modifier = 0;
                         _matchRegex = new Regex(keyData[1]);
                     } else if (keyData.Length == 3) {
@@ -55,6 +55,7 @@ namespace HtcSharp.HttpModule.Routing {
                     }
                 }
             }
+
             _directives = new List<IDirective>();
             foreach (var i in configItems) {
                 var dataSplit = i.ToObject<string>().Split(" ");
@@ -101,6 +102,5 @@ namespace HtcSharp.HttpModule.Routing {
                 }
             }
         }
-
     }
 }

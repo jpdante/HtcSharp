@@ -5,8 +5,8 @@ using System;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Http.Protocols.Http;
-using HtcSharp.HttpModule.Net.Connections.Exceptions;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
     internal sealed class Http2MessageBody : MessageBody {
@@ -34,7 +34,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
 
         protected override void OnDataRead(long bytesRead) {
             // The HTTP/2 flow control window cannot be larger than 2^31-1 which limits bytesRead.
-            _context.OnDataRead((int)bytesRead);
+            _context.OnDataRead((int) bytesRead);
             AddAndCheckConsumedBytes(bytesRead);
         }
 

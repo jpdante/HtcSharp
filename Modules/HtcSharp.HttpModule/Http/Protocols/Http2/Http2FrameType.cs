@@ -1,10 +1,8 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-namespace HtcSharp.HttpModule.Http.Protocols.Http2
-{
-    internal enum Http2FrameType : byte
-    {
+namespace HtcSharp.HttpModule.Http.Protocols.Http2 {
+    internal enum Http2FrameType : byte {
         DATA = 0x0,
         HEADERS = 0x1,
         PRIORITY = 0x2,

@@ -3,6 +3,7 @@
 
 using System;
 using System.Buffers;
+using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Http.Protocols.Http;
 
 namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
@@ -92,7 +93,8 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
         private bool _headersObserved;
 
         public HPackDecoder(int maxDynamicTableSize, int maxRequestHeaderFieldSize)
-            : this(maxDynamicTableSize, maxRequestHeaderFieldSize, new DynamicTable(maxDynamicTableSize)) { }
+            : this(maxDynamicTableSize, maxRequestHeaderFieldSize, new DynamicTable(maxDynamicTableSize)) {
+        }
 
         // For testing.
         internal HPackDecoder(int maxDynamicTableSize, int maxRequestHeaderFieldSize, DynamicTable dynamicTable) {
@@ -129,7 +131,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
                         _headersObserved = true;
                         var val = b & ~IndexedHeaderFieldMask;
 
-                        if (_integerDecoder.BeginTryDecode((byte)val, IndexedHeaderFieldPrefix, out intResult)) {
+                        if (_integerDecoder.BeginTryDecode((byte) val, IndexedHeaderFieldPrefix, out intResult)) {
                             OnIndexedHeaderField(intResult, handler);
                         } else {
                             _state = State.HeaderFieldIndex;
@@ -141,7 +143,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
 
                         if (val == 0) {
                             _state = State.HeaderNameLength;
-                        } else if (_integerDecoder.BeginTryDecode((byte)val, LiteralHeaderFieldWithIncrementalIndexingPrefix, out intResult)) {
+                        } else if (_integerDecoder.BeginTryDecode((byte) val, LiteralHeaderFieldWithIncrementalIndexingPrefix, out intResult)) {
                             OnIndexedHeaderName(intResult);
                         } else {
                             _state = State.HeaderNameIndex;
@@ -153,7 +155,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
 
                         if (val == 0) {
                             _state = State.HeaderNameLength;
-                        } else if (_integerDecoder.BeginTryDecode((byte)val, LiteralHeaderFieldWithoutIndexingPrefix, out intResult)) {
+                        } else if (_integerDecoder.BeginTryDecode((byte) val, LiteralHeaderFieldWithoutIndexingPrefix, out intResult)) {
                             OnIndexedHeaderName(intResult);
                         } else {
                             _state = State.HeaderNameIndex;
@@ -165,7 +167,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
 
                         if (val == 0) {
                             _state = State.HeaderNameLength;
-                        } else if (_integerDecoder.BeginTryDecode((byte)val, LiteralHeaderFieldNeverIndexedPrefix, out intResult)) {
+                        } else if (_integerDecoder.BeginTryDecode((byte) val, LiteralHeaderFieldNeverIndexedPrefix, out intResult)) {
                             OnIndexedHeaderName(intResult);
                         } else {
                             _state = State.HeaderNameIndex;
@@ -179,7 +181,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
                             throw new HPackDecodingException(CoreStrings.HPackErrorDynamicTableSizeUpdateNotAtBeginningOfHeaderBlock);
                         }
 
-                        if (_integerDecoder.BeginTryDecode((byte)(b & ~DynamicTableSizeUpdateMask), DynamicTableSizeUpdatePrefix, out intResult)) {
+                        if (_integerDecoder.BeginTryDecode((byte) (b & ~DynamicTableSizeUpdateMask), DynamicTableSizeUpdatePrefix, out intResult)) {
                             SetDynamicHeaderTableSize(intResult);
                         } else {
                             _state = State.DynamicTableSizeUpdate;
@@ -205,7 +207,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
                 case State.HeaderNameLength:
                     _huffman = (b & HuffmanMask) != 0;
 
-                    if (_integerDecoder.BeginTryDecode((byte)(b & ~HuffmanMask), StringLengthPrefix, out intResult)) {
+                    if (_integerDecoder.BeginTryDecode((byte) (b & ~HuffmanMask), StringLengthPrefix, out intResult)) {
                         OnStringLength(intResult, nextState: State.HeaderName);
                     } else {
                         _state = State.HeaderNameLengthContinue;
@@ -229,7 +231,7 @@ namespace HtcSharp.HttpModule.Http.Protocols.Http2.HPack {
                 case State.HeaderValueLength:
                     _huffman = (b & HuffmanMask) != 0;
 
-                    if (_integerDecoder.BeginTryDecode((byte)(b & ~HuffmanMask), StringLengthPrefix, out intResult)) {
+                    if (_integerDecoder.BeginTryDecode((byte) (b & ~HuffmanMask), StringLengthPrefix, out intResult)) {
                         OnStringLength(intResult, nextState: State.HeaderValue);
                         if (intResult == 0) {
                             ProcessHeaderValue(handler);
