@@ -12,7 +12,7 @@ using HtcSharp.HttpModule.Http.Headers;
 namespace HtcSharp.HttpModule.Http.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\Internal\ResponseCookies.cs
-    // Start-At-Remote-Line 13
+    // Start-At-Remote-Line 12
     // SourceTools-End
     /// <summary>
     /// A wrapper for the response Set-Cookie header.
@@ -37,7 +37,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
         public void Append(string key, string value) {
             var setCookieHeaderValue = new SetCookieHeaderValue(
                 Uri.EscapeDataString(key),
-                Uri.EscapeDataString(value)) {Path = "/"};
+                Uri.EscapeDataString(value)) { Path = "/" };
             var cookieValue = setCookieHeaderValue.ToString();
 
             Headers[HeaderNames.SetCookie] = StringValues.Concat(Headers[HeaderNames.SetCookie], cookieValue);
@@ -57,7 +57,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 Expires = options.Expires,
                 MaxAge = options.MaxAge,
                 Secure = options.Secure,
-                SameSite = (SameSiteMode) options.SameSite,
+                SameSite = options.SameSite,
                 HttpOnly = options.HttpOnly
             };
 
@@ -68,7 +68,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
 
         /// <inheritdoc />
         public void Delete(string key) {
-            Delete(key, new CookieOptions() {Path = "/"});
+            Delete(key, new CookieOptions() { Path = "/" });
         }
 
         /// <inheritdoc />

@@ -6,7 +6,7 @@
 namespace System.IO.Pipelines {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\shared\DuplexPipe.cs
-    // Start-At-Remote-Line 7
+    // Start-At-Remote-Line 5
     // SourceTools-End
     internal class DuplexPipe : IDuplexPipe {
         public DuplexPipe(PipeReader reader, PipeWriter writer) {

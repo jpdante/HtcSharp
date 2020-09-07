@@ -43,9 +43,9 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             var headerSlice = readableBuffer.Slice(0, HeaderLength);
             var header = headerSlice.ToSpan();
 
-            var payloadLength = (int) Bitshifter.ReadUInt24BigEndian(header);
+            var payloadLength = (int)Bitshifter.ReadUInt24BigEndian(header);
             if (payloadLength > maxFrameSize) {
-                throw new Http2ConnectionErrorException($@"The received frame size of {payloadLength} exceeds the limit {maxFrameSize}.", Http2ErrorCode.FRAME_SIZE_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorFrameOverLimit(payloadLength, maxFrameSize), Http2ErrorCode.FRAME_SIZE_ERROR);
             }
 
             // Make sure the whole frame is buffered
@@ -55,9 +55,9 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             }
 
             frame.PayloadLength = payloadLength;
-            frame.Type = (Http2FrameType) header[TypeOffset];
+            frame.Type = (Http2FrameType)header[TypeOffset];
             frame.Flags = header[FlagsOffset];
-            frame.StreamId = (int) Bitshifter.ReadUInt31BigEndian(header.Slice(StreamIdOffset));
+            frame.StreamId = (int)Bitshifter.ReadUInt31BigEndian(header.Slice(StreamIdOffset));
 
             var extendedHeaderLength = ReadExtendedFields(frame, readableBuffer);
 
@@ -72,7 +72,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             var extendedHeaderLength = GetPayloadFieldsLength(frame);
 
             if (extendedHeaderLength > frame.PayloadLength) {
-                throw new Http2ConnectionErrorException($@"The client sent a {frame.Type} frame with length different than {extendedHeaderLength}.", Http2ErrorCode.FRAME_SIZE_ERROR);
+                throw new Http2ConnectionErrorException(
+                    CoreStrings.FormatHttp2ErrorUnexpectedFrameLength(frame.Type, expectedLength: extendedHeaderLength), Http2ErrorCode.FRAME_SIZE_ERROR);
             }
 
             var extendedHeaders = readableBuffer.Slice(HeaderLength, extendedHeaderLength).ToSpan();
@@ -89,7 +90,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     +---------------------------------------------------------------+
                 */
                 case Http2FrameType.DATA: // Variable 0 or 1
-                    frame.DataPadLength = frame.DataHasPadding ? extendedHeaders[0] : (byte) 0;
+                    frame.DataPadLength = frame.DataHasPadding ? extendedHeaders[0] : (byte)0;
                     break;
 
                 /* https://tools.ietf.org/html/rfc7540#section-6.2
@@ -114,7 +115,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     }
 
                     if (frame.HeadersHasPriority) {
-                        frame.HeadersStreamDependency = (int) Bitshifter.ReadUInt31BigEndian(extendedHeaders);
+                        frame.HeadersStreamDependency = (int)Bitshifter.ReadUInt31BigEndian(extendedHeaders);
                         frame.HeadersPriorityWeight = extendedHeaders.Slice(4)[0];
                     } else {
                         frame.HeadersStreamDependency = 0;
@@ -133,8 +134,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     +---------------------------------------------------------------+
                 */
                 case Http2FrameType.GOAWAY:
-                    frame.GoAwayLastStreamId = (int) Bitshifter.ReadUInt31BigEndian(extendedHeaders);
-                    frame.GoAwayErrorCode = (Http2ErrorCode) BinaryPrimitives.ReadUInt32BigEndian(extendedHeaders.Slice(4));
+                    frame.GoAwayLastStreamId = (int)Bitshifter.ReadUInt31BigEndian(extendedHeaders);
+                    frame.GoAwayErrorCode = (Http2ErrorCode)BinaryPrimitives.ReadUInt32BigEndian(extendedHeaders.Slice(4));
                     break;
 
                 /* https://tools.ietf.org/html/rfc7540#section-6.3
@@ -145,7 +146,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     +-+-------------+
                 */
                 case Http2FrameType.PRIORITY:
-                    frame.PriorityStreamDependency = (int) Bitshifter.ReadUInt31BigEndian(extendedHeaders);
+                    frame.PriorityStreamDependency = (int)Bitshifter.ReadUInt31BigEndian(extendedHeaders);
                     frame.PriorityWeight = extendedHeaders.Slice(4)[0];
                     break;
 
@@ -155,7 +156,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     +---------------------------------------------------------------+
                 */
                 case Http2FrameType.RST_STREAM:
-                    frame.RstStreamErrorCode = (Http2ErrorCode) BinaryPrimitives.ReadUInt32BigEndian(extendedHeaders);
+                    frame.RstStreamErrorCode = (Http2ErrorCode)BinaryPrimitives.ReadUInt32BigEndian(extendedHeaders);
                     break;
 
                 /* https://tools.ietf.org/html/rfc7540#section-6.9
@@ -164,7 +165,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     +-+-------------------------------------------------------------+
                 */
                 case Http2FrameType.WINDOW_UPDATE:
-                    frame.WindowUpdateSizeIncrement = (int) Bitshifter.ReadUInt31BigEndian(extendedHeaders);
+                    frame.WindowUpdateSizeIncrement = (int)Bitshifter.ReadUInt31BigEndian(extendedHeaders);
                     break;
 
                 case Http2FrameType.PING: // Opaque payload 8 bytes long
@@ -219,7 +220,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
         }
 
         private static Http2PeerSetting ReadSetting(ReadOnlySpan<byte> payload) {
-            var id = (Http2SettingsParameter) BinaryPrimitives.ReadUInt16BigEndian(payload);
+            var id = (Http2SettingsParameter)BinaryPrimitives.ReadUInt16BigEndian(payload);
             var value = BinaryPrimitives.ReadUInt32BigEndian(payload.Slice(2));
 
             return new Http2PeerSetting(id, value);

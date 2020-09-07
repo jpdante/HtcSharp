@@ -6,12 +6,11 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Shared;
-using HtcSharp.HttpModule.Shared;
 
 namespace HtcSharp.HttpModule.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\SendFileFallback.cs
-    // Start-At-Remote-Line 12
+    // Start-At-Remote-Line 10
     // SourceTools-End
     public static class SendFileFallback {
         /// <summary>

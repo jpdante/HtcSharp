@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 namespace HtcSharp.HttpModule.Hosting.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Hosting\Hosting\src\Http\DefaultHttpContextFactory.cs
-    // Start-At-Remote-Line 14
+    // Start-At-Remote-Line 12
     // SourceTools-End
     public class DefaultHttpContextFactory : IHttpContextFactory {
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -29,6 +29,8 @@ namespace HtcSharp.HttpModule.Hosting.Http {
             _formOptions = serviceProvider.GetRequiredService<IOptions<FormOptions>>().Value;
             _serviceScopeFactory = serviceProvider.GetRequiredService<IServiceScopeFactory>();
         }
+
+        internal IHttpContextAccessor HttpContextAccessor => _httpContextAccessor;
 
         public HttpContext Create(IFeatureCollection featureCollection) {
             if (featureCollection is null) {

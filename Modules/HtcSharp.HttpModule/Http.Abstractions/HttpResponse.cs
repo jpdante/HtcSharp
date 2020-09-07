@@ -17,14 +17,14 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
     /// Represents the outgoing side of an individual HTTP request.
     /// </summary>
     public abstract class HttpResponse {
-        private static readonly Func<object, Task> _callbackDelegate = callback => ((Func<Task>) callback)();
+        private static readonly Func<object, Task> _callbackDelegate = callback => ((Func<Task>)callback)();
 
         private static readonly Func<object, Task> _disposeDelegate = disposable => {
-            ((IDisposable) disposable).Dispose();
+            ((IDisposable)disposable).Dispose();
             return Task.CompletedTask;
         };
 
-        private static readonly Func<object, Task> _disposeAsyncDelegate = disposable => ((IAsyncDisposable) disposable).DisposeAsync().AsTask();
+        private static readonly Func<object, Task> _disposeAsyncDelegate = disposable => ((IAsyncDisposable)disposable).DisposeAsync().AsTask();
 
         /// <summary>
         /// Gets the <see cref="HttpContext"/> for this response.
@@ -73,8 +73,6 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
         /// Gets a value indicating whether response headers have been sent to the client.
         /// </summary>
         public abstract bool HasStarted { get; }
-
-        internal bool HasFinished { get; set; }
 
         /// <summary>
         /// Adds a delegate to be invoked just before response headers will be sent to the client.

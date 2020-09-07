@@ -4,10 +4,10 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+namespace System.Buffers {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\MemoryPoolSlab.cs
-    // Start-At-Remote-Line 8
+    // Start-At-Remote-Line 7
     // SourceTools-End
     /// <summary>
     /// Slab tracking object used by the byte buffer memory pool. A slab is a large allocation which is divided into smaller blocks. The
@@ -19,7 +19,6 @@ namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
         /// relocated and enables any subsections of the array to be used as native memory pointers to P/Invoked API calls.
         /// </summary>
         private GCHandle _gcHandle;
-
         private bool _isDisposed;
 
         public MemoryPoolSlab(byte[] data) {
@@ -58,8 +57,7 @@ namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
             _isDisposed = true;
 
             Array = null;
-            NativePointer = IntPtr.Zero;
-            ;
+            NativePointer = IntPtr.Zero; ;
 
             if (_gcHandle.IsAllocated) {
                 _gcHandle.Free();

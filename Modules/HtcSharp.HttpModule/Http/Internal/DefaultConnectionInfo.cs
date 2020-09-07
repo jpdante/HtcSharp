@@ -12,7 +12,7 @@ using HtcSharp.HttpModule.Http.Features;
 namespace HtcSharp.HttpModule.Http.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\Internal\DefaultConnectionInfo.cs
-    // Start-At-Remote-Line 8
+    // Start-At-Remote-Line 12
     // SourceTools-End
     internal sealed class DefaultConnectionInfo : ConnectionInfo {
         // Lambdas hoisted to static readonly fields to improve inlining https://github.com/dotnet/roslyn/issues/13624

@@ -3,17 +3,18 @@
 
 using System;
 using System.IO.Pipelines;
+using System.Net.Sockets;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketSenderReceiverBase.cs
-    // Start-At-Remote-Line 8
+    // Start-At-Remote-Line 9
     // SourceTools-End
     internal abstract class SocketSenderReceiverBase : IDisposable {
-        protected readonly System.Net.Sockets.Socket _socket;
+        protected readonly Socket _socket;
         protected readonly SocketAwaitableEventArgs _awaitableEventArgs;
 
-        protected SocketSenderReceiverBase(System.Net.Sockets.Socket socket, PipeScheduler scheduler) {
+        protected SocketSenderReceiverBase(Socket socket, PipeScheduler scheduler) {
             _socket = socket;
             _awaitableEventArgs = new SocketAwaitableEventArgs(scheduler);
         }

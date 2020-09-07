@@ -12,7 +12,7 @@ using HtcSharp.HttpModule.Http.Features;
 namespace HtcSharp.HttpModule.Http.Abstractions {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http.Abstractions\src\HttpRequest.cs
-    // Start-At-Remote-Line 13
+    // Start-At-Remote-Line 12
     // SourceTools-End
     /// <summary>
     /// Represents the incoming side of an individual HTTP request.
@@ -137,9 +137,5 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
         /// </summary>
         /// <returns>The collection of route values for this request.</returns>
         public virtual RouteValueDictionary RouteValues { get; set; }
-
-        public abstract string RequestPath { get; internal set; }
-        public abstract string RequestFilePath { get; internal set; }
-        public abstract string TranslatedPath { get; internal set; }
     }
 }

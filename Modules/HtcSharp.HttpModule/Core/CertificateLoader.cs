@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace HtcSharp.HttpModule.Core {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\CertificateLoader.cs
-    // Start-At-Remote-Line 9
+    // Start-At-Remote-Line 10
     // SourceTools-End
     public static class CertificateLoader {
         // See http://oid-info.com/get/1.3.6.1.5.5.7.3.1
@@ -32,7 +32,7 @@ namespace HtcSharp.HttpModule.Core {
                         .FirstOrDefault();
 
                     if (foundCertificate == null) {
-                        throw new InvalidOperationException($@"The requested certificate {subject} could not be found in {storeLocation}/{storeName} with AllowInvalid setting: {allowInvalid}.");
+                        throw new InvalidOperationException(CoreStrings.FormatCertNotFoundInStore(subject, storeLocation, storeName, allowInvalid));
                     }
 
                     return foundCertificate;

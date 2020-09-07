@@ -18,10 +18,12 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-End
     internal sealed partial class HttpRequestHeaders : HttpHeaders {
         private readonly bool _reuseHeaderValues;
+        private readonly bool _useLatin1;
         private long _previousBits = 0;
 
-        public HttpRequestHeaders(bool reuseHeaderValues = true) {
+        public HttpRequestHeaders(bool reuseHeaderValues = true, bool useLatin1 = false) {
             _reuseHeaderValues = reuseHeaderValues;
+            _useLatin1 = useLatin1;
         }
 
         public void OnHeadersComplete() {
@@ -71,7 +73,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
             if (!Utf8Parser.TryParse(value, out long parsed, out var consumed) ||
                 parsed < 0 ||
                 consumed != value.Length) {
-                BadHttpRequestException.Throw(RequestRejectionReason.InvalidContentLength, value.GetAsciiOrUTF8StringNonNullCharacters());
+                BadHttpRequestException.Throw(RequestRejectionReason.InvalidContentLength, value.GetRequestHeaderStringNonNullCharacters(_useLatin1));
             }
 
             _contentLength = parsed;

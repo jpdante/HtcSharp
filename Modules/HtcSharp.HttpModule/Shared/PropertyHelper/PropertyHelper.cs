@@ -259,7 +259,7 @@ namespace HtcSharp.HttpModule.Shared.PropertyHelper {
                 typeof(Func<object, object>),
                 propertyGetterDelegate);
 
-            return (Func<object, object>) accessorDelegate;
+            return (Func<object, object>)accessorDelegate;
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace HtcSharp.HttpModule.Shared.PropertyHelper {
                 callPropertySetterClosedGenericMethod.CreateDelegate(
                     typeof(Action<object, object>), propertySetterAsAction);
 
-            return (Action<object, object>) callPropertySetterDelegate;
+            return (Action<object, object>)callPropertySetterDelegate;
         }
 
         /// <summary>
@@ -336,14 +336,14 @@ namespace HtcSharp.HttpModule.Shared.PropertyHelper {
         private static object CallPropertyGetter<TDeclaringType, TValue>(
             Func<TDeclaringType, TValue> getter,
             object target) {
-            return getter((TDeclaringType) target);
+            return getter((TDeclaringType)target);
         }
 
         // Called via reflection
         private static object CallPropertyGetterByReference<TDeclaringType, TValue>(
             ByRefFunc<TDeclaringType, TValue> getter,
             object target) {
-            var unboxed = (TDeclaringType) target;
+            var unboxed = (TDeclaringType)target;
             return getter(ref unboxed);
         }
 
@@ -355,7 +355,7 @@ namespace HtcSharp.HttpModule.Shared.PropertyHelper {
                 return null;
             }
 
-            return getter((TDeclaringType) target);
+            return getter((TDeclaringType)target);
         }
 
         // Called via reflection
@@ -366,7 +366,7 @@ namespace HtcSharp.HttpModule.Shared.PropertyHelper {
                 return null;
             }
 
-            var unboxed = (TDeclaringType) target;
+            var unboxed = (TDeclaringType)target;
             return getter(ref unboxed);
         }
 
@@ -374,7 +374,7 @@ namespace HtcSharp.HttpModule.Shared.PropertyHelper {
             Action<TDeclaringType, TValue> setter,
             object target,
             object value) {
-            setter((TDeclaringType) target, (TValue) value);
+            setter((TDeclaringType)target, (TValue)value);
         }
 
         protected static PropertyHelper[] GetVisibleProperties(

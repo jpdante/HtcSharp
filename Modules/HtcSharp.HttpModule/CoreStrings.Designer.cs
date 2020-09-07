@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HtcSharp.HttpModule.Core {
+namespace HtcSharp.HttpModule {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,15 +23,15 @@ namespace HtcSharp.HttpModule.Core {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreStrings {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal CoreStrings() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -39,13 +39,13 @@ namespace HtcSharp.HttpModule.Core {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HtcSharp.HttpModule.Core.CoreStrings", typeof(CoreStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HtcSharp.HttpModule.CoreStrings", typeof(CoreStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ namespace HtcSharp.HttpModule.Core {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Failed to bind to address {address}..
         /// </summary>
@@ -68,7 +68,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("AddressBindingFailed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A value between {min} and {max} is required..
         /// </summary>
@@ -77,7 +77,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ArgumentOutOfRange", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Failed to authenticate HTTPS connection..
         /// </summary>
@@ -86,7 +86,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("AuthenticationFailed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Authentication of the HTTPS connection timed out..
         /// </summary>
@@ -95,7 +95,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("AuthenticationTimedOut", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The ASP.NET Core developer certificate is in an invalid state. To fix this issue, run the following commands &apos;dotnet dev-certs https --clean&apos; and &apos;dotnet dev-certs https&apos; to remove all existing ASP.NET Core development certificates and create a new untrusted developer certificate. On macOS or Windows, use &apos;dotnet dev-certs https --trust&apos; to trust the new certificate..
         /// </summary>
@@ -104,7 +104,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadDeveloperCertificateState", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Bad request..
         /// </summary>
@@ -113,7 +113,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Bad chunk size data..
         /// </summary>
@@ -122,7 +122,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_BadChunkSizeData", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Bad chunk suffix..
         /// </summary>
@@ -131,7 +131,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_BadChunkSuffix", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Chunked request incomplete..
         /// </summary>
@@ -140,7 +140,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_ChunkedRequestIncomplete", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The message body length cannot be determined because the final transfer coding was set to &apos;{detail}&apos; instead of &apos;chunked&apos;..
         /// </summary>
@@ -149,7 +149,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_FinalTransferCodingNotChunked", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request headers too long..
         /// </summary>
@@ -158,7 +158,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_HeadersExceedMaxTotalSize", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid characters in header name..
         /// </summary>
@@ -167,7 +167,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidCharactersInHeaderName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid content length: {detail}.
         /// </summary>
@@ -176,7 +176,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidContentLength_Detail", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid Host header..
         /// </summary>
@@ -185,7 +185,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidHostHeader", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid Host header: &apos;{detail}&apos;.
         /// </summary>
@@ -194,7 +194,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidHostHeader_Detail", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid request header: &apos;{detail}&apos;.
         /// </summary>
@@ -203,7 +203,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidRequestHeader_Detail", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid request headers: missing final CRLF in header fields..
         /// </summary>
@@ -212,7 +212,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidRequestHeadersNoCRLF", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid request line..
         /// </summary>
@@ -221,7 +221,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidRequestLine", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid request line: &apos;{detail}&apos;.
         /// </summary>
@@ -230,7 +230,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidRequestLine_Detail", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid request target: &apos;{detail}&apos;.
         /// </summary>
@@ -239,7 +239,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_InvalidRequestTarget_Detail", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {detail} request contains no Content-Length or Transfer-Encoding header..
         /// </summary>
@@ -248,7 +248,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_LengthRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {detail} request contains no Content-Length header..
         /// </summary>
@@ -257,7 +257,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_LengthRequiredHttp10", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Malformed request: invalid headers..
         /// </summary>
@@ -266,7 +266,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_MalformedRequestInvalidHeaders", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Method not allowed..
         /// </summary>
@@ -275,7 +275,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_MethodNotAllowed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request is missing Host header..
         /// </summary>
@@ -284,7 +284,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_MissingHostHeader", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Multiple Content-Length headers..
         /// </summary>
@@ -293,7 +293,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_MultipleContentLengths", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Multiple Host headers..
         /// </summary>
@@ -302,7 +302,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_MultipleHostHeaders", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Reading the request body timed out due to data arriving too slowly. See MinRequestBodyDataRate..
         /// </summary>
@@ -311,7 +311,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_RequestBodyTimeout", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request body too large..
         /// </summary>
@@ -320,7 +320,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_RequestBodyTooLarge", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Reading the request headers timed out..
         /// </summary>
@@ -329,7 +329,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_RequestHeadersTimeout", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request line too long..
         /// </summary>
@@ -338,7 +338,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_RequestLineTooLong", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request contains too many headers..
         /// </summary>
@@ -347,7 +347,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_TooManyHeaders", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unexpected end of request content..
         /// </summary>
@@ -356,7 +356,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_UnexpectedEndOfRequestContent", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unrecognized HTTP version: &apos;{detail}&apos;.
         /// </summary>
@@ -365,7 +365,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_UnrecognizedHTTPVersion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Requests with &apos;Connection: Upgrade&apos; cannot have content in the request body..
         /// </summary>
@@ -374,7 +374,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BadRequest_UpgradeRequestCannotHavePayload", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Kestrel does not support big-endian architectures..
         /// </summary>
@@ -383,7 +383,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BigEndianNotSupported", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No listening endpoints were configured. Binding to {address} by default..
         /// </summary>
@@ -392,7 +392,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BindingToDefaultAddress", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No listening endpoints were configured. Binding to {address0} and {address1} by default..
         /// </summary>
@@ -401,7 +401,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("BindingToDefaultAddresses", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot upgrade a non-upgradable request. Check IHttpUpgradeFeature.IsUpgradableRequest to determine if a request can be upgraded..
         /// </summary>
@@ -410,7 +410,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("CannotUpgradeNonUpgradableRequest", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The requested certificate {subject} could not be found in {storeLocation}/{storeName} with AllowInvalid setting: {allowInvalid}..
         /// </summary>
@@ -419,7 +419,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("CertNotFoundInStore", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Concurrent timeouts are not supported..
         /// </summary>
@@ -428,7 +428,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConcurrentTimeoutsNotSupported", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to HTTPS endpoints can only be configured using {methodName}..
         /// </summary>
@@ -437,7 +437,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConfigureHttpsFromMethodCall", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A path base can only be configured using {methodName}..
         /// </summary>
@@ -446,7 +446,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConfigurePathBaseFromMethodCall", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The connection was aborted by the application..
         /// </summary>
@@ -455,7 +455,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConnectionAbortedByApplication", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client closed the connection..
         /// </summary>
@@ -464,7 +464,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConnectionAbortedByClient", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The connection was aborted because the server is shutting down and request processing didn&apos;t complete within the time specified by HostOptions.ShutdownTimeout..
         /// </summary>
@@ -473,7 +473,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConnectionAbortedDuringServerShutdown", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The connection or stream was aborted because a write operation was aborted with a CancellationToken..
         /// </summary>
@@ -482,7 +482,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConnectionOrStreamAbortedByCancellationToken", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Connection shutdown abnormally..
         /// </summary>
@@ -491,7 +491,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConnectionShutdownError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The connection was timed out by the server because the response was not read by the client at the specified minimum data rate..
         /// </summary>
@@ -500,7 +500,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConnectionTimedBecauseResponseMininumDataRateNotSatisfied", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The connection was timed out by the server..
         /// </summary>
@@ -509,7 +509,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ConnectionTimedOutByServer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Dynamic port binding is not supported when binding to localhost. You must either bind to 127.0.0.1:0 or [::1]:0, or both..
         /// </summary>
@@ -518,7 +518,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("DynamicPortOnLocalhostNotSupported", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Failed to bind to address {endpoint}: address already in use..
         /// </summary>
@@ -527,7 +527,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("EndpointAlreadyInUse", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to HTTP/2 over TLS was not negotiated on an HTTP/2-only endpoint..
         /// </summary>
@@ -536,7 +536,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("EndPointHttp2NotNegotiated", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The endpoint {endpointName} is missing the required &apos;Url&apos; parameter..
         /// </summary>
@@ -545,7 +545,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("EndpointMissingUrl", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to An endpoint must be configured to serve at least one protocol..
         /// </summary>
@@ -554,7 +554,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("EndPointRequiresAtLeastOneProtocol", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Failed to bind to http://[::]:{port} (IPv6Any). Attempting to bind to http://0.0.0.0:{port} instead..
         /// </summary>
@@ -563,7 +563,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("FallbackToIPv4Any", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A value greater than zero is required..
         /// </summary>
@@ -572,7 +572,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("GreaterThanZeroRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Setting the header {name} is not allowed on responses with status code {statusCode}..
         /// </summary>
@@ -581,7 +581,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HeaderNotAllowedOnResponse", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Headers are read-only, response has already started..
         /// </summary>
@@ -590,7 +590,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HeadersAreReadOnly", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Dynamic tables size update did not occur at the beginning of the first header block..
         /// </summary>
@@ -599,7 +599,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackErrorDynamicTableSizeUpdateNotAtBeginningOfHeaderBlock", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A dynamic table size of {size} octets is greater than the configured maximum size of {maxSize} octets..
         /// </summary>
@@ -608,7 +608,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackErrorDynamicTableSizeUpdateTooLarge", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The header block was incomplete and could not be fully decoded..
         /// </summary>
@@ -617,7 +617,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackErrorIncompleteHeaderBlock", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Index {index} is outside the bounds of the header field table..
         /// </summary>
@@ -626,7 +626,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackErrorIndexOutOfRange", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The decoded integer exceeds the maximum value of Int32.MaxValue..
         /// </summary>
@@ -635,7 +635,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackErrorIntegerTooBig", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The given buffer was too small to encode any headers..
         /// </summary>
@@ -644,7 +644,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackErrorNotEnoughBuffer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Huffman decoding error..
         /// </summary>
@@ -653,7 +653,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackHuffmanError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The destination buffer is not large enough to store the decoded data..
         /// </summary>
@@ -662,7 +662,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackHuffmanErrorDestinationTooSmall", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Input data contains the EOS symbol..
         /// </summary>
@@ -671,7 +671,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackHuffmanErrorEOS", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Input data could not be fully decoded..
         /// </summary>
@@ -680,7 +680,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackHuffmanErrorIncomplete", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Decoded string length of {length} octets is greater than the configured maximum length of {maxStringLength} octets..
         /// </summary>
@@ -689,7 +689,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HPackStringLengthTooLarge", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The HTTP/2 connection faulted..
         /// </summary>
@@ -698,7 +698,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ConnectionFaulted", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request headers contain connection-specific header field..
         /// </summary>
@@ -707,7 +707,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorConnectionSpecificHeaderField", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to CONNECT requests must not send :scheme or :path headers..
         /// </summary>
@@ -716,7 +716,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorConnectMustNotSendSchemeOrPath", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a CONTINUATION frame not preceded by a HEADERS frame..
         /// </summary>
@@ -725,7 +725,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorContinuationWithNoHeaders", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request headers contain duplicate pseudo-header field..
         /// </summary>
@@ -734,7 +734,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorDuplicatePseudoHeaderField", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent more data than what was available in the flow-control window..
         /// </summary>
@@ -743,7 +743,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorFlowControlWindowExceeded", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The received frame size of {size} exceeds the limit {limit}..
         /// </summary>
@@ -752,7 +752,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorFrameOverLimit", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a header with uppercase characters in its name..
         /// </summary>
@@ -761,7 +761,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorHeaderNameUppercase", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame to stream ID {streamId} before signaling of the header block for stream ID {headersStreamId}..
         /// </summary>
@@ -770,7 +770,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorHeadersInterleaved", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a HEADERS frame containing trailers without setting the END_STREAM flag..
         /// </summary>
@@ -779,7 +779,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorHeadersWithTrailersNoEndStream", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a SETTINGS frame with a SETTINGS_INITIAL_WINDOW_SIZE that caused a flow-control window to exceed the maximum size..
         /// </summary>
@@ -788,7 +788,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorInitialWindowSizeInvalid", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid HTTP/2 connection preface..
         /// </summary>
@@ -797,7 +797,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorInvalidPreface", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A new stream was refused because this connection has reached its stream limit..
         /// </summary>
@@ -806,7 +806,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorMaxStreams", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The Method &apos;{method}&apos; is invalid..
         /// </summary>
@@ -815,7 +815,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorMethodInvalid", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Tls 1.2 or later must be used for HTTP/2. {protocol} was negotiated..
         /// </summary>
@@ -824,7 +824,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorMinTlsVersion", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request headers missing one or more mandatory pseudo-header fields..
         /// </summary>
@@ -833,7 +833,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorMissingMandatoryPseudoHeaderFields", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame with padding longer than or with the same length as the sent data..
         /// </summary>
@@ -842,7 +842,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorPaddingTooLong", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Pseudo-header field found in request headers after regular header fields..
         /// </summary>
@@ -851,7 +851,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorPseudoHeaderFieldAfterRegularHeaders", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a A PUSH_PROMISE frame..
         /// </summary>
@@ -860,7 +860,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorPushPromiseReceived", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request headers contain response-specific pseudo-header field..
         /// </summary>
@@ -869,7 +869,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorResponsePseudoHeaderField", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a SETTINGS frame with ACK set and length different than 0..
         /// </summary>
@@ -878,7 +878,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorSettingsAckLengthNotZero", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a SETTINGS frame with a length that is not a multiple of 6..
         /// </summary>
@@ -887,7 +887,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorSettingsLengthNotMultipleOfSix", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a SETTINGS frame with a value for parameter {parameter} that is out of range..
         /// </summary>
@@ -896,7 +896,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorSettingsParameterOutOfRange", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A frame of type {frameType} was received after stream {streamId} was reset or aborted..
         /// </summary>
@@ -905,7 +905,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorStreamAborted", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame to closed stream ID {streamId}..
         /// </summary>
@@ -914,7 +914,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorStreamClosed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame to stream ID {streamId} which is in the &quot;half-closed (remote) state&quot;..
         /// </summary>
@@ -923,7 +923,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorStreamHalfClosedRemote", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame with even stream ID {streamId}..
         /// </summary>
@@ -932,7 +932,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorStreamIdEven", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame to idle stream ID {streamId}..
         /// </summary>
@@ -941,7 +941,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorStreamIdle", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame with stream ID different than 0..
         /// </summary>
@@ -950,7 +950,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorStreamIdNotZero", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame with stream ID 0..
         /// </summary>
@@ -959,7 +959,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorStreamIdZero", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame with dependency information that would cause stream ID {streamId} to depend on itself..
         /// </summary>
@@ -968,7 +968,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorStreamSelfDependency", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a trailer with uppercase characters in its name..
         /// </summary>
@@ -977,7 +977,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorTrailerNameUppercase", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent trailers containing one or more pseudo-header fields..
         /// </summary>
@@ -986,7 +986,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorTrailersContainPseudoHeaderField", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a {frameType} frame with length different than {expectedLength}..
         /// </summary>
@@ -995,7 +995,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorUnexpectedFrameLength", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request headers contain unknown pseudo-header field..
         /// </summary>
@@ -1004,7 +1004,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorUnknownPseudoHeaderField", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a WINDOW_UPDATE frame with a window size increment of 0..
         /// </summary>
@@ -1013,7 +1013,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorWindowUpdateIncrementZero", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client sent a WINDOW_UPDATE frame that caused a flow-control window to exceed the maximum size..
         /// </summary>
@@ -1022,7 +1022,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2ErrorWindowUpdateSizeInvalid", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to This feature is not supported for HTTP/2 requests except to disable it entirely by setting the rate to null..
         /// </summary>
@@ -1031,7 +1031,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2MinDataRateNotSupported", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to HTTP/2 over TLS is not supported on macOS due to missing ALPN support..
         /// </summary>
@@ -1040,7 +1040,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HTTP2NoTlsOsx", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to HTTP/2 over TLS is not supported on Windows 7 due to missing ALPN support..
         /// </summary>
@@ -1049,7 +1049,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("HTTP2NoTlsWin7", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The request stream was aborted..
         /// </summary>
@@ -1058,7 +1058,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2StreamAborted", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to An error occurred after the response headers were sent, a reset is being sent..
         /// </summary>
@@ -1067,7 +1067,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2StreamErrorAfterHeaders", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Less data received than specified in the Content-Length header..
         /// </summary>
@@ -1076,7 +1076,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2StreamErrorLessDataThanLength", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to More data received than specified in the Content-Length header..
         /// </summary>
@@ -1085,7 +1085,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2StreamErrorMoreDataThanLength", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The request :path is invalid: &apos;{path}&apos;.
         /// </summary>
@@ -1094,7 +1094,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2StreamErrorPathInvalid", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The request :scheme header &apos;{requestScheme}&apos; does not match the transport scheme &apos;{transportScheme}&apos;..
         /// </summary>
@@ -1103,7 +1103,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2StreamErrorSchemeMismatch", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The HTTP/2 stream was reset by the application with error code {errorCode}..
         /// </summary>
@@ -1112,7 +1112,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2StreamResetByApplication", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The client reset the request stream..
         /// </summary>
@@ -1121,7 +1121,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2StreamResetByClient", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to A new stream was refused because this connection has too many streams that haven&apos;t finished processing. This may happen if many streams are aborted but not yet cleaned up..
         /// </summary>
@@ -1130,7 +1130,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("Http2TellClientToCalmDown", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid non-ASCII or control character in header: {character}.
         /// </summary>
@@ -1139,7 +1139,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("InvalidAsciiOrControlChar", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid Content-Length: &quot;{value}&quot;. Value must be a positive integral number..
         /// </summary>
@@ -1148,7 +1148,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("InvalidContentLength_InvalidNumber", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Header name cannot be a null or empty string..
         /// </summary>
@@ -1157,7 +1157,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("InvalidEmptyHeaderName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Certificate {thumbprint} cannot be used as an SSL server certificate. It has an Extended Key Usage extension but the usages do not include Server Authentication (OID 1.3.6.1.5.5.7.3.1)..
         /// </summary>
@@ -1166,7 +1166,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("InvalidServerCertificateEku", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid URL: &apos;{url}&apos;..
         /// </summary>
@@ -1175,7 +1175,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("InvalidUrl", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to An item with the same key has already been added..
         /// </summary>
@@ -1184,7 +1184,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("KeyAlreadyExists", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The maximum request body size cannot be modified after the app has already started reading from the request body..
         /// </summary>
@@ -1193,7 +1193,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("MaxRequestBodySizeCannotBeModifiedAfterRead", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The maximum request body size cannot be modified after the request has been upgraded..
         /// </summary>
@@ -1202,7 +1202,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("MaxRequestBodySizeCannotBeModifiedForUpgradedRequests", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Maximum request buffer size ({requestBufferSize}) must be greater than or equal to maximum request header size ({requestHeaderSize})..
         /// </summary>
@@ -1211,7 +1211,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("MaxRequestBufferSmallerThanRequestHeaderBuffer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Maximum request buffer size ({requestBufferSize}) must be greater than or equal to maximum request line size ({requestLineSize})..
         /// </summary>
@@ -1220,7 +1220,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("MaxRequestBufferSmallerThanRequestLineBuffer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The request body rate enforcement grace period must be greater than {heartbeatInterval} second..
         /// </summary>
@@ -1229,7 +1229,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("MinimumGracePeriodRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The endpoint {endpointName} specified multiple certificate sources..
         /// </summary>
@@ -1238,7 +1238,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("MultipleCertificateSources", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unable to bind to {address} on the {interfaceName} interface: &apos;{error}&apos;..
         /// </summary>
@@ -1247,7 +1247,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("NetworkInterfaceBindingFailed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unable to configure HTTPS endpoint. No server certificate was specified, and the default developer certificate could not be found or is out of date.
         ///To generate a developer certificate run &apos;dotnet dev-certs https&apos;. To trust the certificate (Windows and macOS only) run &apos;dotnet dev-certs https --trust&apos;.
@@ -1258,7 +1258,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("NoCertSpecifiedNoDevelopmentCertificateFound", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Value must be null or a non-negative number..
         /// </summary>
@@ -1267,7 +1267,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("NonNegativeNumberOrNullRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Value must be a non-negative number..
         /// </summary>
@@ -1276,7 +1276,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("NonNegativeNumberRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Value must be a non-negative TimeSpan..
         /// </summary>
@@ -1285,7 +1285,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("NonNegativeTimeSpanRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Overriding address(es) &apos;{addresses}&apos;. Binding to endpoints defined in {methodName} instead..
         /// </summary>
@@ -1294,7 +1294,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("OverridingWithKestrelOptions", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Overriding endpoints defined in UseKestrel() because {settingName} is set to true. Binding to address(es) &apos;{addresses}&apos; instead..
         /// </summary>
@@ -1303,7 +1303,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("OverridingWithPreferHostingUrls", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {name} cannot be set because the response has already started..
         /// </summary>
@@ -1312,7 +1312,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ParameterReadOnlyAfterResponseStarted", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Timespan must be positive and finite..
         /// </summary>
@@ -1321,7 +1321,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("PositiveFiniteTimeSpanRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Value must be a positive number. To disable a minimum data rate, use null where a MinDataRate instance is expected..
         /// </summary>
@@ -1330,7 +1330,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("PositiveNumberOrNullMinDataRateRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Value must be null or a positive number..
         /// </summary>
@@ -1339,7 +1339,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("PositiveNumberOrNullRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Value must be a positive number..
         /// </summary>
@@ -1348,7 +1348,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("PositiveNumberRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Value must be a positive TimeSpan..
         /// </summary>
@@ -1357,7 +1357,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("PositiveTimeSpanRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Value must be a positive TimeSpan..
         /// </summary>
@@ -1366,7 +1366,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("PositiveTimeSpanRequired1", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to HTTP protocol selection failed..
         /// </summary>
@@ -1375,7 +1375,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ProtocolSelectionFailed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request processing didn&apos;t complete within the shutdown timeout..
         /// </summary>
@@ -1384,7 +1384,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("RequestProcessingAborted", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Connection processing ended abnormally..
         /// </summary>
@@ -1393,7 +1393,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("RequestProcessingEndError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The request trailers are not available yet. They may not be available until the full request body is read..
         /// </summary>
@@ -1402,7 +1402,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("RequestTrailersNotAvailable", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot write to response body after connection has been upgraded..
         /// </summary>
@@ -1411,7 +1411,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ResponseStreamWasUpgraded", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Server has already started..
         /// </summary>
@@ -1420,7 +1420,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ServerAlreadyStarted", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The server certificate parameter is required..
         /// </summary>
@@ -1429,7 +1429,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ServerCertificateRequired", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Server shutdown started during connection initialization..
         /// </summary>
@@ -1438,7 +1438,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("ServerShutdownDuringConnectionInitialization", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot call GetMemory() until response has started. Call HttpResponse.StartAsync() before calling GetMemory()..
         /// </summary>
@@ -1447,7 +1447,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("StartAsyncBeforeGetMemory", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead..
         /// </summary>
@@ -1456,7 +1456,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("SynchronousReadsDisallowed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Synchronous operations are disallowed. Call WriteAsync or set AllowSynchronousIO to true instead..
         /// </summary>
@@ -1465,7 +1465,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("SynchronousWritesDisallowed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Response Content-Length mismatch: too few bytes written ({written} of {expected})..
         /// </summary>
@@ -1474,7 +1474,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("TooFewBytesWritten", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Response Content-Length mismatch: too many bytes written ({written} of {expected})..
         /// </summary>
@@ -1483,7 +1483,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("TooManyBytesWritten", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unable to configure default https bindings because no IDefaultHttpsProvider service was provided..
         /// </summary>
@@ -1492,7 +1492,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("UnableToConfigureHttpsBindings", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to The response has been aborted due to an unhandled application exception..
         /// </summary>
@@ -1501,7 +1501,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("UnhandledApplicationException", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unix socket path must be absolute..
         /// </summary>
@@ -1510,7 +1510,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("UnixSocketPathMustBeAbsolute", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unknown transport mode: &apos;{mode}&apos;..
         /// </summary>
@@ -1519,7 +1519,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("UnknownTransportMode", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unrecognized scheme in server address &apos;{address}&apos;. Only &apos;http://&apos; is supported..
         /// </summary>
@@ -1528,7 +1528,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("UnsupportedAddressScheme", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to IHttpUpgradeFeature.UpgradeAsync was already called and can only be called once per connection..
         /// </summary>
@@ -1537,7 +1537,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("UpgradeCannotBeCalledMultipleTimes", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Request cannot be upgraded because the server has already opened the maximum number of upgraded connections..
         /// </summary>
@@ -1546,7 +1546,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("UpgradedConnectionLimitReached", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot write to the response body, the response has completed..
         /// </summary>
@@ -1555,7 +1555,7 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("WritingToResponseBodyAfterResponseCompleted", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Writing to the response body is invalid for responses with status code {statusCode}..
         /// </summary>
@@ -1564,5 +1564,326 @@ namespace HtcSharp.HttpModule.Core {
                 return ResourceManager.GetString("WritingToResponseBodyNotSupported", resourceCulture);
             }
         }
+
+        #region Format
+
+        internal static string FormatAddressBindingFailed(object address) {
+            return CoreStrings.AddressBindingFailed
+                .Replace("{address}", address.ToString());
+        }
+
+        internal static string FormatArgumentOutOfRange(object min, object max) {
+            return CoreStrings.ArgumentOutOfRange
+                .Replace("{min}", min.ToString())
+                .Replace("{max}", max.ToString());
+        }
+
+        internal static string FormatBadRequest_FinalTransferCodingNotChunked(object detail) {
+            return CoreStrings.BadRequest_FinalTransferCodingNotChunked
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBadRequest_InvalidContentLength_Detail(object detail) {
+            return CoreStrings.BadRequest_InvalidContentLength_Detail
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBadRequest_InvalidHostHeader_Detail(object detail) {
+            return CoreStrings.BadRequest_InvalidHostHeader_Detail
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBadRequest_InvalidRequestHeader_Detail(object detail) {
+            return CoreStrings.BadRequest_InvalidRequestHeader_Detail
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBadRequest_InvalidRequestLine_Detail(object detail) {
+            return CoreStrings.BadRequest_InvalidRequestLine_Detail
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBadRequest_InvalidRequestTarget_Detail(object detail) {
+            return CoreStrings.BadRequest_InvalidRequestTarget_Detail
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBadRequest_LengthRequired(object detail) {
+            return CoreStrings.BadRequest_LengthRequired
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBadRequest_LengthRequiredHttp10(object detail) {
+            return CoreStrings.BadRequest_LengthRequiredHttp10
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBadRequest_UnrecognizedHTTPVersion(object detail) {
+            return CoreStrings.BadRequest_UnrecognizedHTTPVersion
+                .Replace("{detail}", detail.ToString());
+        }
+
+        internal static string FormatBindingToDefaultAddress(object address) {
+            return CoreStrings.BindingToDefaultAddress
+                .Replace("{address}", address.ToString());
+        }
+
+        internal static string FormatBindingToDefaultAddresses(object address0, object address1) {
+            return CoreStrings.BindingToDefaultAddresses
+                .Replace("{address0}", address0.ToString())
+                .Replace("{address1}", address1.ToString());
+        }
+
+        internal static string FormatCertNotFoundInStore(object subject, object storeLocation, object storeName, object allowInvalid) {
+            return CoreStrings.CertNotFoundInStore
+                .Replace("{subject}", subject.ToString())
+                .Replace("{storeLocation}", storeLocation.ToString())
+                .Replace("{storeName}", storeName.ToString())
+                .Replace("{allowInvalid}", allowInvalid.ToString());
+        }
+
+        internal static string FormatConfigureHttpsFromMethodCall(object methodName) {
+            return CoreStrings.ConfigureHttpsFromMethodCall
+                .Replace("{methodName}", methodName.ToString());
+        }
+
+        internal static string FormatConfigurePathBaseFromMethodCall(object methodName) {
+            return CoreStrings.ConfigurePathBaseFromMethodCall
+                .Replace("{methodName}", methodName.ToString());
+        }
+
+        internal static string FormatEndpointAlreadyInUse(object endpoint) {
+            return CoreStrings.EndpointAlreadyInUse
+                .Replace("{endpoint}", endpoint.ToString());
+        }
+
+        internal static string FormatEndpointMissingUrl(object endpointName) {
+            return CoreStrings.EndpointMissingUrl
+                .Replace("{endpointName}", endpointName.ToString());
+        }
+
+        internal static string FormatFallbackToIPv4Any(object port) {
+            return CoreStrings.FallbackToIPv4Any
+                .Replace("{port}", port.ToString());
+        }
+
+        internal static string FormatHeaderNotAllowedOnResponse(object name, object statusCode) {
+            return CoreStrings.HeaderNotAllowedOnResponse
+                .Replace("{name}", name.ToString())
+                .Replace("{statusCode}", statusCode.ToString());
+        }
+
+        internal static string FormatHPackErrorDynamicTableSizeUpdateTooLarge(object size, object maxSize) {
+            return CoreStrings.HPackErrorDynamicTableSizeUpdateTooLarge
+                .Replace("{size}", size.ToString())
+                .Replace("{maxSize}", maxSize.ToString());
+        }
+
+        internal static string FormatHPackErrorIndexOutOfRange(object index) {
+            return CoreStrings.HPackErrorIndexOutOfRange
+                .Replace("{index}", index.ToString());
+        }
+
+        internal static string FormatHPackStringLengthTooLarge(object length, object maxStringLength) {
+            return CoreStrings.HPackStringLengthTooLarge
+                .Replace("{length}", length.ToString())
+                .Replace("{maxStringLength}", maxStringLength.ToString());
+        }
+
+        internal static string FormatHttp2ErrorFrameOverLimit(object size, object limit) {
+            return CoreStrings.Http2ErrorFrameOverLimit
+                .Replace("{size}", size.ToString())
+                .Replace("{limit}", limit.ToString());
+        }
+
+        internal static string FormatHttp2ErrorHeadersInterleaved(object frameType, object streamId, object headersStreamId) {
+            return CoreStrings.Http2ErrorHeadersInterleaved
+                .Replace("{frameType}", frameType.ToString())
+                .Replace("{streamId}", streamId.ToString())
+                .Replace("{headersStreamId}", headersStreamId.ToString());
+        }
+
+        internal static string FormatHttp2ErrorMethodInvalid(object method) {
+            return CoreStrings.Http2ErrorMethodInvalid
+                .Replace("{method}", method.ToString());
+        }
+
+        internal static string FormatHttp2ErrorMinTlsVersion(object protocol) {
+            return CoreStrings.Http2ErrorMinTlsVersion
+                .Replace("{protocol}", protocol.ToString());
+        }
+
+        internal static string FormatHttp2ErrorPaddingTooLong(object frameType) {
+            return CoreStrings.Http2ErrorPaddingTooLong
+                .Replace("{frameType}", frameType.ToString());
+        }
+
+        internal static string FormatHttp2ErrorSettingsParameterOutOfRange(object parameter) {
+            return CoreStrings.Http2ErrorSettingsParameterOutOfRange
+                .Replace("{parameter}", parameter.ToString());
+        }
+
+        internal static string FormatHttp2ErrorStreamAborted(object frameType, object streamId) {
+            return CoreStrings.Http2ErrorStreamAborted
+                .Replace("{frameType}", frameType.ToString())
+                .Replace("{streamId}", streamId.ToString());
+        }
+
+        internal static string FormatHttp2ErrorStreamClosed(object frameType, object streamId) {
+            return CoreStrings.Http2ErrorStreamClosed
+                .Replace("{frameType}", frameType.ToString())
+                .Replace("{streamId}", streamId.ToString());
+        }
+
+        internal static string FormatHttp2ErrorStreamHalfClosedRemote(object frameType, object streamId) {
+            return CoreStrings.Http2ErrorStreamHalfClosedRemote
+                .Replace("{frameType}", frameType.ToString())
+                .Replace("{streamId}", streamId.ToString());
+        }
+
+        internal static string FormatHttp2ErrorStreamIdEven(object frameType, object streamId) {
+            return CoreStrings.Http2ErrorStreamIdEven
+                .Replace("{frameType}", frameType.ToString())
+                .Replace("{streamId}", streamId.ToString());
+        }
+
+        internal static string FormatHttp2ErrorStreamIdle(object frameType, object streamId) {
+            return CoreStrings.Http2ErrorStreamIdle
+                .Replace("{frameType}", frameType.ToString())
+                .Replace("{streamId}", streamId.ToString());
+        }
+
+        internal static string FormatHttp2ErrorStreamIdNotZero(object frameType) {
+            return CoreStrings.Http2ErrorStreamIdNotZero
+                .Replace("{frameType}", frameType.ToString());
+        }
+
+        internal static string FormatHttp2ErrorStreamIdZero(object frameType) {
+            return CoreStrings.Http2ErrorStreamIdZero
+                .Replace("{frameType}", frameType.ToString());
+        }
+
+        internal static string FormatHttp2ErrorStreamSelfDependency(object frameType, object streamId) {
+            return CoreStrings.Http2ErrorStreamSelfDependency
+                .Replace("{frameType}", frameType.ToString())
+                .Replace("{streamId}", streamId.ToString());
+        }
+
+        internal static string FormatHttp2ErrorUnexpectedFrameLength(object frameType, object expectedLength) {
+            return CoreStrings.Http2ErrorUnexpectedFrameLength
+                .Replace("{frameType}", frameType.ToString())
+                .Replace("{expectedLength}", expectedLength.ToString());
+        }
+
+        internal static string FormatHttp2StreamErrorPathInvalid(object path) {
+            return CoreStrings.Http2StreamErrorPathInvalid
+                .Replace("{path}", path.ToString());
+        }
+
+        internal static string FormatHttp2StreamErrorSchemeMismatch(object requestScheme, object transportScheme) {
+            return CoreStrings.Http2StreamErrorSchemeMismatch
+                .Replace("{requestScheme}", requestScheme.ToString())
+                .Replace("{transportScheme}", transportScheme.ToString());
+        }
+
+        internal static string FormatHttp2StreamResetByApplication(object errorCode) {
+            return CoreStrings.Http2StreamResetByApplication
+                .Replace("{errorCode}", errorCode.ToString());
+        }
+
+        internal static string FormatInvalidAsciiOrControlChar(object character) {
+            return CoreStrings.InvalidAsciiOrControlChar
+                .Replace("{character}", character.ToString());
+        }
+
+        internal static string FormatInvalidContentLength_InvalidNumber(object value) {
+            return CoreStrings.InvalidContentLength_InvalidNumber
+                .Replace("{value}", value.ToString());
+        }
+
+        internal static string FormatInvalidServerCertificateEku(object thumbprint) {
+            return CoreStrings.InvalidServerCertificateEku
+                .Replace("{thumbprint}", thumbprint.ToString());
+        }
+
+        internal static string FormatInvalidUrl(object url) {
+            return CoreStrings.InvalidUrl
+                .Replace("{url}", url.ToString());
+        }
+
+        internal static string FormatMaxRequestBufferSmallerThanRequestHeaderBuffer(object requestBufferSize, object requestHeaderSize) {
+            return CoreStrings.MaxRequestBufferSmallerThanRequestHeaderBuffer
+                .Replace("{requestBufferSize}", requestBufferSize.ToString())
+                .Replace("{requestHeaderSize}", requestHeaderSize.ToString());
+        }
+
+        internal static string FormatMaxRequestBufferSmallerThanRequestLineBuffer(object requestBufferSize, object requestLineSize) {
+            return CoreStrings.MaxRequestBufferSmallerThanRequestLineBuffer
+                .Replace("{requestBufferSize}", requestBufferSize.ToString())
+                .Replace("{requestLineSize}", requestLineSize.ToString());
+        }
+
+        internal static string FormatMinimumGracePeriodRequired(object heartbeatInterval) {
+            return CoreStrings.MinimumGracePeriodRequired
+                .Replace("{heartbeatInterval}", heartbeatInterval.ToString());
+        }
+
+        internal static string FormatMultipleCertificateSources(object endpointName) {
+            return CoreStrings.MultipleCertificateSources
+                .Replace("{endpointName}", endpointName.ToString());
+        }
+
+        internal static string FormatNetworkInterfaceBindingFailed(object address, object interfaceName, object error) {
+            return CoreStrings.NetworkInterfaceBindingFailed
+                .Replace("{address}", address.ToString())
+                .Replace("{interfaceName}", interfaceName.ToString())
+                .Replace("{error}", error.ToString());
+        }
+
+        internal static string FormatOverridingWithKestrelOptions(object addresses, object methodName) {
+            return CoreStrings.OverridingWithKestrelOptions
+                .Replace("{addresses}", addresses.ToString())
+                .Replace("{methodName}", methodName.ToString());
+        }
+
+        internal static string FormatOverridingWithPreferHostingUrls(object settingName, object addresses) {
+            return CoreStrings.OverridingWithPreferHostingUrls
+                .Replace("{settingName}", settingName.ToString())
+                .Replace("{addresses}", addresses.ToString());
+        }
+
+        internal static string FormatParameterReadOnlyAfterResponseStarted(object name) {
+            return CoreStrings.ParameterReadOnlyAfterResponseStarted
+                .Replace("{name}", name.ToString());
+        }
+
+        internal static string FormatTooFewBytesWritten(object written, object expected) {
+            return CoreStrings.TooFewBytesWritten
+                .Replace("{written}", written.ToString())
+                .Replace("{expected}", expected.ToString());
+        }
+
+        internal static string FormatTooManyBytesWritten(object written, object expected) {
+            return CoreStrings.TooManyBytesWritten
+                .Replace("{written}", written.ToString())
+                .Replace("{expected}", expected.ToString());
+        }
+
+        internal static string FormatUnknownTransportMode(object mode) {
+            return CoreStrings.UnknownTransportMode
+                .Replace("{mode}", mode.ToString());
+        }
+
+        internal static string FormatUnsupportedAddressScheme(object address) {
+            return CoreStrings.UnsupportedAddressScheme
+                .Replace("{address}", address.ToString());
+        }
+
+        internal static string FormatWritingToResponseBodyNotSupported(object statusCode) {
+            return CoreStrings.WritingToResponseBodyNotSupported
+                .Replace("{statusCode}", statusCode.ToString());
+        }
+
+        #endregion
     }
 }

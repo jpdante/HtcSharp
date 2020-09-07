@@ -12,11 +12,11 @@ using HeaderUtilities = HtcSharp.HttpModule.Http.Headers.HeaderUtilities;
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\HttpResponseHeaders.cs
-    // Start-At-Remote-Line 13
+    // Start-At-Remote-Line 14
     // SourceTools-End
     internal sealed partial class HttpResponseHeaders : HttpHeaders {
-        private static ReadOnlySpan<byte> CrLf => new[] {(byte) '\r', (byte) '\n'};
-        private static ReadOnlySpan<byte> ColonSpace => new[] {(byte) ':', (byte) ' '};
+        private static ReadOnlySpan<byte> CrLf => new[] { (byte)'\r', (byte)'\n' };
+        private static ReadOnlySpan<byte> ColonSpace => new[] { (byte)':', (byte)' ' };
 
         public Enumerator GetEnumerator() {
             return new Enumerator(this);
@@ -58,7 +58,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         }
 
         private static void ThrowInvalidContentLengthException(string value) {
-            throw new InvalidOperationException($@"Invalid Content-Length: ""{value}"". Value must be a positive integral number.");
+            throw new InvalidOperationException(CoreStrings.FormatInvalidContentLength_InvalidNumber(value));
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

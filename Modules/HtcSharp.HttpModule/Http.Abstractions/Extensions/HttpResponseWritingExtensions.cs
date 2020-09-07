@@ -116,7 +116,8 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Extensions {
             // This may be a bug, but encoder.Convert returns completed = true for UTF7 too early.
             // Therefore, we check encodedLength - totalBytesUsed too.
             while (!completed || encodedLength - totalBytesUsed != 0) {
-                encoder.Convert(source, destination, flush: source.Length == 0, out var charsUsed, out var bytesUsed, out completed);
+                // 'text' is a complete string, the converter should always flush its buffer.
+                encoder.Convert(source, destination, flush: true, out var charsUsed, out var bytesUsed, out completed);
                 totalBytesUsed += bytesUsed;
 
                 writer.Advance(bytesUsed);

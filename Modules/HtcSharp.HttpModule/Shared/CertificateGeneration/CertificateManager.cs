@@ -43,6 +43,8 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
         private const string MacOSTrustCertificateCommandLine = "sudo";
         private static readonly string MacOSTrustCertificateCommandLineArguments = "security add-trusted-cert -d -r trustRoot -k " + MacOSSystemKeyChain + " ";
         private const int UserCancelledErrorCode = 1223;
+        private const string MacOSSetPartitionKeyPermissionsCommandLine = "sudo";
+        private static readonly string MacOSSetPartitionKeyPermissionsCommandLineArguments = "security set-key-partition-list -D localhost -S unsigned:,teamid:UBF8T346G9 " + MacOSUserKeyChain;
 
         // Setting to 0 means we don't append the version byte,
         // which is what all machines currently have.
@@ -50,7 +52,7 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
 
         public static bool IsHttpsDevelopmentCertificate(X509Certificate2 certificate) =>
             certificate.Extensions.OfType<X509Extension>()
-                .Any(e => string.Equals(AspNetHttpsOid, e.Oid.Value, StringComparison.Ordinal));
+            .Any(e => string.Equals(AspNetHttpsOid, e.Oid.Value, StringComparison.Ordinal));
 
         public static IList<X509Certificate2> ListCertificates(
             CertificatePurpose purpose,
@@ -87,9 +89,9 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                         var now = DateTimeOffset.Now;
                         var validCertificates = matchingCertificates
                             .Where(c => c.NotBefore <= now &&
-                                        now <= c.NotAfter &&
-                                        (!requireExportable || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || IsExportable(c))
-                                        && MatchesVersion(c))
+                                now <= c.NotAfter &&
+                                (!requireExportable || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || IsExportable(c))
+                                && MatchesVersion(c))
                             .ToArray();
 
                         var invalidCertificates = matchingCertificates.Except(validCertificates);
@@ -110,7 +112,7 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
 
                     store.Close();
 
-                    return (IList<X509Certificate2>) matchingCertificates;
+                    return (IList<X509Certificate2>)matchingCertificates;
                 }
             } catch {
                 DisposeCertificates(certificates);
@@ -128,7 +130,7 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                     .Single()
                     .RawData;
 
-                if ((byteArray.Length == AspNetHttpsOidFriendlyName.Length && byteArray[0] == (byte) 'A') || byteArray.Length == 0) {
+                if ((byteArray.Length == AspNetHttpsOidFriendlyName.Length && byteArray[0] == (byte)'A') || byteArray.Length == 0) {
                     // No Version set, default to 0
                     return 0 >= AspNetHttpsCertificateVersion;
                 } else {
@@ -139,9 +141,9 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
 #if !XPLAT
             bool IsExportable(X509Certificate2 c) =>
                 ((c.GetRSAPrivateKey() is RSACryptoServiceProvider rsaPrivateKey &&
-                  rsaPrivateKey.CspKeyContainerInfo.Exportable) ||
-                 (c.GetRSAPrivateKey() is RSACng cngPrivateKey &&
-                  cngPrivateKey.Key.ExportPolicy == CngExportPolicies.AllowExport));
+                    rsaPrivateKey.CspKeyContainerInfo.Exportable) ||
+                (c.GetRSAPrivateKey() is RSACng cngPrivateKey &&
+                    cngPrivateKey.Key.ExportPolicy == CngExportPolicies.AllowExport));
 #else
             // Only check for RSA CryptoServiceProvider and do not fail in XPlat tooling as
             // System.Security.Cryptography.Cng is not part of the shared framework and we don't
@@ -162,6 +164,24 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                 }
             }
         }
+
+        internal bool HasValidCertificateWithInnaccessibleKeyAcrossPartitions() {
+            var certificates = GetHttpsCertificates();
+            if (certificates.Count == 0) {
+                return false;
+            }
+
+            // We need to check all certificates as a new one might be created that hasn't been correctly setup.
+            var result = false;
+            foreach (var certificate in certificates) {
+                result = result || !CanAccessCertificateKeyAcrossPartitions(certificate);
+            }
+
+            return result;
+        }
+
+        public IList<X509Certificate2> GetHttpsCertificates() =>
+            ListCertificates(CertificatePurpose.HTTPS, StoreName.My, StoreLocation.CurrentUser, isValid: true, requireExportable: true);
 
         public X509Certificate2 CreateAspNetCoreHttpsDevelopmentCertificate(DateTimeOffset notBefore, DateTimeOffset notAfter, string subjectOverride, DiagnosticInformation diagnostics = null) {
             var subject = new X500DistinguishedName(subjectOverride ?? LocalhostHttpsDistinguishedName);
@@ -188,7 +208,7 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
 
             if (AspNetHttpsCertificateVersion != 0) {
                 bytePayload = new byte[1];
-                bytePayload[0] = (byte) AspNetHttpsCertificateVersion;
+                bytePayload[0] = (byte)AspNetHttpsCertificateVersion;
             } else {
                 bytePayload = Encoding.ASCII.GetBytes(AspNetHttpsOidFriendlyName);
             }
@@ -278,9 +298,7 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                 store.Open(OpenFlags.ReadWrite);
                 store.Add(imported);
                 store.Close();
-            }
-
-            ;
+            };
 
             return imported;
         }
@@ -317,7 +335,6 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                     throw;
                 }
             }
-
             try {
                 diagnostics?.Debug($"Writing exported certificate to path '{path}'.");
                 File.WriteAllBytes(path, bytes);
@@ -385,11 +402,8 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                     diagnostics?.Debug("User cancelled the trust prompt.");
                     throw new UserCancelledTrustException();
                 }
-
                 store.Close();
-            }
-
-            ;
+            };
         }
 
         public bool IsTrusted(X509Certificate2 certificate) {
@@ -401,11 +415,12 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                 if (!subjectMatch.Success) {
                     throw new InvalidOperationException($"Can't determine the subject for the certificate with subject '{certificate.Subject}'.");
                 }
-
                 var subject = subjectMatch.Groups[1].Value;
                 using (var checkTrustProcess = Process.Start(new ProcessStartInfo(
                     MacOSFindCertificateCommandLine,
-                    string.Format(MacOSFindCertificateCommandLineArgumentsFormat, subject)) {RedirectStandardOutput = true})) {
+                    string.Format(MacOSFindCertificateCommandLineArgumentsFormat, subject)) {
+                    RedirectStandardOutput = true
+                })) {
                     var output = checkTrustProcess.StandardOutput.ReadToEnd();
                     checkTrustProcess.WaitForExit();
                     var matches = Regex.Matches(output, MacOSFindCertificateOutputRegex, RegexOptions.Multiline, MaxRegexTimeout);
@@ -457,7 +472,9 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
         }
 
         public void RemoveAllCertificates(CertificatePurpose purpose, StoreName storeName, StoreLocation storeLocation, string subject = null) {
-            var certificates = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? ListCertificates(purpose, StoreName.My, StoreLocation.CurrentUser, isValid: false) : ListCertificates(purpose, storeName, storeLocation, isValid: false);
+            var certificates = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ?
+                ListCertificates(purpose, StoreName.My, StoreLocation.CurrentUser, isValid: false) :
+                ListCertificates(purpose, storeName, storeLocation, isValid: false);
             var certificatesWithName = subject == null ? certificates : certificates.Where(c => c.Subject == subject);
 
             var removeLocation = storeName == StoreName.My ? RemoveLocations.Local : RemoveLocations.Trusted;
@@ -483,7 +500,6 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                     if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
                         RemoveCertificateFromTrustedRoots(certificate, diagnostics);
                     }
-
                     RemoveCertificateFromUserStore(certificate, diagnostics);
                     break;
                 default:
@@ -532,7 +548,6 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                         // The delete command will fail if the certificate is
                         // trusted.
                     }
-
                     RemoveCertificateFromKeyChain(MacOSSystemKeyChain, certificate);
                 } else {
                     diagnostics?.Debug("The certificate was not trusted.");
@@ -572,7 +587,10 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                     MacOSDeleteCertificateCommandLineArgumentsFormat,
                     certificate.Thumbprint.ToUpperInvariant(),
                     keyChain
-                )) {RedirectStandardOutput = true, RedirectStandardError = true};
+                )) {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
 
             using (var process = Process.Start(processInfo)) {
                 var output = process.StandardOutput.ReadToEnd() + process.StandardError.ReadToEnd();
@@ -593,19 +611,21 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
             bool trust = false,
             bool includePrivateKey = false,
             string password = null,
-            string subject = LocalhostHttpsDistinguishedName) {
-            return EnsureValidCertificateExists(notBefore, notAfter, CertificatePurpose.HTTPS, path, trust, includePrivateKey, password, subject);
+            string subject = LocalhostHttpsDistinguishedName,
+            bool isInteractive = true) {
+            return EnsureValidCertificateExists(notBefore, notAfter, CertificatePurpose.HTTPS, path, trust, includePrivateKey, password, subject, isInteractive);
         }
 
         public DetailedEnsureCertificateResult EnsureValidCertificateExists(
             DateTimeOffset notBefore,
             DateTimeOffset notAfter,
             CertificatePurpose purpose,
-            string path,
-            bool trust,
-            bool includePrivateKey,
-            string password,
-            string subject) {
+            string path = null,
+            bool trust = false,
+            bool includePrivateKey = false,
+            string password = null,
+            string subjectOverride = null,
+            bool isInteractive = true) {
             if (purpose == CertificatePurpose.All) {
                 throw new ArgumentException("The certificate must have a specific purpose.");
             }
@@ -615,16 +635,38 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
             var certificates = ListCertificates(purpose, StoreName.My, StoreLocation.CurrentUser, isValid: true, requireExportable: true, result.Diagnostics).Concat(
                 ListCertificates(purpose, StoreName.My, StoreLocation.LocalMachine, isValid: true, requireExportable: true, result.Diagnostics));
 
-            var filteredCertificates = subject == null ? certificates : certificates.Where(c => c.Subject == subject);
-            if (subject != null) {
+            var filteredCertificates = subjectOverride == null ? certificates : certificates.Where(c => c.Subject == subjectOverride);
+            if (subjectOverride != null) {
                 var excludedCertificates = certificates.Except(filteredCertificates);
 
-                result.Diagnostics.Debug($"Filtering found certificates to those with a subject equal to '{subject}'");
+                result.Diagnostics.Debug($"Filtering found certificates to those with a subject equal to '{subjectOverride}'");
                 result.Diagnostics.Debug(result.Diagnostics.DescribeCertificates(filteredCertificates));
                 result.Diagnostics.Debug($"Listing certificates excluded from consideration.");
                 result.Diagnostics.Debug(result.Diagnostics.DescribeCertificates(excludedCertificates));
             } else {
                 result.Diagnostics.Debug("Skipped filtering certificates by subject.");
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) {
+                foreach (var cert in filteredCertificates) {
+                    if (!CanAccessCertificateKeyAcrossPartitions(cert)) {
+                        if (!isInteractive) {
+                            // If the process is not interactive (first run experience) bail out. We will simply create a certificate
+                            // in case there is none or report success during the first run experience.
+                            break;
+                        }
+                        try {
+                            // The command we run handles making keys for all localhost certificates accessible across partitions. If it can not run the
+                            // command safely (because there are other localhost certificates that were not created by asp.net core, it will throw.
+                            MakeCertificateKeyAccessibleAcrossPartitions(cert);
+                            break;
+                        } catch (Exception ex) {
+                            result.Diagnostics.Error("Failed to make certificate key accessible", ex);
+                            result.ResultCode = EnsureCertificateResult.FailedToMakeKeyAccessible;
+                            return result;
+                        }
+                    }
+                }
             }
 
             certificates = filteredCertificates;
@@ -646,7 +688,7 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                         case CertificatePurpose.All:
                             throw new InvalidOperationException("The certificate must have a specific purpose.");
                         case CertificatePurpose.HTTPS:
-                            certificate = CreateAspNetCoreHttpsDevelopmentCertificate(notBefore, notAfter, subject, result.Diagnostics);
+                            certificate = CreateAspNetCoreHttpsDevelopmentCertificate(notBefore, notAfter, subjectOverride, result.Diagnostics);
                             break;
                         default:
                             throw new InvalidOperationException("The certificate must have a purpose.");
@@ -664,8 +706,15 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                     result.ResultCode = EnsureCertificateResult.ErrorSavingTheCertificateIntoTheCurrentUserPersonalStore;
                     return result;
                 }
-            }
 
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && isInteractive) {
+                    MakeCertificateKeyAccessibleAcrossPartitions(certificate);
+                }
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) && isInteractive) {
+                    MakeCertificateKeyAccessibleAcrossPartitions(certificate);
+                }
+            }
             if (path != null) {
                 result.Diagnostics.Debug("Trying to export the certificate.");
                 result.Diagnostics.Debug(result.Diagnostics.DescribeCertificates(certificate));
@@ -694,6 +743,64 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
             }
 
             return result;
+        }
+
+        private void MakeCertificateKeyAccessibleAcrossPartitions(X509Certificate2 certificate) {
+            if (OtherNonAspNetCoreHttpsCertificatesPresent()) {
+                throw new InvalidOperationException("Unable to make HTTPS certificate key trusted across security partitions.");
+            }
+            using (var process = Process.Start(MacOSSetPartitionKeyPermissionsCommandLine, MacOSSetPartitionKeyPermissionsCommandLineArguments)) {
+                process.WaitForExit();
+                if (process.ExitCode != 0) {
+                    throw new InvalidOperationException("Error making the key accessible across partitions.");
+                }
+            }
+
+            var certificateSentinelPath = GetCertificateSentinelPath(certificate);
+            File.WriteAllText(certificateSentinelPath, "true");
+        }
+
+        private static string GetCertificateSentinelPath(X509Certificate2 certificate) =>
+            Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".dotnet", $"certificate.{certificate.GetCertHashString(HashAlgorithmName.SHA256)}.sentinel");
+
+        private bool OtherNonAspNetCoreHttpsCertificatesPresent() {
+            var certificates = new List<X509Certificate2>();
+            try {
+                using (var store = new X509Store(StoreName.My, StoreLocation.CurrentUser)) {
+                    store.Open(OpenFlags.ReadOnly);
+                    certificates.AddRange(store.Certificates.OfType<X509Certificate2>());
+                    IEnumerable<X509Certificate2> matchingCertificates = certificates;
+                    // Ensure the certificate hasn't expired, has a private key and its exportable
+                    // (for container/unix scenarios).
+                    var now = DateTimeOffset.Now;
+                    matchingCertificates = matchingCertificates
+                        .Where(c => c.NotBefore <= now &&
+                            now <= c.NotAfter && c.Subject == LocalhostHttpsDistinguishedName);
+
+                    // We need to enumerate the certificates early to prevent dispoisng issues.
+                    matchingCertificates = matchingCertificates.ToList();
+
+                    var certificatesToDispose = certificates.Except(matchingCertificates);
+                    DisposeCertificates(certificatesToDispose);
+
+                    store.Close();
+
+                    return matchingCertificates.All(c => !HasOid(c, AspNetHttpsOid));
+                }
+            } catch {
+                DisposeCertificates(certificates);
+                certificates.Clear();
+                return true;
+            }
+
+            bool HasOid(X509Certificate2 certificate, string oid) =>
+                certificate.Extensions.OfType<X509Extension>()
+                .Any(e => string.Equals(oid, e.Oid.Value, StringComparison.Ordinal));
+        }
+
+        private bool CanAccessCertificateKeyAcrossPartitions(X509Certificate2 certificate) {
+            var certificateSentinelPath = GetCertificateSentinelPath(certificate);
+            return File.Exists(certificateSentinelPath);
         }
 
         private class UserCancelledTrustException : Exception {
@@ -751,6 +858,7 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
                     Messages.Add("Exception message: " + ex.Message);
                     ex = ex.InnerException;
                 }
+
             }
         }
     }

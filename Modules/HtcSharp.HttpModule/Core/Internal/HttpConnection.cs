@@ -21,7 +21,7 @@ namespace HtcSharp.HttpModule.Core.Internal {
     // SourceTools-End
     internal class HttpConnection : ITimeoutHandler {
         // Use C#7.3's ReadOnlySpan<byte> optimization for static data https://vcsjones.com/2019/02/01/csharp-readonly-span-bytes-static/
-        private static ReadOnlySpan<byte> Http2Id => new[] {(byte) 'h', (byte) '2'};
+        private static ReadOnlySpan<byte> Http2Id => new[] { (byte)'h', (byte)'2' };
 
         private readonly HttpConnectionContext _context;
         private readonly ISystemClock _systemClock;
@@ -47,7 +47,6 @@ namespace HtcSharp.HttpModule.Core.Internal {
         public async Task ProcessRequestsAsync<TContext>(IHttpApplication<TContext> httpApplication) {
             try {
                 // Ensure TimeoutControl._lastTimestamp is initialized before anything that could set timeouts runs.
-
                 _timeoutControl.Initialize(_systemClock.UtcNowTicks);
 
                 IRequestProcessor requestProcessor = null;
@@ -87,13 +86,13 @@ namespace HtcSharp.HttpModule.Core.Internal {
                     // Register the various callbacks once we're going to start processing requests
 
                     // The heart beat for various timeouts
-                    connectionHeartbeatFeature?.OnHeartbeat(state => ((HttpConnection) state).Tick(), this);
+                    connectionHeartbeatFeature?.OnHeartbeat(state => ((HttpConnection)state).Tick(), this);
 
                     // Register for graceful shutdown of the server
-                    using var shutdownRegistration = connectionLifetimeNotificationFeature?.ConnectionClosedRequested.Register(state => ((HttpConnection) state).StopProcessingNextRequest(), this);
+                    using var shutdownRegistration = connectionLifetimeNotificationFeature?.ConnectionClosedRequested.Register(state => ((HttpConnection)state).StopProcessingNextRequest(), this);
 
                     // Register for connection close
-                    using var closedRegistration = _context.ConnectionContext.ConnectionClosed.Register(state => ((HttpConnection) state).OnConnectionClosed(), this);
+                    using var closedRegistration = _context.ConnectionContext.ConnectionClosed.Register(state => ((HttpConnection)state).OnConnectionClosed(), this);
 
                     await requestProcessor.ProcessRequestsAsync(httpApplication);
                 }

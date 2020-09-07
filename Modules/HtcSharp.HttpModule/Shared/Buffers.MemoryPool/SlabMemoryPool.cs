@@ -7,10 +7,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 
-namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+namespace System.Buffers {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\SlabMemoryPool.cs
-    // Start-At-Remote-Line 11
+    // Start-At-Remote-Line 9
     // SourceTools-End
     /// <summary>
     /// Used to allocate and distribute re-usable blocks of memory.
@@ -94,7 +94,6 @@ namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
                 block.Lease();
                 return block;
             }
-
             // no blocks available - grow the pool
             block = AllocateSlab();
             block.Lease();
@@ -111,9 +110,9 @@ namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
 
             var basePtr = slab.NativePointer;
             // Page align the blocks
-            var offset = (int) ((((ulong) basePtr + (uint) _blockSize - 1) & ~((uint) _blockSize - 1)) - (ulong) basePtr);
+            var offset = (int)((((ulong)basePtr + (uint)_blockSize - 1) & ~((uint)_blockSize - 1)) - (ulong)basePtr);
             // Ensure page aligned
-            Debug.Assert(((ulong) basePtr + (uint) offset) % _blockSize == 0);
+            Debug.Assert(((ulong)basePtr + (uint)offset) % _blockSize == 0);
 
             var blockCount = (_slabLength - offset) / _blockSize;
             Interlocked.Add(ref _totalAllocatedBlocks, blockCount);

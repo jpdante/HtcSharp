@@ -7,7 +7,7 @@ using System.Threading;
 namespace HtcSharp.HttpModule.Core {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\KestrelServerLimits.cs
-    // Start-At-Remote-Line 8
+    // Start-At-Remote-Line 10
     // SourceTools-End
     public class KestrelServerLimits {
         // Matches the non-configurable default response buffer size for Kestrel in 1.0.0

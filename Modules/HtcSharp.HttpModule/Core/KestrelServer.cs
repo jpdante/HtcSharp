@@ -21,9 +21,9 @@ using Microsoft.Extensions.Options;
 namespace HtcSharp.HttpModule.Core {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\KestrelServer.cs
-    // Start-At-Remote-Line 23
+    // Start-At-Remote-Line 21
     // SourceTools-End
-    public class KestrelServer : IDisposable {
+    public class KestrelServer : IServer {
         private readonly List<(IConnectionListener, Task)> _transports = new List<(IConnectionListener, Task)>();
         private readonly IServerAddressesFeature _serverAddresses;
         private readonly IConnectionListenerFactory _transportFactory;
@@ -38,7 +38,11 @@ namespace HtcSharp.HttpModule.Core {
 
         // For testing
         internal KestrelServer(IConnectionListenerFactory transportFactory, ServiceContext serviceContext) {
-            _transportFactory = transportFactory ?? throw new ArgumentNullException(nameof(transportFactory));
+            if (transportFactory == null) {
+                throw new ArgumentNullException(nameof(transportFactory));
+            }
+
+            _transportFactory = transportFactory;
             ServiceContext = serviceContext;
 
             Features = new FeatureCollection();
@@ -60,11 +64,17 @@ namespace HtcSharp.HttpModule.Core {
             var serverOptions = options.Value ?? new KestrelServerOptions();
             var logger = loggerFactory.CreateLogger("Microsoft.AspNetCore.Server.Kestrel");
             var trace = new KestrelTrace(logger);
-            var connectionManager = new ConnectionManager(trace, serverOptions.Limits.MaxConcurrentUpgradedConnections);
+            var connectionManager = new ConnectionManager(
+                trace,
+                serverOptions.Limits.MaxConcurrentUpgradedConnections);
 
             var heartbeatManager = new HeartbeatManager(connectionManager);
             var dateHeaderValueManager = new DateHeaderValueManager();
-            var heartbeat = new Heartbeat(new IHeartbeatHandler[] {dateHeaderValueManager, heartbeatManager}, new SystemClock(), DebuggerWrapper.Singleton, trace);
+            var heartbeat = new Heartbeat(
+                new IHeartbeatHandler[] {dateHeaderValueManager, heartbeatManager},
+                new SystemClock(),
+                DebuggerWrapper.Singleton,
+                trace);
 
             return new ServiceContext {
                 Log = trace,
@@ -152,6 +162,7 @@ namespace HtcSharp.HttpModule.Core {
 
                 if (!await ConnectionManager.CloseAllConnectionsAsync(cancellationToken).ConfigureAwait(false)) {
                     Trace.NotAllConnectionsClosedGracefully();
+
                     if (!await ConnectionManager.AbortAllConnectionsAsync().ConfigureAwait(false)) {
                         Trace.NotAllConnectionsAborted();
                     }
@@ -185,12 +196,14 @@ namespace HtcSharp.HttpModule.Core {
 
             if (Options.Limits.MaxRequestBufferSize.HasValue &&
                 Options.Limits.MaxRequestBufferSize < Options.Limits.MaxRequestLineSize) {
-                throw new InvalidOperationException($@"Maximum request buffer size ({Options.Limits.MaxRequestBufferSize.Value}) must be greater than or equal to maximum request line size ({Options.Limits.MaxRequestLineSize}).");
+                throw new InvalidOperationException(
+                    CoreStrings.FormatMaxRequestBufferSmallerThanRequestLineBuffer(Options.Limits.MaxRequestBufferSize.Value, Options.Limits.MaxRequestLineSize));
             }
 
             if (Options.Limits.MaxRequestBufferSize.HasValue &&
                 Options.Limits.MaxRequestBufferSize < Options.Limits.MaxRequestHeadersTotalSize) {
-                throw new InvalidOperationException($@"Maximum request buffer size ({Options.Limits.MaxRequestBufferSize.Value}) must be greater than or equal to maximum request header size ({Options.Limits.MaxRequestHeadersTotalSize}).");
+                throw new InvalidOperationException(
+                    CoreStrings.FormatMaxRequestBufferSmallerThanRequestHeaderBuffer(Options.Limits.MaxRequestBufferSize.Value, Options.Limits.MaxRequestHeadersTotalSize));
             }
         }
     }

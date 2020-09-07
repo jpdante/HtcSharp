@@ -31,7 +31,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
         /// <param name="value">The unescaped path to be assigned to the Value property.</param>
         public PathString(string value) {
             if (!string.IsNullOrEmpty(value) && value[0] != '/') {
-                throw new ArgumentException($@"The path in '{nameof(value)}' must start with '/'.", nameof(value));
+                throw new ArgumentException(Resources.FormatException_PathMustStartWithSlash(nameof(value)), nameof(value));
             }
 
             _value = value;
@@ -329,7 +329,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
                 return !HasValue;
             }
 
-            return obj is PathString && Equals((PathString) obj);
+            return obj is PathString && Equals((PathString)obj);
         }
 
         /// <summary>
@@ -428,7 +428,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             => value is string
-                ? PathString.ConvertFromString((string) value)
+                ? PathString.ConvertFromString((string)value)
                 : base.ConvertFrom(context, culture, value);
 
         public override object ConvertTo(ITypeDescriptorContext context,

@@ -6,11 +6,11 @@ using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Abstractions.Extensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Extensions\HeaderDictionaryExtensions.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public static class HeaderDictionaryExtensions {
-        // SourceTools-Start
-        // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Extensions\HeaderDictionaryExtensions.cs
-        // Start-At-Remote-Line 11
-        // SourceTools-End
         /// <summary>
         /// Add new values. Each item remains a separate array entry.
         /// </summary>
@@ -50,10 +50,6 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Extensions {
         /// <param name="values">The header values.</param>
         public static void SetCommaSeparatedValues(this IHeaderDictionary headers, string key, params string[] values) {
             ParsingHelpers.SetHeaderJoined(headers, key, values);
-        }
-
-        public static StringValues GetValueOrDefault(this IHeaderDictionary headers, string key) {
-            return headers.TryGetValue(key, out var value) ? value : default(StringValues);
         }
     }
 }

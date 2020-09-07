@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+namespace System.Buffers {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\DiagnosticMemoryPool.cs
-    // Start-At-Remote-Line 11
+    // Start-At-Remote-Line 9
     // SourceTools-End
     /// <summary>
     /// Used to allocate and distribute re-usable blocks of memory.
@@ -59,7 +59,6 @@ namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
                 if (_rentTracking) {
                     diagnosticPoolBlock.Track();
                 }
-
                 _totalBlocks++;
                 _blocks.Add(diagnosticPoolBlock);
                 return diagnosticPoolBlock;
@@ -84,6 +83,7 @@ namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
                     SetAllBlocksReturned();
                 }
             }
+
         }
 
         internal void ReportException(Exception exception) {

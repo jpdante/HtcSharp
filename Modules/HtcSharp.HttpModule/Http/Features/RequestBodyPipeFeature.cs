@@ -10,7 +10,7 @@ using HtcSharp.HttpModule.Http.Abstractions;
 namespace HtcSharp.HttpModule.Http.Features {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\Features\RequestBodyPipeFeature.cs
-    // Start-At-Remote-Line 11
+    // Start-At-Remote-Line 10
     // SourceTools-End
     public class RequestBodyPipeFeature : IRequestBodyPipeFeature {
         private PipeReader _internalPipeReader;
@@ -33,7 +33,7 @@ namespace HtcSharp.HttpModule.Http.Features {
                     _internalPipeReader = PipeReader.Create(_context.Request.Body);
 
                     _context.Response.OnCompleted((self) => {
-                        ((PipeReader) self).Complete();
+                        ((PipeReader)self).Complete();
                         return Task.CompletedTask;
                     }, _internalPipeReader);
                 }

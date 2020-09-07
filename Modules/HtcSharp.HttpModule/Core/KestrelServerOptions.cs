@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace HtcSharp.HttpModule.Core {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\KestrelServerOptions.cs
-    // Start-At-Remote-Line 18
+    // Start-At-Remote-Line 19
     // SourceTools-End
     /// <summary>
     /// Provides programmatic configuration of Kestrel-specific features.
@@ -92,6 +92,11 @@ namespace HtcSharp.HttpModule.Core {
         /// Has the default dev certificate load been attempted?
         /// </summary>
         internal bool IsDevCertLoaded { get; set; }
+
+        /// <summary>
+        /// Treat request headers as Latin-1 or ISO/IEC 8859-1 instead of UTF-8.
+        /// </summary>
+        internal bool Latin1RequestHeaders { get; set; }
 
         /// <summary>
         /// Specifies a configuration Action to run for each newly created endpoint. Calling this again will replace

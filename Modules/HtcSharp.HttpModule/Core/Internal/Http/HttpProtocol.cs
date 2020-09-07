@@ -28,7 +28,7 @@ using Microsoft.Extensions.Primitives;
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\HttpProtocol.cs
-    // Start-At-Remote-Line 28
+    // Start-At-Remote-Line 27
     // SourceTools-End
     internal abstract partial class HttpProtocol : IHttpResponseControl {
         private static readonly byte[] _bytesConnectionClose = Encoding.ASCII.GetBytes("\r\nConnection: close");
@@ -81,7 +81,11 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
             _context = context;
 
             ServerOptions = ServiceContext.ServerOptions;
-            HttpRequestHeaders = new HttpRequestHeaders(reuseHeaderValues: !ServerOptions.DisableStringReuse);
+
+            HttpRequestHeaders = new HttpRequestHeaders(
+                reuseHeaderValues: !ServerOptions.DisableStringReuse,
+                useLatin1: ServerOptions.Latin1RequestHeaders);
+
             HttpResponseControl = this;
         }
 
@@ -134,13 +138,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         public HttpMethod Method { get; set; }
         public string PathBase { get; set; }
 
-        protected string _parsedPath = null;
         public string Path { get; set; }
-
-        protected string _parsedQueryString = null;
         public string QueryString { get; set; }
-
-        protected string _parsedRawTarget = null;
         public string RawTarget { get; set; }
 
         public string HttpVersion {
@@ -420,7 +419,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
 
             if (shouldScheduleCancellation) {
                 // Potentially calling user code. CancelRequestAbortedToken logs any exceptions.
-                ServiceContext.Scheduler.Schedule(state => ((HttpProtocol) state).CancelRequestAbortedToken(), this);
+                ServiceContext.Scheduler.Schedule(state => ((HttpProtocol)state).CancelRequestAbortedToken(), this);
             }
         }
 
@@ -456,7 +455,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
             }
 
             string key = name.GetHeaderName();
-            var valueStr = value.GetAsciiOrUTF8StringNonNullCharacters();
+            var valueStr = value.GetRequestHeaderStringNonNullCharacters(ServerOptions.Latin1RequestHeaders);
             RequestTrailers.Append(key, valueStr);
         }
 
@@ -725,7 +724,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         [MethodImpl(MethodImplOptions.NoInlining)]
         private InvalidOperationException GetTooManyBytesWrittenException(int count) {
             var responseHeaders = HttpResponseHeaders;
-            return new InvalidOperationException($@"Response Content-Length mismatch: too many bytes written ({_responseBytesWritten + count} of {responseHeaders.ContentLength.Value}).");
+            return new InvalidOperationException(
+                CoreStrings.FormatTooManyBytesWritten(_responseBytesWritten + count, responseHeaders.ContentLength.Value));
         }
 
         private void CheckLastWrite() {
@@ -758,7 +758,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                     _keepAlive = false;
                 }
 
-                ex = new InvalidOperationException($@"Response Content-Length mismatch: too few bytes written ({_responseBytesWritten} of {responseHeaders.ContentLength.Value}).");
+                ex = new InvalidOperationException(
+                    CoreStrings.FormatTooFewBytesWritten(_responseBytesWritten, responseHeaders.ContentLength.Value));
                 return false;
             }
 
@@ -1007,11 +1008,11 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         }
 
         private static void ThrowResponseAlreadyStartedException(string value) {
-            throw new InvalidOperationException($@"{value} cannot be set because the response has already started.");
+            throw new InvalidOperationException(CoreStrings.FormatParameterReadOnlyAfterResponseStarted(value));
         }
 
         private void RejectNonBodyTransferEncodingResponse(bool appCompleted) {
-            var ex = new InvalidOperationException($@"Setting the header Transfer-Encoding is not allowed on responses with status code {StatusCode}.");
+            var ex = new InvalidOperationException(CoreStrings.FormatHeaderNotAllowedOnResponse("Transfer-Encoding", StatusCode));
             if (!appCompleted) {
                 // Back out of header creation surface exception in user code
                 _requestProcessingStatus = RequestProcessingStatus.AppStarted;
@@ -1062,7 +1063,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         [StackTraceHidden]
         private void ThrowWritingToResponseBodyNotSupported() {
             // Throw Exception for 204, 205, 304 responses.
-            throw new InvalidOperationException($@"Writing to the response body is invalid for responses with status code {StatusCode}.");
+            throw new InvalidOperationException(CoreStrings.FormatWritingToResponseBodyNotSupported(StatusCode));
         }
 
         [StackTraceHidden]

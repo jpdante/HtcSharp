@@ -36,7 +36,7 @@ namespace HtcSharp.HttpModule.Core {
                 var v4Options = Clone(IPAddress.Loopback);
                 await AddressBinder.BindEndpointAsync(v4Options, context).ConfigureAwait(false);
             } catch (Exception ex) when (!(ex is IOException)) {
-                context.Logger.LogWarning((EventId) 0, (string) CoreStrings.NetworkInterfaceBindingFailed, GetDisplayName(), "IPv4 loopback", ex.Message);
+                context.Logger.LogWarning(0, CoreStrings.NetworkInterfaceBindingFailed, GetDisplayName(), "IPv4 loopback", ex.Message);
                 exceptions.Add(ex);
             }
 
@@ -44,12 +44,12 @@ namespace HtcSharp.HttpModule.Core {
                 var v6Options = Clone(IPAddress.IPv6Loopback);
                 await AddressBinder.BindEndpointAsync(v6Options, context).ConfigureAwait(false);
             } catch (Exception ex) when (!(ex is IOException)) {
-                context.Logger.LogWarning((EventId) 0, (string) CoreStrings.NetworkInterfaceBindingFailed, GetDisplayName(), "IPv6 loopback", ex.Message);
+                context.Logger.LogWarning(0, CoreStrings.NetworkInterfaceBindingFailed, GetDisplayName(), "IPv6 loopback", ex.Message);
                 exceptions.Add(ex);
             }
 
             if (exceptions.Count == 2) {
-                throw new IOException($"Failed to bind to address {GetDisplayName()}.", new AggregateException(exceptions));
+                throw new IOException(CoreStrings.FormatAddressBindingFailed(GetDisplayName()), new AggregateException(exceptions));
             }
 
             // If StartLocalhost doesn't throw, there is at least one listener.
@@ -59,7 +59,7 @@ namespace HtcSharp.HttpModule.Core {
 
         // used for cloning to two IPEndpoints
         internal ListenOptions Clone(IPAddress address) {
-            var options = new ListenOptions(new IPEndPoint(address, IPEndPoint.Port)) {KestrelServerOptions = KestrelServerOptions, Protocols = Protocols, IsTls = IsTls};
+            var options = new ListenOptions(new IPEndPoint(address, IPEndPoint.Port)) { KestrelServerOptions = KestrelServerOptions, Protocols = Protocols, IsTls = IsTls };
 
             options._middleware.AddRange(_middleware);
             return options;

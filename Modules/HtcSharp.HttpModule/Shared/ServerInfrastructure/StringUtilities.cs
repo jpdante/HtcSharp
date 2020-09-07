@@ -12,11 +12,61 @@ using System.Text;
 namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Shared\ServerInfrastructure\StringUtilities.cs
-    // Start-At-Remote-Line 14
+    // Start-At-Remote-Line 13
     // SourceTools-End
-    internal class StringUtilities {
+    internal static class StringUtilities {
+        public static unsafe string GetAsciiOrUTF8StringNonNullCharacters(this Span<byte> span, Encoding defaultEncoding) {
+            if (span.IsEmpty) {
+                return string.Empty;
+            }
+
+            var resultString = new string('\0', span.Length);
+
+            fixed (char* output = resultString)
+            fixed (byte* buffer = span) {
+                // StringUtilities.TryGetAsciiString returns null if there are any null (0 byte) characters
+                // in the string
+                if (!TryGetAsciiString(buffer, output, span.Length)) {
+                    // null characters are considered invalid
+                    if (span.IndexOf((byte)0) != -1) {
+                        throw new InvalidOperationException();
+                    }
+
+                    try {
+                        resultString = defaultEncoding.GetString(buffer, span.Length);
+                    } catch (DecoderFallbackException) {
+                        throw new InvalidOperationException();
+                    }
+                }
+            }
+
+            return resultString;
+        }
+
+        public static unsafe string GetLatin1StringNonNullCharacters(this Span<byte> span) {
+            if (span.IsEmpty) {
+                return string.Empty;
+            }
+
+            var resultString = new string('\0', span.Length);
+
+            fixed (char* output = resultString)
+            fixed (byte* buffer = span) {
+                // This returns false if there are any null (0 byte) characters in the string.
+                if (!TryGetLatin1String(buffer, output, span.Length)) {
+                    // null characters are considered invalid
+                    throw new InvalidOperationException();
+                }
+            }
+
+            return resultString;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static unsafe bool TryGetAsciiString(byte* input, char* output, int count) {
+            Debug.Assert(input != null);
+            Debug.Assert(output != null);
+
             // Calculate end position
             var end = input + count;
             // Start as valid
@@ -29,28 +79,27 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
                     {
                         // 64-bit: Loop longs by default
                         while (input <= end - sizeof(long)) {
-                            isValid &= CheckBytesInAsciiRange(((long*) input)[0]);
+                            isValid &= CheckBytesInAsciiRange(((long*)input)[0]);
 
-                            output[0] = (char) input[0];
-                            output[1] = (char) input[1];
-                            output[2] = (char) input[2];
-                            output[3] = (char) input[3];
-                            output[4] = (char) input[4];
-                            output[5] = (char) input[5];
-                            output[6] = (char) input[6];
-                            output[7] = (char) input[7];
+                            output[0] = (char)input[0];
+                            output[1] = (char)input[1];
+                            output[2] = (char)input[2];
+                            output[3] = (char)input[3];
+                            output[4] = (char)input[4];
+                            output[5] = (char)input[5];
+                            output[6] = (char)input[6];
+                            output[7] = (char)input[7];
 
                             input += sizeof(long);
                             output += sizeof(long);
                         }
-
                         if (input <= end - sizeof(int)) {
-                            isValid &= CheckBytesInAsciiRange(((int*) input)[0]);
+                            isValid &= CheckBytesInAsciiRange(((int*)input)[0]);
 
-                            output[0] = (char) input[0];
-                            output[1] = (char) input[1];
-                            output[2] = (char) input[2];
-                            output[3] = (char) input[3];
+                            output[0] = (char)input[0];
+                            output[1] = (char)input[1];
+                            output[2] = (char)input[2];
+                            output[3] = (char)input[3];
 
                             input += sizeof(int);
                             output += sizeof(int);
@@ -58,31 +107,29 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
                     } else {
                         // 32-bit: Loop ints by default
                         while (input <= end - sizeof(int)) {
-                            isValid &= CheckBytesInAsciiRange(((int*) input)[0]);
+                            isValid &= CheckBytesInAsciiRange(((int*)input)[0]);
 
-                            output[0] = (char) input[0];
-                            output[1] = (char) input[1];
-                            output[2] = (char) input[2];
-                            output[3] = (char) input[3];
+                            output[0] = (char)input[0];
+                            output[1] = (char)input[1];
+                            output[2] = (char)input[2];
+                            output[3] = (char)input[3];
 
                             input += sizeof(int);
                             output += sizeof(int);
                         }
                     }
-
                     if (input <= end - sizeof(short)) {
-                        isValid &= CheckBytesInAsciiRange(((short*) input)[0]);
+                        isValid &= CheckBytesInAsciiRange(((short*)input)[0]);
 
-                        output[0] = (char) input[0];
-                        output[1] = (char) input[1];
+                        output[0] = (char)input[0];
+                        output[1] = (char)input[1];
 
                         input += sizeof(short);
                         output += sizeof(short);
                     }
-
                     if (input < end) {
-                        isValid &= CheckBytesInAsciiRange(((sbyte*) input)[0]);
-                        output[0] = (char) input[0];
+                        isValid &= CheckBytesInAsciiRange(((sbyte*)input)[0]);
+                        output[0] = (char)input[0];
                     }
 
                     return isValid;
@@ -100,6 +147,100 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
                     input += Vector<sbyte>.Count;
                     output += Vector<sbyte>.Count;
                 } while (input <= end - Vector<sbyte>.Count);
+
+                // Vector path done, loop back to do non-Vector
+                // If is a exact multiple of vector size, bail now
+            } while (input < end);
+
+            return isValid;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        public static unsafe bool TryGetLatin1String(byte* input, char* output, int count) {
+            Debug.Assert(input != null);
+            Debug.Assert(output != null);
+
+            // Calculate end position
+            var end = input + count;
+            // Start as valid
+            var isValid = true;
+
+            do {
+                // If Vector not-accelerated or remaining less than vector size
+                if (!Vector.IsHardwareAccelerated || input > end - Vector<sbyte>.Count) {
+                    if (IntPtr.Size == 8) // Use Intrinsic switch for branch elimination
+                    {
+                        // 64-bit: Loop longs by default
+                        while (input <= end - sizeof(long)) {
+                            isValid &= CheckBytesNotNull(((long*)input)[0]);
+
+                            output[0] = (char)input[0];
+                            output[1] = (char)input[1];
+                            output[2] = (char)input[2];
+                            output[3] = (char)input[3];
+                            output[4] = (char)input[4];
+                            output[5] = (char)input[5];
+                            output[6] = (char)input[6];
+                            output[7] = (char)input[7];
+
+                            input += sizeof(long);
+                            output += sizeof(long);
+                        }
+                        if (input <= end - sizeof(int)) {
+                            isValid &= CheckBytesNotNull(((int*)input)[0]);
+
+                            output[0] = (char)input[0];
+                            output[1] = (char)input[1];
+                            output[2] = (char)input[2];
+                            output[3] = (char)input[3];
+
+                            input += sizeof(int);
+                            output += sizeof(int);
+                        }
+                    } else {
+                        // 32-bit: Loop ints by default
+                        while (input <= end - sizeof(int)) {
+                            isValid &= CheckBytesNotNull(((int*)input)[0]);
+
+                            output[0] = (char)input[0];
+                            output[1] = (char)input[1];
+                            output[2] = (char)input[2];
+                            output[3] = (char)input[3];
+
+                            input += sizeof(int);
+                            output += sizeof(int);
+                        }
+                    }
+                    if (input <= end - sizeof(short)) {
+                        isValid &= CheckBytesNotNull(((short*)input)[0]);
+
+                        output[0] = (char)input[0];
+                        output[1] = (char)input[1];
+
+                        input += sizeof(short);
+                        output += sizeof(short);
+                    }
+                    if (input < end) {
+                        isValid &= CheckBytesNotNull(((sbyte*)input)[0]);
+                        output[0] = (char)input[0];
+                    }
+
+                    return isValid;
+                }
+
+                // do/while as entry condition already checked
+                do {
+                    // Use byte/ushort instead of signed equivalents to ensure it doesn't fill based on the high bit.
+                    var vector = Unsafe.AsRef<Vector<byte>>(input);
+                    isValid &= CheckBytesNotNull(vector);
+                    Vector.Widen(
+                        vector,
+                        out Unsafe.AsRef<Vector<ushort>>(output),
+                        out Unsafe.AsRef<Vector<ushort>>(output + Vector<ushort>.Count));
+
+                    input += Vector<byte>.Count;
+                    output += Vector<byte>.Count;
+                } while (input <= end - Vector<byte>.Count);
 
                 // Vector path done, loop back to do non-Vector
                 // If is a exact multiple of vector size, bail now
@@ -130,8 +271,8 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
             // This isn't problematic as we know the maximum length is max string length (from test above)
             // which is a signed value so half the size of the unsigned pointer value so we can safely add
             // a Vector<byte>.Count to it without overflowing.
-            var count = (IntPtr) newValue.Length;
-            var offset = (IntPtr) 0;
+            var count = (IntPtr)newValue.Length;
+            var offset = (IntPtr)0;
 
             // Get references to the first byte in the span, and the first char in the string.
             ref var bytes = ref MemoryMarshal.GetReference(newValue);
@@ -139,11 +280,11 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
 
             do {
                 // If Vector not-accelerated or remaining less than vector size
-                if (!Vector.IsHardwareAccelerated || (byte*) (offset + Vector<byte>.Count) > (byte*) count) {
+                if (!Vector.IsHardwareAccelerated || (byte*)(offset + Vector<byte>.Count) > (byte*)count) {
                     if (IntPtr.Size == 8) // Use Intrinsic switch for branch elimination
                     {
                         // 64-bit: Loop longs by default
-                        while ((byte*) (offset + sizeof(long)) <= (byte*) count) {
+                        while ((byte*)(offset + sizeof(long)) <= (byte*)count) {
                             if (!WidenFourAsciiBytesToUtf16AndCompareToChars(
                                     ref Unsafe.Add(ref str, offset),
                                     Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bytes, offset))) ||
@@ -155,8 +296,7 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
 
                             offset += sizeof(long);
                         }
-
-                        if ((byte*) (offset + sizeof(int)) <= (byte*) count) {
+                        if ((byte*)(offset + sizeof(int)) <= (byte*)count) {
                             if (!WidenFourAsciiBytesToUtf16AndCompareToChars(
                                 ref Unsafe.Add(ref str, offset),
                                 Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bytes, offset)))) {
@@ -167,7 +307,7 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
                         }
                     } else {
                         // 32-bit: Loop ints by default
-                        while ((byte*) (offset + sizeof(int)) <= (byte*) count) {
+                        while ((byte*)(offset + sizeof(int)) <= (byte*)count) {
                             if (!WidenFourAsciiBytesToUtf16AndCompareToChars(
                                 ref Unsafe.Add(ref str, offset),
                                 Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bytes, offset)))) {
@@ -177,8 +317,7 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
                             offset += sizeof(int);
                         }
                     }
-
-                    if ((byte*) (offset + sizeof(short)) <= (byte*) count) {
+                    if ((byte*)(offset + sizeof(short)) <= (byte*)count) {
                         if (!WidenTwoAsciiBytesToUtf16AndCompareToChars(
                             ref Unsafe.Add(ref str, offset),
                             Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bytes, offset)))) {
@@ -187,9 +326,8 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
 
                         offset += sizeof(short);
                     }
-
-                    if ((byte*) offset < (byte*) count) {
-                        var ch = (char) Unsafe.Add(ref bytes, offset);
+                    if ((byte*)offset < (byte*)count) {
+                        var ch = (char)Unsafe.Add(ref bytes, offset);
                         if (((ch & 0x80) != 0) || Unsafe.Add(ref str, offset) != ch) {
                             goto NotEqual;
                         }
@@ -209,7 +347,6 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
                     if (!CheckBytesInAsciiRange(vector)) {
                         goto NotEqual;
                     }
-
                     // Widen the bytes directly to chars (ushort) as if they were ascii.
                     // As widening doubles the size we get two vectors back.
                     Vector.Widen(vector, out var vector0, out var vector1);
@@ -232,16 +369,16 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
                     }
 
                     offset += Vector<byte>.Count;
-                } while ((byte*) (offset + Vector<byte>.Count) <= (byte*) count);
+                } while ((byte*)(offset + Vector<byte>.Count) <= (byte*)count);
 
                 // Vector path done, loop back to do non-Vector
                 // If is a exact multiple of vector size, bail now
-            } while ((byte*) offset < (byte*) count);
+            } while ((byte*)offset < (byte*)count);
 
             // If we get here (input is exactly a multiple of Vector length) then there are no inequalities via widening;
             // so the input bytes are both ascii and a match to the string if it was converted via Encoding.ASCII.GetString(...)
             return true;
-            NotEqual:
+        NotEqual:
             return false;
         }
 
@@ -258,18 +395,18 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
             if (Bmi2.X64.IsSupported) {
                 // BMI2 will work regardless of the processor's endianness.
                 return Unsafe.ReadUnaligned<ulong>(ref Unsafe.As<char, byte>(ref charStart)) ==
-                       Bmi2.X64.ParallelBitDeposit(value, 0x00FF00FF_00FF00FFul);
+                    Bmi2.X64.ParallelBitDeposit(value, 0x00FF00FF_00FF00FFul);
             } else {
                 if (BitConverter.IsLittleEndian) {
-                    return charStart == (char) (byte) value &&
-                           Unsafe.Add(ref charStart, 1) == (char) (byte) (value >> 8) &&
-                           Unsafe.Add(ref charStart, 2) == (char) (byte) (value >> 16) &&
-                           Unsafe.Add(ref charStart, 3) == (char) (value >> 24);
+                    return charStart == (char)(byte)value &&
+                        Unsafe.Add(ref charStart, 1) == (char)(byte)(value >> 8) &&
+                        Unsafe.Add(ref charStart, 2) == (char)(byte)(value >> 16) &&
+                        Unsafe.Add(ref charStart, 3) == (char)(value >> 24);
                 } else {
-                    return Unsafe.Add(ref charStart, 3) == (char) (byte) value &&
-                           Unsafe.Add(ref charStart, 2) == (char) (byte) (value >> 8) &&
-                           Unsafe.Add(ref charStart, 1) == (char) (byte) (value >> 16) &&
-                           charStart == (char) (value >> 24);
+                    return Unsafe.Add(ref charStart, 3) == (char)(byte)value &&
+                        Unsafe.Add(ref charStart, 2) == (char)(byte)(value >> 8) &&
+                        Unsafe.Add(ref charStart, 1) == (char)(byte)(value >> 16) &&
+                        charStart == (char)(value >> 24);
                 }
             }
         }
@@ -287,14 +424,14 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
             if (Bmi2.IsSupported) {
                 // BMI2 will work regardless of the processor's endianness.
                 return Unsafe.ReadUnaligned<uint>(ref Unsafe.As<char, byte>(ref charStart)) ==
-                       Bmi2.ParallelBitDeposit(value, 0x00FF00FFu);
+                    Bmi2.ParallelBitDeposit(value, 0x00FF00FFu);
             } else {
                 if (BitConverter.IsLittleEndian) {
-                    return charStart == (char) (byte) value &&
-                           Unsafe.Add(ref charStart, 1) == (char) (byte) (value >> 8);
+                    return charStart == (char)(byte)value &&
+                        Unsafe.Add(ref charStart, 1) == (char)(byte)(value >> 8);
                 } else {
-                    return Unsafe.Add(ref charStart, 1) == (char) (byte) value &&
-                           charStart == (char) (byte) (value >> 8);
+                    return Unsafe.Add(ref charStart, 1) == (char)(byte)value &&
+                        charStart == (char)(byte)(value >> 8);
                 }
             }
         }
@@ -373,25 +510,55 @@ namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
         // Validate: bytes != 0 && bytes <= 127
         //  Subtract 1 from all bytes to move 0 to high bits
         //  bitwise or with self to catch all > 127 bytes
-        //  mask off high bits and check if 0
+        //  mask off non high bits and check if 0
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)] // Needs a push
         private static bool CheckBytesInAsciiRange(long check) {
-            const long HighBits = unchecked((long) 0x8080808080808080L);
+            const long HighBits = unchecked((long)0x8080808080808080L);
             return (((check - 0x0101010101010101L) | check) & HighBits) == 0;
         }
 
         private static bool CheckBytesInAsciiRange(int check) {
-            const int HighBits = unchecked((int) 0x80808080);
+            const int HighBits = unchecked((int)0x80808080);
             return (((check - 0x01010101) | check) & HighBits) == 0;
         }
 
         private static bool CheckBytesInAsciiRange(short check) {
-            const short HighBits = unchecked((short) 0x8080);
-            return (((short) (check - 0x0101) | check) & HighBits) == 0;
+            const short HighBits = unchecked((short)0x8080);
+            return (((short)(check - 0x0101) | check) & HighBits) == 0;
         }
 
         private static bool CheckBytesInAsciiRange(sbyte check)
             => check > 0;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Needs a push
+        private static bool CheckBytesNotNull(Vector<byte> check) {
+            // Vectorized byte range check, signed byte != null
+            return !Vector.EqualsAny(check, Vector<byte>.Zero);
+        }
+
+        // Validate: bytes != 0
+        //  Subtract 1 from all bytes to move 0 to high bits
+        //  bitwise and with ~check so high bits are only set for bytes that were originally 0
+        //  mask off non high bits and check if 0
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] // Needs a push
+        private static bool CheckBytesNotNull(long check) {
+            const long HighBits = unchecked((long)0x8080808080808080L);
+            return ((check - 0x0101010101010101L) & ~check & HighBits) == 0;
+        }
+
+        private static bool CheckBytesNotNull(int check) {
+            const int HighBits = unchecked((int)0x80808080);
+            return ((check - 0x01010101) & ~check & HighBits) == 0;
+        }
+
+        private static bool CheckBytesNotNull(short check) {
+            const short HighBits = unchecked((short)0x8080);
+            return ((check - 0x0101) & ~check & HighBits) == 0;
+        }
+
+        private static bool CheckBytesNotNull(sbyte check)
+            => check != 0;
     }
 }

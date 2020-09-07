@@ -13,6 +13,7 @@ namespace HtcSharp.HttpModule.Shared.CertificateGeneration {
         ErrorSavingTheCertificateIntoTheCurrentUserPersonalStore,
         ErrorExportingTheCertificate,
         FailedToTrustTheCertificate,
-        UserCancelledTrustStep
+        UserCancelledTrustStep,
+        FailedToMakeKeyAccessible,
     }
 }

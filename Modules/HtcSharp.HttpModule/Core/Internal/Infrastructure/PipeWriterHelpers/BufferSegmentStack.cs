@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure.PipeWriterHelpers {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\PipeWriterHelpers\BufferSegmentStack.cs
-    // Start-At-Remote-Line 8
+    // Start-At-Remote-Line 7
     // SourceTools-End
     // Copied from https://github.com/dotnet/corefx/blob/de3902bb56f1254ec1af4bf7d092fc2c048734cc/src/System.IO.Pipelines/src/System/IO/Pipelines/BufferSegmentStack.cs
     internal struct BufferSegmentStack {
@@ -25,7 +25,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure.PipeWriterHelpers {
             int size = _size - 1;
             SegmentAsValueType[] array = _array;
 
-            if ((uint) size >= (uint) array.Length) {
+            if ((uint)size >= (uint)array.Length) {
                 result = default;
                 return false;
             }
@@ -41,7 +41,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure.PipeWriterHelpers {
             int size = _size;
             SegmentAsValueType[] array = _array;
 
-            if ((uint) size < (uint) array.Length) {
+            if ((uint)size < (uint)array.Length) {
                 array[size] = item;
                 _size = size + 1;
             } else {

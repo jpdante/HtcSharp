@@ -7,10 +7,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+namespace System.Buffers {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\DiagnosticPoolBlock.cs
-    // Start-At-Remote-Line 11
+    // Start-At-Remote-Line 9
     // SourceTools-End
     /// <summary>
     /// Block tracking object used by the byte buffer memory pool. A slab is a large allocation which is divided into smaller blocks. The
@@ -123,7 +123,7 @@ namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
                     _memoryHandle = _memoryHandle ?? _memory.Pin();
 
                     unsafe {
-                        return new MemoryHandle(((IntPtr) _memoryHandle.Value.Pointer + byteOffset).ToPointer(), default, this);
+                        return new MemoryHandle(((IntPtr)_memoryHandle.Value.Pointer + byteOffset).ToPointer(), default, this);
                     }
                 }
             } catch (Exception exception) {

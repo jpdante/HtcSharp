@@ -7,8 +7,6 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using HtcSharp.HttpModule.Core.Internal.Infrastructure;
-using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Shared.ServerInfrastructure;
 using Microsoft.Extensions.Primitives;
@@ -16,7 +14,7 @@ using Microsoft.Extensions.Primitives;
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\HttpHeaders.Generated.cs
-    // Start-At-Remote-Line 15
+    // Start-At-Remote-Line 17
     // SourceTools-End
     internal partial class HttpRequestHeaders {
         private HeaderReferences _headers;
@@ -4830,7 +4828,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                 }
 
                 // We didn't have a previous matching header value, or have already added a header, so get the string for this value.
-                var valueStr = value.GetAsciiOrUTF8StringNonNullCharacters();
+                var valueStr = value.GetRequestHeaderStringNonNullCharacters(_useLatin1);
                 if ((_bits & flag) == 0) {
                     // We didn't already have a header set, so add a new one.
                     _bits |= flag;
@@ -4843,7 +4841,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                 // The header was not one of the "known" headers.
                 // Convert value to string first, because passing two spans causes 8 bytes stack zeroing in 
                 // this method with rep stosd, which is slower than necessary.
-                var valueStr = value.GetAsciiOrUTF8StringNonNullCharacters();
+                var valueStr = value.GetRequestHeaderStringNonNullCharacters(_useLatin1);
                 AppendUnknownHeaders(name, valueStr);
             }
         }

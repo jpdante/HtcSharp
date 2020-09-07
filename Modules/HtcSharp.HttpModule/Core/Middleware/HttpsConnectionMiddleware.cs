@@ -78,7 +78,7 @@ namespace HtcSharp.HttpModule.Core.Middleware {
 
         private async Task InnerOnConnectionAsync(ConnectionContext context) {
             bool certificateRequired;
-            var feature = new TlsConnectionFeature();
+            var feature = new Core.Internal.TlsConnectionFeature();
             context.Features.Set<ITlsConnectionFeature>(feature);
             context.Features.Set<ITlsHandshakeFeature>(feature);
 
@@ -137,7 +137,7 @@ namespace HtcSharp.HttpModule.Core.Middleware {
             var sslStream = sslDuplexPipe.Stream;
 
             using (var cancellationTokeSource = new CancellationTokenSource(_options.HandshakeTimeout))
-            using (cancellationTokeSource.Token.UnsafeRegister(state => ((ConnectionContext) state).Abort(), context)) {
+            using (cancellationTokeSource.Token.UnsafeRegister(state => ((ConnectionContext)state).Abort(), context)) {
                 try {
                     // Adapt to the SslStream signature
                     ServerCertificateSelectionCallback selector = null;
@@ -229,7 +229,7 @@ namespace HtcSharp.HttpModule.Core.Middleware {
 
         private static void EnsureCertificateIsAllowedForServerAuth(X509Certificate2 certificate) {
             if (!CertificateLoader.IsCertificateAllowedForServerAuth(certificate)) {
-                throw new InvalidOperationException($@"Certificate {certificate.Thumbprint} cannot be used as an SSL server certificate. It has an Extended Key Usage extension but the usages do not include Server Authentication (OID 1.3.6.1.5.5.7.3.1).");
+                throw new InvalidOperationException(CoreStrings.FormatInvalidServerCertificateEku(certificate.Thumbprint));
             }
         }
 

@@ -3,12 +3,11 @@
 
 using System;
 using System.Buffers;
-using HtcSharp.HttpModule.Shared.Buffers.MemoryPool;
 
 namespace HtcSharp.HttpModule.Transport.Sockets {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\SocketTransportOptions.cs
-    // Start-At-Remote-Line 9
+    // Start-At-Remote-Line 8
     // SourceTools-End
     public class SocketTransportOptions {
         /// <summary>
@@ -31,6 +30,6 @@ namespace HtcSharp.HttpModule.Transport.Sockets {
 
         public long? MaxWriteBufferSize { get; set; } = 64 * 1024;
 
-        internal Func<MemoryPool<byte>> MemoryPoolFactory { get; set; } = SlabMemoryPoolFactory.Create;
+        internal Func<MemoryPool<byte>> MemoryPoolFactory { get; set; } = System.Buffers.SlabMemoryPoolFactory.Create;
     }
 }

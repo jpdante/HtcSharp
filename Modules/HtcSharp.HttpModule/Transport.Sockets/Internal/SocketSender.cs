@@ -6,17 +6,18 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipelines;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketSender.cs
-    // Start-At-Remote-Line 12
+    // Start-At-Remote-Line 13
     // SourceTools-End
     internal sealed class SocketSender : SocketSenderReceiverBase {
         private List<ArraySegment<byte>> _bufferList;
 
-        public SocketSender(System.Net.Sockets.Socket socket, PipeScheduler scheduler) : base(socket, scheduler) {
+        public SocketSender(Socket socket, PipeScheduler scheduler) : base(socket, scheduler) {
         }
 
         public SocketAwaitableEventArgs SendAsync(in ReadOnlySequence<byte> buffers) {

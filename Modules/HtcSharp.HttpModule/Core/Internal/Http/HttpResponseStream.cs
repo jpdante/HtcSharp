@@ -11,7 +11,7 @@ using HtcSharp.HttpModule.Shared.ValueTaskExtensions;
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\HttpResponseStream.cs
-    // Start-At-Remote-Line 12
+    // Start-At-Remote-Line 13
     // SourceTools-End
     internal sealed class HttpResponseStream : Stream {
         private readonly HttpResponsePipeWriter _pipeWriter;
@@ -86,14 +86,14 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         }
 
         public override void EndWrite(IAsyncResult asyncResult) {
-            ((Task<object>) asyncResult).GetAwaiter().GetResult();
+            ((Task<object>)asyncResult).GetAwaiter().GetResult();
         }
 
         private Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken, object state) {
             var tcs = new TaskCompletionSource<object>(state);
             var task = WriteAsync(buffer, offset, count, cancellationToken);
             task.ContinueWith((task2, state2) => {
-                var tcs2 = (TaskCompletionSource<object>) state2;
+                var tcs2 = (TaskCompletionSource<object>)state2;
                 if (task2.IsCanceled) {
                     tcs2.SetCanceled();
                 } else if (task2.IsFaulted) {

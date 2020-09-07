@@ -6,10 +6,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+namespace System.Buffers {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\MemoryPoolThrowHelper.cs
-    // Start-At-Remote-Line 10
+    // Start-At-Remote-Line 9
     // SourceTools-End
     internal class MemoryPoolThrowHelper {
         public static void ThrowArgumentOutOfRangeException(int sourceLength, int offset) {
@@ -18,7 +18,7 @@ namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static ArgumentOutOfRangeException GetArgumentOutOfRangeException(int sourceLength, int offset) {
-            if ((uint) offset > (uint) sourceLength) {
+            if ((uint)offset > (uint)sourceLength) {
                 // Offset is negative or less than array length
                 return new ArgumentOutOfRangeException(GetArgumentName(ExceptionArgument.offset));
             }
