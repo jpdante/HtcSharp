@@ -18,7 +18,7 @@ using HtcSharp.HttpModule.Http.Headers;
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\HttpProtocol.FeatureCollection.cs
-    // Start-At-Remote-Line 18
+    // Start-At-Remote-Line 19
     // SourceTools-End
     internal partial class HttpProtocol : IHttpRequestFeature,
         IHttpResponseFeature,

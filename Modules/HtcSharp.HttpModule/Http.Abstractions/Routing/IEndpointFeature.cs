@@ -12,7 +12,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
     /// </summary>
     public interface IEndpointFeature {
         /// <summary>
-        /// Gets or sets the selected <see cref="Routing.Endpoint"/> for the current
+        /// Gets or sets the selected <see cref="Http.Endpoint"/> for the current
         /// request.
         /// </summary>
         Endpoint Endpoint { get; set; }

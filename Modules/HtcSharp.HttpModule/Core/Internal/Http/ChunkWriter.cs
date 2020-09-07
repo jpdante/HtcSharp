@@ -9,7 +9,7 @@ using System.Text;
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\ChunkWriter.cs
-    // Start-At-Remote-Line 10
+    // Start-At-Remote-Line 11
     // SourceTools-End
     internal static class ChunkWriter {
         private static readonly byte[] _hex = Encoding.ASCII.GetBytes("0123456789abcdef");
@@ -37,8 +37,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                 offset++;
             }
 
-            span[count - 2] = (byte) '\r';
-            span[count - 1] = (byte) '\n';
+            span[count - 2] = (byte)'\r';
+            span[count - 1] = (byte)'\n';
 
             return count;
         }
@@ -127,8 +127,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
             var span = start.Span;
 
             // CRLF done in reverse order so the 1st index will elide the bounds check for the 0th index
-            span[1] = (byte) '\n';
-            span[0] = (byte) '\r';
+            span[1] = (byte)'\n';
+            span[0] = (byte)'\r';
             start.Advance(2);
         }
     }

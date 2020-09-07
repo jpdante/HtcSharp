@@ -17,11 +17,11 @@ using HtcSharp.HttpModule.Shared.ServerInfrastructure;
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\Http1Connection.cs
-    // Start-At-Remote-Line 17
+    // Start-At-Remote-Line 16
     // SourceTools-End
     internal partial class Http1Connection : HttpProtocol, IRequestProcessor {
-        private const byte ByteAsterisk = (byte) '*';
-        private const byte ByteForwardSlash = (byte) '/';
+        private const byte ByteAsterisk = (byte)'*';
+        private const byte ByteForwardSlash = (byte)'/';
         private const string Asterisk = "*";
         private const string ForwardSlash = "/";
 
@@ -37,6 +37,13 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
 
         private HttpRequestTarget _requestTargetForm = HttpRequestTarget.Unknown;
         private Uri _absoluteRequestTarget;
+
+        // The _parsed fields cache the Path, QueryString, RawTarget, and/or _absoluteRequestTarget
+        // from the previous request when DisableStringReuse is false.
+        private string _parsedPath = null;
+        private string _parsedQueryString = null;
+        private string _parsedRawTarget = null;
+        private Uri _parsedAbsoluteRequestTarget;
 
         private int _remainingRequestHeadersBytesAllowed;
 
@@ -175,7 +182,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
             return _parser.ParseRequestLine(new Http1ParsingHandler(this), buffer, out consumed, out examined);
 
             bool TrimAndTakeStartLine(in ReadOnlySequence<byte> buffer, out SequencePosition consumed, out SequencePosition examined) {
-                var trimmedBuffer = buffer.Slice(buffer.Start, (int) ServerOptions.Limits.MaxRequestLineSize);
+                var trimmedBuffer = buffer.Slice(buffer.Start, ServerOptions.Limits.MaxRequestLineSize);
 
                 if (!_parser.ParseRequestLine(new Http1ParsingHandler(this), trimmedBuffer, out consumed, out examined)) {
                     // We read the maximum allowed but didn't complete the start line.
@@ -205,7 +212,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                 return result;
             } finally {
                 consumed = reader.Position;
-                _remainingRequestHeadersBytesAllowed -= (int) reader.Consumed;
+                _remainingRequestHeadersBytesAllowed -= (int)reader.Consumed;
 
                 if (result) {
                     examined = consumed;
@@ -232,7 +239,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                     return result;
                 } finally {
                     consumed = reader.Position;
-                    _remainingRequestHeadersBytesAllowed -= (int) reader.Consumed;
+                    _remainingRequestHeadersBytesAllowed -= (int)reader.Consumed;
 
                     if (result) {
                         examined = consumed;
@@ -271,7 +278,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
             _httpVersion = version;
 
             Debug.Assert(RawTarget != null, "RawTarget was not set");
-            Debug.Assert(((IHttpRequestFeature) this).Method != null, "Method was not set");
+            Debug.Assert(((IHttpRequestFeature)this).Method != null, "Method was not set");
             Debug.Assert(Path != null, "Path was not set");
             Debug.Assert(QueryString != null, "QueryString was not set");
             Debug.Assert(HttpVersion != null, "HttpVersion was not set");
@@ -292,6 +299,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                 // Clear parsedData as we won't check it if we come via this path again,
                 // an setting to null is fast as it doesn't need to use a GC write barrier.
                 _parsedRawTarget = _parsedPath = _parsedQueryString = null;
+                _parsedAbsoluteRequestTarget = null;
                 return;
             }
 
@@ -334,6 +342,10 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                     Path = _parsedPath;
                     QueryString = _parsedQueryString;
                 }
+
+                // Clear parsedData for absolute target as we won't check it if we come via this path again,
+                // an setting to null is fast as it doesn't need to use a GC write barrier.
+                _parsedAbsoluteRequestTarget = null;
             } catch (InvalidOperationException) {
                 ThrowRequestTargetRejected(target);
             }
@@ -378,9 +390,10 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
 
             Path = string.Empty;
             QueryString = string.Empty;
-            // Clear parsedData for path and queryString as we won't check it if we come via this path again,
+            // Clear parsedData for path, queryString and absolute target as we won't check it if we come via this path again,
             // an setting to null is fast as it doesn't need to use a GC write barrier.
             _parsedPath = _parsedQueryString = null;
+            _parsedAbsoluteRequestTarget = null;
         }
 
         private void OnAsteriskFormTarget(HttpMethod method) {
@@ -398,6 +411,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
             // Clear parsedData as we won't check it if we come via this path again,
             // an setting to null is fast as it doesn't need to use a GC write barrier.
             _parsedRawTarget = _parsedPath = _parsedQueryString = null;
+            _parsedAbsoluteRequestTarget = null;
         }
 
         private void OnAbsoluteFormTarget(Span<byte> target, Span<byte> query) {
@@ -429,7 +443,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                     ThrowRequestTargetRejected(target);
                 }
 
-                _absoluteRequestTarget = uri;
+                _absoluteRequestTarget = _parsedAbsoluteRequestTarget = uri;
                 Path = _parsedPath = uri.LocalPath;
                 // don't use uri.Query because we need the unescaped version
                 previousValue = _parsedQueryString;
@@ -447,6 +461,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                 RawTarget = _parsedRawTarget;
                 Path = _parsedPath;
                 QueryString = _parsedQueryString;
+                _absoluteRequestTarget = _parsedAbsoluteRequestTarget;
             }
         }
 

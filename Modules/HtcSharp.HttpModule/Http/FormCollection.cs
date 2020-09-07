@@ -10,7 +10,7 @@ using Microsoft.Extensions.Primitives;
 namespace HtcSharp.HttpModule.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\FormCollection.cs
-    // Start-At-Remote-Line 8
+    // Start-At-Remote-Line 10
     // SourceTools-End
     /// <summary>
     /// Contains the parsed form values.
@@ -192,7 +192,7 @@ namespace HtcSharp.HttpModule.Http {
 
             void IEnumerator.Reset() {
                 if (_notEmpty) {
-                    ((IEnumerator) _dictionaryEnumerator).Reset();
+                    ((IEnumerator)_dictionaryEnumerator).Reset();
                 }
             }
         }

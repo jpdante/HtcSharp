@@ -62,7 +62,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
                 }
             }
 
-            return new RouteValueDictionary() {_arrayStorage = items, _count = start,};
+            return new RouteValueDictionary() { _arrayStorage = items, _count = start, };
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
             EnsureCapacity(_count + 1);
 
             if (ContainsKeyArray(key)) {
-                var message = $"An element with the key '{key}' already exists in the {nameof(RouteValueDictionary)}.";
+                var message = Resources.FormatRouteValueDictionary_DuplicateKey(key, nameof(RouteValueDictionary));
                 throw new ArgumentException(message, nameof(key));
             }
 
@@ -512,7 +512,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
             var count = _count;
 
             // Elide bounds check for indexing.
-            if ((uint) count <= (uint) array.Length) {
+            if ((uint)count <= (uint)array.Length) {
                 for (var i = 0; i < count; i++) {
                     if (string.Equals(array[i].Key, key, StringComparison.OrdinalIgnoreCase)) {
                         value = array[i].Value;
@@ -531,7 +531,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
             var count = _count;
 
             // Elide bounds check for indexing.
-            if ((uint) count <= (uint) array.Length) {
+            if ((uint)count <= (uint)array.Length) {
                 for (var i = 0; i < count; i++) {
                     if (string.Equals(array[i].Key, key, StringComparison.OrdinalIgnoreCase)) {
                         return true;
@@ -582,7 +582,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
                 var dictionary = _dictionary;
 
                 // The uncommon case is that the propertyStorage is in use
-                if (dictionary._propertyStorage == null && ((uint) _index < (uint) dictionary._count)) {
+                if (dictionary._propertyStorage == null && ((uint)_index < (uint)dictionary._count)) {
                     Current = dictionary._arrayStorage[_index];
                     _index++;
                     return true;
@@ -593,7 +593,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
 
             private bool MoveNextRare() {
                 var dictionary = _dictionary;
-                if (dictionary._propertyStorage != null && ((uint) _index < (uint) dictionary._count)) {
+                if (dictionary._propertyStorage != null && ((uint)_index < (uint)dictionary._count)) {
                     var storage = dictionary._propertyStorage;
                     var property = storage.Properties[_index];
                     Current = new KeyValuePair<string, object>(property.Name, property.GetValue(storage.Value));
@@ -637,7 +637,11 @@ namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
                     var property = properties[i];
 
                     if (names.TryGetValue(property.Name, out var duplicate)) {
-                        var message = $"The type '{type.FullName}' defines properties '{property.Name}' and '{duplicate.Name}' which differ only by casing. This is not supported by {nameof(RouteValueDictionary)} which uses case-insensitive comparisons.";
+                        var message = Resources.FormatRouteValueDictionary_DuplicatePropertyName(
+                            type.FullName,
+                            property.Name,
+                            duplicate.Name,
+                            nameof(RouteValueDictionary));
                         throw new InvalidOperationException(message);
                     }
 

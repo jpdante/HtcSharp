@@ -3,14 +3,15 @@
 
 using System;
 using System.IO.Pipelines;
+using System.Net.Sockets;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketReceiver.cs
-    // Start-At-Remote-Line 8
+    // Start-At-Remote-Line 9
     // SourceTools-End
     internal sealed class SocketReceiver : SocketSenderReceiverBase {
-        public SocketReceiver(System.Net.Sockets.Socket socket, PipeScheduler scheduler) : base(socket, scheduler) {
+        public SocketReceiver(Socket socket, PipeScheduler scheduler) : base(socket, scheduler) {
         }
 
         public SocketAwaitableEventArgs WaitForDataAsync() {

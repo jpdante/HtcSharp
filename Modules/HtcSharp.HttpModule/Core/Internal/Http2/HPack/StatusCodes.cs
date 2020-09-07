@@ -5,10 +5,6 @@ using System.Globalization;
 using System.Text;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
-    // SourceTools-Start
-    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\StatusCodes.cs
-    // Start-At-Remote-Line 8
-    // SourceTools-End
     internal static class StatusCodes {
         private static readonly byte[] _bytesStatus100 = CreateStatusBytes(HttpModule.Http.Abstractions.StatusCodes.Status100Continue);
         private static readonly byte[] _bytesStatus101 = CreateStatusBytes(HttpModule.Http.Abstractions.StatusCodes.Status101SwitchingProtocols);
@@ -82,7 +78,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
         }
 
         public static byte[] ToStatusBytes(int statusCode) {
-            return statusCode switch {
+            return statusCode switch
+            {
                 HttpModule.Http.Abstractions.StatusCodes.Status100Continue => _bytesStatus100,
                 HttpModule.Http.Abstractions.StatusCodes.Status101SwitchingProtocols => _bytesStatus101,
                 HttpModule.Http.Abstractions.StatusCodes.Status102Processing => _bytesStatus102,

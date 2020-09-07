@@ -22,7 +22,7 @@ namespace HtcSharp.HttpModule.Transport.Sockets {
         private readonly int _numSchedulers;
         private readonly PipeScheduler[] _schedulers;
         private readonly ISocketsTrace _trace;
-        private System.Net.Sockets.Socket _listenSocket;
+        private Socket _listenSocket;
         private int _schedulerIndex;
         private readonly SocketTransportOptions _options;
 
@@ -46,7 +46,7 @@ namespace HtcSharp.HttpModule.Transport.Sockets {
                     _schedulers[i] = new IOQueue();
                 }
             } else {
-                var directScheduler = new PipeScheduler[] {PipeScheduler.ThreadPool};
+                var directScheduler = new PipeScheduler[] { PipeScheduler.ThreadPool };
                 _numSchedulers = directScheduler.Length;
                 _schedulers = directScheduler;
             }
@@ -54,15 +54,15 @@ namespace HtcSharp.HttpModule.Transport.Sockets {
 
         internal void Bind() {
             if (_listenSocket != null) {
-                throw new InvalidOperationException("Transport is already bound.");
+                throw new InvalidOperationException(SocketsStrings.TransportAlreadyBound);
             }
 
-            System.Net.Sockets.Socket listenSocket;
+            Socket listenSocket;
 
             // Unix domain sockets are unspecified
             var protocolType = EndPoint is UnixDomainSocketEndPoint ? ProtocolType.Unspecified : ProtocolType.Tcp;
 
-            listenSocket = new System.Net.Sockets.Socket(EndPoint.AddressFamily, SocketType.Stream, protocolType);
+            listenSocket = new Socket(EndPoint.AddressFamily, SocketType.Stream, protocolType);
 
             // Kestrel expects IPv6Any to bind to both IPv6 and IPv4
             if (EndPoint is IPEndPoint ip && ip.Address == IPAddress.IPv6Any) {

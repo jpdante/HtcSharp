@@ -11,20 +11,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Shared;
-using HtcSharp.HttpModule.Shared.Buffers.MemoryPool;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketConnection.cs
-    // Start-At-Remote-Line 18
+    // Start-At-Remote-Line 17
     // SourceTools-End
     internal sealed class SocketConnection : TransportConnection {
         private static readonly int MinAllocBufferSize = SlabMemoryPool.BlockSize / 2;
         private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         private static readonly bool IsMacOS = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
-        private readonly System.Net.Sockets.Socket _socket;
+        private readonly Socket _socket;
         private readonly ISocketsTrace _trace;
         private readonly SocketReceiver _receiver;
         private readonly SocketSender _sender;
@@ -37,7 +36,7 @@ namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
         private readonly TaskCompletionSource<object> _waitForConnectionClosedTcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
         private bool _connectionClosed;
 
-        internal SocketConnection(System.Net.Sockets.Socket socket,
+        internal SocketConnection(Socket socket,
             MemoryPool<byte> memoryPool,
             PipeScheduler scheduler,
             ISocketsTrace trace,
@@ -267,10 +266,10 @@ namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
             _connectionClosed = true;
 
             ThreadPool.UnsafeQueueUserWorkItem(state => {
-                    state.CancelConnectionClosedToken();
+                state.CancelConnectionClosedToken();
 
-                    state._waitForConnectionClosedTcs.TrySetResult(null);
-                },
+                state._waitForConnectionClosedTcs.TrySetResult(null);
+            },
                 this,
                 preferLocal: false);
         }

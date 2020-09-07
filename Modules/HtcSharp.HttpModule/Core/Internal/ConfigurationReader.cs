@@ -17,11 +17,13 @@ namespace HtcSharp.HttpModule.Core.Internal {
         private const string EndpointDefaultsKey = "EndpointDefaults";
         private const string EndpointsKey = "Endpoints";
         private const string UrlKey = "Url";
+        private const string Latin1RequestHeadersKey = "Latin1RequestHeaders";
 
         private IConfiguration _configuration;
         private IDictionary<string, CertificateConfig> _certificates;
         private IList<EndpointConfig> _endpoints;
         private EndpointDefaults _endpointDefaults;
+        private bool? _latin1RequestHeaders;
 
         public ConfigurationReader(IConfiguration configuration) {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -57,6 +59,16 @@ namespace HtcSharp.HttpModule.Core.Internal {
             }
         }
 
+        public bool Latin1RequestHeaders {
+            get {
+                if (_latin1RequestHeaders is null) {
+                    _latin1RequestHeaders = _configuration.GetValue<bool>(Latin1RequestHeadersKey);
+                }
+
+                return _latin1RequestHeaders.Value;
+            }
+        }
+
         private void ReadCertificates() {
             _certificates = new Dictionary<string, CertificateConfig>(0);
 
@@ -71,7 +83,7 @@ namespace HtcSharp.HttpModule.Core.Internal {
         // }
         private void ReadEndpointDefaults() {
             var configSection = _configuration.GetSection(EndpointDefaultsKey);
-            _endpointDefaults = new EndpointDefaults {Protocols = ParseProtocols(configSection[ProtocolsKey])};
+            _endpointDefaults = new EndpointDefaults { Protocols = ParseProtocols(configSection[ProtocolsKey]) };
         }
 
         private void ReadEndpoints() {
@@ -90,11 +102,15 @@ namespace HtcSharp.HttpModule.Core.Internal {
 
                 var url = endpointConfig[UrlKey];
                 if (string.IsNullOrEmpty(url)) {
-                    throw new InvalidOperationException($"The endpoint {endpointConfig.Key} is missing the required 'Url' parameter.");
+                    throw new InvalidOperationException(CoreStrings.FormatEndpointMissingUrl(endpointConfig.Key));
                 }
 
                 var endpoint = new EndpointConfig {
-                    Name = endpointConfig.Key, Url = url, Protocols = ParseProtocols(endpointConfig[ProtocolsKey]), ConfigSection = endpointConfig, Certificate = new CertificateConfig(endpointConfig.GetSection(CertificateKey)),
+                    Name = endpointConfig.Key,
+                    Url = url,
+                    Protocols = ParseProtocols(endpointConfig[ProtocolsKey]),
+                    ConfigSection = endpointConfig,
+                    Certificate = new CertificateConfig(endpointConfig.GetSection(CertificateKey)),
                 };
                 _endpoints.Add(endpoint);
             }

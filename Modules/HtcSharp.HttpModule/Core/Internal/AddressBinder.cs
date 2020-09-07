@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace HtcSharp.HttpModule.Core.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\AddressBinder.cs
-    // Start-At-Remote-Line 17
+    // Start-At-Remote-Line 19
     // SourceTools-End
     internal class AddressBinder {
         public static async Task BindAsync(IServerAddressesFeature addresses,
@@ -30,7 +30,7 @@ namespace HtcSharp.HttpModule.Core.Internal {
                 addresses.Addresses.ToArray(),
                 addresses.PreferHostingUrls);
 
-            var context = new AddressBindContext {Addresses = addresses.Addresses, ListenOptions = listenOptions, ServerOptions = serverOptions, Logger = logger, CreateBinding = createBinding};
+            var context = new AddressBindContext { Addresses = addresses.Addresses, ListenOptions = listenOptions, ServerOptions = serverOptions, Logger = logger, CreateBinding = createBinding };
 
             // reset options. The actual used options and addresses will be populated
             // by the address binding feature
@@ -83,7 +83,7 @@ namespace HtcSharp.HttpModule.Core.Internal {
             try {
                 await context.CreateBinding(endpoint).ConfigureAwait(false);
             } catch (AddressInUseException ex) {
-                throw new IOException($@"Failed to bind to address {endpoint}: address already in use.", ex);
+                throw new IOException(CoreStrings.FormatEndpointAlreadyInUse(endpoint), ex);
             }
 
             context.ListenOptions.Add(endpoint);
@@ -96,11 +96,11 @@ namespace HtcSharp.HttpModule.Core.Internal {
             if (parsedAddress.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase)) {
                 https = true;
             } else if (!parsedAddress.Scheme.Equals("http", StringComparison.OrdinalIgnoreCase)) {
-                throw new InvalidOperationException($@"Unrecognized scheme in server address '{address}'. Only 'http://' is supported.");
+                throw new InvalidOperationException(CoreStrings.FormatUnsupportedAddressScheme(address));
             }
 
             if (!string.IsNullOrEmpty(parsedAddress.PathBase)) {
-                throw new InvalidOperationException($@"A path base can only be configured using {nameof(IApplicationBuilder)}.UsePathBase().");
+                throw new InvalidOperationException(CoreStrings.FormatConfigurePathBaseFromMethodCall($"{nameof(IApplicationBuilder)}.UsePathBase()"));
             }
 
             ListenOptions options = null;

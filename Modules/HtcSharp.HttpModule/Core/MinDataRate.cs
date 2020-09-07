@@ -22,7 +22,7 @@ namespace HtcSharp.HttpModule.Core {
             }
 
             if (gracePeriod <= Heartbeat.Interval) {
-                throw new ArgumentOutOfRangeException(nameof(gracePeriod), $@"The request body rate enforcement grace period must be greater than {Heartbeat.Interval.TotalSeconds} second.");
+                throw new ArgumentOutOfRangeException(nameof(gracePeriod), CoreStrings.FormatMinimumGracePeriodRequired(Heartbeat.Interval.TotalSeconds));
             }
 
             BytesPerSecond = bytesPerSecond;

@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace HtcSharp.HttpModule.Core {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\KestrelConfigurationLoader.cs
-    // Start-At-Remote-Line 18
+    // Start-At-Remote-Line 23
     // SourceTools-End
     public class KestrelConfigurationLoader {
         private bool _loaded = false;
@@ -188,6 +188,8 @@ namespace HtcSharp.HttpModule.Core {
 
             _loaded = true;
 
+            Options.Latin1RequestHeaders = ConfigurationReader.Latin1RequestHeaders;
+
             LoadDefaultCert(ConfigurationReader);
 
             foreach (var endpoint in ConfigurationReader.Endpoints) {
@@ -300,7 +302,7 @@ namespace HtcSharp.HttpModule.Core {
 
         private X509Certificate2 LoadCertificate(CertificateConfig certInfo, string endpointName) {
             if (certInfo.IsFileCert && certInfo.IsStoreCert) {
-                throw new InvalidOperationException($@"The endpoint {endpointName} specified multiple certificate sources.");
+                throw new InvalidOperationException(CoreStrings.FormatMultipleCertificateSources(endpointName));
             } else if (certInfo.IsFileCert) {
                 var env = Options.ApplicationServices.GetRequiredService<IHostEnvironment>();
                 return new X509Certificate2(Path.Combine(env.ContentRootPath, certInfo.Path), certInfo.Password);

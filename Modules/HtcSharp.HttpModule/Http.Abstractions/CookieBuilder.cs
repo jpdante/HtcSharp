@@ -9,7 +9,7 @@ using HtcSharp.HttpModule.Http.Headers;
 namespace HtcSharp.HttpModule.Http.Abstractions {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http.Abstractions\src\CookieBuilder.cs
-    // Start-At-Remote-Line 10
+    // Start-At-Remote-Line 8
     // SourceTools-End
     /// <summary>
     /// Defines settings used to create a cookie.
@@ -34,14 +34,14 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
             get => _name;
             set => _name = !string.IsNullOrEmpty(value)
                 ? value
-                : throw new ArgumentException(@"Argument cannot be null or empty.", nameof(value));
+                : throw new ArgumentException(Resources.ArgumentCannotBeNullOrEmpty, nameof(value));
         }
 
         /// <summary>
         /// The cookie path.
         /// </summary>
         /// <remarks>
-        /// Determines the value that will set on <seealso cref="System.IO.Path"/>.
+        /// Determines the value that will set on <seealso cref="CookieOptions.Path"/>.
         /// </remarks>
         public virtual string Path { get; set; }
 

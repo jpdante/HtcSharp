@@ -7,7 +7,7 @@ using HtcSharp.HttpModule.Core.Internal.Http;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
     // SourceTools-Start
-    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\HeaderField.cs
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\HPackDecoder.cs
     // Start-At-Remote-Line 9
     // SourceTools-End
     internal class HPackDecoder {
@@ -134,7 +134,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
                         _headersObserved = true;
                         var val = b & ~IndexedHeaderFieldMask;
 
-                        if (_integerDecoder.BeginTryDecode((byte) val, IndexedHeaderFieldPrefix, out intResult)) {
+                        if (_integerDecoder.BeginTryDecode((byte)val, IndexedHeaderFieldPrefix, out intResult)) {
                             OnIndexedHeaderField(intResult, handler);
                         } else {
                             _state = State.HeaderFieldIndex;
@@ -146,7 +146,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
 
                         if (val == 0) {
                             _state = State.HeaderNameLength;
-                        } else if (_integerDecoder.BeginTryDecode((byte) val, LiteralHeaderFieldWithIncrementalIndexingPrefix, out intResult)) {
+                        } else if (_integerDecoder.BeginTryDecode((byte)val, LiteralHeaderFieldWithIncrementalIndexingPrefix, out intResult)) {
                             OnIndexedHeaderName(intResult);
                         } else {
                             _state = State.HeaderNameIndex;
@@ -158,7 +158,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
 
                         if (val == 0) {
                             _state = State.HeaderNameLength;
-                        } else if (_integerDecoder.BeginTryDecode((byte) val, LiteralHeaderFieldWithoutIndexingPrefix, out intResult)) {
+                        } else if (_integerDecoder.BeginTryDecode((byte)val, LiteralHeaderFieldWithoutIndexingPrefix, out intResult)) {
                             OnIndexedHeaderName(intResult);
                         } else {
                             _state = State.HeaderNameIndex;
@@ -170,7 +170,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
 
                         if (val == 0) {
                             _state = State.HeaderNameLength;
-                        } else if (_integerDecoder.BeginTryDecode((byte) val, LiteralHeaderFieldNeverIndexedPrefix, out intResult)) {
+                        } else if (_integerDecoder.BeginTryDecode((byte)val, LiteralHeaderFieldNeverIndexedPrefix, out intResult)) {
                             OnIndexedHeaderName(intResult);
                         } else {
                             _state = State.HeaderNameIndex;
@@ -184,7 +184,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
                             throw new HPackDecodingException(CoreStrings.HPackErrorDynamicTableSizeUpdateNotAtBeginningOfHeaderBlock);
                         }
 
-                        if (_integerDecoder.BeginTryDecode((byte) (b & ~DynamicTableSizeUpdateMask), DynamicTableSizeUpdatePrefix, out intResult)) {
+                        if (_integerDecoder.BeginTryDecode((byte)(b & ~DynamicTableSizeUpdateMask), DynamicTableSizeUpdatePrefix, out intResult)) {
                             SetDynamicHeaderTableSize(intResult);
                         } else {
                             _state = State.DynamicTableSizeUpdate;
@@ -210,7 +210,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
                 case State.HeaderNameLength:
                     _huffman = (b & HuffmanMask) != 0;
 
-                    if (_integerDecoder.BeginTryDecode((byte) (b & ~HuffmanMask), StringLengthPrefix, out intResult)) {
+                    if (_integerDecoder.BeginTryDecode((byte)(b & ~HuffmanMask), StringLengthPrefix, out intResult)) {
                         OnStringLength(intResult, nextState: State.HeaderName);
                     } else {
                         _state = State.HeaderNameLengthContinue;
@@ -234,7 +234,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
                 case State.HeaderValueLength:
                     _huffman = (b & HuffmanMask) != 0;
 
-                    if (_integerDecoder.BeginTryDecode((byte) (b & ~HuffmanMask), StringLengthPrefix, out intResult)) {
+                    if (_integerDecoder.BeginTryDecode((byte)(b & ~HuffmanMask), StringLengthPrefix, out intResult)) {
                         OnStringLength(intResult, nextState: State.HeaderValue);
                         if (intResult == 0) {
                             ProcessHeaderValue(handler);
@@ -302,7 +302,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
 
         private void OnStringLength(int length, State nextState) {
             if (length > _stringOctets.Length) {
-                throw new HPackDecodingException($@"Decoded string length of {length} octets is greater than the configured maximum length of {_stringOctets.Length} octets.");
+                throw new HPackDecodingException(CoreStrings.FormatHPackStringLengthTooLarge(length, _stringOctets.Length));
             }
 
             _stringLength = length;
@@ -340,13 +340,14 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
                     ? StaticTable.Instance[index - 1]
                     : _dynamicTable[index - StaticTable.Instance.Count - 1];
             } catch (IndexOutOfRangeException ex) {
-                throw new HPackDecodingException($@"Index {index} is outside the bounds of the header field table.", ex);
+                throw new HPackDecodingException(CoreStrings.FormatHPackErrorIndexOutOfRange(index), ex);
             }
         }
 
         private void SetDynamicHeaderTableSize(int size) {
             if (size > _maxDynamicTableSize) {
-                throw new HPackDecodingException($@"A dynamic table size of {size} octets is greater than the configured maximum size of {_maxDynamicTableSize} octets.");
+                throw new HPackDecodingException(
+                    CoreStrings.FormatHPackErrorDynamicTableSizeUpdateTooLarge(size, _maxDynamicTableSize));
             }
 
             _dynamicTable.Resize(size);

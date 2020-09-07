@@ -14,7 +14,7 @@ using HtcSharp.HttpModule.Http.Headers;
 namespace HtcSharp.HttpModule.Http.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\Internal\DefaultHttpRequest.cs
-    // Start-At-Remote-Line 15
+    // Start-At-Remote-Line 14
     // SourceTools-End
     internal sealed class DefaultHttpRequest : HttpRequest {
         private const string Http = "http";
@@ -154,10 +154,6 @@ namespace HtcSharp.HttpModule.Http.Internal {
             get { return RouteValuesFeature.RouteValues; }
             set { RouteValuesFeature.RouteValues = value; }
         }
-
-        public override string RequestPath { get; internal set; }
-        public override string RequestFilePath { get; internal set; }
-        public override string TranslatedPath { get; internal set; }
 
         public override PipeReader BodyReader {
             get { return RequestBodyPipeFeature.Reader; }

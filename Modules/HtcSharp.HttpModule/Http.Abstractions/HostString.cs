@@ -39,7 +39,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
             }
 
             if (port <= 0) {
-                throw new ArgumentOutOfRangeException(nameof(port), @"The value must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(port), Resources.Exception_PortMustBeGreaterThanZero);
             }
 
             int index;
@@ -265,7 +265,7 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
                 return !HasValue;
             }
 
-            return obj is HostString && Equals((HostString) obj);
+            return obj is HostString && Equals((HostString)obj);
         }
 
         /// <summary>

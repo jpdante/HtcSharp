@@ -14,7 +14,9 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
     // Start-At-Remote-Line 12
     // SourceTools-End
     internal class BodyControl {
-        private static readonly ThrowingWasUpgradedWriteOnlyStream _throwingResponseStream = new ThrowingWasUpgradedWriteOnlyStream();
+        private static readonly ThrowingWasUpgradedWriteOnlyStream _throwingResponseStream
+            = new ThrowingWasUpgradedWriteOnlyStream();
+
         private readonly HttpResponseStream _response;
         private readonly HttpResponsePipeWriter _responseWriter;
         private readonly HttpRequestPipeReader _requestReader;

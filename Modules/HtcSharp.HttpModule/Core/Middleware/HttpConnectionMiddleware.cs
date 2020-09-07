@@ -25,7 +25,7 @@ namespace HtcSharp.HttpModule.Core.Middleware {
         }
 
         public Task OnConnectionAsync(ConnectionContext connectionContext) {
-            var memoryPool = connectionContext.Features.Get<IMemoryPoolFeature>()?.MemoryPool;
+            var memoryPoolFeature = connectionContext.Features.Get<IMemoryPoolFeature>();
 
             var httpConnectionContext = new HttpConnectionContext {
                 ConnectionId = connectionContext.ConnectionId,
@@ -33,12 +33,11 @@ namespace HtcSharp.HttpModule.Core.Middleware {
                 Protocols = _protocols,
                 ServiceContext = _serviceContext,
                 ConnectionFeatures = connectionContext.Features,
-                MemoryPool = memoryPool,
+                MemoryPool = memoryPoolFeature.MemoryPool,
                 Transport = connectionContext.Transport,
                 LocalEndPoint = connectionContext.LocalEndPoint as IPEndPoint,
                 RemoteEndPoint = connectionContext.RemoteEndPoint as IPEndPoint
             };
-
 
             var connection = new HttpConnection(httpConnectionContext);
 

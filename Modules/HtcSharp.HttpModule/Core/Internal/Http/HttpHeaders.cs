@@ -14,7 +14,7 @@ using Microsoft.Extensions.Primitives;
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\HttpHeaders.cs
-    // Start-At-Remote-Line 14
+    // Start-At-Remote-Line 16
     // SourceTools-End
     internal abstract class HttpHeaders : IHeaderDictionary {
         protected long _bits = 0;
@@ -65,7 +65,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
 
                 return value;
             }
-            set { ((IHeaderDictionary) this)[key] = value; }
+            set { ((IHeaderDictionary)this)[key] = value; }
         }
 
         protected static void ThrowHeadersReadOnlyException() {
@@ -88,9 +88,9 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
 
         bool ICollection<KeyValuePair<string, StringValues>>.IsReadOnly => _isReadOnly;
 
-        ICollection<string> IDictionary<string, StringValues>.Keys => ((IDictionary<string, StringValues>) this).Select(pair => pair.Key).ToList();
+        ICollection<string> IDictionary<string, StringValues>.Keys => ((IDictionary<string, StringValues>)this).Select(pair => pair.Key).ToList();
 
-        ICollection<StringValues> IDictionary<string, StringValues>.Values => ((IDictionary<string, StringValues>) this).Select(pair => pair.Value).ToList();
+        ICollection<StringValues> IDictionary<string, StringValues>.Values => ((IDictionary<string, StringValues>)this).Select(pair => pair.Value).ToList();
 
         public void SetReadOnly() {
             _isReadOnly = true;
@@ -147,7 +147,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         }
 
         void ICollection<KeyValuePair<string, StringValues>>.Add(KeyValuePair<string, StringValues> item) {
-            ((IDictionary<string, StringValues>) this).Add(item.Key, item.Value);
+            ((IDictionary<string, StringValues>)this).Add(item.Key, item.Value);
         }
 
         void IDictionary<string, StringValues>.Add(string key, StringValues value) {
@@ -374,11 +374,11 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         }
 
         private static void ThrowInvalidContentLengthException(long value) {
-            throw new ArgumentOutOfRangeException($@"Invalid Content-Length: ""{value}"". Value must be a positive integral number.");
+            throw new ArgumentOutOfRangeException(CoreStrings.FormatInvalidContentLength_InvalidNumber(value));
         }
 
         private static void ThrowInvalidHeaderCharacter(char ch) {
-            throw new InvalidOperationException($@"Invalid non-ASCII or control character in header: {$"0x{(ushort) ch:X4}"}");
+            throw new InvalidOperationException(CoreStrings.FormatInvalidAsciiOrControlChar(string.Format("0x{0:X4}", (ushort)ch)));
         }
 
         private static void ThrowInvalidEmptyHeaderName() {

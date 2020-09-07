@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace HtcSharp.HttpModule.Http.WebUtilities {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\WebUtilities\src\FileBufferingReadStream.cs
-    // Start-At-Remote-Line 12
+    // Start-At-Remote-Line 13
     // SourceTools-End
     /// <summary>
     /// A Stream that wraps another stream and enables rewinding by buffering the content as it is read.
@@ -183,7 +183,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
             ThrowIfDisposed();
             if (_buffer.Position < _buffer.Length || _completelyBuffered) {
                 // Just read from the buffer
-                return _buffer.Read(buffer, offset, (int) Math.Min(count, _buffer.Length - _buffer.Position));
+                return _buffer.Read(buffer, offset, (int)Math.Min(count, _buffer.Length - _buffer.Position));
             }
 
             int read = _inner.Read(buffer, offset, count);
@@ -199,7 +199,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 _buffer = CreateTempFile();
                 if (_rentedBuffer == null) {
                     oldBuffer.Position = 0;
-                    var rentedBuffer = _bytePool.Rent(Math.Min((int) oldBuffer.Length, _maxRentedBufferSize));
+                    var rentedBuffer = _bytePool.Rent(Math.Min((int)oldBuffer.Length, _maxRentedBufferSize));
                     try {
                         var copyRead = oldBuffer.Read(rentedBuffer, 0, rentedBuffer.Length);
                         while (copyRead > 0) {
@@ -210,7 +210,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                         _bytePool.Return(rentedBuffer);
                     }
                 } else {
-                    _buffer.Write(_rentedBuffer, 0, (int) oldBuffer.Length);
+                    _buffer.Write(_rentedBuffer, 0, (int)oldBuffer.Length);
                     _bytePool.Return(_rentedBuffer);
                     _rentedBuffer = null;
                 }
@@ -229,7 +229,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
             ThrowIfDisposed();
             if (_buffer.Position < _buffer.Length || _completelyBuffered) {
                 // Just read from the buffer
-                return await _buffer.ReadAsync(buffer, offset, (int) Math.Min(count, _buffer.Length - _buffer.Position), cancellationToken);
+                return await _buffer.ReadAsync(buffer, offset, (int)Math.Min(count, _buffer.Length - _buffer.Position), cancellationToken);
             }
 
             int read = await _inner.ReadAsync(buffer, offset, count, cancellationToken);
@@ -245,7 +245,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                 _buffer = CreateTempFile();
                 if (_rentedBuffer == null) {
                     oldBuffer.Position = 0;
-                    var rentedBuffer = _bytePool.Rent(Math.Min((int) oldBuffer.Length, _maxRentedBufferSize));
+                    var rentedBuffer = _bytePool.Rent(Math.Min((int)oldBuffer.Length, _maxRentedBufferSize));
                     try {
                         // oldBuffer is a MemoryStream, no need to do async reads.
                         var copyRead = oldBuffer.Read(rentedBuffer, 0, rentedBuffer.Length);
@@ -257,7 +257,7 @@ namespace HtcSharp.HttpModule.Http.WebUtilities {
                         _bytePool.Return(rentedBuffer);
                     }
                 } else {
-                    await _buffer.WriteAsync(_rentedBuffer, 0, (int) oldBuffer.Length, cancellationToken);
+                    await _buffer.WriteAsync(_rentedBuffer, 0, (int)oldBuffer.Length, cancellationToken);
                     _bytePool.Return(_rentedBuffer);
                     _rentedBuffer = null;
                 }

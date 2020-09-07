@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace HtcSharp.HttpModule.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\DefaultHttpContext.cs
-    // Start-At-Remote-Line 17
+    // Start-At-Remote-Line 15
     // SourceTools-End
     public sealed class DefaultHttpContext : HttpContext {
         // Lambdas hoisted to static readonly fields to improve inlining https://github.com/dotnet/roslyn/issues/13624
@@ -98,9 +98,9 @@ namespace HtcSharp.HttpModule.Http {
 
         public override HttpResponse Response => _response;
 
-        public override ConnectionInfo Connection => _connection ?? (_connection = new DefaultConnectionInfo(_features.Collection));
+        public override ConnectionInfo Connection => _connection ?? (_connection = new DefaultConnectionInfo(Features));
 
-        public override WebSocketManager WebSockets => _websockets ?? (_websockets = new DefaultWebSocketManager(_features.Collection));
+        public override WebSocketManager WebSockets => _websockets ?? (_websockets = new DefaultWebSocketManager(Features));
 
         public override ClaimsPrincipal User {
             get {
@@ -158,8 +158,6 @@ namespace HtcSharp.HttpModule.Http {
         public override void Abort() {
             LifetimeFeature.Abort();
         }
-
-        public override HttpServerInfo ServerInfo { get; internal set; }
 
         private static IFeatureCollection ContextDisposed() {
             ThrowContextDisposed();

@@ -36,7 +36,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
         private StreamCompletionFlags _completionState;
         private readonly object _completionLock = new object();
 
-        public Http2Stream(Http2StreamContext context) : base(context) {
+        public Http2Stream(Http2StreamContext context)
+            : base(context) {
             _context = context;
 
             _inputFlowControl = new StreamInputFlowControl(
@@ -114,7 +115,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
         }
 
         protected override string CreateRequestId()
-            => StringUtilities.ConcatAsHexSuffix(ConnectionId, ':', (uint) StreamId);
+            => StringUtilities.ConcatAsHexSuffix(ConnectionId, ':', (uint)StreamId);
 
         protected override MessageBody CreateMessageBody()
             => Http2MessageBody.For(this);
@@ -162,7 +163,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             // - For now we'll restrict it to http/s and require it match the transport.
             // - We'll need to find some concrete scenarios to warrant unblocking this.
             if (!string.Equals(RequestHeaders[HeaderNames.Scheme], Scheme, StringComparison.OrdinalIgnoreCase)) {
-                ResetAndAbort(new ConnectionAbortedException($@"The request :scheme header '{RequestHeaders[HeaderNames.Scheme]}' does not match the transport scheme '{Scheme}'."), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException(
+                    CoreStrings.FormatHttp2StreamErrorSchemeMismatch(RequestHeaders[HeaderNames.Scheme], Scheme)), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -195,7 +197,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             var queryIndex = path.IndexOf('?');
             QueryString = queryIndex == -1 ? string.Empty : path.Substring(queryIndex);
 
-            var pathSegment = queryIndex == -1 ? MemoryExtensions.AsSpan(path) : MemoryExtensions.AsSpan(path, 0, queryIndex);
+            var pathSegment = queryIndex == -1 ? path.AsSpan() : path.AsSpan(0, queryIndex);
 
             return TryValidatePath(pathSegment);
         }
@@ -206,13 +208,13 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             Method = HttpUtilities.GetKnownMethod(_methodText);
 
             if (Method == HttpMethod.None) {
-                ResetAndAbort(new ConnectionAbortedException($@"The Method '{_methodText}' is invalid."), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2ErrorMethodInvalid(_methodText)), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
             if (Method == HttpMethod.Custom) {
                 if (HttpCharacters.IndexOfInvalidTokenChar(_methodText) >= 0) {
-                    ResetAndAbort(new ConnectionAbortedException($@"The Method '{_methodText}' is invalid."), Http2ErrorCode.PROTOCOL_ERROR);
+                    ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2ErrorMethodInvalid(_methodText)), Http2ErrorCode.PROTOCOL_ERROR);
                     return false;
                 }
             }
@@ -249,7 +251,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             hostText = host.ToString();
             if (host.Count > 1 || !HttpUtilities.IsHostHeaderValid(hostText)) {
                 // RST replaces 400
-                ResetAndAbort(new ConnectionAbortedException($@"Invalid Host header: '{hostText}'"), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatBadRequest_InvalidHostHeader_Detail(hostText)), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -259,7 +261,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
         private bool TryValidatePath(ReadOnlySpan<char> pathSegment) {
             // Must start with a leading slash
             if (pathSegment.Length == 0 || pathSegment[0] != '/') {
-                ResetAndAbort(new ConnectionAbortedException($@"The request :path is invalid: '{RawTarget}'"), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2StreamErrorPathInvalid(RawTarget)), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
 
@@ -278,14 +280,14 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     var ch = pathSegment[i];
                     // The header parser should already be checking this
                     Debug.Assert(32 < ch && ch < 127);
-                    pathBuffer[i] = (byte) ch;
+                    pathBuffer[i] = (byte)ch;
                 }
 
                 Path = PathNormalizer.DecodePath(pathBuffer, pathEncoded, RawTarget, QueryString.Length);
 
                 return true;
             } catch (InvalidOperationException) {
-                ResetAndAbort(new ConnectionAbortedException($@"The request :path is invalid: '{RawTarget}'"), Http2ErrorCode.PROTOCOL_ERROR);
+                ResetAndAbort(new ConnectionAbortedException(CoreStrings.FormatHttp2StreamErrorPathInvalid(RawTarget)), Http2ErrorCode.PROTOCOL_ERROR);
                 return false;
             }
         }
@@ -310,7 +312,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                         _inputFlowControl.StopWindowUpdates();
                     }
 
-                    _inputFlowControl.Advance((int) dataPayload.Length);
+                    _inputFlowControl.Advance((int)dataPayload.Length);
 
                     // This check happens after flow control so that when we throw and abort, the byte count is returned to the connection
                     // level accounting.

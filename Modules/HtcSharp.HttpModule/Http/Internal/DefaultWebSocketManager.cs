@@ -13,7 +13,7 @@ using HtcSharp.HttpModule.Http.Headers;
 namespace HtcSharp.HttpModule.Http.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\Internal\DefaultWebSocketManager.cs
-    // Start-At-Remote-Line 13
+    // Start-At-Remote-Line 12
     // SourceTools-End
     internal sealed class DefaultWebSocketManager : WebSocketManager {
         // Lambdas hoisted to static readonly fields to improve inlining https://github.com/dotnet/roslyn/issues/13624
@@ -57,7 +57,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
                 throw new NotSupportedException("WebSockets are not supported");
             }
 
-            return WebSocketFeature.AcceptAsync(new WebSocketAcceptContext() {SubProtocol = subProtocol});
+            return WebSocketFeature.AcceptAsync(new WebSocketAcceptContext() { SubProtocol = subProtocol });
         }
 
         struct FeatureInterfaces {

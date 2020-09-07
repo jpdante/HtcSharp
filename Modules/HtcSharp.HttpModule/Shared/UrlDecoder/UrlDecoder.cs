@@ -98,7 +98,7 @@ namespace HtcSharp.HttpModule.Shared.UrlDecoder {
 
             if (byte1 <= 0x7F) {
                 // first byte < U+007f, it is a single byte ASCII
-                buffer[destinationIndex++] = (byte) byte1;
+                buffer[destinationIndex++] = (byte)byte1;
                 return true;
             }
 
@@ -180,19 +180,16 @@ namespace HtcSharp.HttpModule.Shared.UrlDecoder {
             //       the idea is to combine the bytes into short/int and write to span directly to avoid
             //       range check cost
             if (byteCount > 0) {
-                buffer[destinationIndex++] = (byte) byte1;
+                buffer[destinationIndex++] = (byte)byte1;
             }
-
             if (byteCount > 1) {
-                buffer[destinationIndex++] = (byte) byte2;
+                buffer[destinationIndex++] = (byte)byte2;
             }
-
             if (byteCount > 2) {
-                buffer[destinationIndex++] = (byte) byte3;
+                buffer[destinationIndex++] = (byte)byte3;
             }
-
             if (byteCount > 3) {
-                buffer[destinationIndex++] = (byte) byte4;
+                buffer[destinationIndex++] = (byte)byte4;
             }
 
             return true;
@@ -278,7 +275,7 @@ namespace HtcSharp.HttpModule.Shared.UrlDecoder {
             } else if (value <= 'F') {
                 return (value - 'A') + 10;
             } else // a - f
-            {
+              {
                 return (value - 'a') + 10;
             }
         }

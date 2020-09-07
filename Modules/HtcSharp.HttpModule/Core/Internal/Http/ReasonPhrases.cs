@@ -80,7 +80,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
         private static readonly byte[] _bytesStatus511 = CreateStatusBytes(StatusCodes.Status511NetworkAuthenticationRequired);
 
         private static byte[] CreateStatusBytes(int statusCode) {
-            var reasonPhrase = HtcSharp.HttpModule.Http.WebUtilities.ReasonPhrases.GetReasonPhrase(statusCode);
+            var reasonPhrase = WebUtilities.ReasonPhrases.GetReasonPhrase(statusCode);
             Debug.Assert(!string.IsNullOrEmpty(reasonPhrase));
 
             return Encoding.ASCII.GetBytes(statusCode.ToString(CultureInfo.InvariantCulture) + " " + reasonPhrase);
@@ -219,7 +219,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
                         return _bytesStatus511;
 
                     default:
-                        var predefinedReasonPhrase = HttpModule.Http.WebUtilities.ReasonPhrases.GetReasonPhrase(statusCode);
+                        var predefinedReasonPhrase = WebUtilities.ReasonPhrases.GetReasonPhrase(statusCode);
                         // https://tools.ietf.org/html/rfc7230#section-3.1.2 requires trailing whitespace regardless of reason phrase
                         var formattedStatusCode = statusCode.ToString(CultureInfo.InvariantCulture) + " ";
                         return string.IsNullOrEmpty(predefinedReasonPhrase)

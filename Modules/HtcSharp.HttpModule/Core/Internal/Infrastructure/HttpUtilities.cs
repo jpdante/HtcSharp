@@ -55,7 +55,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
             var bytes = Encoding.ASCII.GetBytes(str);
 
             fixed (byte* ptr = &bytes[0]) {
-                return *(ulong*) ptr;
+                return *(ulong*)ptr;
             }
         }
 
@@ -65,7 +65,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
             var bytes = Encoding.ASCII.GetBytes(str);
 
             fixed (byte* ptr = &bytes[0]) {
-                return *(uint*) ptr;
+                return *(uint*)ptr;
             }
         }
 
@@ -73,7 +73,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
             Debug.Assert(bytes.Length == 8, "Mask must be exactly 8 bytes long.");
 
             fixed (byte* ptr = bytes) {
-                return *(ulong*) ptr;
+                return *(ulong*)ptr;
             }
         }
 
@@ -106,7 +106,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
 
             fixed (char* output = asciiString)
             fixed (byte* buffer = span) {
-                // This version if AsciiUtilities returns null if there are any null (0 byte) characters
+                // StringUtilities.TryGetAsciiString returns null if there are any null (0 byte) characters
                 // in the string
                 if (!StringUtilities.TryGetAsciiString(buffer, output, span.Length)) {
                     throw new InvalidOperationException();
@@ -116,40 +116,15 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
             return asciiString;
         }
 
-        public static unsafe string GetAsciiOrUTF8StringNonNullCharacters(this Span<byte> span) {
-            if (span.IsEmpty) {
-                return string.Empty;
-            }
-
-            var resultString = new string('\0', span.Length);
-
-            fixed (char* output = resultString)
-            fixed (byte* buffer = span) {
-                // This version if AsciiUtilities returns null if there are any null (0 byte) characters
-                // in the string
-                if (!StringUtilities.TryGetAsciiString(buffer, output, span.Length)) {
-                    // null characters are considered invalid
-                    if (span.IndexOf((byte) 0) != -1) {
-                        throw new InvalidOperationException();
-                    }
-
-                    try {
-                        resultString = HeaderValueEncoding.GetString(buffer, span.Length);
-                    } catch (DecoderFallbackException) {
-                        throw new InvalidOperationException();
-                    }
-                }
-            }
-
-            return resultString;
-        }
+        public static string GetRequestHeaderStringNonNullCharacters(this Span<byte> span, bool useLatin1) =>
+            useLatin1 ? span.GetLatin1StringNonNullCharacters() : span.GetAsciiOrUTF8StringNonNullCharacters(HeaderValueEncoding);
 
         public static string GetAsciiStringEscaped(this Span<byte> span, int maxChars) {
             var sb = new StringBuilder();
 
             for (var i = 0; i < Math.Min(span.Length, maxChars); i++) {
                 var ch = span[i];
-                sb.Append(ch < 0x20 || ch >= 0x7F ? $"\\x{ch:X2}" : ((char) ch).ToString());
+                sb.Append(ch < 0x20 || ch >= 0x7F ? $"\\x{ch:X2}" : ((char)ch).ToString());
             }
 
             if (span.Length > maxChars) {
@@ -184,13 +159,13 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
             methodLength = 0;
             if (length < sizeof(uint)) {
                 return HttpMethod.Custom;
-            } else if (*(uint*) data == _httpGetMethodInt) {
+            } else if (*(uint*)data == _httpGetMethodInt) {
                 methodLength = 3;
                 return HttpMethod.Get;
             } else if (length < sizeof(ulong)) {
                 return HttpMethod.Custom;
             } else {
-                var value = *(ulong*) data;
+                var value = *(ulong*)data;
                 var key = GetKnownMethodIndex(value);
                 var x = _knownMethods[key];
 
@@ -298,8 +273,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static unsafe HttpVersion GetKnownVersion(byte* location, int length) {
             HttpVersion knownVersion;
-            var version = *(ulong*) location;
-            if (length < sizeof(ulong) + 1 || location[sizeof(ulong)] != (byte) '\r') {
+            var version = *(ulong*)location;
+            if (length < sizeof(ulong) + 1 || location[sizeof(ulong)] != (byte)'\r') {
                 knownVersion = HttpVersion.Unknown;
             } else if (version == _http11VersionLong) {
                 knownVersion = HttpVersion.Http11;
@@ -328,7 +303,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe bool GetKnownHttpScheme(byte* location, int length, out HttpScheme knownScheme) {
             if (length >= sizeof(ulong)) {
-                var scheme = *(ulong*) location;
+                var scheme = *(ulong*)location;
                 if ((scheme & _mask7Chars) == _httpSchemeLong) {
                     knownScheme = HttpScheme.Http;
                     return true;
@@ -345,7 +320,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
         }
 
         public static string VersionToString(HttpVersion httpVersion) {
-            return httpVersion switch {
+            return httpVersion switch
+            {
                 HttpVersion.Http10 => Http10Version,
                 HttpVersion.Http11 => Http11Version,
                 _ => null,
@@ -353,9 +329,9 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
         }
 
         public static string MethodToString(HttpMethod method) {
-            var methodIndex = (int) method;
+            var methodIndex = (int)method;
             var methodNames = _methodNames;
-            if ((uint) methodIndex < (uint) methodNames.Length) {
+            if ((uint)methodIndex < (uint)methodNames.Length) {
                 return methodNames[methodIndex];
             }
 
@@ -363,7 +339,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
         }
 
         public static string SchemeToString(HttpScheme scheme) {
-            return scheme switch {
+            return scheme switch
+            {
                 HttpScheme.Http => HttpUriScheme,
                 HttpScheme.Https => HttpsUriScheme,
                 _ => null,
@@ -446,7 +423,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
             // Subtract start of range '0'
             // Cast to uint to change negative numbers to large numbers
             // Check if less than 10 representing chars '0' - '9'
-            return (uint) (ch - '0') < 10u;
+            return (uint)(ch - '0') < 10u;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -459,7 +436,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
                    // Subtract start of range 'a'
                    // Cast to uint to change negative numbers to large numbers
                    // Check if less than 6 representing chars 'a' - 'f'
-                   || (uint) ((ch | 32) - 'a') < 6u;
+                   || (uint)((ch | 32) - 'a') < 6u;
         }
 
         // Allow for de-virtualization (see https://github.com/dotnet/coreclr/pull/9230)

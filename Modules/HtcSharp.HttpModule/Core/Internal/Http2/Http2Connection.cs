@@ -28,7 +28,7 @@ using Microsoft.Extensions.Logging;
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2Connection.cs
-    // Start-At-Remote-Line 29
+    // Start-At-Remote-Line 28
     // SourceTools-End
     internal class Http2Connection : IHttp2StreamLifetimeHandler, IHttpHeadersHandler, IRequestProcessor {
         public static byte[] ClientPreface { get; } = Encoding.ASCII.GetBytes("PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n");
@@ -109,14 +109,14 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
             _hpackDecoder = new HPackDecoder(http2Limits.HeaderTableSize, http2Limits.MaxRequestHeaderFieldSize);
 
-            var connectionWindow = (uint) http2Limits.InitialConnectionWindowSize;
+            var connectionWindow = (uint)http2Limits.InitialConnectionWindowSize;
             _inputFlowControl = new InputFlowControl(connectionWindow, connectionWindow / 2);
 
-            _serverSettings.MaxConcurrentStreams = (uint) http2Limits.MaxStreamsPerConnection;
-            _serverSettings.MaxFrameSize = (uint) http2Limits.MaxFrameSize;
-            _serverSettings.HeaderTableSize = (uint) http2Limits.HeaderTableSize;
-            _serverSettings.MaxHeaderListSize = (uint) httpLimits.MaxRequestHeadersTotalSize;
-            _serverSettings.InitialWindowSize = (uint) http2Limits.InitialStreamWindowSize;
+            _serverSettings.MaxConcurrentStreams = (uint)http2Limits.MaxStreamsPerConnection;
+            _serverSettings.MaxFrameSize = (uint)http2Limits.MaxFrameSize;
+            _serverSettings.HeaderTableSize = (uint)http2Limits.HeaderTableSize;
+            _serverSettings.MaxHeaderListSize = (uint)httpLimits.MaxRequestHeadersTotalSize;
+            _serverSettings.InitialWindowSize = (uint)http2Limits.InitialStreamWindowSize;
             _inputTask = ReadInputAsync();
         }
 
@@ -185,7 +185,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     // Inform the client that the connection window is larger than the default. It can't be lowered here,
                     // It can only be lowered by not issuing window updates after data is received.
                     var connectionWindow = _context.ServiceContext.ServerOptions.Limits.Http2.InitialConnectionWindowSize;
-                    var diff = connectionWindow - (int) Http2PeerSettings.DefaultInitialWindowSize;
+                    var diff = connectionWindow - (int)Http2PeerSettings.DefaultInitialWindowSize;
                     if (diff > 0) {
                         await _frameWriter.WriteWindowUpdateAsync(0, diff);
                     }
@@ -301,7 +301,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             }
 
             if (tlsFeature.Protocol < SslProtocols.Tls12) {
-                throw new Http2ConnectionErrorException($@"Tls 1.2 or later must be used for HTTP/2. {tlsFeature.Protocol} was negotiated.", Http2ErrorCode.INADEQUATE_SECURITY);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorMinTlsVersion(tlsFeature.Protocol), Http2ErrorCode.INADEQUATE_SECURITY);
             }
         }
 
@@ -357,10 +357,11 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             // An endpoint that receives an unexpected stream identifier MUST respond with
             // a connection error (Section 5.4.1) of type PROTOCOL_ERROR.
             if (_incomingFrame.StreamId != 0 && (_incomingFrame.StreamId & 1) == 0) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with even stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdEven(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
-            return _incomingFrame.Type switch {
+            return _incomingFrame.Type switch
+            {
                 Http2FrameType.DATA => ProcessDataFrameAsync(payload),
                 Http2FrameType.HEADERS => ProcessHeadersFrameAsync(application, payload),
                 Http2FrameType.PRIORITY => ProcessPriorityFrameAsync(),
@@ -377,15 +378,15 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
         private Task ProcessDataFrameAsync(in ReadOnlySequence<byte> payload) {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.StreamId == 0) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with stream ID 0.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdZero(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.DataHasPadding && _incomingFrame.DataPadLength >= _incomingFrame.PayloadLength) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with padding longer than or with the same length as the sent data.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorPaddingTooLong(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             ThrowIfIncomingFrameSentToIdleStream();
@@ -393,7 +394,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             if (_streams.TryGetValue(_incomingFrame.StreamId, out var stream)) {
                 if (stream.RstStreamReceived) {
                     // Hard abort, do not allow any more frames on this stream.
-                    throw new Http2ConnectionErrorException($@"A frame of type {_incomingFrame.Type} was received after stream {stream.StreamId} was reset or aborted.", Http2ErrorCode.STREAM_CLOSED);
+                    throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamAborted(_incomingFrame.Type, stream.StreamId), Http2ErrorCode.STREAM_CLOSED);
                 }
 
                 if (stream.EndStreamReceived) {
@@ -404,7 +405,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                     // of type STREAM_CLOSED, unless the frame is permitted as described below.
                     //
                     // (The allowed frame types for this situation are WINDOW_UPDATE, RST_STREAM and PRIORITY)
-                    throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {stream.StreamId} which is in the ""half - closed(remote) state\"".", Http2ErrorCode.STREAM_CLOSED);
+                    throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamHalfClosedRemote(_incomingFrame.Type, stream.StreamId), Http2ErrorCode.STREAM_CLOSED);
                 }
 
                 return stream.OnDataAsync(_incomingFrame, payload);
@@ -421,30 +422,30 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             //
             // We choose to do that here so we don't have to keep state to track implicitly closed
             // streams vs. streams closed with END_STREAM or RST_STREAM.
-            throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to closed stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.STREAM_CLOSED);
+            throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamClosed(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.STREAM_CLOSED);
         }
 
         private Task ProcessHeadersFrameAsync<TContext>(IHttpApplication<TContext> application, in ReadOnlySequence<byte> payload) {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.StreamId == 0) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with stream ID 0.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdZero(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.HeadersHasPadding && _incomingFrame.HeadersPadLength >= _incomingFrame.PayloadLength - 1) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with padding longer than or with the same length as the sent data.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorPaddingTooLong(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.HeadersHasPriority && _incomingFrame.HeadersStreamDependency == _incomingFrame.StreamId) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with dependency information that would cause stream ID {_incomingFrame.StreamId} to depend on itself.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamSelfDependency(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_streams.TryGetValue(_incomingFrame.StreamId, out var stream)) {
                 if (stream.RstStreamReceived) {
                     // Hard abort, do not allow any more frames on this stream.
-                    throw new Http2ConnectionErrorException($@"A frame of type {_incomingFrame.Type} was received after stream {stream.StreamId} was reset or aborted.", Http2ErrorCode.STREAM_CLOSED);
+                    throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamAborted(_incomingFrame.Type, stream.StreamId), Http2ErrorCode.STREAM_CLOSED);
                 }
 
                 // http://httpwg.org/specs/rfc7540.html#rfc.section.5.1
@@ -455,7 +456,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                 //
                 // (The allowed frame types after END_STREAM are WINDOW_UPDATE, RST_STREAM and PRIORITY)
                 if (stream.EndStreamReceived) {
-                    throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {stream.StreamId} which is in the ""half - closed(remote) state"".", Http2ErrorCode.STREAM_CLOSED);
+                    throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamHalfClosedRemote(_incomingFrame.Type, stream.StreamId), Http2ErrorCode.STREAM_CLOSED);
                 }
 
                 // This is the last chance for the client to send END_STREAM
@@ -477,7 +478,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                 //
                 // If we couldn't find the stream, it was previously closed (either implicitly or with
                 // END_STREAM or RST_STREAM).
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to closed stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.STREAM_CLOSED);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamClosed(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.STREAM_CLOSED);
             } else {
                 // Cancel keep-alive timeout and start header timeout if necessary.
                 if (TimeoutControl.TimerReason != TimeoutReason.None) {
@@ -517,19 +518,19 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
         private Task ProcessPriorityFrameAsync() {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.StreamId == 0) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with stream ID 0.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdZero(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.PriorityStreamDependency == _incomingFrame.StreamId) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with dependency information that would cause stream ID {_incomingFrame.StreamId} to depend on itself.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamSelfDependency(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.PayloadLength != 5) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with length different than 5.", Http2ErrorCode.FRAME_SIZE_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorUnexpectedFrameLength(_incomingFrame.Type, 5), Http2ErrorCode.FRAME_SIZE_ERROR);
             }
 
             return Task.CompletedTask;
@@ -537,15 +538,15 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
         private Task ProcessRstStreamFrameAsync() {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.StreamId == 0) {
-                throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame with stream ID 0.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdZero(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.PayloadLength != 4) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with length different than 4.", Http2ErrorCode.FRAME_SIZE_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorUnexpectedFrameLength(_incomingFrame.Type, 4), Http2ErrorCode.FRAME_SIZE_ERROR);
             }
 
             ThrowIfIncomingFrameSentToIdleStream();
@@ -554,7 +555,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                 // Second reset
                 if (stream.RstStreamReceived) {
                     // Hard abort, do not allow any more frames on this stream.
-                    throw new Http2ConnectionErrorException($@"A frame of type {_incomingFrame.Type} was received after stream {stream.StreamId} was reset or aborted.", Http2ErrorCode.STREAM_CLOSED);
+                    throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamAborted(_incomingFrame.Type, stream.StreamId), Http2ErrorCode.STREAM_CLOSED);
                 }
 
                 // No additional inbound header or data frames are allowed for this stream after receiving a reset.
@@ -566,11 +567,11 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
         private Task ProcessSettingsFrameAsync(in ReadOnlySequence<byte> payload) {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.StreamId != 0) {
-                throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame with stream ID different than 0.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdNotZero(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.SettingsAck) {
@@ -587,7 +588,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
             try {
                 // int.MaxValue is the largest allowed windows size.
-                var previousInitialWindowSize = (int) _clientSettings.InitialWindowSize;
+                var previousInitialWindowSize = (int)_clientSettings.InitialWindowSize;
                 var previousMaxFrameSize = _clientSettings.MaxFrameSize;
 
                 _clientSettings.Update(Http2FrameReader.ReadSettings(payload));
@@ -601,7 +602,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                 }
 
                 // This difference can be negative.
-                var windowSizeDifference = (int) _clientSettings.InitialWindowSize - previousInitialWindowSize;
+                var windowSizeDifference = (int)_clientSettings.InitialWindowSize - previousInitialWindowSize;
 
                 if (windowSizeDifference != 0) {
                     foreach (var stream in _streams.Values) {
@@ -616,7 +617,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
                 return ackTask.AsTask();
             } catch (Http2SettingsParameterOutOfRangeException ex) {
-                throw new Http2ConnectionErrorException($@"The client sent a SETTINGS frame with a value for parameter {ex.Parameter} that is out of range.", ex.Parameter == Http2SettingsParameter.SETTINGS_INITIAL_WINDOW_SIZE
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorSettingsParameterOutOfRange(ex.Parameter), ex.Parameter == Http2SettingsParameter.SETTINGS_INITIAL_WINDOW_SIZE
                     ? Http2ErrorCode.FLOW_CONTROL_ERROR
                     : Http2ErrorCode.PROTOCOL_ERROR);
             }
@@ -624,15 +625,15 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
         private Task ProcessPingFrameAsync(in ReadOnlySequence<byte> payload) {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.StreamId != 0) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with stream ID different than 0.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdNotZero(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.PayloadLength != 8) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with length different than 8.", Http2ErrorCode.FRAME_SIZE_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorUnexpectedFrameLength(_incomingFrame.Type, 8), Http2ErrorCode.FRAME_SIZE_ERROR);
             }
 
             if (_incomingFrame.PingAck) {
@@ -645,11 +646,11 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
         private Task ProcessGoAwayFrameAsync() {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.StreamId != 0) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with stream ID different than 0.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdNotZero(_incomingFrame.Type), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             StopProcessingNextRequest(serverInitiated: false);
@@ -659,11 +660,11 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
         private Task ProcessWindowUpdateFrameAsync() {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_incomingFrame.PayloadLength != 4) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame with length different than 4.", Http2ErrorCode.FRAME_SIZE_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorUnexpectedFrameLength(_incomingFrame.Type, 4), Http2ErrorCode.FRAME_SIZE_ERROR);
             }
 
             ThrowIfIncomingFrameSentToIdleStream();
@@ -694,7 +695,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             } else if (_streams.TryGetValue(_incomingFrame.StreamId, out var stream)) {
                 if (stream.RstStreamReceived) {
                     // Hard abort, do not allow any more frames on this stream.
-                    throw new Http2ConnectionErrorException($@"A frame of type {_incomingFrame.Type} was received after stream {stream.StreamId} was reset or aborted.", Http2ErrorCode.STREAM_CLOSED);
+                    throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamAborted(_incomingFrame.Type, stream.StreamId), Http2ErrorCode.STREAM_CLOSED);
                 }
 
                 if (!stream.TryUpdateOutputWindow(_incomingFrame.WindowUpdateSizeIncrement)) {
@@ -715,7 +716,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             }
 
             if (_incomingFrame.StreamId != _currentHeadersStream.StreamId) {
-                throw new Http2ConnectionErrorException($@"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             if (_requestHeaderParsingState == RequestHeaderParsingState.Trailers) {
@@ -733,7 +734,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
         private Task ProcessUnknownFrameAsync() {
             if (_currentHeadersStream != null) {
-                throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame to stream ID {_incomingFrame.StreamId} before signaling of the header block for stream ID {_currentHeadersStream.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorHeadersInterleaved(_incomingFrame.Type, _incomingFrame.StreamId, _currentHeadersStream.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
 
             return Task.CompletedTask;
@@ -826,7 +827,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
             // far, then the incoming frame's target stream is in the idle state, which is the implicit
             // initial state for all streams.
             if (_incomingFrame.StreamId > _highestOpenedStreamId) {
-                throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame to idle stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.PROTOCOL_ERROR);
+                throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamIdle(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.PROTOCOL_ERROR);
             }
         }
 
@@ -866,7 +867,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
                 if (stream.EndStreamReceived || stream.RstStreamReceived || stream.DrainExpirationTicks < now) {
                     if (stream == _currentHeadersStream) {
                         // The drain expired out while receiving trailers. The most recent incoming frame is either a header or continuation frame for the timed out stream.
-                        throw new Http2ConnectionErrorException($"The client sent a {_incomingFrame.Type} frame to closed stream ID {_incomingFrame.StreamId}.", Http2ErrorCode.STREAM_CLOSED);
+                        throw new Http2ConnectionErrorException(CoreStrings.FormatHttp2ErrorStreamClosed(_incomingFrame.Type, _incomingFrame.StreamId), Http2ErrorCode.STREAM_CLOSED);
                     }
 
                     _streams.Remove(stream.StreamId);
@@ -1020,7 +1021,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
         private bool IsPseudoHeaderField(Span<byte> name, out PseudoHeaderFields headerField) {
             headerField = PseudoHeaderFields.None;
 
-            if (name.IsEmpty || name[0] != (byte) ':') {
+            if (name.IsEmpty || name[0] != (byte)':') {
                 return false;
             }
 
@@ -1078,7 +1079,7 @@ namespace HtcSharp.HttpModule.Core.Internal.Http2 {
 
                     var outputBuffer = writer.GetMemory(_minAllocBufferSize);
 
-                    var copyAmount = (int) Math.Min(outputBuffer.Length, readResult.Buffer.Length);
+                    var copyAmount = (int)Math.Min(outputBuffer.Length, readResult.Buffer.Length);
                     var bufferSlice = readResult.Buffer.Slice(0, copyAmount);
 
                     bufferSlice.CopyTo(outputBuffer.Span);
