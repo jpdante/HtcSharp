@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2Stream.FeatureCollection.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     internal partial class Http2Stream : IHttp2StreamIdFeature,
         IHttpMinRequestBodyDataRateFeature,
         IHttpResetFeature,

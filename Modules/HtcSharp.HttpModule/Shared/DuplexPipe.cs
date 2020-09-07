@@ -4,6 +4,10 @@
 // ReSharper disable once CheckNamespace
 
 namespace System.IO.Pipelines {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\shared\DuplexPipe.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal class DuplexPipe : IDuplexPipe {
         public DuplexPipe(PipeReader reader, PipeWriter writer) {
             Input = reader;

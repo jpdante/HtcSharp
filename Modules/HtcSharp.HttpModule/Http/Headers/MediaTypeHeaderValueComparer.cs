@@ -5,6 +5,10 @@ using System;
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\MediaTypeHeaderValueComparer.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Implementation of <see cref="IComparer{T}"/> that can compare accept media type header fields
     /// based on their quality values (a.k.a q-values).

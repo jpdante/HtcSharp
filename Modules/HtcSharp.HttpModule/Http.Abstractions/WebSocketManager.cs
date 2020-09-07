@@ -6,6 +6,10 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\WebSocketManager.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     /// <summary>
     /// Manages the establishment of WebSocket connections for a specific HTTP request. 
     /// </summary>

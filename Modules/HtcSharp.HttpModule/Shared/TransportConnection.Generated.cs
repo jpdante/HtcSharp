@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Connections.Abstractions.Features;
 
 namespace HtcSharp.HttpModule.Shared {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\shared\TransportConnection.Generated.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     internal partial class TransportConnection : IFeatureCollection {
         private static readonly Type IConnectionIdFeatureType = typeof(IConnectionIdFeature);
         private static readonly Type IConnectionTransportFeatureType = typeof(IConnectionTransportFeature);

@@ -4,7 +4,11 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace HtcSharp.HttpModule.Http {
+namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\HttpCharacters.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal static class HttpCharacters {
         private static readonly int _tableSize = 128;
         private static readonly bool[] _alphaNumeric = InitializeAlphaNumeric();

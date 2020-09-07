@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\StatusCodes.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     // Status Codes listed at http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
     public static class StatusCodes {
         public const int Status100Continue = 100;

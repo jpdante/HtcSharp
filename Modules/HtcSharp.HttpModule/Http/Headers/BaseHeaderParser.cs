@@ -4,6 +4,10 @@
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\BaseHeaderParser.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal abstract class BaseHeaderParser<T> : HttpHeaderParser<T> {
         protected BaseHeaderParser(bool supportsMultipleValues)
             : base(supportsMultipleValues) {

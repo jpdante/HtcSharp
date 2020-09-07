@@ -5,6 +5,10 @@ using System;
 using System.IO.Pipelines;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketReceiver.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal sealed class SocketReceiver : SocketSenderReceiverBase {
         public SocketReceiver(System.Net.Sockets.Socket socket, PipeScheduler scheduler) : base(socket, scheduler) {
         }

@@ -8,6 +8,10 @@ using System.Text;
 using HtcSharp.HttpModule.Http.Abstractions.Internal;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\PathString.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     /// <summary>
     /// Provides correct escaping for Path and PathBase values when needed to reconstruct a request or redirect URI string
     /// </summary>

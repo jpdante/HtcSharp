@@ -6,6 +6,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.FlowControl {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\FlowControl\StreamOutputFlowControl.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal class StreamOutputFlowControl {
         private readonly OutputFlowControl _connectionLevelFlowControl;
         private readonly OutputFlowControl _streamLevelFlowControl;

@@ -5,6 +5,10 @@ using System;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketsTrace.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal class SocketsTrace : ISocketsTrace {
         // ConnectionRead: Reserved: 3
 

@@ -5,6 +5,10 @@ using System.Diagnostics.Contracts;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\CookieHeaderParser.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal sealed class CookieHeaderParser : HttpHeaderParser<CookieHeaderValue> {
         internal CookieHeaderParser(bool supportsMultipleValues)
             : base(supportsMultipleValues) {

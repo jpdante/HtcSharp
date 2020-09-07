@@ -11,11 +11,17 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Core.Internal.Http2.FlowControl;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HtcSharp.HttpModule.Http;
+using HtcSharp.HttpModule.Shared.ServerInfrastructure;
 using Microsoft.Extensions.Primitives;
 using HeaderNames = HtcSharp.HttpModule.Http.Headers.HeaderNames;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2Stream.cs
+    // Start-At-Remote-Line 19
+    // SourceTools-End
     internal abstract partial class Http2Stream : HttpProtocol, IThreadPoolWorkItem {
         private readonly Http2StreamContext _context;
         private readonly Http2OutputProducer _http2Output;

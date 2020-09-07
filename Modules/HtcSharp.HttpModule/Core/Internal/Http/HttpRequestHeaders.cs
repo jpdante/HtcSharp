@@ -6,6 +6,7 @@ using System.Buffers.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Headers;
 using Microsoft.Extensions.Primitives;

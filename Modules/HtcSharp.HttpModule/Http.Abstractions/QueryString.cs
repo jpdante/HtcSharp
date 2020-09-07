@@ -8,6 +8,10 @@ using System.Text.Encodings.Web;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\QueryString.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     /// <summary>
     /// Provides correct handling for QueryString value when needed to reconstruct a request or redirect URI string
     /// </summary>

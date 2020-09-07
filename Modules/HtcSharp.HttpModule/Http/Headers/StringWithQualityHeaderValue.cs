@@ -8,6 +8,10 @@ using System.Globalization;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\StringWithQualityHeaderValue.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     public class StringWithQualityHeaderValue {
         private static readonly HttpHeaderParser<StringWithQualityHeaderValue> SingleValueParser
             = new GenericHeaderParser<StringWithQualityHeaderValue>(false, GetStringWithQualityLength);

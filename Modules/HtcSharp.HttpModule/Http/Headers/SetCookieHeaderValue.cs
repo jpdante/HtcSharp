@@ -9,6 +9,10 @@ using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\SetCookieHeaderValue.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     // http://tools.ietf.org/html/rfc6265
     public class SetCookieHeaderValue {
         private const string ExpiresToken = "expires";

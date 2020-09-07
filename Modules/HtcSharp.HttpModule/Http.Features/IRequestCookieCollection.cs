@@ -4,6 +4,10 @@
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IRequestCookieCollection.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     /// <summary>
     /// Represents the HttpRequest cookie collection
     /// </summary>

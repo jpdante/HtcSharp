@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\ObjectCollection.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     // List<T> allows 'null' values to be added. This is not what we want so we use a custom Collection<T> derived
     // type to throw if 'null' gets added. Collection<T> internally uses List<T> which comes at some cost. In addition
     // Collection<T>.Add() calls List<T>.InsertItem() which is an O(n) operation (compared to O(1) for List<T>.Add()).

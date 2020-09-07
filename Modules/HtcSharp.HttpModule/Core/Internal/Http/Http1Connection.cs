@@ -12,6 +12,7 @@ using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Features;
+using HtcSharp.HttpModule.Shared.ServerInfrastructure;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start

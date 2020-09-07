@@ -8,6 +8,10 @@ using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\CookieHeaderValue.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     // http://tools.ietf.org/html/rfc6265
     public class CookieHeaderValue {
         private static readonly CookieHeaderParser SingleValueParser = new CookieHeaderParser(supportsMultipleValues: false);

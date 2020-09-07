@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Http.Abstractions.Internal;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\HostString.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     /// <summary>
     /// Represents the host portion of a URI can be used to construct URI's properly formatted and encoded for use in
     /// HTTP headers.

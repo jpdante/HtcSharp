@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IServiceProvidersFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public interface IServiceProvidersFeature {
         IServiceProvider RequestServices { get; set; }
     }

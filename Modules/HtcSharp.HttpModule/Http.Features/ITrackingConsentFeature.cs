@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\ITrackingConsentFeature.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     /// <summary>
     /// Used to query, grant, and withdraw user consent regarding the storage of user
     /// information related to site activity and functionality.

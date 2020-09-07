@@ -6,6 +6,10 @@ using System.IO;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpResponseFeature.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     /// <summary>
     /// Represents the fields and state of an HTTP response.
     /// </summary>

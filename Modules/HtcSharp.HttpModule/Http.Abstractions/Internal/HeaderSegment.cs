@@ -5,6 +5,10 @@ using System;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Abstractions.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Internal\HeaderSegment.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal readonly struct HeaderSegment : IEquatable<HeaderSegment> {
         private readonly StringSegment _formatting;
         private readonly StringSegment _data;

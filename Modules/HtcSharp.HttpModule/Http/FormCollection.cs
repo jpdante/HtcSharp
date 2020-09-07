@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\FormCollection.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Contains the parsed form values.
     /// </summary>

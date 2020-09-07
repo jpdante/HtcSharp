@@ -4,6 +4,10 @@
 using System.Diagnostics;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.FlowControl {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\FlowControl\FlowControl.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal struct FlowControl {
         public FlowControl(uint initialWindowSize) {
             Debug.Assert(initialWindowSize <= Http2PeerSettings.MaxWindowSize, $"{nameof(initialWindowSize)} too large.");

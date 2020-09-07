@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpRequestTrailersFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     /// <summary>
     /// This feature exposes HTTP request trailer headers, either for HTTP/1.1 chunked bodies or HTTP/2 trailing headers.
     /// </summary>

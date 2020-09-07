@@ -4,6 +4,10 @@
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\ReasonPhrases.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public static class ReasonPhrases {
         // Status Codes listed at http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
         private static IDictionary<int, string> Phrases = new Dictionary<int, string>() {

@@ -7,6 +7,10 @@ using System.IO.Pipelines;
 using System.Threading;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\IOQueue.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal class IOQueue : PipeScheduler, IThreadPoolWorkItem {
         private readonly ConcurrentQueue<Work> _workItems = new ConcurrentQueue<Work>();
         private int _doingWork;

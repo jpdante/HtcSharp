@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IQueryCollection.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     ///     Represents the HttpRequest query string collection
     /// </summary>

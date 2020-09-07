@@ -9,6 +9,10 @@ using System.Globalization;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\HeaderUtilities.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     public static class HeaderUtilities {
         private static readonly int _int64MaxStringLength = 19;
         private static readonly int _qualityValueMaxCharCount = 10; // Little bit more permissive than RFC7231 5.3.1

@@ -5,6 +5,10 @@ using System;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\CookieOptions.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Options used to create a new cookie.
     /// </summary>

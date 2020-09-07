@@ -10,6 +10,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketAwaitableEventArgs.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     internal class SocketAwaitableEventArgs : SocketAsyncEventArgs, ICriticalNotifyCompletion {
         private static readonly Action _callbackCompleted = () => { };
 

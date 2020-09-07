@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Http.Internal;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\RequestCookiesFeature.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     public class RequestCookiesFeature : IRequestCookiesFeature {
         // Lambda hoisted to static readonly field to improve inlining https://github.com/dotnet/roslyn/issues/13624
         private readonly static Func<IFeatureCollection, IHttpRequestFeature> _nullRequestFeature = f => null;

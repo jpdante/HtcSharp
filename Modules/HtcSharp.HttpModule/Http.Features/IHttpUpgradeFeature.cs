@@ -5,6 +5,10 @@ using System.IO;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpUpgradeFeature.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public interface IHttpUpgradeFeature {
         /// <summary>
         /// Indicates if the server can upgrade this request to an opaque, bidirectional stream.

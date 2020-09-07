@@ -11,6 +11,10 @@ using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\ContentDispositionHeaderValue.cs
+    // Start-At-Remote-Line 14
+    // SourceTools-End
     // Note this is for use both in HTTP (https://tools.ietf.org/html/rfc6266) and MIME (https://tools.ietf.org/html/rfc2183)
     public class ContentDispositionHeaderValue {
         private const string FileNameString = "filename";

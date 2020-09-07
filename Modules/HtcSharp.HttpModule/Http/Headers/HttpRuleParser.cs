@@ -8,6 +8,10 @@ using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\HttpRuleParser.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     internal static class HttpRuleParser {
         private static readonly bool[] TokenChars = CreateTokenChars();
         private const int MaxNestedCount = 5;

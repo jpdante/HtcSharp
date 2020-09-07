@@ -9,6 +9,7 @@ using System.Net;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
+using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Server.Abstractions.Features;
 using Microsoft.Extensions.Logging;

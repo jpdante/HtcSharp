@@ -5,6 +5,10 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\BufferExtensions.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal static class BufferExtensions {
         public static ArraySegment<byte> GetArray(this Memory<byte> memory) {
             return ((ReadOnlyMemory<byte>) memory).GetArray();

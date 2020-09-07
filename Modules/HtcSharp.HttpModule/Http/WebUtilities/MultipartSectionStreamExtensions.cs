@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\MultipartSectionStreamExtensions.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     /// <summary>
     /// Various extension methods for dealing with the section body stream
     /// </summary>

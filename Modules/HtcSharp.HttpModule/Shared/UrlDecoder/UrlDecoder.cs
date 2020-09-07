@@ -5,6 +5,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Shared.UrlDecoder {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\UrlDecoder\UrlDecoder.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal class UrlDecoder {
         /// <summary>
         /// Unescape a URL path

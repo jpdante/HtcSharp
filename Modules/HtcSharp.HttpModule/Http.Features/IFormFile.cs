@@ -6,6 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IFormFile.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     /// <summary>
     /// Represents a file sent with the HttpRequest.
     /// </summary>

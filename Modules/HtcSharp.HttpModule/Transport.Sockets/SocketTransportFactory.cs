@@ -11,6 +11,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace HtcSharp.HttpModule.Transport.Sockets {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\SocketTransportFactory.cs
+    // Start-At-Remote-Line 14
+    // SourceTools-End
     public sealed class SocketTransportFactory : IConnectionListenerFactory {
         private readonly SocketTransportOptions _options;
         private readonly SocketsTrace _trace;

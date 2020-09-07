@@ -4,6 +4,10 @@
 using System.IO;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpRequestFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     /// <summary>
     /// Contains the details of a given request. These properties should all be mutable.
     /// None of these properties should ever be set to null.

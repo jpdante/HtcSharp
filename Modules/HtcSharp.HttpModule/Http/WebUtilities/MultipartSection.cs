@@ -7,6 +7,10 @@ using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\MultipartSection.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     public class MultipartSection {
         public string ContentType {
             get {

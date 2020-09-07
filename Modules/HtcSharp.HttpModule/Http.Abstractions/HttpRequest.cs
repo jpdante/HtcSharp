@@ -10,6 +10,10 @@ using HtcSharp.HttpModule.Http.Abstractions.Routing;
 using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\HttpRequest.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     /// <summary>
     /// Represents the incoming side of an individual HTTP request.
     /// </summary>

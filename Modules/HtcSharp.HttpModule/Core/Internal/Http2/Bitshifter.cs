@@ -7,6 +7,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Bitshifter.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     // Mimics BinaryPrimitives with oddly sized units
     internal static class Bitshifter {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

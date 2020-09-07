@@ -5,6 +5,10 @@ using System.IO;
 using HtcSharp.HttpModule.Http.WebUtilities;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\FormOptions.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public class FormOptions {
         internal static readonly FormOptions Default = new FormOptions();
 

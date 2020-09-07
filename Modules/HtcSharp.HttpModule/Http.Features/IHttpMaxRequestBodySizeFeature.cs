@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpMaxRequestBodySizeFeature.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     /// <summary>
     /// Feature to inspect and modify the maximum request body size for a single request.
     /// </summary>

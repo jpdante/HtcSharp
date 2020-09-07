@@ -7,6 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpSendFileFeature.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     /// <summary>
     /// Provides an efficient mechanism for transferring files from disk to the network.
     /// </summary>

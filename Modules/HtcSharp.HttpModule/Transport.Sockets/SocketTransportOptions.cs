@@ -6,6 +6,10 @@ using System.Buffers;
 using HtcSharp.HttpModule.Shared.Buffers.MemoryPool;
 
 namespace HtcSharp.HttpModule.Transport.Sockets {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\SocketTransportOptions.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     public class SocketTransportOptions {
         /// <summary>
         /// The number of I/O queues used to process requests. Set to 0 to directly schedule I/O to the ThreadPool.

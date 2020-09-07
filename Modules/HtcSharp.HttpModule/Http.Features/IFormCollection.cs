@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IFormCollection.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Represents the parsed form values sent with the HttpRequest.
     /// </summary>

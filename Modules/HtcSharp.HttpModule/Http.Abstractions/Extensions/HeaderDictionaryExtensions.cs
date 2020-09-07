@@ -4,10 +4,13 @@
 using HtcSharp.HttpModule.Http.Abstractions.Internal;
 using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.Primitives;
-using HtcSharp.HttpModule.Http.Internal;
 
-namespace HtcSharp.HttpModule.Http {
+namespace HtcSharp.HttpModule.Http.Abstractions.Extensions {
     public static class HeaderDictionaryExtensions {
+        // SourceTools-Start
+        // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Extensions\HeaderDictionaryExtensions.cs
+        // Start-At-Remote-Line 11
+        // SourceTools-End
         /// <summary>
         /// Add new values. Each item remains a separate array entry.
         /// </summary>

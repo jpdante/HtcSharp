@@ -5,6 +5,10 @@ using System;
 using System.IO;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\AspNetCoreTempDirectory.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal static class AspNetCoreTempDirectory {
         private static string _tempDirectory;
 

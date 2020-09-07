@@ -5,6 +5,10 @@ using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpWebSocketFeature.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public interface IHttpWebSocketFeature {
         /// <summary>
         /// Indicates if this is a WebSocket upgrade request.

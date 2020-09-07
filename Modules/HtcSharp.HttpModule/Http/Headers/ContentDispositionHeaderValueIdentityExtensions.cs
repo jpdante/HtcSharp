@@ -5,6 +5,10 @@ using System;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\ContentDispositionHeaderValueIdentityExtensions.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Various extension methods for <see cref="ContentDispositionHeaderValue"/> for identifying the type of the disposition header
     /// </summary>

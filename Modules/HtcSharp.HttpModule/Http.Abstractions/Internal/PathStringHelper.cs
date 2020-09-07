@@ -5,6 +5,10 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace HtcSharp.HttpModule.Http.Abstractions.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Internal\PathStringHelper.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal static class PathStringHelper {
         // uint[] bits uses 1 cache line (Array info + 16 bytes)
         // bool[] would use 3 cache lines (Array info + 128 bytes)

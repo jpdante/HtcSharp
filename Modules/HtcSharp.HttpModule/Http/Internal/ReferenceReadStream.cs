@@ -7,6 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Internal\ReferenceReadStream.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     /// <summary>
     /// A Stream that wraps another stream starting at a certain offset and reading for the given length.
     /// </summary>

@@ -4,7 +4,7 @@
 using System;
 using System.Globalization;
 
-namespace HtcSharp.HttpModule.Core {
+namespace HtcSharp.HttpModule.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\BindingAddress.cs
     // Start-At-Remote-Line 8

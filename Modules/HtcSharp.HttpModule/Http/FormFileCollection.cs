@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\FormFileCollection.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     /// <summary>
     /// Default implementation of <see cref="IFormFileCollection"/>.
     /// </summary>

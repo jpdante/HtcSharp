@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\StreamResponseBodyFeature.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     /// <summary>
     /// An implementation of <see cref="IHttpResponseBodyFeature"/> that aproximates all of the APIs over the given Stream.
     /// </summary>

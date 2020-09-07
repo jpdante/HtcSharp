@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\QueryCollection.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     /// <summary>
     /// The HttpRequest query string collection
     /// </summary>

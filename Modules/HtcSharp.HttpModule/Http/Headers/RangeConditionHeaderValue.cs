@@ -6,6 +6,10 @@ using System.Diagnostics.Contracts;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\RangeConditionHeaderValue.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     public class RangeConditionHeaderValue {
         private static readonly HttpHeaderParser<RangeConditionHeaderValue> Parser
             = new GenericHeaderParser<RangeConditionHeaderValue>(false, GetRangeConditionLength);

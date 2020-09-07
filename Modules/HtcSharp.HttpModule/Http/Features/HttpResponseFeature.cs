@@ -6,6 +6,10 @@ using System.IO;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\HttpResponseFeature.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     public class HttpResponseFeature : IHttpResponseFeature {
         public HttpResponseFeature() {
             StatusCode = 200;

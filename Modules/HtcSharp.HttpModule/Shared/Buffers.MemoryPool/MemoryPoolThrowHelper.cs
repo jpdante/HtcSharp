@@ -7,6 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\MemoryPoolThrowHelper.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal class MemoryPoolThrowHelper {
         public static void ThrowArgumentOutOfRangeException(int sourceLength, int offset) {
             throw GetArgumentOutOfRangeException(sourceLength, offset);

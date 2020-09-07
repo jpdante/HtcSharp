@@ -10,6 +10,10 @@ using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Http.Internal;
 
 namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\FormFile.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     /// <summary>
     /// Default implementation of <see cref="IFormFile"/>.
     /// </summary>

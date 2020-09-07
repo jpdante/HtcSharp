@@ -6,6 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\ITlsConnectionFeature.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     public interface ITlsConnectionFeature {
         /// <summary>
         /// Synchronously retrieves the client certificate, if any.

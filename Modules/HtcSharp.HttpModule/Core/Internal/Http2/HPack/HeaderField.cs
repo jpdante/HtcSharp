@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\HeaderField.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal readonly struct HeaderField {
         // http://httpwg.org/specs/rfc7541.html#rfc.section.4.1
         public const int RfcOverhead = 32;

@@ -4,6 +4,10 @@
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\RequestDelegate.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     /// <summary>
     /// A function that can process an HTTP request.
     /// </summary>

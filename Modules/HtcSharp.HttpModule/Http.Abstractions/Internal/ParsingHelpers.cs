@@ -7,6 +7,10 @@ using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Abstractions.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Internal\ParsingHelpers.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal static class ParsingHelpers {
         public static StringValues GetHeader(IHeaderDictionary headers, string key) {
             StringValues value;

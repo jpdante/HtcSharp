@@ -9,6 +9,10 @@ using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\CacheControlHeaderValue.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     public class CacheControlHeaderValue {
         public static readonly string PublicString = "public";
         public static readonly string PrivateString = "private";

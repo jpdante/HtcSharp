@@ -15,6 +15,10 @@ using HtcSharp.HttpModule.Shared.Buffers.MemoryPool;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketConnection.cs
+    // Start-At-Remote-Line 18
+    // SourceTools-End
     internal sealed class SocketConnection : TransportConnection {
         private static readonly int MinAllocBufferSize = SlabMemoryPool.BlockSize / 2;
         private static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);

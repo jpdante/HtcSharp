@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\CookieSecurePolicy.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     /// <summary>
     /// Determines how cookie security properties are set.
     /// </summary>

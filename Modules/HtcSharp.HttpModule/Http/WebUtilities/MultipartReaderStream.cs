@@ -9,6 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\MultipartReaderStream.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal sealed class MultipartReaderStream : Stream {
         private readonly MultipartBoundary _boundary;
         private readonly BufferedReadStream _innerStream;

@@ -7,6 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\StreamHelperExtensions.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     public static class StreamHelperExtensions {
         private const int _maxReadBufferSize = 1024 * 4;
 

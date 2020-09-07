@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\FragmentString.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     /// <summary>
     /// Provides correct handling for FragmentString value when needed to generate a URI string
     /// </summary>

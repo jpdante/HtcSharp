@@ -4,6 +4,10 @@
 using System.Diagnostics;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.FlowControl {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\FlowControl\StreamInputFlowControl.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal class StreamInputFlowControl {
         private readonly InputFlowControl _connectionLevelFlowControl;
         private readonly InputFlowControl _streamLevelFlowControl;

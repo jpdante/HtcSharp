@@ -9,6 +9,10 @@ using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketSender.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal sealed class SocketSender : SocketSenderReceiverBase {
         private List<ArraySegment<byte>> _bufferList;
 

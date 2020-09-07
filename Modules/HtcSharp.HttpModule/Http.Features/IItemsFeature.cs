@@ -4,6 +4,10 @@
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IItemsFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public interface IItemsFeature {
         IDictionary<object, object> Items { get; set; }
     }

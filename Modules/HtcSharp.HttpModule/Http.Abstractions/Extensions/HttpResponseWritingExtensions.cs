@@ -8,6 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Abstractions.Extensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Extensions\HttpResponseWritingExtensions.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     /// <summary>
     /// Convenience methods for writing to the response.
     /// </summary>

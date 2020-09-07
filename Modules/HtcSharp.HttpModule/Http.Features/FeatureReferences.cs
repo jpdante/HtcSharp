@@ -5,6 +5,10 @@ using System;
 using System.Runtime.CompilerServices;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\FeatureReferences.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public struct FeatureReferences<TCache> {
         public FeatureReferences(IFeatureCollection collection) {
             Collection = collection;

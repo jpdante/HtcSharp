@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Internal\RequestCookieCollection.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     internal class RequestCookieCollection : IRequestCookieCollection {
         public static readonly RequestCookieCollection Empty = new RequestCookieCollection();
         private static readonly string[] EmptyKeys = Array.Empty<string>();

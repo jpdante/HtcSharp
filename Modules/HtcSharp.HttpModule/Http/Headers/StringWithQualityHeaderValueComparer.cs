@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\StringWithQualityHeaderValueComparer.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     /// <summary>
     /// Implementation of <see cref="IComparer{T}"/> that can compare content negotiation header fields
     /// based on their quality values (a.k.a q-values). This applies to values used in accept-charset,

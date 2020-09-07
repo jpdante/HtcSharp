@@ -12,6 +12,10 @@ using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Internal\DefaultHttpRequest.cs
+    // Start-At-Remote-Line 15
+    // SourceTools-End
     internal sealed class DefaultHttpRequest : HttpRequest {
         private const string Http = "http";
         private const string Https = "https";

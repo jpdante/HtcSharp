@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\HPackEncodingException.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal sealed class HPackEncodingException : Exception {
         public HPackEncodingException(string message)
             : base(message) {

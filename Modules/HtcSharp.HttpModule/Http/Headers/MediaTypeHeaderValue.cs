@@ -10,6 +10,10 @@ using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\MediaTypeHeaderValue.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     /// <summary>
     /// Representation of the media type header. See <see href="https://tools.ietf.org/html/rfc6838"/>.
     /// </summary>

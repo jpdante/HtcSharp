@@ -6,6 +6,10 @@ using System.Buffers;
 using HtcSharp.HttpModule.Core.Internal.Http;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\HeaderField.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal class HPackDecoder {
         private enum State {
             Ready,

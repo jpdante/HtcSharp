@@ -9,6 +9,10 @@ using HtcSharp.HttpModule.Http.Shared;
 using HtcSharp.HttpModule.Shared;
 
 namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\SendFileFallback.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     public static class SendFileFallback {
         /// <summary>
         /// Copies the segment of the file to the destination stream.

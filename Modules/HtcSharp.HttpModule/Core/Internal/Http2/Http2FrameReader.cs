@@ -9,6 +9,10 @@ using System.Diagnostics;
 using HtcSharp.HttpModule.Core.Internal.Http;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2FrameReader.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal static class Http2FrameReader {
         /* https://tools.ietf.org/html/rfc7540#section-4.1
             +-----------------------------------------------+

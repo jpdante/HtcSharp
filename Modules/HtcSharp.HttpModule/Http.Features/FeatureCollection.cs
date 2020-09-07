@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\FeatureCollection.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     public class FeatureCollection : IFeatureCollection {
         private static KeyComparer FeatureKeyComparer = new KeyComparer();
         private readonly IFeatureCollection _defaults;

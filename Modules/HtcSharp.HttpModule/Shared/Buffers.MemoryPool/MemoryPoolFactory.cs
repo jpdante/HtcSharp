@@ -4,6 +4,10 @@
 using System.Buffers;
 
 namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\MemoryPoolFactory.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal static class SlabMemoryPoolFactory {
         public static MemoryPool<byte> Create() {
 #if DEBUG

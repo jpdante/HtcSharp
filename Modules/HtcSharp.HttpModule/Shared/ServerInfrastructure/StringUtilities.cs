@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -10,7 +9,11 @@ using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 
-namespace HtcSharp.HttpModule.Http {
+namespace HtcSharp.HttpModule.Shared.ServerInfrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\ServerInfrastructure\StringUtilities.cs
+    // Start-At-Remote-Line 14
+    // SourceTools-End
     internal class StringUtilities {
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static unsafe bool TryGetAsciiString(byte* input, char* output, int count) {

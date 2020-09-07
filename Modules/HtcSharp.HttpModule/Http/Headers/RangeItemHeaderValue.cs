@@ -8,6 +8,10 @@ using System.Globalization;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\RangeItemHeaderValue.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     public class RangeItemHeaderValue {
         private long? _from;
         private long? _to;

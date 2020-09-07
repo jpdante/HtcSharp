@@ -6,6 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\TlsConnectionFeature.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     public class TlsConnectionFeature : ITlsConnectionFeature {
         public X509Certificate2 ClientCertificate { get; set; }
 

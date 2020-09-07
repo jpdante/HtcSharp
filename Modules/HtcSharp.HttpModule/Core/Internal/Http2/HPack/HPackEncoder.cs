@@ -5,6 +5,10 @@ using System;
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\HPackEncoder.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal class HPackEncoder {
         private IEnumerator<KeyValuePair<string, string>> _enumerator;
 

@@ -9,6 +9,10 @@ using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\HeaderDictionary.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     /// <summary>
     /// Represents a wrapper for RequestHeaders and ResponseHeaders.
     /// </summary>

@@ -9,6 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Shared {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Shared\StreamCopyOperationInternal.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     // FYI: In most cases the source will be a FileStream and the destination will be to the network.
     internal static class StreamCopyOperationInternal {
         private const int DefaultBufferSize = 4096;

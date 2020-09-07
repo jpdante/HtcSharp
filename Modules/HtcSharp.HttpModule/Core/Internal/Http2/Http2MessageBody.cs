@@ -10,6 +10,10 @@ using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Http;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2MessageBody.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     internal sealed class Http2MessageBody : MessageBody {
         private readonly Http2Stream _context;
         private ReadResult _readResult;

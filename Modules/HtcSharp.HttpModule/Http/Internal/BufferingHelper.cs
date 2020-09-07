@@ -6,6 +6,10 @@ using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.WebUtilities;
 
 namespace HtcSharp.HttpModule.Http.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Internal\BufferingHelper.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal static class BufferingHelper {
         internal const int DefaultBufferThreshold = 1024 * 30;
 

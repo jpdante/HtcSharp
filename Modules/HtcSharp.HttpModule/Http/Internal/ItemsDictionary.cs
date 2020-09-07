@@ -5,6 +5,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Http.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Internal\ItemsDictionary.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal class ItemsDictionary : IDictionary<object, object> {
         private IDictionary<object, object> _items;
 

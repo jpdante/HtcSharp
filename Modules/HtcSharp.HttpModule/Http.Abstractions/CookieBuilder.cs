@@ -7,6 +7,10 @@ using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\CookieBuilder.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     /// <summary>
     /// Defines settings used to create a cookie.
     /// </summary>

@@ -9,6 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\BufferedReadStream.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     /// <summary>
     /// A Stream that wraps another stream and allows reading lines.
     /// The data is buffered in memory.

@@ -7,6 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\ConnectionInfo.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     public abstract class ConnectionInfo {
         /// <summary>
         /// Gets or sets a unique identifier to represent this connection.

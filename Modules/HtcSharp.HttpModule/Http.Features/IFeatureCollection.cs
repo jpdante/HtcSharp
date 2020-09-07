@@ -5,6 +5,10 @@ using System;
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IFeatureCollection.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Represents a collection of HTTP features.
     /// </summary>

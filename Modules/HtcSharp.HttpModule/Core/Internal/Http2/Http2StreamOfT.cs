@@ -5,6 +5,10 @@
 using HtcSharp.HttpModule.Server.Abstractions;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2StreamOfT.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal sealed class Http2Stream<TContext> : Http2Stream, IHostContextContainer<TContext> {
         private readonly IHttpApplication<TContext> _application;
 

@@ -6,6 +6,10 @@ using System.Text;
 using HeaderNames = HtcSharp.HttpModule.Http.Headers.HeaderNames;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\StaticTable.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal class StaticTable {
         private static readonly StaticTable _instance = new StaticTable();
 

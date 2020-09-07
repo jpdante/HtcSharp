@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Internal;
@@ -11,6 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace HtcSharp.HttpModule.Hosting.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Hosting\Hosting\src\Http\DefaultHttpContextFactory.cs
+    // Start-At-Remote-Line 14
+    // SourceTools-End
     public class DefaultHttpContextFactory : IHttpContextFactory {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly FormOptions _formOptions;

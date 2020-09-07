@@ -8,6 +8,10 @@ using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\RangeHeaderValue.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     public class RangeHeaderValue {
         private static readonly HttpHeaderParser<RangeHeaderValue> Parser
             = new GenericHeaderParser<RangeHeaderValue>(false, GetRangeLength);

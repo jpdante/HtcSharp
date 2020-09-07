@@ -5,6 +5,10 @@ using System;
 using System.Diagnostics;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\IntegerEncoder.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal static class IntegerEncoder {
         public static bool Encode(int i, int n, Span<byte> buffer, out int length) {
             Debug.Assert(i >= 0);

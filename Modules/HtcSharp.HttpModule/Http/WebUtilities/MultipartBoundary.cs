@@ -5,6 +5,10 @@ using System;
 using System.Text;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\MultipartBoundary.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal class MultipartBoundary {
         private readonly int[] _skipTable = new int[256];
         private readonly string _boundary;

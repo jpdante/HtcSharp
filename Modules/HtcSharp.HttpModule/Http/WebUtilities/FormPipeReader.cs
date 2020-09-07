@@ -17,6 +17,10 @@ using HtcSharp.HttpModule.Shared;
 using HtcSharp.HttpModule.Shared.UrlDecoder;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\FormPipeReader.cs
+    // Start-At-Remote-Line 20
+    // SourceTools-End
     /// <summary>
     /// Used to read an 'application/x-www-form-urlencoded' form.
     /// Internally reads from a PipeReader.

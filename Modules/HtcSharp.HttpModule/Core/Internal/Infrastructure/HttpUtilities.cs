@@ -7,8 +7,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Shared.ServerInfrastructure;
 
-namespace HtcSharp.HttpModule.Http {
+namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\HttpUtilities.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal static partial class HttpUtilities {
         public const string Http10Version = "HTTP/1.0";
         public const string Http11Version = "HTTP/1.1";

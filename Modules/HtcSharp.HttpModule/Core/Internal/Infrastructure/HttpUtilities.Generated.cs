@@ -6,7 +6,11 @@ using System.Runtime.CompilerServices;
 using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Http.Abstractions;
 
-namespace HtcSharp.HttpModule.Http {
+namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\HttpUtilities.Generated.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal static partial class HttpUtilities {
         // readonly primitive statics can be Jit'd to consts https://github.com/dotnet/coreclr/issues/1079
         private static readonly ulong _httpConnectMethodLong = GetAsciiStringAsLong("CONNECT ");

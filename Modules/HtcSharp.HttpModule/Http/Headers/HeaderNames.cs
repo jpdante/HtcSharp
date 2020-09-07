@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\HeaderNames.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     public static class HeaderNames {
         // Use readonly statics rather than constants so ReferenceEquals works
         public static readonly string Accept = "Accept";

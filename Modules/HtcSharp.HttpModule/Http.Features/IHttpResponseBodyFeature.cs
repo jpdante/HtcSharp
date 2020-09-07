@@ -7,6 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpResponseBodyFeature.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     /// <summary>
     /// An aggregate of the different ways to interact with the response body.
     /// </summary>

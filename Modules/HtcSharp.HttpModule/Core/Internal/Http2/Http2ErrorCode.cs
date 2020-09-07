@@ -3,6 +3,10 @@
 
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2ErrorCode.cs
+    // Start-At-Remote-Line 6
+    // SourceTools-End
     internal enum Http2ErrorCode : uint {
         NO_ERROR = 0x0,
         PROTOCOL_ERROR = 0x1,

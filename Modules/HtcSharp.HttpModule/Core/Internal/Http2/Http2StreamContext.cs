@@ -4,6 +4,10 @@
 using HtcSharp.HttpModule.Core.Internal.Http2.FlowControl;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2StreamContext.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal sealed class Http2StreamContext : HttpConnectionContext {
         public int StreamId { get; set; }
         public IHttp2StreamLifetimeHandler StreamLifetimeHandler { get; set; }

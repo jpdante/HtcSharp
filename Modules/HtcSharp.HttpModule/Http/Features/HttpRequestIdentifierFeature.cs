@@ -5,6 +5,10 @@ using System;
 using System.Threading;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\HttpRequestIdentifierFeature.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public class HttpRequestIdentifierFeature : IHttpRequestIdentifierFeature {
         // Base32 encoding - in ascii sort order for easy text based sorting
         private static readonly char[] s_encode32Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUV".ToCharArray();

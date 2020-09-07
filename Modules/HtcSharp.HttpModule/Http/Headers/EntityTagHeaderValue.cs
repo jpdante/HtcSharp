@@ -7,6 +7,10 @@ using System.Diagnostics.Contracts;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\EntityTagHeaderValue.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     public class EntityTagHeaderValue {
         // Note that the ETag header does not allow a * but we're not that strict: We allow both '*' and ETag values in a single value.
         // We can't guarantee that a single parsed value will be used directly in an ETag header.

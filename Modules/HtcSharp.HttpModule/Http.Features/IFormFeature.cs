@@ -5,6 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IFormFeature.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public interface IFormFeature {
         /// <summary>
         /// Indicates if the request has a supported form content-type.

@@ -19,6 +19,10 @@ using HtcSharp.HttpModule.Core.Internal.Infrastructure.PipeWriterHelpers;
 using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2 {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\Http2FrameWriter.cs
+    // Start-At-Remote-Line 22
+    // SourceTools-End
     internal class Http2FrameWriter {
         // Literal Header Field without Indexing - Indexed Name (Index 8 - :status)
         private static ReadOnlySpan<byte> ContinueBytes => new byte[] {0x08, 0x03, (byte) '1', (byte) '0', (byte) '0'};

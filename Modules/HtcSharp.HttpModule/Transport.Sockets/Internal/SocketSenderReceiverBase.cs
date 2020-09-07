@@ -5,6 +5,10 @@ using System;
 using System.IO.Pipelines;
 
 namespace HtcSharp.HttpModule.Transport.Sockets.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\Internal\SocketSenderReceiverBase.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal abstract class SocketSenderReceiverBase : IDisposable {
         protected readonly System.Net.Sockets.Socket _socket;
         protected readonly SocketAwaitableEventArgs _awaitableEventArgs;

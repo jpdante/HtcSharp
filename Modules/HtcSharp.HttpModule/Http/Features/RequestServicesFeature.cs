@@ -7,6 +7,10 @@ using HtcSharp.HttpModule.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\RequestServicesFeature.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     public class RequestServicesFeature : IServiceProvidersFeature, IDisposable, IAsyncDisposable {
         private readonly IServiceScopeFactory _scopeFactory;
         private IServiceProvider _requestServices;

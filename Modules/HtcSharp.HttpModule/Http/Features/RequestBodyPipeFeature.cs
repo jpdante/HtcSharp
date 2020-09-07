@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\RequestBodyPipeFeature.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     public class RequestBodyPipeFeature : IRequestBodyPipeFeature {
         private PipeReader _internalPipeReader;
         private Stream _streamInstanceWhenWrapped;

@@ -10,6 +10,10 @@ using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Internal\ResponseCookies.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     /// <summary>
     /// A wrapper for the response Set-Cookie header.
     /// </summary>

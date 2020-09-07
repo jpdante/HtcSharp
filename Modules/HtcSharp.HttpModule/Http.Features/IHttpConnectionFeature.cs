@@ -4,6 +4,10 @@
 using System.Net;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\IHttpConnectionFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     /// <summary>
     /// Information regarding the TCP/IP connection carrying the request.
     /// </summary>

@@ -5,6 +5,10 @@ using System;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\MultipartSectionConverterExtensions.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Various extensions for converting multipart sections
     /// </summary>

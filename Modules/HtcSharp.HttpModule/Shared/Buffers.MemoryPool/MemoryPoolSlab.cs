@@ -5,6 +5,10 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\MemoryPoolSlab.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Slab tracking object used by the byte buffer memory pool. A slab is a large allocation which is divided into smaller blocks. The
     /// individual blocks are then treated as independent array segments.

@@ -6,6 +6,10 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Shared.ValueTaskExtensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\ValueTaskExtensions\ValueTaskExtensions.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal static class ValueTaskExtensions {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task GetAsTask(this in ValueTask<FlushResult> valueTask) {

@@ -8,6 +8,10 @@ using System.Text.Encodings.Web;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\QueryHelpers.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     public static class QueryHelpers {
         /// <summary>
         /// Append the given query key and value to the URI.

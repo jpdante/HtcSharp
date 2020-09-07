@@ -9,6 +9,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace HtcSharp.HttpModule.Http.Abstractions.Routing {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Routing\EndpointMetadataCollection.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     /// <summary>
     /// A collection of arbitrary metadata associated with an endpoint.
     /// </summary>

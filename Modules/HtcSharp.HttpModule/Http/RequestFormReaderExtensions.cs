@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\RequestFormReaderExtensions.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     public static class RequestFormReaderExtensions {
         /// <summary>
         /// Read the request body as a form with the given options. These options will only be used

@@ -16,6 +16,7 @@ using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Http.Abstractions.Extensions;
 using HtcSharp.HttpModule.Http.Abstractions.Routing;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;

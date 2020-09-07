@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\SameSiteMode.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     /// <summary>
     /// Indicates if the client should include a cookie on "same-site" or "cross-site" requests.
     /// RFC Draft: https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-03#section-4.1.1

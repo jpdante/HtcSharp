@@ -3,13 +3,16 @@
 
 using System.IO;
 using System.Runtime.CompilerServices;
-using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
-using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Http.Abstractions;
+using Microsoft.Extensions.Primitives;
 
-namespace HtcSharp.HttpModule.Http {
+namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\BadHttpRequestException.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     public sealed class BadHttpRequestException : IOException {
         private BadHttpRequestException(string message, int statusCode, RequestRejectionReason reason)
             : this(message, statusCode, reason, null) {

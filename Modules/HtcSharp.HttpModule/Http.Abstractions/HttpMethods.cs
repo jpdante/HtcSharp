@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\HttpMethods.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public static class HttpMethods {
         // We are intentionally using 'static readonly' here instead of 'const'.
         // 'const' values would be embedded in to each assembly that used them

@@ -9,6 +9,10 @@ using System.Linq;
 using System.Reflection;
 
 namespace HtcSharp.HttpModule.Shared.PropertyHelper {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\PropertyHelper\PropertyHelper.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal class PropertyHelper {
         // Delegate type for a by-ref property getter
         private delegate TValue ByRefFunc<TDeclaringType, TValue>(ref TDeclaringType arg);

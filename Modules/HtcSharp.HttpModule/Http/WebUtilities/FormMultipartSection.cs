@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\FormMultipartSection.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     /// <summary>
     /// Represents a form multipart section
     /// </summary>

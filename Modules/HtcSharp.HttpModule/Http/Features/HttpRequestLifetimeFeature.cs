@@ -4,6 +4,10 @@
 using System.Threading;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\HttpRequestLifetimeFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public class HttpRequestLifetimeFeature : IHttpRequestLifetimeFeature {
         public CancellationToken RequestAborted { get; set; }
 

@@ -4,6 +4,10 @@
 using System.IO;
 
 namespace HtcSharp.HttpModule.Http.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\Features\HttpRequestFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public class HttpRequestFeature : IHttpRequestFeature {
         public HttpRequestFeature() {
             Headers = new HeaderDictionary();

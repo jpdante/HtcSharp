@@ -4,6 +4,10 @@
 using System.Security.Claims;
 
 namespace HtcSharp.HttpModule.Http.Features.Authentication {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Features\src\Authentication\IHttpAuthenticationFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public interface IHttpAuthenticationFeature {
         ClaimsPrincipal User { get; set; }
     }

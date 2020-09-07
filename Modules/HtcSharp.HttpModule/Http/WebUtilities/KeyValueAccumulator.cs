@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.WebUtilities {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\WebUtilities\src\KeyValueAccumulator.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     public struct KeyValueAccumulator {
         private Dictionary<string, StringValues> _accumulator;
         private Dictionary<string, List<string>> _expandingAccumulator;

@@ -10,9 +10,14 @@ using System.Threading;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Features.Authentication;
+using HtcSharp.HttpModule.Http.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HtcSharp.HttpModule.Http.Internal {
+namespace HtcSharp.HttpModule.Http {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http\src\DefaultHttpContext.cs
+    // Start-At-Remote-Line 17
+    // SourceTools-End
     public sealed class DefaultHttpContext : HttpContext {
         // Lambdas hoisted to static readonly fields to improve inlining https://github.com/dotnet/roslyn/issues/13624
         private readonly static Func<IFeatureCollection, IItemsFeature> _newItemsFeature = f => new ItemsFeature();

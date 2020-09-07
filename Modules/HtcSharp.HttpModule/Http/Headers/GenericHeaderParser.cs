@@ -5,6 +5,10 @@ using System;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Headers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Headers\src\GenericHeaderParser.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal sealed class GenericHeaderParser<T> : BaseHeaderParser<T> {
         internal delegate int GetParsedValueLengthDelegate(StringSegment value, int startIndex, out T parsedValue);
 

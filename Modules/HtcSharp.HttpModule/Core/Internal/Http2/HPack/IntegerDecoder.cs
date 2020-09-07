@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\IntegerDecoder.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     /// <summary>
     /// The maximum we will decode is Int32.MaxValue, which is also the maximum request header field size.
     /// </summary>

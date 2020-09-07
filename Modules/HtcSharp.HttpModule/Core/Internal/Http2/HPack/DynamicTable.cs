@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Core.Internal.Http2.HPack {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http2\HPack\DynamicTable.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     // The dynamic table is defined as a queue where items are inserted at the front and removed from the back.
     // It's implemented as a circular buffer that appends to the end and trims from the front. Thus index are reversed.
     internal class DynamicTable {

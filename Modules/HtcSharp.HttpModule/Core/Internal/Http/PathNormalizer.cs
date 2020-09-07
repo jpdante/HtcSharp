@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Shared.UrlDecoder;
 

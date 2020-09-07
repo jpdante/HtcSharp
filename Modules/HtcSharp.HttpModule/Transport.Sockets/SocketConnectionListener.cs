@@ -13,6 +13,10 @@ using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Transport.Sockets.Internal;
 
 namespace HtcSharp.HttpModule.Transport.Sockets {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Transport.Sockets\src\SocketConnectionListener.cs
+    // Start-At-Remote-Line 16
+    // SourceTools-End
     internal sealed class SocketConnectionListener : IConnectionListener {
         private readonly MemoryPool<byte> _memoryPool;
         private readonly int _numSchedulers;

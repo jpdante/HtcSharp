@@ -8,6 +8,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Shared.Buffers.MemoryPool {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\Buffers.MemoryPool\DiagnosticMemoryPool.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     /// <summary>
     /// Used to allocate and distribute re-usable blocks of memory.
     /// </summary>

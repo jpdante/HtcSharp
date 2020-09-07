@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Abstractions.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\Internal\HeaderSegmentCollection.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal readonly struct HeaderSegmentCollection : IEnumerable<HeaderSegment>, IEquatable<HeaderSegmentCollection> {
         private readonly StringValues _headers;
 

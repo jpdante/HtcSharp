@@ -8,6 +8,10 @@ using System.Threading;
 using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Abstractions\src\HttpContext.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     /// <summary>
     /// Encapsulates all HTTP-specific information about an individual HTTP request.
     /// </summary>
