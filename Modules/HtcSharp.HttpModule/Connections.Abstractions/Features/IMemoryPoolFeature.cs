@@ -4,6 +4,10 @@
 using System.Buffers;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\Features\IMemoryPoolFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public interface IMemoryPoolFeature {
         MemoryPool<byte> MemoryPool { get; }
     }

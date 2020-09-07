@@ -4,6 +4,10 @@
 using System.Security.Authentication;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\Features\ITlsHandshakeFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public interface ITlsHandshakeFeature {
         SslProtocols Protocol { get; }
 

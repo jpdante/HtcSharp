@@ -4,6 +4,10 @@
 using System.Threading;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\Features\IConnectionLifetimeFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public interface IConnectionLifetimeFeature {
         CancellationToken ConnectionClosed { get; set; }
 

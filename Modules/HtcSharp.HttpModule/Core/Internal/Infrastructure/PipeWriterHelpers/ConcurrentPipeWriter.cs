@@ -9,6 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure.PipeWriterHelpers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\PipeWriterHelpers\ConcurrentPipeWriter.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     /// <summary>
     /// Wraps a PipeWriter so you can start appending more data to the pipe prior to the previous flush completing.
     /// </summary>

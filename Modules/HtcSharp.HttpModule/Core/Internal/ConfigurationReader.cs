@@ -6,6 +6,10 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\ConfigurationReader.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal class ConfigurationReader {
         private const string ProtocolsKey = "Protocols";
         private const string CertificatesKey = "Certificates";

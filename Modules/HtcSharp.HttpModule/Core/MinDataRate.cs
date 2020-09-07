@@ -5,6 +5,10 @@ using System;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\MinDataRate.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public class MinDataRate {
         /// <summary>
         /// Creates a new instance of <see cref="MinDataRate"/>.

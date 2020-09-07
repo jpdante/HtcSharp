@@ -4,6 +4,10 @@
 using System.Diagnostics;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\DebuggerWrapper.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal sealed class DebuggerWrapper : IDebugger {
         private DebuggerWrapper() {
         }

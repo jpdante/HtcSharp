@@ -15,6 +15,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\KestrelServerOptions.cs
+    // Start-At-Remote-Line 18
+    // SourceTools-End
     /// <summary>
     /// Provides programmatic configuration of Kestrel-specific features.
     /// </summary>

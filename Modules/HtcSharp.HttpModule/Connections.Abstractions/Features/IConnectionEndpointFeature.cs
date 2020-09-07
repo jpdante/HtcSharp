@@ -4,6 +4,10 @@
 using System.Net;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\Features\IConnectionEndPointFeature.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public interface IConnectionEndPointFeature {
         EndPoint LocalEndPoint { get; set; }
         EndPoint RemoteEndPoint { get; set; }

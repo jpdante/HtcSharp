@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\ConnectionReference.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal class ConnectionReference {
         private readonly WeakReference<KestrelConnection> _weakReference;
 

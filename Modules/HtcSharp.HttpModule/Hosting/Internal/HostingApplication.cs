@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 

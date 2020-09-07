@@ -4,7 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Internal {

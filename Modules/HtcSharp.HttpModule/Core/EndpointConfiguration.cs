@@ -5,6 +5,10 @@ using System;
 using Microsoft.Extensions.Configuration;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\EndpointConfiguration.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public class EndpointConfiguration {
         internal EndpointConfiguration(bool isHttps, ListenOptions listenOptions, HttpsConnectionAdapterOptions httpsOptions, IConfigurationSection configSection) {
             IsHttps = isHttps;

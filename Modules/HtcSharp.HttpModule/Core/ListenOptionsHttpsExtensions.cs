@@ -11,6 +11,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\ListenOptionsHttpsExtensions.cs
+    // Start-At-Remote-Line 14
+    // SourceTools-End
     /// <summary>
     /// Extension methods for <see cref="ListenOptions"/> that configure Kestrel to use HTTPS for a given endpoint.
     /// </summary>

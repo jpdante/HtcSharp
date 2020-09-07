@@ -9,7 +9,7 @@ using System.Net;
 using System.Threading;
 using HtcSharp.HttpModule.Connections.Abstractions;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Shared {
     internal abstract partial class TransportConnection : ConnectionContext {

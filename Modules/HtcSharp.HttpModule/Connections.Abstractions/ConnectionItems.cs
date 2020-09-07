@@ -5,6 +5,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\ConnectionItems.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     public class ConnectionItems : IDictionary<object, object> {
         public ConnectionItems()
             : this(new Dictionary<object, object>()) {

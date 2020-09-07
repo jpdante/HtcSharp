@@ -5,10 +5,14 @@ using System;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
-using HtcSharp.HttpModule.Http.Protocols.Http;
+using HtcSharp.HttpModule.Core.Internal.Http;
+using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\BodyControl.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal class BodyControl {
         private static readonly ThrowingWasUpgradedWriteOnlyStream _throwingResponseStream = new ThrowingWasUpgradedWriteOnlyStream();
         private readonly HttpResponseStream _response;

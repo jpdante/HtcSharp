@@ -8,9 +8,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions.Features;
 using HtcSharp.HttpModule.Core.Features;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\TlsConnectionFeature.cs
+    // Start-At-Remote-Line 14
+    // SourceTools-End
     internal class TlsConnectionFeature : ITlsConnectionFeature, ITlsApplicationProtocolFeature, ITlsHandshakeFeature {
         public X509Certificate2 ClientCertificate { get; set; }
 

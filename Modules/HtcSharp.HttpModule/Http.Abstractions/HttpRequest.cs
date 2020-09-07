@@ -7,7 +7,7 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions.Routing;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
     /// <summary>

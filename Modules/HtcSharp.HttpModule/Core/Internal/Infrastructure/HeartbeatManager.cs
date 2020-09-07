@@ -5,6 +5,10 @@ using System;
 using System.Threading;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\HeartbeatManager.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     internal class HeartbeatManager : IHeartbeatHandler, ISystemClock {
         private readonly ConnectionManager _connectionManager;
         private readonly Action<KestrelConnection> _walkCallback;

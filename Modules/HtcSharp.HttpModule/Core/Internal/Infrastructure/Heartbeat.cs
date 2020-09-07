@@ -6,6 +6,10 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\Heartbeat.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal class Heartbeat : IDisposable {
         public static readonly TimeSpan Interval = TimeSpan.FromSeconds(1);
 

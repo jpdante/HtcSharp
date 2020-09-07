@@ -7,6 +7,10 @@ using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Server.Abstractions;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\IRequestProcessor.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal interface IRequestProcessor {
         Task ProcessRequestsAsync<TContext>(IHttpApplication<TContext> application);
         void StopProcessingNextRequest();

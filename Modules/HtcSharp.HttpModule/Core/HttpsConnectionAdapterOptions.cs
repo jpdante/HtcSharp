@@ -9,6 +9,10 @@ using System.Threading;
 using HtcSharp.HttpModule.Connections.Abstractions;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\HttpsConnectionAdapterOptions.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     /// <summary>
     /// Settings for how Kestrel should handle HTTPS connections.
     /// </summary>

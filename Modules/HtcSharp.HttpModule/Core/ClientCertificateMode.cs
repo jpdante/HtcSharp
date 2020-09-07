@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\ClientCertificateMode.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     /// <summary>
     /// Describes the client certificate requirements for a HTTPS connection.
     /// </summary>

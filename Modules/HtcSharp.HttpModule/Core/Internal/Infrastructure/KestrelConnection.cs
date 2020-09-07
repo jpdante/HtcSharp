@@ -10,6 +10,10 @@ using HtcSharp.HttpModule.Connections.Abstractions.Features;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\KestrelConnection.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     internal class KestrelConnection : IConnectionHeartbeatFeature, IConnectionCompleteFeature, IConnectionLifetimeNotificationFeature, IThreadPoolWorkItem {
         private List<(Action<object> handler, object state)> _heartbeatHandlers;
         private readonly object _heartbeatLock = new object();

@@ -5,9 +5,13 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using HtcSharp.HttpModule.Core.Features;
-using HtcSharp.HttpModule.Http.Protocols.Http2.FlowControl;
+using HtcSharp.HttpModule.Core.Internal.Http2.FlowControl;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\TimeoutControl.cs
+    // Start-At-Remote-Line 11
+    // SourceTools-End
     internal class TimeoutControl : ITimeoutControl, IConnectionTimeoutFeature {
         private readonly ITimeoutHandler _timeoutHandler;
 

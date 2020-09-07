@@ -6,6 +6,10 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\BufferWriter.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     /// <summary>
     /// A fast access struct that wraps <see cref="IBufferWriter{T}"/>.
     /// </summary>

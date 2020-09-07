@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\ConnectionManager.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal class ConnectionManager {
         private readonly ConcurrentDictionary<long, ConnectionReference> _connectionReferences = new ConcurrentDictionary<long, ConnectionReference>();
         private readonly IKestrelTrace _trace;

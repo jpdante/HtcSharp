@@ -3,7 +3,6 @@
 
 using System;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.WebUtilities;
 
 namespace HtcSharp.HttpModule.Http.Features {

@@ -6,9 +6,13 @@ using System.IO.Pipelines;
 using System.Net;
 using HtcSharp.HttpModule.Connections.Abstractions;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\HttpConnectionContext.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal class HttpConnectionContext {
         public string ConnectionId { get; set; }
         public HttpProtocols Protocols { get; set; }

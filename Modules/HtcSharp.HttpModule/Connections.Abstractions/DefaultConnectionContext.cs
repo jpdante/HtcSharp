@@ -11,9 +11,12 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Connections.Abstractions.Features;
 using HtcSharp.HttpModule.Http.Features;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\DefaultConnectionContext.cs
+    // Start-At-Remote-Line 17
+    // SourceTools-End
     public class DefaultConnectionContext : ConnectionContext,
         IConnectionIdFeature,
         IConnectionItemsFeature,

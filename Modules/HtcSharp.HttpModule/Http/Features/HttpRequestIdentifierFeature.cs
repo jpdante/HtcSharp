@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 
 namespace HtcSharp.HttpModule.Http.Features {
     public class HttpRequestIdentifierFeature : IHttpRequestIdentifierFeature {

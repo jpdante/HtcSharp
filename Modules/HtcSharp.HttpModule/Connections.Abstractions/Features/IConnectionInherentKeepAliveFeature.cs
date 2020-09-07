@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Connections.Abstractions.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\Features\IConnectionInherentKeepAliveFeature.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     /// <summary>
     /// Indicates if the connection transport has an "inherent keep-alive", which means that the transport will automatically
     /// inform the client that it is still present.

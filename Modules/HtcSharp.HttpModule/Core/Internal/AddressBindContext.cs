@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\AddressBindContext.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal class AddressBindContext {
         public ICollection<string> Addresses { get; set; }
         public List<ListenOptions> ListenOptions { get; set; }

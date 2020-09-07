@@ -2,6 +2,10 @@ using System;
 using System.Buffers;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\MemoryPoolExtensions.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     internal static class MemoryPoolExtensions {
         /// <summary>
         /// Computes a minimum segment size

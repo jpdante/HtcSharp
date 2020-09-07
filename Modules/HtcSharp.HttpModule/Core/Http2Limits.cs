@@ -2,9 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using HtcSharp.HttpModule.Http.Protocols.Http2;
+using HtcSharp.HttpModule.Core.Internal.Http2;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Http2Limits.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Limits only applicable to HTTP/2 connections.
     /// </summary>

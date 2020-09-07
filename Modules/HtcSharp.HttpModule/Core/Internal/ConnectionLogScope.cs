@@ -7,6 +7,10 @@ using System.Collections.Generic;
 using System.Globalization;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\ConnectionLogScope.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal class ConnectionLogScope : IReadOnlyList<KeyValuePair<string, object>> {
         private readonly string _connectionId;
 

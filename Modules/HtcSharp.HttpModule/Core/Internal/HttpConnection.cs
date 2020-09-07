@@ -7,14 +7,18 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Connections.Abstractions.Features;
 using HtcSharp.HttpModule.Core.Features;
+using HtcSharp.HttpModule.Core.Internal.Http;
+using HtcSharp.HttpModule.Core.Internal.Http2;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
-using HtcSharp.HttpModule.Http.Protocols.Http;
-using HtcSharp.HttpModule.Http.Protocols.Http2;
+using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\HttpConnection.cs
+    // Start-At-Remote-Line 18
+    // SourceTools-End
     internal class HttpConnection : ITimeoutHandler {
         // Use C#7.3's ReadOnlySpan<byte> optimization for static data https://vcsjones.com/2019/02/01/csharp-readonly-span-bytes-static/
         private static ReadOnlySpan<byte> Http2Id => new[] {(byte) 'h', (byte) '2'};

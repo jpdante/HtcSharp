@@ -5,6 +5,10 @@ using System;
 using System.Net;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\UriEndPoint.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// An <see cref="EndPoint"/> defined by a <see cref="System.Uri"/>.
     /// </summary>

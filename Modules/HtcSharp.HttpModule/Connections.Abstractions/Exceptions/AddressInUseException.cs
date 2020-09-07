@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions.Exceptions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\Exceptions\AddressInUseException.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     public class AddressInUseException : InvalidOperationException {
         public AddressInUseException(string message) : base(message) {
         }

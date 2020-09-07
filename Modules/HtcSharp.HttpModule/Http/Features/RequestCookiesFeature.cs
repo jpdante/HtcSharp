@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Http.Internal;
 

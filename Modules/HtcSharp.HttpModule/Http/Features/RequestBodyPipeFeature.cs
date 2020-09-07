@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 
 namespace HtcSharp.HttpModule.Http.Features {
     public class RequestBodyPipeFeature : IRequestBodyPipeFeature {

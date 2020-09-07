@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\HttpProtocols.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     [Flags]
     public enum HttpProtocols {
         None = 0x0,

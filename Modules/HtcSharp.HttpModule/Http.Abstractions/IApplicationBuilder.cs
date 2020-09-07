@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Http.Abstractions {
     /// <summary>

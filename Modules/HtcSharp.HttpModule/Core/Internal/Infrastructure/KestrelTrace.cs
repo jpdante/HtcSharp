@@ -3,12 +3,16 @@
 
 using System;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
+using HtcSharp.HttpModule.Core.Internal.Http2;
+using HtcSharp.HttpModule.Core.Internal.Http2.HPack;
 using HtcSharp.HttpModule.Http;
-using HtcSharp.HttpModule.Http.Protocols.Http2;
-using HtcSharp.HttpModule.Http.Protocols.Http2.HPack;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\KestrelTrace.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal class KestrelTrace : IKestrelTrace {
         private static readonly Action<ILogger, string, Exception> _connectionStart =
             LoggerMessage.Define<string>(LogLevel.Debug, new EventId(1, nameof(ConnectionStart)), @"Connection id ""{ConnectionId}"" started.");

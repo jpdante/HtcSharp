@@ -6,6 +6,10 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\LoggerExtensions.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal static class LoggerExtensions {
         // Category: DefaultHttpsProvider
         private static readonly Action<ILogger, string, string, Exception> _locatedDevelopmentCertificate =

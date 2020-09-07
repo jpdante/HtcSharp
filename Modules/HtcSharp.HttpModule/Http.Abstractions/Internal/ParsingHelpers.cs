@@ -3,7 +3,7 @@
 
 using System;
 using System.Linq;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Abstractions.Internal {

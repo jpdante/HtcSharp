@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Features;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 
 namespace HtcSharp.HttpModule.Http {
     public static class RequestFormReaderExtensions {

@@ -4,10 +4,10 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.Http.Protocols.Http;
 
 namespace HtcSharp.HttpModule.Http {
     public sealed class BadHttpRequestException : IOException {

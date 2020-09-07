@@ -9,6 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Core.Middleware.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Middleware\Internal\DuplexPipeStream.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal class DuplexPipeStream : Stream {
         private readonly PipeReader _input;
         private readonly PipeWriter _output;

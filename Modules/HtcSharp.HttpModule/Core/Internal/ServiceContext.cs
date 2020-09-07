@@ -2,10 +2,14 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.IO.Pipelines;
+using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Core.Internal.Infrastructure;
-using HtcSharp.HttpModule.Http.Protocols.Http;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\ServiceContext.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal class ServiceContext {
         public IKestrelTrace Log { get; set; }
 

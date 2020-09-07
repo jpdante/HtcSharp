@@ -7,6 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\ThrowingWasUpgradedWriteOnlyStream.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     internal sealed class ThrowingWasUpgradedWriteOnlyStream : WriteOnlyStream {
         public override bool CanSeek => false;
 

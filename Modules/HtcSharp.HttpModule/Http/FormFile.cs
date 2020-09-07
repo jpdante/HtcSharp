@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Http.Internal;
 

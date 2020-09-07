@@ -3,8 +3,8 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using HtcSharp.HttpModule.Core.Internal.Http;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.Http.Protocols.Http;
 
 namespace HtcSharp.HttpModule.Http {
     internal static partial class HttpUtilities {

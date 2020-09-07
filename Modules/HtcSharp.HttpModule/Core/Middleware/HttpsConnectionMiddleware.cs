@@ -16,10 +16,11 @@ using HtcSharp.HttpModule.Connections.Abstractions.Features;
 using HtcSharp.HttpModule.Core.Features;
 using HtcSharp.HttpModule.Core.Internal;
 using HtcSharp.HttpModule.Core.Middleware.Internal;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Shared.CertificateGeneration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using TlsConnectionFeature = HtcSharp.HttpModule.Core.Internal.TlsConnectionFeature;
 
 namespace HtcSharp.HttpModule.Core.Middleware {
     // SourceTools-Start

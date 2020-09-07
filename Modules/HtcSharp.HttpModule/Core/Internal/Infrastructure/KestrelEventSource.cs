@@ -4,9 +4,13 @@
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using HtcSharp.HttpModule.Connections.Abstractions;
-using HtcSharp.HttpModule.Http.Protocols.Http;
+using HtcSharp.HttpModule.Core.Internal.Http;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\KestrelEventSource.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     [EventSource(Name = "Microsoft-AspNetCore-Server-Kestrel")]
     internal sealed class KestrelEventSource : EventSource {
         public static readonly KestrelEventSource Log = new KestrelEventSource();

@@ -4,7 +4,6 @@
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 
 namespace HtcSharp.HttpModule.Http.Features {
     public class TlsConnectionFeature : ITlsConnectionFeature {

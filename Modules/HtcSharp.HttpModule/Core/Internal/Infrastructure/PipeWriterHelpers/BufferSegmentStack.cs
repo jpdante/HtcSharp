@@ -5,6 +5,10 @@ using System;
 using System.Runtime.CompilerServices;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure.PipeWriterHelpers {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\PipeWriterHelpers\BufferSegmentStack.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     // Copied from https://github.com/dotnet/corefx/blob/de3902bb56f1254ec1af4bf7d092fc2c048734cc/src/System.IO.Pipelines/src/System/IO/Pipelines/BufferSegmentStack.cs
     internal struct BufferSegmentStack {
         private SegmentAsValueType[] _array;

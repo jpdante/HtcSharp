@@ -6,6 +6,10 @@ using System.Diagnostics;
 using System.Threading;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\ResourceCounter.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal abstract class ResourceCounter {
         public abstract bool TryLockOne();
         public abstract void ReleaseOne();

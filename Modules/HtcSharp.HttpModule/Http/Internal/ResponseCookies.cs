@@ -7,7 +7,6 @@ using System.Text;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Primitives;
 using HtcSharp.HttpModule.Http.Features;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Internal {

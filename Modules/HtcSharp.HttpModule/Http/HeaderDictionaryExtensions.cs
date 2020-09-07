@@ -1,8 +1,9 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using HtcSharp.HttpModule.Http.Abstractions.Internal;
+using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.Primitives;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Internal;
 
 namespace HtcSharp.HttpModule.Http {

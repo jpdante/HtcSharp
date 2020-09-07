@@ -5,6 +5,10 @@ using System;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions.Features {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\Features\IConnectionCompleteFeature.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Represents the completion action for a connection.
     /// </summary>

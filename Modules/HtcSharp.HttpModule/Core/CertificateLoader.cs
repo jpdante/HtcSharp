@@ -6,6 +6,10 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\CertificateLoader.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     public static class CertificateLoader {
         // See http://oid-info.com/get/1.3.6.1.5.5.7.3.1
         // Indicates that a certificate can be used as a SSL server certificate

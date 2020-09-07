@@ -14,6 +14,10 @@ using HtcSharp.HttpModule.Server.Abstractions.Features;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\AddressBinder.cs
+    // Start-At-Remote-Line 17
+    // SourceTools-End
     internal class AddressBinder {
         public static async Task BindAsync(IServerAddressesFeature addresses,
             KestrelServerOptions serverOptions,

@@ -9,6 +9,10 @@ using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\ConnectionDispatcher.cs
+    // Start-At-Remote-Line 12
+    // SourceTools-End
     internal class ConnectionDispatcher {
         private static long _lastConnectionId = long.MinValue;
 

@@ -10,6 +10,10 @@ using HtcSharp.HttpModule.Connections.Abstractions;
 using HtcSharp.HttpModule.Core.Internal;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\ListenOptions.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     /// <summary>
     /// Describes either an <see cref="IPEndPoint"/>, Unix domain socket path, or a file descriptor for an already open
     /// socket that Kestrel should bind to or open.

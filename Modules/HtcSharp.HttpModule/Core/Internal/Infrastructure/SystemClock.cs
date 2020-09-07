@@ -4,6 +4,10 @@
 using System;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\SystemClock.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     /// <summary>
     /// Provides access to the normal system clock.
     /// </summary>

@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HtcSharp.HttpModule.Http.Features {

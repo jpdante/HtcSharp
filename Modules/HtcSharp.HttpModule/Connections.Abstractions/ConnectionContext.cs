@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Connections.Abstractions.Exceptions;
 using HtcSharp.HttpModule.Connections.Abstractions.Features;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
+using HtcSharp.HttpModule.Http.Features;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions {
     // SourceTools-Start

@@ -6,6 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Connections.Abstractions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Connections.Abstractions\src\IConnectionFactory.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     /// <summary>
     /// A factory abstraction for creating connections to an endpoint.
     /// </summary>

@@ -15,6 +15,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Core {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\KestrelConfigurationLoader.cs
+    // Start-At-Remote-Line 18
+    // SourceTools-End
     public class KestrelConfigurationLoader {
         private bool _loaded = false;
 

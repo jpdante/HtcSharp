@@ -6,6 +6,10 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace HtcSharp.HttpModule.Core.Internal.Infrastructure {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Infrastructure\ThreadPoolAwaitable.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     internal class ThreadPoolAwaitable : ICriticalNotifyCompletion {
         public static ThreadPoolAwaitable Instance = new ThreadPoolAwaitable();
 

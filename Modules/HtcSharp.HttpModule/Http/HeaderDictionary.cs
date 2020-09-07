@@ -4,8 +4,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.Primitives;
-using HtcSharp.HttpModule.Http.Features.Interfaces;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http {

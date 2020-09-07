@@ -7,6 +7,10 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 
 namespace HtcSharp.HttpModule.Core.Middleware.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Middleware\Internal\DuplexPipeStreamAdapter.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     /// <summary>
     /// A helper for wrapping a Stream decorator from an <see cref="IDuplexPipe"/>.
     /// </summary>
