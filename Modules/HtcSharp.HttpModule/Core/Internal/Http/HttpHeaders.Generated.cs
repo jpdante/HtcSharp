@@ -7,6 +7,7 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using HtcSharp.HttpModule.Core.Internal.Infrastructure;
 using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Shared.ServerInfrastructure;
 using Microsoft.Extensions.Primitives;

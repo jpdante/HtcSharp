@@ -137,5 +137,20 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
         /// </summary>
         /// <returns>The collection of route values for this request.</returns>
         public virtual RouteValueDictionary RouteValues { get; set; }
+
+        /// <summary>
+        /// Gets the requested path.
+        /// </summary>
+        public abstract string RequestPath { get; internal set; }
+
+        /// <summary>
+        /// Gets the requested file path.
+        /// </summary>
+        public abstract string RequestFilePath { get; internal set; }
+
+        /// <summary>
+        /// Gets the translated path to file.
+        /// </summary>
+        public abstract string TranslatedPath { get; internal set; }
     }
 }

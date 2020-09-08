@@ -143,5 +143,10 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
         public virtual Task CompleteAsync() {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Gets or sets if connection was finished.
+        /// </summary>
+        internal bool HasFinished { get; set; }
     }
 }

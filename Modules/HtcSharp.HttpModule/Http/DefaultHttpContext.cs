@@ -168,6 +168,8 @@ namespace HtcSharp.HttpModule.Http {
             throw new ObjectDisposedException(nameof(HttpContext), $"Request has finished and {nameof(HttpContext)} disposed.");
         }
 
+        public override HttpServerInfo ServerInfo { get; internal set; }
+
         struct FeatureInterfaces {
             public IItemsFeature Items;
             public IServiceProvidersFeature ServiceProviders;

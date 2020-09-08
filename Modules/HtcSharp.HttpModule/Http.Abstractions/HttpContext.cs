@@ -76,5 +76,10 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
         /// Aborts the connection underlying this request.
         /// </summary>
         public abstract void Abort();
+
+        /// <summary>
+        /// Gets or sets the server info used.
+        /// </summary>
+        public abstract HttpServerInfo ServerInfo { get; internal set; }
     }
 }

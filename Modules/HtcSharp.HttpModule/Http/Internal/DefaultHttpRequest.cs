@@ -159,6 +159,12 @@ namespace HtcSharp.HttpModule.Http.Internal {
             get { return RequestBodyPipeFeature.Reader; }
         }
 
+        public override string RequestPath { get; internal set; }
+
+        public override string RequestFilePath { get; internal set; }
+
+        public override string TranslatedPath { get; internal set; }
+
         struct FeatureInterfaces {
             public IHttpRequestFeature Request;
             public IQueryFeature Query;
