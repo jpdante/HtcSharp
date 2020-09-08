@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HtcSharp.Core.Logging.Abstractions;
-using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Http.Abstractions.Extensions;
 using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
-using Microsoft.Extensions.Primitives;
 
 namespace HtcPlugin.Php.Processor.Models {
     public class PhpRequest {
@@ -25,15 +21,15 @@ namespace HtcPlugin.Php.Processor.Models {
             //queryString = Uri.UnescapeDataString(queryString);
             //phpProcess.StartInfo.EnvironmentVariables.Clear();
             phpProcess.StartInfo.EnvironmentVariables.Add("PHPRC", PhpProcessor.PhpPath);
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_HOST", httpContext.Request.Headers.GetValueOrDefault("Host"));
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_CONNECTION", httpContext.Request.Headers.GetValueOrDefault("Connection"));
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_UPGRADE_INSECURE_REQUESTS", httpContext.Request.Headers.GetValueOrDefault("Upgrade-Insecure-Requests"));
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_USER_AGENT", httpContext.Request.Headers.GetValueOrDefault("User-Agent"));
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_DNT", httpContext.Request.Headers.GetValueOrDefault("DNT"));
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_ACCEPT", httpContext.Request.Headers.GetValueOrDefault("Accept"));
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_ACCEPT_ENCODING", httpContext.Request.Headers.GetValueOrDefault("Accept-Encoding"));
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_ACCEPT_LANGUAGE", httpContext.Request.Headers.GetValueOrDefault("Accept-Language"));
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_COOKIE", httpContext.Request.Headers.GetValueOrDefault("Cookie"));
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_HOST", httpContext.Request.Headers["Host"]);
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_CONNECTION", httpContext.Request.Headers["Connection"]);
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_UPGRADE_INSECURE_REQUESTS", httpContext.Request.Headers["Upgrade-Insecure-Requests"]);
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_USER_AGENT", httpContext.Request.Headers["User-Agent"]);
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_DNT", httpContext.Request.Headers["DNT"]);
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_ACCEPT", httpContext.Request.Headers["Accept"]);
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_ACCEPT_ENCODING", httpContext.Request.Headers["Accept-Encoding"]);
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_ACCEPT_LANGUAGE", httpContext.Request.Headers["Accept-Language"]);
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_COOKIE", httpContext.Request.Headers["Cookie"]);
             //phpProcess.StartInfo.EnvironmentVariables.Add("PATH", pathVars);
             phpProcess.StartInfo.EnvironmentVariables.Add("SERVER_SOFTWARE", "HtcSharp/1.2");
             phpProcess.StartInfo.EnvironmentVariables.Add("SERVER_SIGNATURE", $"<address>HtcSharp/1.0 Server at {httpContext.Request.Host.Host} Port {httpContext.Connection.RemotePort}</address>");
@@ -54,9 +50,9 @@ namespace HtcPlugin.Php.Processor.Models {
             phpProcess.StartInfo.EnvironmentVariables.Add("SCRIPT_NAME", httpContext.Request.RequestFilePath);
             phpProcess.StartInfo.EnvironmentVariables.Add("PHP_SELF", httpContext.Request.RequestFilePath); // Maybe the script file ??
             phpProcess.StartInfo.EnvironmentVariables.Add("REDIRECT_STATUS", "200");
-            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_REFERER", httpContext.Request.Headers.GetValueOrDefault("Referer"));
+            phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_REFERER", httpContext.Request.Headers["Referer"]);
             phpProcess.StartInfo.EnvironmentVariables.Add("CONTENT_LENGTH", httpContext.Request.ContentLength.ToString());
-            phpProcess.StartInfo.EnvironmentVariables.Add("CONTENT_TYPE", httpContext.Request.Headers.GetValueOrDefault("Content-Type"));
+            phpProcess.StartInfo.EnvironmentVariables.Add("CONTENT_TYPE", httpContext.Request.Headers["Content-Type"]);
             phpProcess.StartInfo.EnvironmentVariables.Add("HTTPS", httpContext.Request.IsHttps ? "1" : "0");
             phpProcess.StartInfo.EnvironmentVariables.Add("REMOTE_HOST", httpContext.Request.Host.Host);
             phpProcess.StartInfo.EnvironmentVariables.Add("CONTEXT_PREFIX", "");
@@ -71,11 +67,11 @@ namespace HtcPlugin.Php.Processor.Models {
             var isResponse = false;
             phpProcess.Start();
             await httpContext.Request.Body.CopyToAsync(phpProcess.StandardInput.BaseStream);
-            phpProcess.StandardInput.BaseStream.Flush();
-            phpProcess.StandardInput.Flush();
+            await phpProcess.StandardInput.BaseStream.FlushAsync();
+            await phpProcess.StandardInput.FlushAsync();
             try {
                 while (!phpProcess.StandardOutput.EndOfStream) {
-                    string line = phpProcess.StandardOutput.ReadLine();
+                    string line = await phpProcess.StandardOutput.ReadLineAsync();
                     PhpProcessor.Context.Logger.LogInfo(line);
                     if (line == null) continue;
                     if (line == "" && isResponse == false) {
@@ -107,7 +103,7 @@ namespace HtcPlugin.Php.Processor.Models {
                                 };
                                 string[] cookieData = tag[1].Split(';', 2);
                                 string[] cookieKeyValue = cookieData[0].Split('=', 2);
-                                foreach (var a in cookieKeyValue) {
+                                foreach (string a in cookieKeyValue) {
                                     PhpProcessor.Context.Logger.LogInfo(a[0] + ": " + a[1]);
                                 }
                                 /*var setCookieHeaderValue = new SetCookieHeaderValue(Uri.UnescapeDataString(cookieKeyValue[0]), Uri.UnescapeDataString(cookieKeyValue[1]));

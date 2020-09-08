@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MySql.Data.MySqlClient;
-using MySql.Data.Types;
+using MySqlConnector;
 
 namespace HtcPlugin.Lua.MySql.Models {
     public class LuaSqlDataReader {

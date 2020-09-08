@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using MoonSharp.Interpreter.Interop;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace HtcPlugin.Lua.MySql.Models {
     public class LuaSqlTransaction {
