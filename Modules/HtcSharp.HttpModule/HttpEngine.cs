@@ -14,6 +14,7 @@ using HtcSharp.HttpModule.Hosting.Http;
 using HtcSharp.HttpModule.Hosting.Internal;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Logging;
+using HtcSharp.HttpModule.Middleware.StaticFiles;
 using HtcSharp.HttpModule.Routing;
 using HtcSharp.HttpModule.Routing.Error;
 using HtcSharp.HttpModule.Routing.Pages;
@@ -37,6 +38,7 @@ namespace HtcSharp.HttpModule {
         private ILoggerFactory _loggerFactory;
         private SocketTransportFactory _socketTransportFactory;
         private KestrelServer _kestrelServer;
+        private StaticFileFactory _staticFileFactory;
         private CancellationTokenSource _startCancellationToken;
         private CancellationTokenSource _stopCancellationToken;
 
@@ -45,6 +47,10 @@ namespace HtcSharp.HttpModule {
 
         public Task Load(JObject config, HtcSharp.Core.Logging.Abstractions.ILogger logger) {
             _logger = logger;
+            _staticFileFactory = new StaticFileFactory(new StaticFileOptions {
+                ContentTypeProvider = new FileExtensionContentTypeProvider(),
+                DefaultContentType = "application/octet-stream",
+            }, new FileExtensionContentTypeProvider());
             Configure(config);
             UrlMapper.RegisterIndexFile("index.html");
             UrlMapper.RegisterIndexFile("index.htm");
@@ -70,7 +76,7 @@ namespace HtcSharp.HttpModule {
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddTransient<IHttpContextFactory, DefaultHttpContextFactory>();
             serviceCollection.AddTransient<ILogger, Logger<KestrelServer>>();
-            var hostingEnvironment = new HostingEnvironment {ApplicationName = "HtcSharp", ContentRootPath = "", EnvironmentName = "", ContentRootFileProvider = new NullFileProvider()};
+            var hostingEnvironment = new HostingEnvironment { ApplicationName = "HtcSharp", ContentRootPath = "", EnvironmentName = "", ContentRootFileProvider = new NullFileProvider() };
             serviceCollection.AddSingleton<IHostEnvironment>(hostingEnvironment);
             //var listener = new DiagnosticListener("HtcSharpServer");
             //serviceCollection.AddSingleton<DiagnosticListener>(listener);
@@ -86,7 +92,7 @@ namespace HtcSharp.HttpModule {
             var servers = config.GetValue("Servers", StringComparison.CurrentCultureIgnoreCase)?.Value<JArray>();
             if (servers == null) return;
             foreach (var jToken in servers) {
-                var server = (JObject) jToken;
+                var server = (JObject)jToken;
                 List<string> hosts = GetValues<string>(server, "Hosts");
                 List<string> domains = GetValues<string>(server, "Domains");
                 string root = HtcIOUtils.ReplacePathTags(GetValue<string>(server, "Root"));
@@ -99,7 +105,9 @@ namespace HtcSharp.HttpModule {
                     password = GetValue<string>(server, "Password");
                 }
 
-                var locationManager = ContainsKey(server, "Locations") ? new HttpLocationManager(GetValue<JToken>(server, "Default"), GetValue<JObject>(server, "Locations")) : new HttpLocationManager(GetValue<JToken>(server, "Default"), null);
+                var locationManager = ContainsKey(server, "Locations") ? 
+                    new HttpLocationManager(_staticFileFactory, GetValue<JToken>(server, "Default"), GetValue<JObject>(server, "Locations")) :
+                    new HttpLocationManager(_staticFileFactory,GetValue<JToken>(server, "Default"), null);
                 var errorMessageManager = new ErrorMessageManager();
                 if (ContainsKey(server, "ErrorPages")) {
                     foreach ((string key, var value) in GetValue<JObject>(server, "ErrorPages")) {
@@ -138,7 +146,7 @@ namespace HtcSharp.HttpModule {
 
         private IOptions<KestrelServerOptions> GetKestrelServerOptions(JObject config, IServiceProvider serviceProvider) {
             var endpoints = new List<string>();
-            var kestrelServerOptions = new KestrelServerOptions {ApplicationServices = serviceProvider};
+            var kestrelServerOptions = new KestrelServerOptions { ApplicationServices = serviceProvider };
             foreach (var serverConfig in ServerConfigs) {
                 if (serverConfig.UseSsl) {
                     foreach (string endpoint in serverConfig.Endpoints) {

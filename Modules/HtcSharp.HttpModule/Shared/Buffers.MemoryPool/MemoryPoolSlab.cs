@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+// ReSharper disable CheckNamespace
 
 namespace System.Buffers {
     // SourceTools-Start

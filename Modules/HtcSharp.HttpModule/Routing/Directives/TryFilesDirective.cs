@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
-using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class TryFilesDirective : IDirective {
+        private readonly StaticFileFactory _staticFileFactory;
         private readonly List<string> _files;
         private readonly HttpLocationManager _httpLocationManager;
 
-        public TryFilesDirective(IReadOnlyList<string> files, HttpLocationManager httpLocationManager) {
+        public TryFilesDirective(StaticFileFactory staticFileFactory, IReadOnlyList<string> files, HttpLocationManager httpLocationManager) {
+            _staticFileFactory = staticFileFactory;
             _httpLocationManager = httpLocationManager;
             _files = new List<string>();
             for (var i = 1; i < files.Count; i++) {
@@ -53,19 +53,17 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         context.Response.HasFinished = true;
                     } else {
                         try {
-                            await HttpIO.SendFile(context, context.Request.TranslatedPath);
-                            context.Response.HasFinished = true;
+                            await _staticFileFactory.ServeStaticFile(context, context.Request.TranslatedPath);
                         } catch {
-                            await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
-                            context.Response.HasFinished = true;
+                            //await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                         }
+                        context.Response.HasFinished = true;
                     }
                 } else if (Directory.Exists(context.Request.TranslatedPath)) {
                     if (!context.Request.RequestPath.EndsWith('/')) {
                         context.Response.Redirect(context.Request.RequestPath + "/");
                         context.Response.HasFinished = true;
                     }
-
                     //context.ErrorMessageManager.SendError(context, 404);
                     // Do indexer
                 }

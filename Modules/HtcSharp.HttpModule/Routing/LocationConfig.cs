@@ -61,16 +61,16 @@ namespace HtcSharp.HttpModule.Routing {
                 var dataSplit = i.ToObject<string>().Split(" ");
                 switch (dataSplit[0]) {
                     case "index":
-                        _directives.Add(new IndexDirective(dataSplit));
+                        _directives.Add(new IndexDirective(_httpLocationManager.StaticFileFactory, dataSplit));
                         break;
                     case "try_files":
-                        _directives.Add(new TryFilesDirective(dataSplit, _httpLocationManager));
+                        _directives.Add(new TryFilesDirective(_httpLocationManager.StaticFileFactory, dataSplit, httpLocationManager));
                         break;
                     case "rewrite":
                         _directives.Add(new ReWriteDirective(dataSplit));
                         break;
                     case "try_pages":
-                        _directives.Add(new TryPagesDirective(dataSplit, _httpLocationManager));
+                        _directives.Add(new TryPagesDirective(dataSplit, httpLocationManager));
                         break;
                     case "return":
                         _directives.Add(new ReturnDirective(dataSplit));

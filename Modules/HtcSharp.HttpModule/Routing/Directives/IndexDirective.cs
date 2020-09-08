@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
-using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class IndexDirective : IDirective {
+        private readonly StaticFileFactory _staticFileFactory;
         private readonly List<string> _indexes;
 
-        public IndexDirective(IReadOnlyList<string> index) {
+        public IndexDirective(StaticFileFactory staticFileFactory, IReadOnlyList<string> index) {
+            _staticFileFactory = staticFileFactory;
             _indexes = new List<string>();
             for (var i = 1; i < index.Count; i++) {
                 _indexes.Add(index[i]);
@@ -32,15 +33,12 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                             context.Response.HasFinished = true;
                             return;
                         }
-
                         try {
-                            await HttpIO.SendFile(context, indexPath);
-                            context.Response.HasFinished = true;
-                        } catch (Exception) {
-                            await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
-                            context.Response.HasFinished = true;
+                            await _staticFileFactory.ServeStaticFile(context, indexPath);
+                        } catch {
+                            //await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                         }
-
+                        context.Response.HasFinished = true;
                         return;
                     }
                 } else {
@@ -53,15 +51,11 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                         context.Response.HasFinished = true;
                         return;
                     }
-
                     try {
-                        await HttpIO.SendFile(context, indexPath);
-                        context.Response.HasFinished = true;
+                        await _staticFileFactory.ServeStaticFile(context, indexPath);
                     } catch {
-                        await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
-                        context.Response.HasFinished = true;
+                        //await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                     }
-
                     return;
                 }
             }

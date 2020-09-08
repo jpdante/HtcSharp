@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
@@ -38,7 +41,9 @@ namespace HtcSharp.HttpModule.Hosting.Internal {
 
         public async Task ProcessRequestAsync(Context context) {
             try {
-                string currentKey = context.HttpContext.Request.IsHttps ? $"1{context.HttpContext.Request.Host.ToString()}" : $"0{context.HttpContext.Request.Host.ToString()}";
+                string currentKey = context.HttpContext.Request.IsHttps
+                    ? $"1{context.HttpContext.Request.Host}"
+                    : $"0{context.HttpContext.Request.Host}";
                 if (_httpEngine.DomainDictionary.TryGetValue(currentKey, out var value)) {
                     context.HttpContext.ServerInfo = value.HttpServerInfo;
                     await value.LocationManager.ProcessRequest(context.HttpContext);
@@ -54,8 +59,7 @@ namespace HtcSharp.HttpModule.Hosting.Internal {
 
                 var response = context.HttpContext.Response;
                 response.StatusCode = 503;
-                Memory<byte> data = Encoding.UTF8.GetBytes("No domain found!");
-                await response.BodyWriter.WriteAsync(data);
+                await response.BodyWriter.WriteAsync(Encoding.UTF8.GetBytes("No domain found!"));
             } catch (Exception ex) {
                 _logger.LogError(ex, ex.Message);
             }

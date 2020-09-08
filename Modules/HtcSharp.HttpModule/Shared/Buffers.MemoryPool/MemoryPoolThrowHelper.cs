@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
+// ReSharper disable CheckNamespace
 
 namespace System.Buffers {
     // SourceTools-Start

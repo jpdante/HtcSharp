@@ -7,8 +7,10 @@ namespace HtcSharp.HttpModule.Routing {
     public class HttpLocationManager {
         internal readonly List<LocationConfig> Locations;
         internal readonly LocationConfig DefaultConfig;
+        internal readonly StaticFileFactory StaticFileFactory;
 
-        public HttpLocationManager(JToken defaultConfig, JObject locationConfigs) {
+        public HttpLocationManager(StaticFileFactory staticFileFactory, JToken defaultConfig, JObject locationConfigs) {
+            StaticFileFactory = staticFileFactory;
             DefaultConfig = new LocationConfig(null, defaultConfig as JArray, this, true);
             Locations = new List<LocationConfig>();
             if (locationConfigs == null) return;

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
+﻿using System.Collections.Generic;
 using HtcSharp.HttpModule.Routing;
 using HtcSharp.HttpModule.Routing.Error;
 

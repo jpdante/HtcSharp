@@ -6,6 +6,7 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+// ReSharper disable CheckNamespace
 
 namespace System.Buffers {
     // SourceTools-Start
