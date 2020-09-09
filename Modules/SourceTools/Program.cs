@@ -137,9 +137,29 @@ namespace SourceTools {
                 case "ignore-remote-line":
                     _ignoreRemoteLines.Add(int.Parse(dataSplit[1]));
                     break;
+                case "ignore-remote-range": {
+                    string[] range = dataSplit[1].Split('-', 2);
+                    int n1 = int.Parse(range[0]);
+                    int n2 = int.Parse(range[1]) + 1;
+                    if (n2 < n1) throw new Exception("Range incorrect");
+                    for (int i = n1; i < n2; i++) {
+                        _ignoreRemoteLines.Add(i);
+                    }
+                    break;
+                }
                 case "ignore-local-line":
                     _ignoreLocalLines.Add(int.Parse(dataSplit[1]));
                     break;
+                case "ignore-local-line-range": {
+                    string[] range = dataSplit[1].Split('-', 2);
+                    int n1 = int.Parse(range[0]);
+                    int n2 = int.Parse(range[1]) + 1;
+                    if (n2 < n1) throw new Exception("Range incorrect");
+                    for (int i = n1; i < n2; i++) {
+                        _ignoreLocalLines.Add(i);
+                    }
+                    break;
+                }
                 case "ignore-copyright":
                     _ignoreCopyright = true;
                     break;

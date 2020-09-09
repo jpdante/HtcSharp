@@ -2,12 +2,13 @@
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions.Extensions;
-using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
-using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class ReturnDirective : IDirective {
+        // SourceTools-Start
+        // Ignore-Copyright
+        // SourceTools-End
         private readonly int _statusCode;
         private readonly string _data;
         private readonly byte _type;
@@ -45,11 +46,11 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 context.Response.HasFinished = true;
             } else if (_type == 2) {
                 context.Response.StatusCode = _statusCode;
-                context.Response.Headers.Add("Location", HttpIO.ReplaceVars(context, _data));
+                context.Response.Headers.Add("Location", _data.ReplaceHttpContextVars(context));
                 context.Response.HasFinished = true;
             } else if (_type == 3) {
                 context.Response.StatusCode = _statusCode;
-                await context.Response.WriteAsync(HttpIO.ReplaceVars(context, _data));
+                await context.Response.WriteAsync(_data.ReplaceHttpContextVars(context));
                 context.Response.HasFinished = true;
             }
         }

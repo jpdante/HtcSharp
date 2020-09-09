@@ -17,6 +17,8 @@ namespace HtcSharp.HttpModule.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\DefaultHttpContext.cs
     // Start-At-Remote-Line 15
+    // Only-Warn-Content-Change
+    // Ignore-Local-Line-Range 173-182
     // SourceTools-End
     public sealed class DefaultHttpContext : HttpContext {
         // Lambdas hoisted to static readonly fields to improve inlining https://github.com/dotnet/roslyn/issues/13624

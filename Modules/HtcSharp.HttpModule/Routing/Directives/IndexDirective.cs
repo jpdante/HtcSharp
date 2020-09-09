@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class IndexDirective : IDirective {
         private readonly StaticFileFactory _staticFileFactory;
         private readonly List<string> _indexes;
@@ -21,7 +23,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
 
         public async Task Execute(HttpContext context) {
             foreach (string i in _indexes) {
-                string index = HttpIO.ReplaceVars(context, i);
+                string index = i.ReplaceHttpContextVars(context);
                 if (index.Equals("$internal_indexes")) {
                     foreach (string j in UrlMapper.IndexFiles) {
                         string indexPath = Path.Combine(context.ServerInfo.RootPath, j[0].Equals('/') ? j.Remove(0, 1) : Path.Combine(context.Request.Path, j).Remove(0, 1));

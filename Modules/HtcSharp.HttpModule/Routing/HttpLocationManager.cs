@@ -4,6 +4,9 @@ using HtcSharp.HttpModule.Http.Abstractions;
 using Newtonsoft.Json.Linq;
 
 namespace HtcSharp.HttpModule.Routing {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class HttpLocationManager {
         internal readonly List<LocationConfig> Locations;
         internal readonly LocationConfig DefaultConfig;

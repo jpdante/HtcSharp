@@ -1,89 +1,154 @@
-﻿using System;
+﻿// Copyright (c) Scott Offen. All rights reserved.
+// https://github.com/sukona/Grapevine/blob/master/src/Grapevine/Shared/ContentType.cs
+
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 
 namespace HtcSharp.HttpModule.Routing {
-    public static class ContentTypeExtensions {
+    // SourceTools-Start
+    // Remote-File https://raw.githubusercontent.com/sukona/Grapevine/master/src/Grapevine/Shared/ContentType.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
+    public static class ContentTypeExtensions
+    {
         private static readonly ConcurrentDictionary<string, int> ValueLookup;
         private static readonly ConcurrentDictionary<string, int> ValueCache;
         private static readonly ConcurrentDictionary<string, int> ExtensionLookup;
 
-        static ContentTypeExtensions() {
+        static ContentTypeExtensions()
+        {
             ValueLookup = new ConcurrentDictionary<string, int>();
             ValueCache = new ConcurrentDictionary<string, int>();
             ExtensionLookup = new ConcurrentDictionary<string, int>();
 
-            foreach (var contentType in Enum.GetValues(typeof(ContentType)).Cast<ContentType>()) {
-                var key = contentType.ToValue();
-                var ext = contentType.ToString();
-                if (!ValueLookup.ContainsKey(key)) ValueLookup[key] = (int) contentType;
-                if (!ValueCache.ContainsKey(key)) ValueCache[key] = (int) contentType;
-                ExtensionLookup[ext] = (int) contentType;
+            foreach (var ctype in Enum.GetValues(typeof(ContentType)).Cast<ContentType>())
+            {
+                var key = ctype.ToValue();
+                var ext = ctype.ToString();
+
+                if (!ValueLookup.ContainsKey(key)) ValueLookup[key] = (int)ctype;
+                if (!ValueCache.ContainsKey(key)) ValueCache[key] = (int)ctype;
+                ExtensionLookup[ext] = (int)ctype;
             }
         }
 
-        private static ContentTypeMetadata GetMetadata(ContentType ct) {
+        /// <summary>
+        /// Returns the ContentTypeMetadata for the given content type
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns>ContentTypeMetadata</returns>
+        private static ContentTypeMetadata GetMetadata(ContentType ct)
+        {
             var info = ct.GetType().GetMember(ct.ToString());
             var attributes = info[0].GetCustomAttributes(typeof(ContentTypeMetadata), false);
             return attributes.Length > 0 ? attributes[0] as ContentTypeMetadata : new ContentTypeMetadata();
         }
 
-        public static string ToValue(this ContentType ct) {
+        /// <summary>
+        /// Returns the mime type and subtype string from the Value property of the ContentTypeMetadata
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns>string</returns>
+        public static string ToValue(this ContentType ct)
+        {
             return GetMetadata(ct).Value;
         }
 
-        public static bool IsText(this ContentType ct) {
+        /// <summary>
+        /// Gets a value that indicates whether this mime type represents a text file
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns>bool</returns>
+        public static bool IsText(this ContentType ct)
+        {
             return GetMetadata(ct).IsText;
         }
 
-        public static bool IsBinary(this ContentType ct) {
+        /// <summary>
+        /// Gets a value that indicates whether this mime type represents a binary file
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns>bool</returns>
+        public static bool IsBinary(this ContentType ct)
+        {
             return GetMetadata(ct).IsBinary;
         }
 
-        public static ContentType FromString(this ContentType ct, string contentType) {
+        /// <summary>
+        /// Returns a ContentType value for the MIME type string provided
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        public static ContentType FromString(this ContentType ct, string contentType)
+        {
             if (string.IsNullOrWhiteSpace(contentType)) return ContentType.CUSTOM_TEXT;
-            contentType = contentType.Trim();
+            var contenttype = contentType.Trim();
 
-            if (ValueCache.ContainsKey(contentType)) return (ContentType) ValueCache[contentType];
+            if (ValueCache.ContainsKey(contenttype)) return (ContentType) ValueCache[contenttype];
 
-            foreach (var part in contentType.Split(';', ',')) {
-                var contentType2 = part.Trim();
-                if (!ValueLookup.ContainsKey(contentType2)) continue;
-                var tct = (ContentType) ValueLookup[contentType2];
+            foreach (var part in contenttype.Split(';', ','))
+            {
+                var ctype = part.Trim();
+                if (!ValueLookup.ContainsKey(ctype)) continue;
+                var tct = (ContentType)ValueLookup[ctype];
 
-                ValueCache[contentType] = (int) tct;
+                ValueCache[contenttype] = (int)tct;
                 return tct;
             }
 
-            ValueCache[contentType] = 0;
+            ValueCache[contenttype] = 0;
             return 0;
         }
 
-        public static ContentType FromExtension(this ContentType ct, string filename) {
+        public static ContentType FromExtension(this ContentType ct, string filename)
+        {
             var ext = Path.GetExtension(filename)?.ToUpper().TrimStart('.');
             if (ext == null) return 0;
             return ExtensionLookup.ContainsKey(ext) ? (ContentType) ExtensionLookup[ext] : 0;
         }
     }
 
+    /// <summary>
+    /// <para>Attribute for ContentType enumeration</para>
+    /// <para>Targets: Field</para>
+    /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    internal class ContentTypeMetadata : Attribute {
+    internal class ContentTypeMetadata : Attribute
+    {
+        /// <summary>
+        /// String representation of the MIME type and subtype
+        /// </summary>
         public string Value { get; set; }
+
+        /// <summary>
+        /// A value that indicates whether this mime type represents a text file
+        /// </summary>
         public bool IsText { get; set; }
 
-        public bool IsBinary {
-            get => !IsText;
-            set => IsText = !value;
+        /// <summary>
+        /// A value that indicates whether this mime type represents a binary file
+        /// </summary>
+        public bool IsBinary
+        {
+            get { return !IsText; }
+            set { IsText = !value; }
         }
 
-        public ContentTypeMetadata() {
+        public ContentTypeMetadata()
+        {
             Value = "text/plain";
             IsText = true;
         }
     }
 
-    public enum ContentType {
+    /// <summary>
+    /// MIME type of the body of the request or response
+    /// </summary>
+    public enum ContentType
+    {
         [ContentTypeMetadata(Value = "text/plain", IsText = true)]
         CUSTOM_TEXT,
 

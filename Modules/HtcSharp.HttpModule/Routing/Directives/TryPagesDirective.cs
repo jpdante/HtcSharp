@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
-using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class TryPagesDirective : IDirective {
+        // SourceTools-Start
+        // Ignore-Copyright
+        // SourceTools-End
         private readonly List<string> _pages;
         private readonly HttpLocationManager _httpLocationManager;
 
@@ -21,7 +22,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
 
         public async Task Execute(HttpContext context) {
             foreach (string file in _pages) {
-                string tempPath = HttpIO.ReplaceVars(context, file);
+                string tempPath = file.ReplaceHttpContextVars(context);
                 if (tempPath[0].Equals('=')) {
                     if (int.TryParse(tempPath.Remove(0, 1), out int statusCode)) {
                         await context.ServerInfo.ErrorMessageManager.SendError(context, statusCode);

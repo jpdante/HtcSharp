@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Middleware.StaticFiles {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Middleware\StaticFiles\src\Constants.cs
+    // Start-At-Remote-Line 7
+    // SourceTools-End
     internal static class Constants {
         internal const string ServerCapabilitiesKey = "server.Capabilities";
         internal const string SendFileVersionKey = "sendfile.Version";

@@ -5,6 +5,9 @@ using System.Reflection;
 using HtcSharp.HttpModule.Http.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.ReWriter {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class ReWriteLocation {
         private readonly byte _actionType;
         private readonly string _data;

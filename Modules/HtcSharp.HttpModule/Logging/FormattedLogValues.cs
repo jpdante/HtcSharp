@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Threading;
 
 namespace HtcSharp.HttpModule.Logging {
+    // SourceTools-Start
+    // SourceTools-End
     /// <summary>
     /// LogValues to enable formatting options supported by <see cref="M:string.Format"/>.
     /// This also enables using {NamedformatItem} in the format string.

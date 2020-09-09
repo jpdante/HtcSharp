@@ -8,6 +8,9 @@ using HtcSharp.HttpModule.Routing.Directives;
 using Newtonsoft.Json.Linq;
 
 namespace HtcSharp.HttpModule.Routing {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class LocationConfig {
         public readonly string Key = "";
         private readonly byte _modifier;

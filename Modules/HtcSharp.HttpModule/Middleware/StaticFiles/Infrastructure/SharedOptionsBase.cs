@@ -2,10 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
-using HtcSharp.HttpModule.Http.Abstractions;
-using Microsoft.Extensions.FileProviders;
 
 namespace HtcSharp.HttpModule.Middleware.StaticFiles.Infrastructure {
+    // SourceTools-Start
+    // SourceTools-End
     /// <summary>
     /// Options common to several middleware components
     /// </summary>

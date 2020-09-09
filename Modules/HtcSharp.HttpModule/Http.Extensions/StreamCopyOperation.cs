@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Shared;
 
 namespace HtcSharp.HttpModule.Http.Extensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Extensions\src\StreamCopyOperation.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     // FYI: In most cases the source will be a FileStream and the destination will be to the network.
     public static class StreamCopyOperation {
         /// <summary>Asynchronously reads the given number of bytes from the source stream and writes them to another stream.</summary>

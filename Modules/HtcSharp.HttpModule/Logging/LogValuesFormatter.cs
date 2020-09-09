@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 
 namespace HtcSharp.HttpModule.Logging {
+    // SourceTools-Start
+    // SourceTools-End
     /// <summary>
     /// Formatter to convert the named format items like {NamedformatItem} to <see cref="M:string.Format"/> format.
     /// </summary>

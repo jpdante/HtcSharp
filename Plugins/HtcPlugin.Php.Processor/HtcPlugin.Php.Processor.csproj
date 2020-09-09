@@ -5,6 +5,7 @@
     <AssemblyName>HtcPlugin.Php.Processor.plugin</AssemblyName>
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Platforms>x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +24,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir)" />
+    <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir) $(PlatformName)" />
   </Target>
 
 </Project>

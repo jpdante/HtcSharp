@@ -13,6 +13,7 @@ namespace HtcSharp.HttpModule.Http.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\Internal\ResponseCookies.cs
     // Start-At-Remote-Line 12
+    // Ignore-Local-Line 61
     // SourceTools-End
     /// <summary>
     /// A wrapper for the response Set-Cookie header.

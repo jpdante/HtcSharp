@@ -10,6 +10,11 @@ using HtcSharp.HttpModule.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Hosting.Internal {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Hosting\Hosting\src\Internal\HostingApplication.cs
+    // Start-At-Remote-Line 14
+    // Ignore-Local-Line-Range 19-100
+    // SourceTools-End
     internal class HostingApplication : IHttpApplication<HostingApplication.Context> {
         private readonly HttpEngine _httpEngine;
         private readonly ILogger _logger;
@@ -41,6 +46,8 @@ namespace HtcSharp.HttpModule.Hosting.Internal {
 
         public async Task ProcessRequestAsync(Context context) {
             try {
+                // Https = 1
+                // Http = 0
                 string currentKey = context.HttpContext.Request.IsHttps
                     ? $"1{context.HttpContext.Request.Host}"
                     : $"0{context.HttpContext.Request.Host}";

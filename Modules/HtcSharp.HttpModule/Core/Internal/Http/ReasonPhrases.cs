@@ -10,6 +10,8 @@ namespace HtcSharp.HttpModule.Core.Internal.Http {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Servers\Kestrel\Core\src\Internal\Http\ReasonPhrases.cs
     // Start-At-Remote-Line 10
+    // Ignore-Local-Line 85
+    // Ignore-Local-Line 224
     // SourceTools-End
     internal static class ReasonPhrases {
         private static readonly byte[] _bytesStatus100 = CreateStatusBytes(StatusCodes.Status100Continue);

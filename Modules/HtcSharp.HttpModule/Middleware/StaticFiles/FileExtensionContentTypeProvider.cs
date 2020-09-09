@@ -5,6 +5,10 @@ using System;
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Middleware.StaticFiles {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Middleware\StaticFiles\src\FileExtensionContentTypeProvider.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// Provides a mapping between file extensions and MIME types.
     /// </summary>

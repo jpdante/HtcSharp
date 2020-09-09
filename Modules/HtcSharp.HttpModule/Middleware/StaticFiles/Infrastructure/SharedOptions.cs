@@ -6,6 +6,8 @@ using HtcSharp.HttpModule.Http.Abstractions;
 using Microsoft.Extensions.FileProviders;
 
 namespace HtcSharp.HttpModule.Middleware.StaticFiles.Infrastructure {
+    // SourceTools-Start
+    // SourceTools-End
     /// <summary>
     /// Options common to several middleware components
     /// </summary>

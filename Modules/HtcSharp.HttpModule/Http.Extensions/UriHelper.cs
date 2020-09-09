@@ -1,8 +1,15 @@
-﻿using System;
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
+
+using System;
 using System.Text;
 using HtcSharp.HttpModule.Http.Abstractions;
 
 namespace HtcSharp.HttpModule.Http.Extensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Extensions\src\UriHelper.cs
+    // Start-At-Remote-Line 8
+    // SourceTools-End
     /// <summary>
     /// A helper class for constructing encoded Uris for use in headers and other Uris.
     /// </summary>

@@ -6,6 +6,11 @@ using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Middleware.StaticFiles.Infrastructure;
 
 namespace HtcSharp.HttpModule.Middleware.StaticFiles {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Middleware\StaticFiles\src\StaticFileOptions.cs
+    // Start-At-Remote-Line 10
+    // Ignore-Local-Line-Range 28-52
+    // SourceTools-End
     /// <summary>
     /// Options for serving static files
     /// </summary>

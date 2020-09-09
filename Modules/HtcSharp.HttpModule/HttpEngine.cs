@@ -30,6 +30,9 @@ using LoggerExtensions = HtcSharp.Core.Logging.Abstractions.LoggerExtensions;
 using LogLevel = HtcSharp.Core.Logging.Abstractions.LogLevel;
 
 namespace HtcSharp.HttpModule {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class HttpEngine : IEngine {
         public string Name => "HtcHttp";
 

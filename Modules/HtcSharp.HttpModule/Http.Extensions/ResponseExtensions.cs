@@ -7,6 +7,10 @@ using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Extensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Extensions\src\ResponseExtensions.cs
+    // Start-At-Remote-Line 9
+    // SourceTools-End
     public static class ResponseExtensions {
         public static void Clear(this HttpResponse response) {
             if (response.HasStarted) {

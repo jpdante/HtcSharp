@@ -3,6 +3,9 @@ using System.Text.RegularExpressions;
 using HtcSharp.HttpModule.Http.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.ReWriter {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class ReWriteRule {
         private readonly byte _ruleType;
         private readonly Regex _pattern;

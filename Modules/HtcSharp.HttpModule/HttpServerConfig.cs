@@ -3,6 +3,9 @@ using HtcSharp.HttpModule.Routing;
 using HtcSharp.HttpModule.Routing.Error;
 
 namespace HtcSharp.HttpModule {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     internal class HttpServerConfig {
         public List<string> Endpoints { get; }
         public List<string> Domains { get; }

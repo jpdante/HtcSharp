@@ -8,6 +8,10 @@ using HtcSharp.HttpModule.Http.Features;
 using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcSharp.HttpModule.Http.Extensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Extensions\src\ResponseHeaders.cs
+    // Start-At-Remote-Line 10
+    // SourceTools-End
     public class ResponseHeaders {
         public ResponseHeaders(IHeaderDictionary headers) {
             if (headers == null) {

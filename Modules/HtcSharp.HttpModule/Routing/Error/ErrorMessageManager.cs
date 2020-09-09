@@ -5,6 +5,9 @@ using HtcSharp.HttpModule.Routing.Abstractions;
 using HtcSharp.HttpModule.Routing.Pages;
 
 namespace HtcSharp.HttpModule.Routing.Error {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class ErrorMessageManager {
         private static readonly Dictionary<int, IPageMessage> DefaultPages;
         private readonly Dictionary<int, IPageMessage> _overridePages;

@@ -6,6 +6,9 @@ using HtcSharp.Core.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Logging {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     class HtcLoggerProvider : ILoggerProvider, ISupportExternalScope {
         private readonly ConcurrentDictionary<string, HtcLogger> _loggers;
         private IExternalScopeProvider _scopeProvider;

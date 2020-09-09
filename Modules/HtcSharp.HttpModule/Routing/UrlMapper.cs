@@ -2,6 +2,9 @@
 using System.Reflection;
 
 namespace HtcSharp.HttpModule.Routing {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public static class UrlMapper {
         internal static readonly List<string> IndexFiles = new List<string>();
         internal static readonly Dictionary<string, IHttpEvents> ExtensionPlugins = new Dictionary<string, IHttpEvents>();

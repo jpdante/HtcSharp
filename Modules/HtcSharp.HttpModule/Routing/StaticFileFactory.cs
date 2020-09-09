@@ -3,6 +3,9 @@ using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Middleware.StaticFiles;
 
 namespace HtcSharp.HttpModule.Routing {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class StaticFileFactory {
 
         private readonly StaticFileOptions _staticFileOptions;

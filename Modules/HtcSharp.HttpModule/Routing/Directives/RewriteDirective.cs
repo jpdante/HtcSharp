@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class ReWriteDirective : IDirective {
+        // SourceTools-Start
+        // Ignore-Copyright
+        // SourceTools-End
         private readonly Regex _pattern;
         private readonly string _rewriteData;
         private readonly string _flag;
@@ -21,7 +23,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         public Task Execute(HttpContext context) {
             var match = _pattern.Match(context.Request.Path);
             if (!match.Success) return Task.CompletedTask;
-            var newRequest = HttpIO.ReplaceVars(context, _rewriteData);
+            var newRequest = _rewriteData.ReplaceHttpContextVars(context);
             for (var i = 0; i < match.Captures.Count; i++) {
                 newRequest = newRequest.Replace($"${i + 1}", match.Captures[i].Value);
             }

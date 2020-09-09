@@ -10,6 +10,10 @@ using HtcSharp.HttpModule.Http.Features;
 using Microsoft.Extensions.FileProviders;
 
 namespace HtcSharp.HttpModule.Http.Extensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Extensions\src\SendFileResponseExtensions.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     /// <summary>
     /// Provides extensions for HttpResponse exposing the SendFile extension.
     /// </summary>

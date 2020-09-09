@@ -6,6 +6,9 @@ using HtcSharp.HttpModule.Http.Abstractions.Extensions;
 using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Pages {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class FilePageMessage : IPageMessage {
         private readonly string _pageFileName;
         public int StatusCode { get; }

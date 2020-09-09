@@ -13,6 +13,11 @@ using HtcSharp.HttpModule.Http.Headers;
 using HtcSharp.HttpModule.Shared.RangeHelper;
 
 namespace HtcSharp.HttpModule.Middleware.StaticFiles {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Middleware\StaticFiles\src\StaticFileContext.cs
+    // Start-At-Remote-Line 19
+    // Ignore-Local-Line-Range 26-337
+    // SourceTools-End
     internal struct StaticFileContext {
         private readonly HttpContext _context;
         private readonly StaticFileOptions _options;

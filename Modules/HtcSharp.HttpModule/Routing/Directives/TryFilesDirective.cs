@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
-using HtcSharp.HttpModule.IO;
 using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class TryFilesDirective : IDirective {
+        // SourceTools-Start
+        // Ignore-Copyright
+        // SourceTools-End
         private readonly StaticFileFactory _staticFileFactory;
         private readonly List<string> _files;
         private readonly HttpLocationManager _httpLocationManager;
@@ -23,7 +25,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
 
         public async Task Execute(HttpContext context) {
             foreach (string file in _files) {
-                string tempPath = HttpIO.ReplaceVars(context, file);
+                string tempPath = file.ReplaceHttpContextVars(context);
                 if (tempPath[0].Equals('=')) {
                     if (int.TryParse(tempPath.Remove(0, 1), out int statusCode)) {
                         await context.ServerInfo.ErrorMessageManager.SendError(context, statusCode);

@@ -13,6 +13,8 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http.Abstractions\src\HttpRequest.cs
     // Start-At-Remote-Line 12
+    // Only-Warn-Content-Change
+    // Ignore-Local-Line-Range 142-143
     // SourceTools-End
     /// <summary>
     /// Represents the incoming side of an individual HTTP request.

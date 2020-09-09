@@ -15,6 +15,8 @@ namespace HtcSharp.HttpModule.Http.Internal {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http\src\Internal\DefaultHttpRequest.cs
     // Start-At-Remote-Line 14
+    // Only-Warn-Content-Change
+    // Ignore-Local-Line-Range 164-173
     // SourceTools-End
     internal sealed class DefaultHttpRequest : HttpRequest {
         private const string Http = "http";

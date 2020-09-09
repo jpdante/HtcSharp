@@ -11,6 +11,8 @@ namespace HtcSharp.HttpModule.Http.Abstractions {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http.Abstractions\src\HttpContext.cs
     // Start-At-Remote-Line 11
+    // Only-Warn-Content-Change
+    // Ignore-Local-Line-Range 81-82
     // SourceTools-End
     /// <summary>
     /// Encapsulates all HTTP-specific information about an individual HTTP request.

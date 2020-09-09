@@ -22,6 +22,9 @@ namespace HtcSharp.HttpModule {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;

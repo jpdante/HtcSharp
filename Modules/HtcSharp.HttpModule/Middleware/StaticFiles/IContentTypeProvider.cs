@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 namespace HtcSharp.HttpModule.Middleware.StaticFiles {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Middleware\StaticFiles\src\IContentTypeProvider.cs
+    // Start-At-Remote-Line 5
+    // SourceTools-End
     /// <summary>
     /// Used to look up MIME types given a file path
     /// </summary>

@@ -12,6 +12,10 @@ using HtcSharp.HttpModule.Http.Headers;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Http.Extensions {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Http\Http.Extensions\src\HeaderDictionaryTypeExtensions.cs
+    // Start-At-Remote-Line 13
+    // SourceTools-End
     public static class HeaderDictionaryTypeExtensions {
         public static RequestHeaders GetTypedHeaders(this HttpRequest request) {
             return new RequestHeaders(request.Headers);

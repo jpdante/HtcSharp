@@ -13,8 +13,6 @@ function isBlackListed(path)
   elseif path == [[runtimes\win\lib\netcoreapp2.0\System.Diagnostics.EventLog.dll]] then return true
   elseif path == [[HtcSharp.HttpModule.module.dll]] then return true
   elseif path == [[HtcSharp.HttpModule.module.pdb]] then return true
-  elseif path == [[HtcPlugin.Lua.Processor.plugin.dll]] then return true
-  elseif path == [[HtcPlugin.Lua.Processor.plugin.pdb]] then return true
   elseif path == [[Microsoft.Extensions.Configuration.Abstractions.dll]] then return true
   elseif path == [[Microsoft.Extensions.Configuration.Binder.dll]] then return true
   elseif path == [[Microsoft.Extensions.Configuration.CommandLine.dll]] then return true
@@ -45,6 +43,9 @@ function isBlackListed(path)
   elseif path == [[System.Diagnostics.EventLog.dll]] then return true
   elseif path == [[System.IO.Pipelines.dll]] then return true
   elseif path == [[Microsoft.Extensions.DependencyInjection.dll]] then return true
+  elseif path == [[HtcPlugin.Lua.Processor.plugin.dll]] then return true
+  elseif path == [[HtcPlugin.Lua.Processor.plugin.pdb]] then return true
+  elseif path == [[MoonSharp.Interpreter.dll]] then return true
   else return false
   end
 end
@@ -52,7 +53,7 @@ end
 print("[LuaBuildEvents] Running in " .. args[2] .. " Mode\n")
 
 -- Create base directory
-pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/]] .. args[2] .. [[/plugins/lua-mysql]])
+pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/]] .. args[6] .. "/" .. args[2] .. [[/plugins/lua]])
 if Directory.exists(pluginsPath) == false then
   Directory.createDirectory(pluginsPath)
 end

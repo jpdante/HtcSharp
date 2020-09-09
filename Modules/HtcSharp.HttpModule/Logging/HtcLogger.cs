@@ -4,6 +4,9 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace HtcSharp.HttpModule.Logging {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class HtcLogger : ILogger {
         private readonly HtcSharp.Core.Logging.Abstractions.ILogger _logger;
 

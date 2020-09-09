@@ -5,6 +5,9 @@ using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Routing.Abstractions;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
+    // SourceTools-Start
+    // Ignore-Copyright
+    // SourceTools-End
     public class AddHeaderDirective : IDirective {
         private readonly string _name;
         private readonly string _value;

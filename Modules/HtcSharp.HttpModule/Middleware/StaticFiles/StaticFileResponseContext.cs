@@ -6,6 +6,11 @@ using System.IO;
 using HtcSharp.HttpModule.Http.Abstractions;
 
 namespace HtcSharp.HttpModule.Middleware.StaticFiles {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Middleware\StaticFiles\src\StaticFileContext.cs
+    // Start-At-Remote-Line 9
+    // Ignore-Local-Line-Range 14-51
+    // SourceTools-End
     /// <summary>
     /// Contains information about the request and the file that will be served in response.
     /// </summary>

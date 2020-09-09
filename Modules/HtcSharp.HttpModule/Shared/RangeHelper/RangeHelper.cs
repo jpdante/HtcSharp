@@ -11,6 +11,10 @@ using HtcSharp.HttpModule.Http.Headers;
 using Microsoft.Extensions.Primitives;
 
 namespace HtcSharp.HttpModule.Shared.RangeHelper {
+    // SourceTools-Start
+    // Remote-File C:\ASP\src\Shared\RangeHelper\RangeHelper.cs
+    // Start-At-Remote-Line 14
+    // SourceTools-End
     /// <summary>
     /// Provides a parser for the Range Header in an <see cref="HttpContext.Request"/>.
     /// </summary>
