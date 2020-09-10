@@ -1,8 +1,6 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,30 +8,35 @@ namespace HtcSharp.HttpModule.Http.Features {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http.Features\src\ISession.cs
     // Start-At-Remote-Line 9
-    // Ignore-Local-Line-Range 27-72
+    // Ignore-Local-Line-Range 13-72
     // SourceTools-End
     public interface ISession {
         /// <summary>
-        /// Indicate whether the current session has loaded.
+        /// Indicate whether the current session is valid.
         /// </summary>
-        bool IsAvailable { get; }
+        bool IsValid { get; }
 
         /// <summary>
-        /// A unique identifier for the current session. This is not the same as the session cookie
-        /// since the cookie lifetime may not be the same as the session entry lifetime in the data store.
+        /// A unique identifier for the current session.
         /// </summary>
         string Id { get; }
 
         /// <summary>
-        /// Load the session from the data store. This may throw if the data store is unavailable.
+        /// Load the session.
         /// </summary>
         /// <returns></returns>
         Task LoadAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Store the session in the data store. This may throw if the data store is unavailable.
+        /// Create session.
         /// </summary>
         /// <returns></returns>
         Task CreateAsync(CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Delete session.
+        /// </summary>
+        /// <returns></returns>
+        Task DeleteAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }
