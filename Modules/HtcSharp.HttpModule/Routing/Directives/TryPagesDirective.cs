@@ -44,8 +44,8 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                     }
                 }
 
-                if (!UrlMapper.RegisteredPages.ContainsKey(tempPath.ToLower())) continue;
-                await UrlMapper.RegisteredPages[tempPath.ToLower()].OnHttpPageRequest(context, tempPath.ToLower());
+                if (!UrlMapper.RegisteredPages.ContainsKey(tempPath)) continue;
+                await UrlMapper.RegisteredPages[tempPath].OnHttpPageRequest(context, tempPath);
                 context.Response.HasFinished = true;
             }
         }
