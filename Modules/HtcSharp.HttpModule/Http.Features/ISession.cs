@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace HtcSharp.HttpModule.Http.Features {
     // SourceTools-Start
     // Remote-File C:\ASP\src\Http\Http.Features\src\ISession.cs
     // Start-At-Remote-Line 9
+    // Ignore-Local-Line-Range 27-72
     // SourceTools-End
     public interface ISession {
         /// <summary>
@@ -21,11 +23,6 @@ namespace HtcSharp.HttpModule.Http.Features {
         /// since the cookie lifetime may not be the same as the session entry lifetime in the data store.
         /// </summary>
         string Id { get; }
-
-        /// <summary>
-        /// Enumerates all the keys, if any.
-        /// </summary>
-        IEnumerable<string> Keys { get; }
 
         /// <summary>
         /// Load the session from the data store. This may throw if the data store is unavailable.
@@ -45,7 +42,7 @@ namespace HtcSharp.HttpModule.Http.Features {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        bool TryGetValue(string key, out byte[] value);
+        bool TryGetValue<T>(string key, out T value);
 
         /// <summary>
         /// Set the given key and value in the current session. This will throw if the session
@@ -53,7 +50,16 @@ namespace HtcSharp.HttpModule.Http.Features {
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        void Set(string key, byte[] value);
+        void Set<T>(string key, T value);
+
+        /// <summary>
+        /// Set the given key and value in the current session. This will throw if the session
+        /// was not established prior to sending the response.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireSpan"></param>
+        void Set<T>(string key, T value, TimeSpan expireSpan);
 
         /// <summary>
         /// Remove the given key from the session if present.
