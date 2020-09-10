@@ -34,43 +34,6 @@ namespace HtcSharp.HttpModule.Http.Features {
         /// Store the session in the data store. This may throw if the data store is unavailable.
         /// </summary>
         /// <returns></returns>
-        Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Retrieve the value of the given key, if present.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        bool TryGetValue<T>(string key, out T value);
-
-        /// <summary>
-        /// Set the given key and value in the current session. This will throw if the session
-        /// was not established prior to sending the response.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        void Set<T>(string key, T value);
-
-        /// <summary>
-        /// Set the given key and value in the current session. This will throw if the session
-        /// was not established prior to sending the response.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireSpan"></param>
-        void Set<T>(string key, T value, TimeSpan expireSpan);
-
-        /// <summary>
-        /// Remove the given key from the session if present.
-        /// </summary>
-        /// <param name="key"></param>
-        void Remove(string key);
-
-        /// <summary>
-        /// Remove all entries from the current session, if any.
-        /// The session cookie is not removed.
-        /// </summary>
-        void Clear();
+        Task CreateAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }
