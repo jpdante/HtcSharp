@@ -22,6 +22,11 @@ namespace HtcSharp.HttpModule.Http.Features {
         string Id { get; }
 
         /// <summary>
+        /// Custom data for the current session.
+        /// </summary>
+        object Data { get; }
+
+        /// <summary>
         /// Load the session.
         /// </summary>
         /// <returns></returns>
@@ -31,7 +36,7 @@ namespace HtcSharp.HttpModule.Http.Features {
         /// Create session.
         /// </summary>
         /// <returns></returns>
-        Task CreateAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task CreateAsync(object data = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Delete session.
