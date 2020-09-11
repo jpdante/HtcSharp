@@ -46,7 +46,7 @@ namespace HtcSharp.HttpModule.Http.Features {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        bool TryGetValue<T>(string key, out T value);
+        bool TryGetValue(string key, out object value);
 
         /// <summary>
         /// Set the given key and value in the current session. This will throw if the session
@@ -54,7 +54,7 @@ namespace HtcSharp.HttpModule.Http.Features {
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        void Set<T>(string key, T value);
+        void Set(string key, object value);
 
         /// <summary>
         /// Remove the given key from the session if present.
