@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using HtcPlugin.Php.Processor.Models;
-using HtcSharp.Core;
 using HtcSharp.Core.Logging.Abstractions;
 using HtcSharp.Core.Plugin;
 using HtcSharp.Core.Plugin.Abstractions;
@@ -16,18 +15,13 @@ namespace HtcPlugin.Php.Processor {
     public class PhpProcessor : IPlugin, IHttpEvents {
 
         public string Name => "HtcPhpProcessor";
-        public string Version => "0.3.7";
+        public string Version => "0.4.0";
 
-        public static PhpProcessor Context;
         public static string PhpCgiExec;
         public static string PhpPath;
         public static int Timeout;
 
-        public ILogger Logger;
-
-        public PhpProcessor() {
-            Context = this;
-        }
+        public static ILogger Logger;
 
         public Task Load(PluginServerContext pluginServerContext, ILogger logger) {
             Logger = logger;

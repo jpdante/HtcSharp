@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using HtcSharp.Core.Logging.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions.Extensions;
@@ -10,16 +11,13 @@ using HtcSharp.HttpModule.Http.Headers;
 
 namespace HtcPlugin.Php.Processor.Models {
     public class PhpRequest {
+
         public static async Task Request(HttpContext httpContext, string filename, int timeout) {
-            //httpContext.Response.ContentType = "text/html; charset=utf-8";
             using var phpProcess = new Process {
                 StartInfo = { FileName = PhpProcessor.PhpCgiExec }
             };
-            //var pathVars = phpProcess.StartInfo.EnvironmentVariables["Path"];
             var queryString = httpContext.Request.QueryString.ToString();
             if (!string.IsNullOrEmpty(queryString)) queryString = queryString.Remove(0, 1);
-            //queryString = Uri.UnescapeDataString(queryString);
-            //phpProcess.StartInfo.EnvironmentVariables.Clear();
             phpProcess.StartInfo.EnvironmentVariables.Add("PHPRC", PhpProcessor.PhpPath);
             phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_HOST", httpContext.Request.Headers["Host"]);
             phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_CONNECTION", httpContext.Request.Headers["Connection"]);
@@ -30,7 +28,6 @@ namespace HtcPlugin.Php.Processor.Models {
             phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_ACCEPT_ENCODING", httpContext.Request.Headers["Accept-Encoding"]);
             phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_ACCEPT_LANGUAGE", httpContext.Request.Headers["Accept-Language"]);
             phpProcess.StartInfo.EnvironmentVariables.Add("HTTP_COOKIE", httpContext.Request.Headers["Cookie"]);
-            //phpProcess.StartInfo.EnvironmentVariables.Add("PATH", pathVars);
             phpProcess.StartInfo.EnvironmentVariables.Add("SERVER_SOFTWARE", "HtcSharp/1.2");
             phpProcess.StartInfo.EnvironmentVariables.Add("SERVER_SIGNATURE", $"<address>HtcSharp/1.0 Server at {httpContext.Request.Host.Host} Port {httpContext.Connection.RemotePort}</address>");
             phpProcess.StartInfo.EnvironmentVariables.Add("SERVER_ADDR", httpContext.Request.Host.ToString());
@@ -56,91 +53,66 @@ namespace HtcPlugin.Php.Processor.Models {
             phpProcess.StartInfo.EnvironmentVariables.Add("HTTPS", httpContext.Request.IsHttps ? "1" : "0");
             phpProcess.StartInfo.EnvironmentVariables.Add("REMOTE_HOST", httpContext.Request.Host.Host);
             phpProcess.StartInfo.EnvironmentVariables.Add("CONTEXT_PREFIX", "");
-            //phpProcess.StartInfo.EnvironmentVariables.Add("PATH_INFO", httpContext.Request.RequestPath);
-            //phpProcess.StartInfo.EnvironmentVariables.Add("PATH_TRANSLATED", httpContext.Request.TranslatedPath);
 
             phpProcess.StartInfo.UseShellExecute = false;
             phpProcess.StartInfo.RedirectStandardInput = true;
             phpProcess.StartInfo.RedirectStandardOutput = true;
             phpProcess.StartInfo.RedirectStandardError = true;
-            phpProcess.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-            var isResponse = false;
             phpProcess.Start();
             await httpContext.Request.Body.CopyToAsync(phpProcess.StandardInput.BaseStream);
             await phpProcess.StandardInput.BaseStream.FlushAsync();
-            await phpProcess.StandardInput.FlushAsync();
             try {
-                while (!phpProcess.StandardOutput.EndOfStream) {
-                    string line = await phpProcess.StandardOutput.ReadLineAsync();
-                    PhpProcessor.Context.Logger.LogInfo(line);
-                    if (line == null) continue;
-                    if (line == "" && isResponse == false) {
-                        isResponse = true;
-                        continue;
-                    }
-                    if (isResponse) await httpContext.Response.WriteAsync(line + Environment.NewLine);
-                    else {
-                        //var tag = line.Split(new[] {':'}, 2);
-                        //tag[1] = tag[1].Remove(0, 1);
-                        //httpContext.Response.Headers.Add(tag[0], tag[1]);
-                        //Logger.Info($"{tag[0]}=>{tag[1]}");
-                        //Logger.Info($"{line}");
-                        string[] tag = line.Split(new[] { ':' }, 2);
-                        if (tag.Length == 1) {
-                            await httpContext.Response.WriteAsync(line + Environment.NewLine);
-                            isResponse = true;
-                            continue;
-                        }
-                        tag[1] = tag[1].Remove(0, 1);
-                        if (httpContext.Response.HasStarted) return;
-                        switch (tag[0]) {
-                            case "Location":
-                                httpContext.Response.Redirect(tag[1]);
-                                break;
-                            case "Set-Cookie":
-                                var cookieOptions = new CookieOptions() {
-                                    SameSite = SameSiteMode.None
-                                };
-                                string[] cookieData = tag[1].Split(';', 2);
-                                string[] cookieKeyValue = cookieData[0].Split('=', 2);
-                                foreach (string a in cookieKeyValue) {
-                                    PhpProcessor.Context.Logger.LogInfo(a[0] + ": " + a[1]);
-                                }
-                                /*var setCookieHeaderValue = new SetCookieHeaderValue(Uri.UnescapeDataString(cookieKeyValue[0]), Uri.UnescapeDataString(cookieKeyValue[1]));
-                                foreach (string cookieConfig in cookieData[1].Split(';')) {
-                                    string[] config = cookieConfig.Split('=', 2);
-                                    config[0] = config[0].Remove(0, 1);
-                                    if (config[0].Equals("Max-Age", StringComparison.CurrentCultureIgnoreCase)) {
-                                        setCookieHeaderValue.MaxAge = TimeSpan.FromSeconds(int.Parse(config[1]));
-                                    } else if (config[0].Equals("path", StringComparison.CurrentCultureIgnoreCase)) {
-                                        setCookieHeaderValue.Path = config[1];
-                                    } else if (config[0].Equals("domain", StringComparison.CurrentCultureIgnoreCase)) {
-                                        setCookieHeaderValue.Domain = config[1];
-                                    } else if (config[0].Equals("HttpOnly", StringComparison.CurrentCultureIgnoreCase)) {
-                                        setCookieHeaderValue.HttpOnly = true;
-                                    } else if (config[0].Equals("expires", StringComparison.CurrentCultureIgnoreCase)) {
-                                        setCookieHeaderValue.Expires = DateTimeOffset.Parse(config[1]);
-                                    } else if (config[0].Equals("SameSite", StringComparison.CurrentCultureIgnoreCase)) {
-                                        setCookieHeaderValue.SameSite = SameSiteMode.Lax;
+                var reader = new UnbufferedStreamReader(phpProcess.StandardOutput.BaseStream);
+                while (true) {
+                    string line = reader.ReadLine();
+                    //PhpProcessor.Logger.LogInfo($"{line}");
+                    if (line == null || line.Equals("\r")) break;
+                    if (line[^1] == '\r') line = line.Remove(line.Length - 1, 1);
+                    string[] tag = line.Split(": ", 2);
+                    if (tag.Length == 1) continue;
+                    if (httpContext.Response.HasStarted) return;
+                    switch (tag[0].ToLower()) {
+                        case "location":
+                            httpContext.Response.Redirect(HttpUtility.UrlDecode(tag[1]));
+                            break;
+                        case "set-cookie":
+                            //PhpProcessor.Logger.LogInfo("Cookie -> " + tag[1]);
+                            string[] cookieData = tag[1].Split(";");
+                            string[] baseCookie = cookieData[0].Split("=", 2);
+                            var cookieOptions = new CookieOptions();
+                            if (cookieData.Length > 1) {
+                                for (var i = 1; i < cookieData.Length; i++) {
+                                    string[] subData = cookieData[i].Split("=", 2);
+                                    switch (subData[0].ToLower()) {
+                                        case "path":
+                                            cookieOptions.Path = HttpUtility.UrlDecode(subData[1]);
+                                            break;
+                                        case "httponly":
+                                            cookieOptions.HttpOnly = true;
+                                            break;
+                                        case "max-age":
+                                            cookieOptions.MaxAge = TimeSpan.FromSeconds(int.Parse(subData[1]));
+                                            break;
+                                        case "expires":
+                                            cookieOptions.Expires = DateTimeOffset.Parse(subData[1]);
+                                            break;
                                     }
                                 }
-                                if (cookieKeyValue[1] == "+") cookieKeyValue[1] = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString();
-                                //Logger.Info($"{Uri.UnescapeDataString(cookieKeyValue[0])}: {Uri.UnescapeDataString(cookieKeyValue[1])}");
-                                var cookieValue = setCookieHeaderValue.ToString();
-                                httpContext.Response.Headers[HeaderNames.SetCookie] = StringValues.Concat(httpContext.Response.Headers[HeaderNames.SetCookie], cookieValue);*/
-                                break;
-                            default:
-                                if (httpContext.Response.Headers.ContainsKey(tag[0])) {
-                                    httpContext.Response.Headers[tag[0]] = string.Concat(httpContext.Response.Headers[tag[0]], tag[1]);
-                                } else {
-                                    httpContext.Response.Headers.Add(tag[0], tag[1]);
-                                }
-                                break;
-                        }
+                            }
+                            httpContext.Response.Cookies.Append(baseCookie[0], HttpUtility.UrlDecode(baseCookie[1]), cookieOptions);
+                            break;
+                        default:
+                            if (httpContext.Response.Headers.ContainsKey(tag[0])) {
+                                httpContext.Response.Headers[tag[0]] = string.Concat(httpContext.Response.Headers[tag[0]], tag[1]);
+                            } else {
+                                httpContext.Response.Headers.Add(tag[0], HttpUtility.UrlDecode(tag[1]));
+                            }
+                            break;
                     }
                 }
+                await phpProcess.StandardOutput.BaseStream.CopyToAsync(httpContext.Response.Body);
             } catch (Exception ex) {
-                PhpProcessor.Context.Logger.LogTrace(ex.StackTrace, ex);
+                PhpProcessor.Logger.LogTrace(ex.StackTrace, ex);
             }
             phpProcess.WaitForExit();
         }
