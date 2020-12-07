@@ -6,12 +6,12 @@
     <AssemblyName>HtcPlugin.Tests.Mvc.plugin</AssemblyName>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Modules\HtcSharp.HttpModule\HtcSharp.HttpModule.csproj" />
-  </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet $(SolutionDir)LuaBuildEvents/LuaBuildEvents.dll PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir) $(PlatformName)" />
   </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Modules\HtcSharp.HttpModule\HtcSharp.HttpModule.csproj" />
+  </ItemGroup>
 
 </Project>
