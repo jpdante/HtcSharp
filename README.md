@@ -1,5 +1,5 @@
 # HTCSharp
-Web server for developing applications not based on the Asp.Net framework but using it as the basis for the server.
+Web server for application development, based on the Asp.Net Kestrel but not using the Asp.Net Framework as the basis for the server.
 
 ### Why use it ?
 
@@ -7,9 +7,9 @@ The HtcSharp project aims not to get the developer into how AspNet works by tryi
 
 ### Why was this project developed ?
 
-When trying to work with Asp Net I felt very stuck the way the framework works and processes requests, the truth is that I prefer the low level of HttpListener, but this is a legacy technology that does not support encryption, so there was a need to use an Http API with encryption support.
+When trying to work with Asp Net I felt very stuck the way the framework works and processes requests, the truth is that I prefer the low level of HttpListener, but this is a legacy technology that does not support encryption, so there was a need to use an Http Protocol with encryption support.
 
-The project's attempt is to make it look like the Nginx server by configuration, and allow the implementation of plugins and modules. The modularity of the project allows multiple modules to be implemented by simply adding a dll. And plugins allow scripts like Lua and PHP to be executed to render pages.
+The project's attempt is to make it look like the Nginx server by configuration, and allow the implementation of plugins and modules. The modularity of the project allows multiple modules to be implemented by simply adding a library. And plugins allow scripts like Lua and PHP to be executed to render pages.
 
 This also allows one part of the code to be executed in CSharp and the other part in a scripting language like Lua, so the page is rendered by Lua while the database, algorithms and others are executed in CSharp.
 
@@ -19,7 +19,7 @@ It all started just as a personal project to allow me to develop my sites more e
 Despite the use of Asp Net, this technology does not please me since I have to reprocess all requests, besides it seems slow by itself, so I am creating my own http server that would eliminate dependence on Asp Net but it may take some time until it is finished.
 
 ## Getting Started
-To use this program you must have .Net Core 3.0 installed, in the future self-contained releases will be published.
+To use this program you must have .Net Core 3.1 installed, in the future self-contained releases will be published.
 
 ### Prerequisites
 *   [.Net Core 3.1](https://dotnet.microsoft.com/download)
@@ -57,7 +57,7 @@ dotnet <path>/HtcSharp.Server.dll daemon-mode
 ```
 
 #### Optional Args
-*   daemon-mode - Causes the server to run in daemon mode by disabling console input.
+*   daemon-mode - Force the server to run in daemon mode by disabling console input (It is strictly necessary if used as a service in linux as in systemd).
 *   "../HtcConfig.json" - Specifies the path where the server can get the configuration file.
 
 ## Configuration
@@ -87,6 +87,25 @@ Example Configuration:
                    ],
                    "Root":"%WorkingPath%/www/",
                    "SSL":false
+                },
+                {
+                   "Hosts":[
+                      "0.0.0.0:8443"
+                   ],
+                   "Domains":[
+                      "sub.mydomain.com",
+                      "mydomain.com"
+                   ],
+                   "Default":[
+                      "try_pages $uri",
+                      "try_files $uri",
+                      "index $internal_indexes",
+                      "return 404"
+                   ],
+                   "Root":"%WorkingPath%/www/",
+                   "SSL":true,
+                   "Certificate": "%WorkingPath%/ssl/mydomain.com.pfx",
+                   "Password": "Cert Password"
                 }
              ]
         }
