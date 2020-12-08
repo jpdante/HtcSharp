@@ -18,8 +18,8 @@ namespace HtcSharp.HttpModule.Routing.Pages {
             StatusCode = statusCode;
         }
 
-        public string GetPageMessage(HttpContext httpContext) {
-            var fileContent = File.ReadAllText(_pageFileName, Encoding.UTF8);
+        public async Task<string> GetPageMessage(HttpContext httpContext) {
+            string fileContent = await File.ReadAllTextAsync(_pageFileName, Encoding.UTF8);
             fileContent = fileContent.Replace("{Request.Path}", httpContext.Request.Path);
             fileContent = fileContent.Replace("{Request.Host}", httpContext.Request.Host.ToString());
             fileContent = fileContent.Replace("{Request.PathBase}", httpContext.Request.PathBase);
@@ -30,7 +30,7 @@ namespace HtcSharp.HttpModule.Routing.Pages {
             fileContent = fileContent.Replace("{Request.Scheme}", httpContext.Request.Scheme);
             fileContent = fileContent.Replace("{Request.TranslatedPath}", httpContext.Request.TranslatedPath);
             fileContent = fileContent.Replace("{Request.IsHttps}", httpContext.Request.IsHttps.ToString());
-            fileContent = fileContent.Replace("{Request.Method}", httpContext.Request.Method.ToString());
+            fileContent = fileContent.Replace("{Request.Method}", httpContext.Request.Method);
             fileContent = fileContent.Replace("{Connection.Id}", httpContext.Connection.Id);
             fileContent = fileContent.Replace("{Connection.RemoteIpAddress}", httpContext.Connection.RemoteIpAddress.ToString());
             fileContent = fileContent.Replace("{Connection.RemotePort}", httpContext.Connection.RemotePort.ToString());
@@ -39,7 +39,7 @@ namespace HtcSharp.HttpModule.Routing.Pages {
 
         public async Task ExecutePageMessage(HttpContext httpContext) {
             if (httpContext.Response.HasStarted) return;
-            var fileContent = File.ReadAllText(_pageFileName, Encoding.UTF8);
+            string fileContent = await File.ReadAllTextAsync(_pageFileName, Encoding.UTF8);
             fileContent = fileContent.Replace("{Request.Path}", httpContext.Request.Path);
             fileContent = fileContent.Replace("{Request.Host}", httpContext.Request.Host.ToString());
             fileContent = fileContent.Replace("{Request.PathBase}", httpContext.Request.PathBase);
@@ -50,7 +50,7 @@ namespace HtcSharp.HttpModule.Routing.Pages {
             fileContent = fileContent.Replace("{Request.Scheme}", httpContext.Request.Scheme);
             fileContent = fileContent.Replace("{Request.TranslatedPath}", httpContext.Request.TranslatedPath);
             fileContent = fileContent.Replace("{Request.IsHttps}", httpContext.Request.IsHttps.ToString());
-            fileContent = fileContent.Replace("{Request.Method}", httpContext.Request.Method.ToString());
+            fileContent = fileContent.Replace("{Request.Method}", httpContext.Request.Method);
             fileContent = fileContent.Replace("{Connection.Id}", httpContext.Connection.Id);
             fileContent = fileContent.Replace("{Connection.RemoteIpAddress}", httpContext.Connection.RemoteIpAddress.ToString());
             fileContent = fileContent.Replace("{Connection.RemotePort}", httpContext.Connection.RemotePort.ToString());

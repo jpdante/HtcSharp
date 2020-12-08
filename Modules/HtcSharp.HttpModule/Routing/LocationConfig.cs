@@ -61,28 +61,30 @@ namespace HtcSharp.HttpModule.Routing {
 
             _directives = new List<IDirective>();
             foreach (var i in configItems) {
-                var dataSplit = i.ToObject<string>().Split(" ");
+                var rawData = i.ToObject<string>();
+                if (rawData == null) continue;
+                string[] dataSplit = rawData.Split(" ", 2);
                 switch (dataSplit[0]) {
                     case "index":
-                        _directives.Add(new IndexDirective(_httpLocationManager.StaticFileFactory, dataSplit));
+                        _directives.Add(new IndexDirective(_httpLocationManager.StaticFileFactory, dataSplit[1]));
                         break;
                     case "try_files":
-                        _directives.Add(new TryFilesDirective(_httpLocationManager.StaticFileFactory, dataSplit, httpLocationManager));
+                        _directives.Add(new TryFilesDirective(_httpLocationManager.StaticFileFactory, dataSplit[1], httpLocationManager));
                         break;
                     case "rewrite":
-                        _directives.Add(new ReWriteDirective(dataSplit));
+                        _directives.Add(new ReWriteDirective(dataSplit[1]));
                         break;
                     case "try_pages":
-                        _directives.Add(new TryPagesDirective(dataSplit, httpLocationManager));
+                        _directives.Add(new TryPagesDirective(dataSplit[1], httpLocationManager));
                         break;
                     case "return":
-                        _directives.Add(new ReturnDirective(dataSplit));
+                        _directives.Add(new ReturnDirective(dataSplit[1]));
                         break;
                     case "autoindex":
                         //_directives.Add(new LocationDirective(i));
                         break;
                     case "add_header":
-                        _directives.Add(new AddHeaderDirective(dataSplit));
+                        _directives.Add(new AddHeaderDirective(dataSplit[1]));
                         break;
                 }
             }
@@ -90,12 +92,10 @@ namespace HtcSharp.HttpModule.Routing {
 
         public bool MatchLocation(HttpContext context) {
             if (_isDefault) return true;
-            switch (_modifier) {
-                case 4:
-                    return !_matchRegex.IsMatch(context.Request.Path);
-                default:
-                    return _matchRegex.IsMatch(context.Request.Path);
-            }
+            return _modifier switch {
+                4 => !_matchRegex.IsMatch(context.Request.Path),
+                _ => _matchRegex.IsMatch(context.Request.Path)
+            };
         }
 
         public async Task Execute(HttpContext context) {

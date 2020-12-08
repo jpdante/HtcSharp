@@ -7,7 +7,7 @@ namespace HtcSharp.HttpModule.Routing.Abstractions {
     // SourceTools-End
     public interface IPageMessage {
         int StatusCode { get; }
-        string GetPageMessage(HttpContext httpContext);
+        Task<string> GetPageMessage(HttpContext httpContext);
         Task ExecutePageMessage(HttpContext httpContext);
     }
 }

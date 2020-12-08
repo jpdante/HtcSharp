@@ -30,13 +30,13 @@ namespace HtcSharp.HttpModule.Routing.Error {
 
         public void UnRegisterOverridePage(int statusCode) => _overridePages.Remove(statusCode);
 
-        public string GetErrorMessage(HttpContext httpContext, int statusCode) {
-            if (_overridePages.ContainsKey(statusCode)) return _overridePages[statusCode].GetPageMessage(httpContext);
-            return DefaultPages.ContainsKey(statusCode) ? DefaultPages[statusCode].GetPageMessage(httpContext) : null;
+        public async Task<string> GetErrorMessage(HttpContext httpContext, int statusCode) {
+            if (_overridePages.ContainsKey(statusCode)) return await _overridePages[statusCode].GetPageMessage(httpContext);
+            return DefaultPages.ContainsKey(statusCode) ? await DefaultPages[statusCode].GetPageMessage(httpContext) : null;
         }
 
-        public static string GetDefaultErrorMessage(HttpContext httpContext, int statusCode) {
-            return DefaultPages.ContainsKey(statusCode) ? DefaultPages[statusCode].GetPageMessage(httpContext) : null;
+        public static async Task<string> GetDefaultErrorMessage(HttpContext httpContext, int statusCode) {
+            return DefaultPages.ContainsKey(statusCode) ? await DefaultPages[statusCode].GetPageMessage(httpContext) : null;
         }
 
         public async Task SendError(HttpContext httpContext, int statusCode) {

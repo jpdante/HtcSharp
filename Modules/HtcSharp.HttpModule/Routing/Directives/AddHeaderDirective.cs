@@ -12,10 +12,11 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         private readonly string _name;
         private readonly string _value;
 
-        public AddHeaderDirective(IReadOnlyList<string> header) {
-            if (header.Count < 3) return;
-            _name = header[1];
-            _value = header[2];
+        public AddHeaderDirective(string header) {
+            string[] headerData = header.Split(" ", 2);
+            if (headerData.Length != 2) return;
+            _name = headerData[0];
+            _value = headerData[1];
         }
 
 #pragma warning disable 1998

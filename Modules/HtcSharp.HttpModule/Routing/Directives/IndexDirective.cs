@@ -13,11 +13,12 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         private readonly StaticFileFactory _staticFileFactory;
         private readonly List<string> _indexes;
 
-        public IndexDirective(StaticFileFactory staticFileFactory, IReadOnlyList<string> index) {
+        public IndexDirective(StaticFileFactory staticFileFactory, string indexes) {
             _staticFileFactory = staticFileFactory;
             _indexes = new List<string>();
-            for (var i = 1; i < index.Count; i++) {
-                _indexes.Add(index[i]);
+            string[] indexesData = indexes.Split(" ");
+            foreach (string index in indexesData) {
+                _indexes.Add(index);
             }
         }
 

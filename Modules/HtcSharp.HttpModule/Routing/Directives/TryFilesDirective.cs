@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Routing.Abstractions;
@@ -14,36 +15,35 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         private readonly List<string> _files;
         private readonly HttpLocationManager _httpLocationManager;
 
-        public TryFilesDirective(StaticFileFactory staticFileFactory, IReadOnlyList<string> files, HttpLocationManager httpLocationManager) {
+        public TryFilesDirective(StaticFileFactory staticFileFactory, string files, HttpLocationManager httpLocationManager) {
             _staticFileFactory = staticFileFactory;
             _httpLocationManager = httpLocationManager;
             _files = new List<string>();
-            for (var i = 1; i < files.Count; i++) {
-                _files.Add(files[i]);
+            string[] filesData = files.Split(" ");
+            foreach (string file in filesData) {
+                _files.Add(file);
             }
         }
 
         public async Task Execute(HttpContext context) {
-            foreach (string file in _files) {
-                string tempPath = file.ReplaceHttpContextVars(context);
-                if (tempPath[0].Equals('=')) {
-                    if (int.TryParse(tempPath.Remove(0, 1), out int statusCode)) {
+            foreach (string tempPath in _files.Select(file => file.ReplaceHttpContextVars(context))) {
+                switch (tempPath[0]) {
+                    case '=' when int.TryParse(tempPath.Remove(0, 1), out int statusCode):
                         await context.ServerInfo.ErrorMessageManager.SendError(context, statusCode);
                         context.Response.HasFinished = true;
                         return;
-                    }
-
-                    await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
-                    context.Response.HasFinished = true;
-                    return;
-                }
-
-                if (tempPath[0].Equals('@')) {
-                    foreach (var location in _httpLocationManager.Locations) {
-                        if (!location.Key.Equals(tempPath, StringComparison.CurrentCultureIgnoreCase)) continue;
-                        await location.Execute(context);
+                    case '=':
+                        await context.ServerInfo.ErrorMessageManager.SendError(context, 500);
                         context.Response.HasFinished = true;
                         return;
+                    case '@': {
+                        foreach (var location in _httpLocationManager.Locations.Where(location => location.Key.Equals(tempPath, StringComparison.CurrentCultureIgnoreCase))) {
+                            await location.Execute(context);
+                            context.Response.HasFinished = true;
+                            return;
+                        }
+
+                        break;
                     }
                 }
 

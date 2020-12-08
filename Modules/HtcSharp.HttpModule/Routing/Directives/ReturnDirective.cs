@@ -11,47 +11,52 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         // SourceTools-End
         private readonly int _statusCode;
         private readonly string _data;
-        private readonly byte _type;
+        private readonly int _type;
 
-        public ReturnDirective(IReadOnlyList<string> returnData) {
-            if (returnData.Count == 2) {
-                if (int.TryParse(returnData[1], out var statusCode)) {
+        public ReturnDirective(string rawReturn) {
+            string[] returnData = rawReturn.Split(" ");
+            if (returnData.Length == 1) {
+                if (int.TryParse(returnData[0], out int statusCode)) {
                     _statusCode = statusCode;
                     _type = 1;
                 } else {
                     _statusCode = 301;
-                    _data = returnData[1];
+                    _data = returnData[0];
                     _type = 2;
                 }
-            } else if (returnData.Count >= 3) {
-                if (!int.TryParse(returnData[1], out var statusCode)) return;
+            } else if (returnData.Length >= 2) {
+                if (!int.TryParse(returnData[0], out int statusCode)) return;
                 _statusCode = statusCode;
-                if (returnData[2][0].Equals('"') && returnData[returnData.Count - 1][returnData[returnData.Count - 1].Length - 1].Equals('"')) {
+                if (returnData[1][0].Equals('"') && returnData[^1][returnData[^1].Length - 1].Equals('"')) {
                     _type = 3;
-                    for (var i = 2; i < returnData.Count; i++) {
-                        _data = i == returnData.Count - 1 ? $"{returnData[i]}" : $"{returnData[i]} ";
+                    for (var i = 2; i < returnData.Length; i++) {
+                        _data = i == returnData.Length - 1 ? $"{returnData[i]}" : $"{returnData[i]} ";
                     }
                 } else {
                     _type = 2;
-                    for (var i = 2; i < returnData.Count; i++) {
-                        _data = i == returnData.Count - 1 ? $"{returnData[i]}" : $"{returnData[i]} ";
+                    for (var i = 2; i < returnData.Length; i++) {
+                        _data = i == returnData.Length - 1 ? $"{returnData[i]}" : $"{returnData[i]} ";
                     }
                 }
             }
         }
 
         public async Task Execute(HttpContext context) {
-            if (_type == 1) {
-                await context.ServerInfo.ErrorMessageManager.SendError(context, _statusCode);
-                context.Response.HasFinished = true;
-            } else if (_type == 2) {
-                context.Response.StatusCode = _statusCode;
-                context.Response.Headers.Add("Location", _data.ReplaceHttpContextVars(context));
-                context.Response.HasFinished = true;
-            } else if (_type == 3) {
-                context.Response.StatusCode = _statusCode;
-                await context.Response.WriteAsync(_data.ReplaceHttpContextVars(context));
-                context.Response.HasFinished = true;
+            switch (_type) {
+                case 1:
+                    await context.ServerInfo.ErrorMessageManager.SendError(context, _statusCode);
+                    context.Response.HasFinished = true;
+                    break;
+                case 2:
+                    context.Response.StatusCode = _statusCode;
+                    context.Response.Headers.Add("Location", _data.ReplaceHttpContextVars(context));
+                    context.Response.HasFinished = true;
+                    break;
+                case 3:
+                    context.Response.StatusCode = _statusCode;
+                    await context.Response.WriteAsync(_data.ReplaceHttpContextVars(context));
+                    context.Response.HasFinished = true;
+                    break;
             }
         }
     }
