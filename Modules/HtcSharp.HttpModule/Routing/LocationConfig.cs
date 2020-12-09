@@ -17,10 +17,8 @@ namespace HtcSharp.HttpModule.Routing {
         private readonly Regex _matchRegex;
         private readonly List<IDirective> _directives;
         private readonly bool _isDefault;
-        private readonly HttpLocationManager _httpLocationManager;
 
         public LocationConfig(string key, JArray configItems, HttpLocationManager httpLocationManager, bool isDefault = false) {
-            _httpLocationManager = httpLocationManager;
             _isDefault = isDefault;
             if (!isDefault) {
                 var keyData = key.Split(" ");
@@ -66,10 +64,10 @@ namespace HtcSharp.HttpModule.Routing {
                 string[] dataSplit = rawData.Split(" ", 2);
                 switch (dataSplit[0]) {
                     case "index":
-                        _directives.Add(new IndexDirective(_httpLocationManager.StaticFileFactory, dataSplit[1]));
+                        _directives.Add(new IndexDirective(httpLocationManager.StaticFileFactory, dataSplit[1]));
                         break;
                     case "try_files":
-                        _directives.Add(new TryFilesDirective(_httpLocationManager.StaticFileFactory, dataSplit[1], httpLocationManager));
+                        _directives.Add(new TryFilesDirective(httpLocationManager.StaticFileFactory, dataSplit[1], httpLocationManager));
                         break;
                     case "rewrite":
                         _directives.Add(new ReWriteDirective(dataSplit[1]));
@@ -81,7 +79,7 @@ namespace HtcSharp.HttpModule.Routing {
                         _directives.Add(new ReturnDirective(dataSplit[1]));
                         break;
                     case "autoindex":
-                        //_directives.Add(new LocationDirective(i));
+                        _directives.Add(new DirectoryListingDirective(dataSplit[1]));
                         break;
                     case "add_header":
                         _directives.Add(new AddHeaderDirective(dataSplit[1]));

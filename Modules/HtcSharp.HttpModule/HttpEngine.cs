@@ -57,6 +57,9 @@ namespace HtcSharp.HttpModule {
             Configure(config);
             UrlMapper.RegisterIndexFile("index.html");
             UrlMapper.RegisterIndexFile("index.htm");
+            ErrorMessageManager.RegisterDefaultPage(new Default404PageMessage());
+            ErrorMessageManager.RegisterDefaultPage(new Default403PageMessage());
+            ErrorMessageManager.RegisterDefaultPage(new Default500PageMessage());
             _serviceProvider = SetupServiceCollection().BuildServiceProvider();
             _loggerFactory = LoggerFactory.Create(builder => { builder.AddProvider(new HtcLoggerProvider(_logger)); });
             _socketTransportFactory = new SocketTransportFactory(GetSocketTransportOptions(config), _loggerFactory);
