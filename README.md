@@ -83,6 +83,7 @@ Example Configuration:
                       "try_pages $uri",
                       "try_files $uri",
                       "index $internal_indexes",
+                      "autoindex on",
                       "return 404"
                    ],
                    "Root":"%WorkingPath%/www/",
@@ -100,6 +101,7 @@ Example Configuration:
                       "try_pages $uri",
                       "try_files $uri",
                       "index $internal_indexes",
+                      "autoindex on",
                       "return 404"
                    ],
                    "Root":"%WorkingPath%/www/",
