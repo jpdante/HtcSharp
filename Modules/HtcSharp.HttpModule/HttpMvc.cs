@@ -45,8 +45,14 @@ namespace HtcSharp.HttpModule {
                 if (attribute == null) continue;
                 if (parameters.Length < 1 || parameters[0].ParameterType != typeof(HttpContext)) continue;
                 if (parameters.Length == 2 && !parameters[1].ParameterType.GetInterfaces().Contains(typeof(IHttpJsonObject))) continue;
-                _logger?.LogInfo(parameters.Length == 2 ? $"Registering route: {attribute.Path}, JsonObject" : $"Registering route: {attribute.Path}");
-                _routes.Add(attribute.Path, (attribute, parameters.Length == 2, parameters.Length == 2 ? parameters[1].ParameterType : null, method));
+                _logger?.LogInfo(parameters.Length == 2 ? $"Registering route: [{attribute.Method}, JsonObject] {attribute.Path}" : $"Registering route: [{attribute.Method}] {attribute.Path}");
+                _routes.Add($"{attribute.Method.ToUpper()}{attribute.Path}", (attribute, parameters.Length == 2, parameters.Length == 2 ? parameters[1].ParameterType : null, method));
+                if (UrlMapper.RegisteredPages.TryGetValue(attribute.Path, out var httpEvents)) {
+                    if (httpEvents != this) {
+                        throw new Exception($"The '{attribute.Path}' page has already been registered by another plugin.");
+                    }
+                    return;
+                }
                 UrlMapper.RegisterPluginPage(attribute.Path, this);
             }
         }
@@ -79,11 +85,6 @@ namespace HtcSharp.HttpModule {
             }
         }
 
-        public virtual async Task ThrowInvalidRequestMethod(HttpContext httpContext, string method) {
-            httpContext.Response.StatusCode = 405;
-            await httpContext.Response.WriteAsync($"Invalid request method, expected '{method}'.");
-        }
-
         public virtual Task ThrowPreProcessingException(HttpContext httpContext, Exception exception) {
             _logger?.LogError(exception);
             return Task.CompletedTask;
@@ -103,9 +104,8 @@ namespace HtcSharp.HttpModule {
         public async Task OnHttpPageRequest(HttpContext httpContext, string filename) {
             if (await BeforePageRequest(httpContext, filename)) return;
             try {
-                if (_routes.TryGetValue(filename, out var value)) {
-                    if (httpContext.Request.Method.Equals(value.Item1.Method)) {
-                        await LoadSession(httpContext);
+                if (_routes.TryGetValue($"{httpContext.Request.Method.ToUpper()}{filename}", out var value)) {
+                    await LoadSession(httpContext);
                         if (value.Item1.RequireSession && httpContext.Session != null && !httpContext.Session.IsAvailable) {
                             await ThrowInvalidSession(httpContext);
                             return;
@@ -154,10 +154,7 @@ namespace HtcSharp.HttpModule {
                         } catch (Exception ex) {
                             await ThrowException(httpContext, ex);
                         }
-                    } else {
-                        await ThrowInvalidRequestMethod(httpContext, value.Item1.Method);
                     }
-                }
             } catch (Exception ex) {
                 await ThrowPreProcessingException(httpContext, ex);
             }

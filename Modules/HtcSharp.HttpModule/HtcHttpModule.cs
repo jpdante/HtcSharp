@@ -10,7 +10,7 @@ namespace HtcSharp.HttpModule {
     // SourceTools-End
     public class HtcHttpModule : IModule {
         public string Name => "HtcHttp";
-        public string Version => "1.2.0";
+        public string Version => "1.2.1";
 
         public Task Load(HtcServer htcServer, ILogger logger) {
             htcServer.EngineManager.RegisterEngine("htc-http", typeof(HttpEngine));

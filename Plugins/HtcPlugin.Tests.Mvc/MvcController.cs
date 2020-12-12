@@ -26,7 +26,7 @@ namespace HtcPlugin.Tests.Mvc {
             }
         }
 
-        [HttpPost("/test2", ContentType.JSON)]
+        [HttpPost("/test", ContentType.JSON)]
         public static async Task Test(HttpContext httpContext, DataObj dataObj) {
             await httpContext.Response.WriteAsync(dataObj.Data ?? "Null");
         }
