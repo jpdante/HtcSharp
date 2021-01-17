@@ -14,7 +14,11 @@ namespace HtcSharp.Server {
         private bool _daemonMode = false;
 
         private static void Main(string[] args) {
-            new Program().Start(args).GetAwaiter().GetResult();
+            try {
+                new Program().Start(args).GetAwaiter().GetResult();
+            } catch (Exception ex) {
+                if (ex.InnerException != null) throw ex.InnerException;
+            }
         }
 
         private async Task Start(string[] args) {
