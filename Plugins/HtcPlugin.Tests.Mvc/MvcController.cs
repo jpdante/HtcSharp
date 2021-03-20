@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http.Abstractions;
 using HtcSharp.HttpModule.Http.Abstractions.Extensions;
+using HtcSharp.HttpModule.Http.Extensions;
 using HtcSharp.HttpModule.Mvc;
 using HtcSharp.HttpModule.Routing;
 
@@ -30,6 +32,5 @@ namespace HtcPlugin.Tests.Mvc {
         public static async Task Test(HttpContext httpContext, DataObj dataObj) {
             await httpContext.Response.WriteAsync(dataObj.Data ?? "Null");
         }
-
     }
 }

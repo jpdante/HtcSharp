@@ -79,8 +79,8 @@ namespace HtcSharp.Core {
                 Logger.LogInfo("Enabling Plugins", null);
                 await _pluginManager.CallEnable();
             } catch (Exception ex) {
-                Console.WriteLine(ex.ToString());
-                throw ex;
+                Logger.LogFatal(ex.Message, ex);
+                throw;
             }
         }
 
@@ -96,8 +96,8 @@ namespace HtcSharp.Core {
                 await _moduleManager.CallDisable();
                 Running = false;
             } catch (Exception ex) {
-                Console.WriteLine(ex.ToString());
-                throw ex;
+                Logger.LogFatal(ex.Message, ex);
+                throw;
             }
         }
     }
