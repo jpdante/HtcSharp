@@ -2,18 +2,14 @@
 using HtcSharp.Core;
 using HtcSharp.Core.Logging.Abstractions;
 using HtcSharp.Core.Module.Abstractions;
-using HtcSharp.Core.Plugin.Abstractions;
 
 namespace HtcSharp.HttpModule {
-    // SourceTools-Start
-    // Ignore-Copyright
-    // SourceTools-End
     public class HtcHttpModule : IModule {
         public string Name => "HtcHttp";
         public string Version => "1.2.1";
 
         public Task Load(HtcServer htcServer, ILogger logger) {
-            htcServer.EngineManager.RegisterEngine("htc-http", typeof(HttpEngine));
+            htcServer.EngineManager.RegisterEngine("http", typeof(HttpEngine));
             return Task.CompletedTask;
         }
 
