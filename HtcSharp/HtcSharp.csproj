@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <RuntimeFramework>netcoreapp2.2.0</RuntimeFramework>
-    <StartupObject>HtcSharp.Server.Program</StartupObject>
+    <StartupObject>HtcSharp.Program</StartupObject>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <Platforms>x64;x86</Platforms>
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HtcSharp.Core\HtcSharp.Core.csproj" />
+    <ProjectReference Include="..\HtcSharp.Logging\HtcSharp.Logging.csproj" />
   </ItemGroup>
 
 </Project>

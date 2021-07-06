@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtcSharp.Cli", "HtcSharp.Cl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtcSharp.Shared", "HtcSharp.Shared\HtcSharp.Shared.csproj", "{0B45388B-4C77-4EBF-BD38-3C412F11E271}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtcSharp.Logging", "HtcSharp.Logging\HtcSharp.Logging.csproj", "{191860ED-EC41-409C-9350-82B77477A486}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +157,18 @@ Global
 		{0B45388B-4C77-4EBF-BD38-3C412F11E271}.Release|x64.Build.0 = Release|Any CPU
 		{0B45388B-4C77-4EBF-BD38-3C412F11E271}.Release|x86.ActiveCfg = Release|Any CPU
 		{0B45388B-4C77-4EBF-BD38-3C412F11E271}.Release|x86.Build.0 = Release|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Debug|x64.Build.0 = Debug|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Debug|x86.Build.0 = Debug|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Release|Any CPU.Build.0 = Release|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Release|x64.ActiveCfg = Release|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Release|x64.Build.0 = Release|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Release|x86.ActiveCfg = Release|Any CPU
+		{191860ED-EC41-409C-9350-82B77477A486}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
