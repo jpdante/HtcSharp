@@ -2,7 +2,6 @@
 using HtcSharp.Internal;
 using HtcSharp.Logging;
 using HtcSharp.Logging.Internal;
-using HtcSharp.Logging.Loggers;
 
 namespace HtcSharp {
     public class Server : DaemonApplication {

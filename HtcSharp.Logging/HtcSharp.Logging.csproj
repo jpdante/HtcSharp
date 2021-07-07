@@ -4,9 +4,4 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Internal\" />
-    <Folder Include="Loggers\" />
-  </ItemGroup>
-
 </Project>
