@@ -27,6 +27,7 @@ namespace HtcSharp.Logging.Appenders {
             SetupFile();
             lock (_lock) {
                 _currentLog.Writer.Write(_logFormatter.FormatLog(logLevel, msg, objs));
+                _currentLog.Flush();
             }
         }
 
@@ -35,6 +36,7 @@ namespace HtcSharp.Logging.Appenders {
             SetupFile();
             lock (_lock) {
                 _currentLog.Writer.Write(_logFormatter.FormatLog(logLevel, msg, ex, objs));
+                _currentLog.Flush();
             }
         }
 
@@ -150,9 +152,12 @@ namespace HtcSharp.Logging.Appenders {
                 Writer = new StreamWriter(FileStream);
             }
 
-            public void Dispose() {
+            public void Flush() {
                 Writer?.Flush();
                 FileStream?.Flush(true);
+            }
+
+            public void Dispose() {
                 Writer?.Dispose();
                 FileStream?.Dispose();
             }

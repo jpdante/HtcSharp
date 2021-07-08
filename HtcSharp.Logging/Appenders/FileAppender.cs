@@ -24,6 +24,8 @@ namespace HtcSharp.Logging.Appenders {
             if (!_logLevels.HasFlag(logLevel)) return;
             lock (_lock) {
                 _streamWriter.Write(_logFormatter.FormatLog(logLevel, msg, objs));
+                _streamWriter.Flush();
+                _fileStream.Flush(true);
             }
         }
 
@@ -31,6 +33,8 @@ namespace HtcSharp.Logging.Appenders {
             if (!_logLevels.HasFlag(logLevel)) return;
             lock (_lock) {
                 _streamWriter.Write(_logFormatter.FormatLog(logLevel, msg, ex, objs));
+                _streamWriter.Flush();
+                _fileStream.Flush(true);
             }
         }
 
@@ -40,6 +44,8 @@ namespace HtcSharp.Logging.Appenders {
 
         public void Dispose() {
             lock (_lock) {
+                _streamWriter.Flush();
+                _fileStream.Flush(true);
                 _streamWriter?.Dispose();
                 _fileStream?.Dispose();
             }
