@@ -102,10 +102,10 @@ namespace HtcSharp.Logging.Appenders {
         }
 
         private void AdvanceRollingFiles(string path) {
-            for (uint i = 1; i < _config.MaxBackupHistory; i++) {
+            for (uint i = _config.MaxBackupHistory; i > 0; i--) {
                 var currentPath = $"{path}.{i}";
-                if (File.Exists(currentPath)) continue;
-                if (i + 1 > _config.MaxBackupHistory) {
+                if (!File.Exists(currentPath)) continue;
+                if (i + 1 >= _config.MaxBackupHistory) {
                     File.Delete($"{path}.{i}");
                 } else {
                     File.Move(currentPath, $"{path}.{i + 1}");
@@ -116,7 +116,7 @@ namespace HtcSharp.Logging.Appenders {
 
         private bool ShouldRollFile(LogFile currentLog) {
             if (_config.MaxFileSize != -1 && currentLog.FileStream.Length >= _config.MaxFileSize) return true;
-            if (currentLog.LogDate - DateTime.Now >= _config.RollingSpan) return true;
+            if (DateTime.Now - currentLog.LogDate >= _config.RollingSpan) return true;
             return false;
         }
 
@@ -148,7 +148,8 @@ namespace HtcSharp.Logging.Appenders {
             public LogFile(string path, DateTime dateTime) {
                 LogPath = path;
                 LogDate = dateTime;
-                FileStream = new FileStream(LogPath, FileMode.Append, FileAccess.Write, FileShare.Read);
+                FileStream = new FileStream(LogPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+                FileStream.Seek(FileStream.Length, SeekOrigin.Begin);
                 Writer = new StreamWriter(FileStream);
             }
 
@@ -175,7 +176,7 @@ namespace HtcSharp.Logging.Appenders {
 
             public bool CompressOldLogs { get; set; } = true;
 
-            public bool RollIfAlreadyExists { get; set; } = true;
+            public bool RollIfAlreadyExists { get; set; } = false;
 
             public long MaxFileSize { get; set; } = 16 * 1024 * 1024;
 

@@ -15,7 +15,8 @@ namespace HtcSharp.Logging.Appenders {
             _logLevels = logLevels;
             _logFormatter = logFormatter;
             _logFormatter ??= new LogFormatter();
-            _fileStream = new FileStream(file, FileMode.Append, FileAccess.Write, FileShare.Read);
+            _fileStream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+            _fileStream.Seek(_fileStream.Length, SeekOrigin.Begin);
             _streamWriter = new StreamWriter(_fileStream);
             _lock = new object();
         }
