@@ -1,21 +1,24 @@
 ﻿using System.Threading.Tasks;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
+using HtcSharp.Logging.Appenders;
 using HtcSharp.Logging.Internal;
 
 namespace HtcSharp {
     public class Server : DaemonApplication {
 
-        private MultiLogger _logger;
+        private readonly ILogger Logger = LoggerManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
 
         protected override Task OnLoad() {
-            _logger = new MultiLogger();
-            _logger.AddLogger(new ConsoleLogger(LogLevel.All));
+            var multiAppender = new MultiAppender();
+            multiAppender.AddAppender(new ConsoleAppender(LogLevel.All));
+            multiAppender.AddAppender(new RollingFileAppender(new RollingFileAppender.RollingFileConfig(), LogLevel.All));
+            LoggerManager.Init(multiAppender);
             return Task.CompletedTask;
         }
 
         protected override Task OnStart() {
-            _logger.LogFatal("TOP!!");
+            Logger.LogFatal("TOP!!");
             return Task.CompletedTask;
         }
 

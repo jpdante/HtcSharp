@@ -11,5 +11,8 @@ namespace HtcSharp.Logging.Appenders {
         public bool IsEnabled(LogLevel logLevel) {
             return true;
         }
+
+        public void Dispose() {
+        }
     }
 }

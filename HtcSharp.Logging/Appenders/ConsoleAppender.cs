@@ -26,5 +26,8 @@ namespace HtcSharp.Logging.Appenders {
         public bool IsEnabled(LogLevel logLevel) => _logLevels.HasFlag(logLevel);
 
         public void SetLogLevel(LogLevel logLevels) => _logLevels = logLevels;
+
+        public void Dispose() {
+        }
     }
 }

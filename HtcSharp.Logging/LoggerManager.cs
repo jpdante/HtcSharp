@@ -11,7 +11,7 @@ namespace HtcSharp.Logging {
             DefaultAppender = new NullAppender();
         }
 
-        public LoggerManager(IAppender appender) {
+        public static void Init(IAppender appender) {
             DefaultAppender = appender;
         }
 

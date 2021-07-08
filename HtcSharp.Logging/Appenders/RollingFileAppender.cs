@@ -5,7 +5,7 @@ using System.Text;
 using HtcSharp.Logging.Internal;
 
 namespace HtcSharp.Logging.Appenders {
-    public class RollingFileAppender {
+    public class RollingFileAppender : IAppender {
 
         private LogLevel _logLevels;
         private readonly RollingFileConfig _config;
@@ -24,6 +24,7 @@ namespace HtcSharp.Logging.Appenders {
 
         public void Log(ILogger logger, LogLevel logLevel, string msg, params object[] objs) {
             if (!_logLevels.HasFlag(logLevel)) return;
+            SetupFile();
             lock (_lock) {
                 _currentLog.Writer.Write(_logFormatter.FormatLog(logLevel, msg, objs));
             }
@@ -31,6 +32,7 @@ namespace HtcSharp.Logging.Appenders {
 
         public void Log(ILogger logger, LogLevel logLevel, string msg, Exception ex, params object[] objs) {
             if (!_logLevels.HasFlag(logLevel)) return;
+            SetupFile();
             lock (_lock) {
                 _currentLog.Writer.Write(_logFormatter.FormatLog(logLevel, msg, ex, objs));
             }
@@ -43,44 +45,76 @@ namespace HtcSharp.Logging.Appenders {
         public void SetupFile() {
             if (_currentLog == null) {
                 lock (_lock) {
-                    var dateTime = DateTime.Now;
-                    _currentLog = new LogFile(GetFileName(dateTime), dateTime);
+                    var currentDate = DateTime.Now;
+                    string path = GetFileName(currentDate, _config.FileExtension);
+                    if (File.Exists(path) && _config.RollIfAlreadyExists) RollFile(path, currentDate);
+                    _currentLog = new LogFile(path, currentDate);
                 }
             } else {
                 lock (_lock) {
-                    if(!ShouldRotateFile(_currentLog)) return;
-                    string oldLog = _currentLog.LogPath;
+                    if(!ShouldRollFile(_currentLog)) return;
+
+                    string oldLogPath = _currentLog.LogPath;
+                    var oldLogDate = _currentLog.LogDate;
+
                     _currentLog.Dispose();
-                    if (_config.CompressOldLogs) {
-                        CompressFile(_currentLog.LogPath, Path.Combine(_config.Path, Path.GetFileNameWithoutExtension(oldLog) ?? throw new InvalidOperationException(), ".zip"));
-                        if (File.Exists(_currentLog.LogPath)) File.Delete(_currentLog.LogPath);
-                    }
+                    _currentLog = null;
+
+                    RollFile(oldLogPath, oldLogDate);
+
                     var dateTime = DateTime.Now;
-                    _currentLog = new LogFile(GetFileName(dateTime), dateTime);
+                    _currentLog = new LogFile(GetFileName(dateTime, _config.FileExtension), dateTime);
                 }
             }
         }
 
-        private string GetFileName(DateTime dateTime, int count = 0) {
-            var fileFormat = new StringBuilder(_config.FileFormat);
-            fileFormat.Replace("%YYYY", dateTime.Year.ToString("0000"));
-            fileFormat.Replace("%MM", dateTime.Month.ToString("00"));
-            fileFormat.Replace("%DD", dateTime.Day.ToString("00"));
-            fileFormat.Replace("%hh", dateTime.Hour.ToString("00"));
-            fileFormat.Replace("%mm", dateTime.Minute.ToString("00"));
-            fileFormat.Replace("%ss", dateTime.Second.ToString("00"));
-            fileFormat.Replace("%ms", dateTime.Millisecond.ToString("00"));
-            fileFormat.Replace("%tt", dateTime.Ticks.ToString("00"));
-
-            string extra = count > 0 ? $".{count}" : "";
-
-            var fileName = $"{fileFormat}{extra}.{_config.FileExtension}";
-            return Path.Combine(_config.Path, fileName);
+        private void RollFile(string logPath, DateTime dateTime) {
+            if (_config.CompressOldLogs) {
+                string rollPath = GetFileName(dateTime, "zip");
+                if (File.Exists(rollPath)) File.Delete(rollPath);
+                CompressFile(logPath, rollPath);
+                AdvanceRollingFiles(rollPath);
+            } else {
+                AdvanceRollingFiles(logPath);
+            }
         }
 
-        private bool ShouldRotateFile(LogFile currentLog) {
+        public string GetFileName(DateTime dateTime, string extension) {
+            var builder = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(_config.Name)) {
+                builder.Append(_config.Name);
+                builder.Append('.');
+            }
+
+            if (!string.IsNullOrEmpty(_config.FileFormat)) {
+                builder.Append(dateTime.ToString(_config.FileFormat));
+            }
+
+            if (!string.IsNullOrEmpty(extension)) {
+                builder.Append('.');
+                builder.Append(extension);
+            }
+
+            return Path.Combine(_config.Path, builder.ToString());
+        }
+
+        private void AdvanceRollingFiles(string path) {
+            for (uint i = 1; i < _config.MaxBackupHistory; i++) {
+                var currentPath = $"{path}.{i}";
+                if (File.Exists(currentPath)) continue;
+                if (i + 1 > _config.MaxBackupHistory) {
+                    File.Delete($"{path}.{i}");
+                } else {
+                    File.Move(currentPath, $"{path}.{i + 1}");
+                }
+            }
+            File.Move(path, $"{path}.1");
+        }
+
+        private bool ShouldRollFile(LogFile currentLog) {
             if (_config.MaxFileSize != -1 && currentLog.FileStream.Length >= _config.MaxFileSize) return true;
-            if ((currentLog.LogDate - DateTime.Now).TotalDays >= 1) return true;
+            if (currentLog.LogDate - DateTime.Now >= _config.RollingSpan) return true;
             return false;
         }
 
@@ -112,11 +146,13 @@ namespace HtcSharp.Logging.Appenders {
             public LogFile(string path, DateTime dateTime) {
                 LogPath = path;
                 LogDate = dateTime;
-                FileStream = new FileStream(LogPath, FileMode.Append, FileAccess.ReadWrite, FileShare.Read);
+                FileStream = new FileStream(LogPath, FileMode.Append, FileAccess.Write, FileShare.Read);
                 Writer = new StreamWriter(FileStream);
             }
 
             public void Dispose() {
+                Writer?.Flush();
+                FileStream?.Flush(true);
                 Writer?.Dispose();
                 FileStream?.Dispose();
             }
@@ -124,16 +160,23 @@ namespace HtcSharp.Logging.Appenders {
 
         public class RollingFileConfig {
 
-            public long MaxFileSize { get; set; } = 16 * 1024 * 1024;
+            public string Path { get; set; } = Directory.GetCurrentDirectory();
 
-            public string Path { get; set; } = null;
+            public string Name { get; set; } = "log";
 
-            public string FileFormat { get; set; } = "%DD-%MM-%YYYY";
+            public string FileFormat { get; set; } = "dd-MM-yyyy";
 
             public string FileExtension { get; set; } = "log";
 
             public bool CompressOldLogs { get; set; } = true;
 
+            public bool RollIfAlreadyExists { get; set; } = true;
+
+            public long MaxFileSize { get; set; } = 16 * 1024 * 1024;
+
+            public uint MaxBackupHistory { get; set; } = 10;
+
+            public TimeSpan RollingSpan { get; set; } = new(1, 0, 0, 0);
         }
     }
 }
