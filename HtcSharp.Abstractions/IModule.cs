@@ -2,11 +2,14 @@
 
 namespace HtcSharp.Abstractions {
     public interface IModule {
+
         string Name { get; }
         string Version { get; }
-        //Task Load(HtcServer htcServer, ILogger logger);
+
+        Task Load();
         Task Enable();
         Task Disable();
+
         bool IsCompatible(int htcMajor, int htcMinor, int htcPatch);
     }
 }

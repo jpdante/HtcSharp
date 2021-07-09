@@ -21,6 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HtcSharp.Core\HtcSharp.Core.csproj" />
     <ProjectReference Include="..\HtcSharp.Logging\HtcSharp.Logging.csproj" />
   </ItemGroup>
 
