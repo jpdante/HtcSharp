@@ -26,7 +26,7 @@ namespace HtcSharp.Logging.Appenders {
             if (!_logLevels.HasFlag(logLevel)) return;
             SetupFile();
             lock (_lock) {
-                _currentLog.Writer.Write(_logFormatter.FormatLog(logLevel, msg, objs));
+                _currentLog.Writer.Write(_logFormatter.FormatLog(logger, logLevel, msg, objs));
                 _currentLog.Flush();
             }
         }
@@ -35,7 +35,7 @@ namespace HtcSharp.Logging.Appenders {
             if (!_logLevels.HasFlag(logLevel)) return;
             SetupFile();
             lock (_lock) {
-                _currentLog.Writer.Write(_logFormatter.FormatLog(logLevel, msg, ex, objs));
+                _currentLog.Writer.Write(_logFormatter.FormatLog(logger, logLevel, msg, ex, objs));
                 _currentLog.Flush();
             }
         }

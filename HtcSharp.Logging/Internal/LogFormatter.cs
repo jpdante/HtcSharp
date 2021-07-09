@@ -9,14 +9,14 @@ namespace HtcSharp.Logging.Internal {
         private readonly string _format;
 
         public LogFormatter() {
-            _format = "[%DD/%MM/%YYYY %hh:%mm:%ss] [%level] [%thread] %message %ex-message %obj\n%ex-stack";
+            _format = "[%DD/%MM/%YYYY %hh:%mm:%ss] [%level] [%thread] [%type] %message %ex-message %obj\n%ex-stack";
         }
 
         public LogFormatter(string format) {
             _format = format;
         }
 
-        public string FormatLog(LogLevel logLevel, string msg, params object[] objs) {
+        public string FormatLog(ILogger logger, LogLevel logLevel, string msg, params object[] objs) {
             var dateTime = DateTime.Now;
             var builder = new StringBuilder(_format);
             builder.Replace("%YYYY", dateTime.Year.ToString("0000"));
@@ -34,11 +34,13 @@ namespace HtcSharp.Logging.Internal {
             builder.Replace("%ex-stack", "");
             builder.Replace("%ex-hresult", "");
             builder.Replace("%ex-source", "");
+            builder.Replace("%type", logger.Type.Name);
+            builder.Replace("%fulltype", logger.Type.FullName);
             builder.Replace("%obj", objs is {Length: > 0} ? objs.Select(o => $"{o} ").Aggregate((i, j) => i + j) : "");
             return builder.ToString();
         }
 
-        public string FormatLog(LogLevel logLevel, string msg, Exception ex, params object[] objs) {
+        public string FormatLog(ILogger logger, LogLevel logLevel, string msg, Exception ex, params object[] objs) {
             var dateTime = DateTime.Now;
             var builder = new StringBuilder(_format);
             builder.Replace("%YYYY", dateTime.Year.ToString("00"));
@@ -56,6 +58,8 @@ namespace HtcSharp.Logging.Internal {
             builder.Replace("%ex-stack", $"{ex.StackTrace}\n");
             builder.Replace("%ex-hresult", ex.HResult.ToString());
             builder.Replace("%ex-source", ex.Source);
+            builder.Replace("%type", logger.Type.Name);
+            builder.Replace("%fulltype", logger.Type.FullName);
             builder.Replace("%obj", objs is {Length: > 0} ? objs.Select(o => $"{o} ").Aggregate((i, j) => i + j) : "");
             return builder.ToString();
         }

@@ -15,12 +15,12 @@ namespace HtcSharp.Logging.Appenders {
 
         public void Log(ILogger logger, LogLevel logLevel, string msg, params object[] objs) {
             if (!_logLevels.HasFlag(logLevel)) return;
-            Console.Write(_logFormatter.FormatLog(logLevel, msg, objs));
+            Console.Write(_logFormatter.FormatLog(logger, logLevel, msg, objs));
         }
 
         public void Log(ILogger logger, LogLevel logLevel, string msg, Exception ex, params object[] objs) {
             if (!_logLevels.HasFlag(logLevel)) return;
-            Console.Write(_logFormatter.FormatLog(logLevel, msg, ex, objs));
+            Console.Write(_logFormatter.FormatLog(logger, logLevel, msg, ex, objs));
         }
 
         public bool IsEnabled(LogLevel logLevel) => _logLevels.HasFlag(logLevel);
