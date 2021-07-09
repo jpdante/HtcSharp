@@ -20,4 +20,14 @@
     <PackageReference Include="CorePluginLoader" Version="0.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Module\" />
+    <Folder Include="Plugin\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HtcSharp.Abstractions\HtcSharp.Abstractions.csproj" />
+    <ProjectReference Include="..\HtcSharp.Logging\HtcSharp.Logging.csproj" />
+  </ItemGroup>
+
 </Project>

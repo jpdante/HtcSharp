@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 
 namespace HtcSharp.HttpModule {
     public class HttpEngine {
@@ -10,7 +9,7 @@ namespace HtcSharp.HttpModule {
 
         private KestrelServer _kestrelServer;
 
-        public async Task Load(JObject config, ILogger logger) {
+        public async Task Load() {
 
         }
 

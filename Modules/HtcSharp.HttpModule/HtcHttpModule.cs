@@ -1,15 +1,14 @@
 ﻿using System.Threading.Tasks;
-using HtcSharp.Core;
-using HtcSharp.Core.Logging.Abstractions;
-using HtcSharp.Core.Module.Abstractions;
+using HtcSharp.Abstractions;
+using HtcSharp.Logging;
 
 namespace HtcSharp.HttpModule {
     public class HtcHttpModule : IModule {
+
         public string Name => "HtcHttp";
         public string Version => "1.2.1";
 
-        public Task Load(HtcServer htcServer, ILogger logger) {
-            htcServer.EngineManager.RegisterEngine("http", typeof(HttpEngine));
+        public Task Load() {
             return Task.CompletedTask;
         }
 

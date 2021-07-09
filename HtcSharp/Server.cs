@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.Core;
+using HtcSharp.Core.Module;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
 using HtcSharp.Logging.Appenders;
@@ -14,6 +15,7 @@ namespace HtcSharp {
 
         private ArgsReader ArgsReader;
         private Config Config;
+        private ModuleManager ModuleManager;
 
         protected override async Task OnLoad() {
             var multiAppender = new MultiAppender();
@@ -23,6 +25,8 @@ namespace HtcSharp {
             Logger.LogInfo("Loading...");
             ArgsReader = new ArgsReader(Args);
             await LoadConfig();
+            ModuleManager = new ModuleManager();
+            ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
         }
 
         private async Task LoadConfig() {

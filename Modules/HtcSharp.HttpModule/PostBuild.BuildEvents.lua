@@ -13,7 +13,7 @@ end
 print("[LuaBuildEvents] Running in " .. args[2] .. " Mode\n")
 
 -- Create base directory
-pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/]] .. args[6] .. "/" .. args[2] .. [[/modules/http-module]])
+pluginsPath = Path.combine(args[3], [[HtcSharp/bin/]] .. args[6] .. "/" .. args[2] .. [[/modules/http-module]])
 if Directory.exists(pluginsPath) == false then
   Directory.createDirectory(pluginsPath)
 end
