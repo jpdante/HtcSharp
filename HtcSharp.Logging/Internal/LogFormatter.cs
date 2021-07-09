@@ -53,7 +53,7 @@ namespace HtcSharp.Logging.Internal {
             builder.Replace("%thread", Thread.CurrentThread.ManagedThreadId.ToString());
             builder.Replace("%message", msg);
             builder.Replace("%ex-message", ex.Message);
-            builder.Replace("%ex-stack", ex.StackTrace);
+            builder.Replace("%ex-stack", $"{ex.StackTrace}\n");
             builder.Replace("%ex-hresult", ex.HResult.ToString());
             builder.Replace("%ex-source", ex.Source);
             builder.Replace("%obj", objs is {Length: > 0} ? objs.Select(o => $"{o} ").Aggregate((i, j) => i + j) : "");
