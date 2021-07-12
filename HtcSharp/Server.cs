@@ -26,7 +26,7 @@ namespace HtcSharp {
             ArgsReader = new ArgsReader(Args);
             await LoadConfig();
             ModuleManager = new ModuleManager();
-            ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
+            await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
         }
 
         private async Task LoadConfig() {
@@ -49,9 +49,9 @@ namespace HtcSharp {
             return Task.CompletedTask;
         }
 
-        protected override Task OnExit() {
+        protected override async Task OnExit() {
+            await ModuleManager.UnloadModules();
             Logger.LogInfo("Exiting...");
-            return Task.CompletedTask;
         }
 
     }
