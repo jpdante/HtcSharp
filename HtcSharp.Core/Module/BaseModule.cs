@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Loader;
 using HtcSharp.Abstractions;
 
-namespace HtcSharp.Core.Internal {
+namespace HtcSharp.Core.Module {
     internal class BaseModule {
 
         public IModule Module { get; }

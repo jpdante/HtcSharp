@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
-using HtcSharp.Core.Internal;
 using HtcSharp.Logging;
 
 namespace HtcSharp.Core.Module {

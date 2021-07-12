@@ -1,8 +1,10 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.Core;
 using HtcSharp.Core.Module;
+using HtcSharp.Core.Plugin;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
 using HtcSharp.Logging.Appenders;
@@ -16,17 +18,24 @@ namespace HtcSharp {
         private ArgsReader ArgsReader;
         private Config Config;
         private ModuleManager ModuleManager;
+        private PluginManager PluginManager;
 
         protected override async Task OnLoad() {
             var multiAppender = new MultiAppender();
             multiAppender.AddAppender(new ConsoleAppender(LogLevel.All));
             multiAppender.AddAppender(new RollingFileAppender(new RollingFileAppender.RollingFileConfig(), LogLevel.All));
             LoggerManager.Init(multiAppender);
+
             Logger.LogInfo("Loading...");
+
             ArgsReader = new ArgsReader(Args);
             await LoadConfig();
+
             ModuleManager = new ModuleManager();
             await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
+
+            PluginManager = new PluginManager();
+            await PluginManager.LoadPlugins(Path.GetFullPath(Config.ModulesPath));
         }
 
         private async Task LoadConfig() {
@@ -50,6 +59,7 @@ namespace HtcSharp {
         }
 
         protected override async Task OnExit() {
+            await PluginManager.UnloadPlugins();
             await ModuleManager.UnloadModules();
             Logger.LogInfo("Exiting...");
         }
