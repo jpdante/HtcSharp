@@ -22,14 +22,17 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtcPlugin.Tests.Mvc", "Plugins\HtcPlugin.Tests.Mvc\HtcPlugin.Tests.Mvc.csproj", "{4C78F62F-7328-4664-BC0E-0CC0F7AFA0DF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtcSharp", "HtcSharp\HtcSharp.csproj", "{3EC402C0-280B-48FF-AAF5-DCF51FAC561C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5DF828F7-B675-4C86-B633-FC628E7262A2} = {5DF828F7-B675-4C86-B633-FC628E7262A2}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtcSharp.Abstractions", "HtcSharp.Abstractions\HtcSharp.Abstractions.csproj", "{18D7867C-5495-4639-A551-F66723CF8B92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtcSharp.Abstractions", "HtcSharp.Abstractions\HtcSharp.Abstractions.csproj", "{18D7867C-5495-4639-A551-F66723CF8B92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtcSharp.Cli", "HtcSharp.Cli\HtcSharp.Cli.csproj", "{DC70D117-CC90-4A29-8BC6-6BEB742FEE32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtcSharp.Cli", "HtcSharp.Cli\HtcSharp.Cli.csproj", "{DC70D117-CC90-4A29-8BC6-6BEB742FEE32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtcSharp.Shared", "HtcSharp.Shared\HtcSharp.Shared.csproj", "{0B45388B-4C77-4EBF-BD38-3C412F11E271}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtcSharp.Shared", "HtcSharp.Shared\HtcSharp.Shared.csproj", "{0B45388B-4C77-4EBF-BD38-3C412F11E271}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtcSharp.Logging", "HtcSharp.Logging\HtcSharp.Logging.csproj", "{191860ED-EC41-409C-9350-82B77477A486}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HtcSharp.Logging", "HtcSharp.Logging\HtcSharp.Logging.csproj", "{191860ED-EC41-409C-9350-82B77477A486}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
