@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using HtcSharp.Abstractions;
-using HtcSharp.Logging;
 
 namespace HtcSharp.HttpModule {
     public class HtcHttpModule : IModule {
 
         public string Name => "HtcHttp";
-        public string Version => "1.2.1";
+        public string Version => "0.1.0";
 
         public Task Load() {
             return Task.CompletedTask;
