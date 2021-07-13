@@ -38,11 +38,27 @@ namespace HtcSharp.Core.Plugin {
             foreach (var pluginType in assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract)) {
                 var plugin = Activator.CreateInstance(pluginType) as IPlugin;
                 if (plugin == null) continue;
+                // TODO: Check if is compatible
                 _plugins.Add(plugin);
                 _pluginsDictionary.Add(plugin, new BasePlugin(plugin, assemblyLoadContext));
                 await plugin.Load();
                 Logger.LogInfo($"Loaded plugin {plugin.Name} {plugin.Version}.");
             }
+        }
+
+        public async Task InitPlugins() {
+            foreach (var plugin in _plugins.ToArray()) {
+                try {
+                    await InitPlugin(plugin);
+                    Logger.LogInfo($"Enabled plugin {plugin.Name} {plugin.Version}.");
+                } catch (Exception ex) {
+                    Logger.LogError($"Failed to enable plugin {plugin.Name} {plugin.Version}.", ex);
+                }
+            }
+        }
+
+        public async Task InitPlugin(IPlugin plugin) {
+            await plugin.Enable();
         }
 
         public async Task UnloadPlugins() {

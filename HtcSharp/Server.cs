@@ -13,7 +13,7 @@ using HtcSharp.Logging.Internal;
 namespace HtcSharp {
     public class Server : DaemonApplication {
 
-        private readonly ILogger Logger = LoggerManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+        private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private ArgsReader ArgsReader;
         private Config Config;
@@ -38,6 +38,18 @@ namespace HtcSharp {
             await PluginManager.LoadPlugins(Path.GetFullPath(Config.ModulesPath));
         }
 
+        protected override async Task OnStart() {
+            Logger.LogInfo("Starting...");
+            await ModuleManager.InitModules();
+            await PluginManager.InitPlugins();
+        }
+
+        protected override async Task OnExit() {
+            await PluginManager.UnloadPlugins();
+            await ModuleManager.UnloadModules();
+            Logger.LogInfo("Exiting...");
+        }
+
         private async Task LoadConfig() {
             string configPath = ArgsReader.GetOrDefault("config", "./config.json");
             configPath = Path.GetFullPath(configPath);
@@ -52,17 +64,5 @@ namespace HtcSharp {
                 });
             }
         }
-
-        protected override Task OnStart() {
-            Logger.LogInfo("Starting...");
-            return Task.CompletedTask;
-        }
-
-        protected override async Task OnExit() {
-            await PluginManager.UnloadPlugins();
-            await ModuleManager.UnloadModules();
-            Logger.LogInfo("Exiting...");
-        }
-
     }
 }

@@ -38,11 +38,27 @@ namespace HtcSharp.Core.Module {
             foreach (var moduleType in assembly.GetTypes().Where(t => typeof(IModule).IsAssignableFrom(t) && !t.IsAbstract)) {
                 var module = Activator.CreateInstance(moduleType) as IModule;
                 if (module == null) continue;
+                // TODO: Check if is compatible
                 _modules.Add(module);
                 _modulesDictionary.Add(module, new BaseModule(module, assemblyLoadContext));
                 await module.Load();
                 Logger.LogInfo($"Loaded module {module.Name} {module.Version}.");
             }
+        }
+
+        public async Task InitModules() {
+            foreach (var module in _modules.ToArray()) {
+                try {
+                    await InitModule(module);
+                    Logger.LogInfo($"Enabled module {module.Name} {module.Version}.");
+                } catch (Exception ex) {
+                    Logger.LogError($"Failed to enable module {module.Name} {module.Version}.", ex);
+                }
+            }
+        }
+
+        public async Task InitModule(IModule module) {
+            await module.Enable();
         }
 
         public async Task UnloadModules() {
