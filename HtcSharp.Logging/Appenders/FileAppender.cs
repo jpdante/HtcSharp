@@ -6,15 +6,15 @@ namespace HtcSharp.Logging.Appenders {
     public class FileAppender : IAppender {
 
         private LogLevel _logLevels;
-        private readonly LogFormatter _logFormatter;
+        private readonly IFormatter _logFormatter;
         private readonly FileStream _fileStream;
         private readonly StreamWriter _streamWriter;
         private readonly object _lock;
 
-        public FileAppender(string file, LogLevel logLevels, LogFormatter logFormatter = null) {
+        public FileAppender(string file, LogLevel logLevels, IFormatter logFormatter = null) {
             _logLevels = logLevels;
             _logFormatter = logFormatter;
-            _logFormatter ??= new LogFormatter();
+            _logFormatter ??= new Formatter();
             _fileStream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
             _fileStream.Seek(_fileStream.Length, SeekOrigin.Begin);
             _streamWriter = new StreamWriter(_fileStream);
@@ -24,7 +24,7 @@ namespace HtcSharp.Logging.Appenders {
         public void Log(ILogger logger, LogLevel logLevel, string msg, params object[] objs) {
             if (!_logLevels.HasFlag(logLevel)) return;
             lock (_lock) {
-                _streamWriter.Write(_logFormatter.FormatLog(logger, logLevel, msg, objs));
+                _streamWriter.Write(_logFormatter.FormatLog(logger, logLevel, msg, null, objs));
                 _streamWriter.Flush();
                 _fileStream.Flush(true);
             }

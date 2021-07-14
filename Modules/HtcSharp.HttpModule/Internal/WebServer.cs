@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Http;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +21,7 @@ namespace HtcSharp.HttpModule.Internal {
         }
 
         public async Task OnRequest(HttpContext context) {
+            var htcContext = new HtcHttpContext(context);
             await context.Response.WriteAsync("Test");
         }
 

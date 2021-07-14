@@ -5,17 +5,17 @@ namespace HtcSharp.Logging.Appenders {
     public class ConsoleAppender : IAppender {
 
         private LogLevel _logLevels;
-        private readonly LogFormatter _logFormatter;
+        private readonly IFormatter _logFormatter;
 
-        public ConsoleAppender(LogLevel logLevels, LogFormatter logFormatter = null) {
+        public ConsoleAppender(LogLevel logLevels, IFormatter logFormatter = null) {
             _logLevels = logLevels;
             _logFormatter = logFormatter;
-            _logFormatter ??= new LogFormatter();
+            _logFormatter ??= new Formatter();
         }
 
         public void Log(ILogger logger, LogLevel logLevel, string msg, params object[] objs) {
             if (!_logLevels.HasFlag(logLevel)) return;
-            Console.Write(_logFormatter.FormatLog(logger, logLevel, msg, objs));
+            Console.Write(_logFormatter.FormatLog(logger, logLevel, msg, null, objs));
         }
 
         public void Log(ILogger logger, LogLevel logLevel, string msg, Exception ex, params object[] objs) {

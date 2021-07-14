@@ -21,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="YamlDotNet.NetCore" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HtcSharp.Core\HtcSharp.Core.csproj" />
     <ProjectReference Include="..\HtcSharp.Logging\HtcSharp.Logging.csproj" />
   </ItemGroup>

@@ -34,6 +34,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\HtcSharp.Core\HtcSharp.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Http\" />
+    <Folder Include="Abstractions\" />
+    <Folder Include="Mvc\" />
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="LuaBuildEvents PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir) $(PlatformName)" />
   </Target>

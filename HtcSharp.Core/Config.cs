@@ -1,13 +1,24 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using HtcSharp.Logging.Config;
+using HtcSharp.Logging.Config.Appenders;
 
 namespace HtcSharp.Core {
     public class Config {
 
-        [JsonPropertyName("modulesPath")]
         public string ModulesPath { get; set; } = "./modules/";
 
-        [JsonPropertyName("pluginsPath")]
         public string PluginsPath { get; set; } = "./plugins/";
+
+        public LoggingConfig Logging { get; set; } = new() {
+            Appender = new MultiAppenderConfig() {
+                Appenders = new List<AppenderConfig>() {
+                    new AppenderConfig {
+                        Type = AppenderType.Console
+                    },
+                    new RollingAppenderConfig()
+                }
+            }
+        };
 
     }
 }

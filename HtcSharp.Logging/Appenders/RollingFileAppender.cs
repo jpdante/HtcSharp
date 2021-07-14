@@ -9,16 +9,16 @@ namespace HtcSharp.Logging.Appenders {
 
         private LogLevel _logLevels;
         private readonly RollingFileConfig _config;
-        private readonly LogFormatter _logFormatter;
+        private readonly IFormatter _logFormatter;
         private readonly object _lock;
 
         private LogFile _currentLog;
 
-        public RollingFileAppender(RollingFileConfig config, LogLevel logLevels, LogFormatter logFormatter = null) {
+        public RollingFileAppender(RollingFileConfig config, LogLevel logLevels, IFormatter logFormatter = null) {
             _config = config;
             _logLevels = logLevels;
             _logFormatter = logFormatter;
-            _logFormatter ??= new LogFormatter();
+            _logFormatter ??= new Formatter();
             _lock = new object();
         }
 
@@ -26,7 +26,7 @@ namespace HtcSharp.Logging.Appenders {
             if (!_logLevels.HasFlag(logLevel)) return;
             SetupFile();
             lock (_lock) {
-                _currentLog.Writer.Write(_logFormatter.FormatLog(logger, logLevel, msg, objs));
+                _currentLog.Writer.Write(_logFormatter.FormatLog(logger, logLevel, msg, null, objs));
                 _currentLog.Flush();
             }
         }

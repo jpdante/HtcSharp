@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.Core;
@@ -8,7 +9,8 @@ using HtcSharp.Core.Plugin;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
 using HtcSharp.Logging.Appenders;
-using HtcSharp.Logging.Internal;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace HtcSharp {
     public class Server : DaemonApplication {
@@ -50,19 +52,26 @@ namespace HtcSharp {
             Logger.LogInfo("Exiting...");
         }
 
-        private async Task LoadConfig() {
-            string configPath = ArgsReader.GetOrDefault("config", "./config.json");
+        private Task LoadConfig() {
+            string configPath = ArgsReader.GetOrDefault("config", "./config.yml");
             configPath = Path.GetFullPath(configPath);
             if (File.Exists(configPath)) {
-                await using var fileStream = new FileStream(configPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
-                Config = await JsonSerializer.DeserializeAsync<Config>(fileStream);
+                using var fileStream = new FileStream(configPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+                using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
+                var deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(new CamelCaseNamingConvention())
+                    .Build();
+                Config = deserializer.Deserialize<Config>(streamReader);
             } else {
-                await using var fileStream = new FileStream(configPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+                using var fileStream = new FileStream(configPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+                using var streamWriter = new StreamWriter(fileStream, Encoding.UTF8);
                 Config = new Config();
-                await JsonSerializer.SerializeAsync(fileStream, Config, new JsonSerializerOptions {
-                    WriteIndented = true
-                });
+                var serializer = new SerializerBuilder()
+                    .WithNamingConvention(new PascalCaseNamingConvention())
+                    .Build();
+                serializer.Serialize(streamWriter, Config);
             }
+            return Task.CompletedTask;
         }
     }
 }
