@@ -9,7 +9,7 @@ namespace HtcSharp.Logging {
         private readonly string _format;
 
         public LogFormatter() {
-            _format = "[%DD/%MM/%YYYY %hh:%mm:%ss] [%level] [%thread] [%type] %message %ex-message %obj\n%ex-stack";
+            _format = "[%DD/%MM/%YYYY %hh:%mm:%ss.%ms] [%level] [%thread] [%type] %message %ex-message %obj\n%ex-stack";
         }
 
         public LogFormatter(string format) {
@@ -25,7 +25,7 @@ namespace HtcSharp.Logging {
             builder.Replace("%hh", dateTime.Hour.ToString("00"));
             builder.Replace("%mm", dateTime.Minute.ToString("00"));
             builder.Replace("%ss", dateTime.Second.ToString("00"));
-            builder.Replace("%ms", dateTime.Millisecond.ToString("00"));
+            builder.Replace("%ms", dateTime.Millisecond.ToString("0"));
             builder.Replace("%tt", dateTime.Ticks.ToString("00"));
             builder.Replace("%level", logLevel.ToString());
             builder.Replace("%thread", Thread.CurrentThread.ManagedThreadId.ToString());
@@ -49,7 +49,7 @@ namespace HtcSharp.Logging {
             builder.Replace("%hh", dateTime.Hour.ToString("00"));
             builder.Replace("%mm", dateTime.Minute.ToString("00"));
             builder.Replace("%ss", dateTime.Second.ToString("00"));
-            builder.Replace("%ms", dateTime.Millisecond.ToString("00"));
+            builder.Replace("%ms", dateTime.Millisecond.ToString("0"));
             builder.Replace("%tt", dateTime.Ticks.ToString("00"));
             builder.Replace("%level", logLevel.ToString());
             builder.Replace("%thread", Thread.CurrentThread.ManagedThreadId.ToString());
