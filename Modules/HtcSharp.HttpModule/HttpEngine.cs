@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Internal;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Hosting;
