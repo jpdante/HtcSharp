@@ -11,7 +11,8 @@ namespace HtcSharp.HttpModule.Logging {
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) {
-            _logger.Log(ConvertLogLevel(logLevel), $"[{eventId.Id}] [{eventId.Name}] {state}", exception);
+            string eventName = string.IsNullOrEmpty(eventId.Name) ? null : $" {eventId.Name}";
+            _logger.Log(ConvertLogLevel(logLevel), $"[EID {eventId.Id}{eventName}] {state}", exception);
         }
 
         public bool IsEnabled(LogLevel logLevel) {
