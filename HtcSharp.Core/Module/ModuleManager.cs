@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
+using HtcSharp.Core.Internal;
 using HtcSharp.Logging;
 
 namespace HtcSharp.Core.Module {
@@ -33,8 +35,8 @@ namespace HtcSharp.Core.Module {
         }
 
         public async Task LoadModule(string assemblyPath) {
-            var assemblyLoadContext = new AssemblyLoadContext("ModuleContext", true);
-            var assembly = assemblyLoadContext.LoadFromAssemblyPath(assemblyPath);
+            var assemblyLoadContext = new CustomAssemblyLoadContext(assemblyPath);
+            var assembly = assemblyLoadContext.LoadAssemblyFromFilePath(assemblyPath);
             foreach (var moduleType in assembly.GetTypes().Where(t => typeof(IModule).IsAssignableFrom(t) && !t.IsAbstract)) {
                 var module = Activator.CreateInstance(moduleType) as IModule;
                 if (module == null) continue;

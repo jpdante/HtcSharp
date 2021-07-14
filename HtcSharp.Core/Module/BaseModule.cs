@@ -1,14 +1,15 @@
 ﻿using System.Runtime.Loader;
 using HtcSharp.Abstractions;
+using HtcSharp.Core.Internal;
 
 namespace HtcSharp.Core.Module {
     internal class BaseModule {
 
         public IModule Module { get; }
 
-        private readonly AssemblyLoadContext _assemblyLoadContext;
+        private readonly CustomAssemblyLoadContext _assemblyLoadContext;
 
-        public BaseModule(IModule module, AssemblyLoadContext assemblyLoadContext) {
+        public BaseModule(IModule module, CustomAssemblyLoadContext assemblyLoadContext) {
             Module = module;
             _assemblyLoadContext = assemblyLoadContext;
         }
