@@ -17,12 +17,14 @@ namespace HtcSharp.HttpModule {
 
         public Task Load() {
             Logger.LogInfo("Loading HttpEngine...");
-            var webHostBuilder = new WebHostBuilder();
-            _webHost = webHostBuilder.UseKestrel(options => {
+            _webHost = new WebHostBuilder()
+            .UseStartup<WebStartup>()
+            .UseKestrel(options => {
                 options.ListenAnyIP(80, listenOptions => {
                     listenOptions.NoDelay = true;
                 });
-            }).Build();
+            })
+            .Build();
             return Task.CompletedTask;
         }
 
