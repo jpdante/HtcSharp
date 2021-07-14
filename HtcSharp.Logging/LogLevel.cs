@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HtcSharp.Logging.Internal {
+namespace HtcSharp.Logging {
     [Flags]
     public enum LogLevel {
         Debug = 1,

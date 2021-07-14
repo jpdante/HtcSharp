@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace HtcSharp.Logging.Internal {
-    public class Logger : ILogger {
+    internal class Logger : ILogger {
 
         public Type Type { get; }
 
@@ -14,7 +14,8 @@ namespace HtcSharp.Logging.Internal {
         }
 
         public void Log(LogLevel logLevel, string msg, Exception ex, params object[] objs) {
-            LoggerManager.DefaultAppender.Log(this, logLevel, msg, ex, objs);
+            if (ex == null) LoggerManager.DefaultAppender.Log(this, logLevel, msg, objs);
+            else LoggerManager.DefaultAppender.Log(this, logLevel, msg, ex, objs);
         }
 
         public bool IsEnabled(LogLevel logLevel) => LoggerManager.DefaultAppender.IsEnabled(logLevel);

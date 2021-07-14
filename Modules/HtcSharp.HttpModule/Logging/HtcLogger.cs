@@ -20,16 +20,16 @@ namespace HtcSharp.HttpModule.Logging {
 
         public IDisposable BeginScope<TState>(TState state) => default;
 
-        private static HtcSharp.Logging.Internal.LogLevel ConvertLogLevel(LogLevel logLevel) {
+        private static HtcSharp.Logging.LogLevel ConvertLogLevel(LogLevel logLevel) {
             return logLevel switch {
-                LogLevel.Trace => HtcSharp.Logging.Internal.LogLevel.Debug,
-                LogLevel.Debug => HtcSharp.Logging.Internal.LogLevel.Debug,
-                LogLevel.None => HtcSharp.Logging.Internal.LogLevel.Debug,
-                LogLevel.Information => HtcSharp.Logging.Internal.LogLevel.Info,
-                LogLevel.Warning => HtcSharp.Logging.Internal.LogLevel.Warn,
-                LogLevel.Error => HtcSharp.Logging.Internal.LogLevel.Error,
-                LogLevel.Critical => HtcSharp.Logging.Internal.LogLevel.Fatal,
-                _ => HtcSharp.Logging.Internal.LogLevel.Debug
+                LogLevel.Trace => HtcSharp.Logging.LogLevel.Debug,
+                LogLevel.Debug => HtcSharp.Logging.LogLevel.Debug,
+                LogLevel.None => HtcSharp.Logging.LogLevel.Debug,
+                LogLevel.Information => HtcSharp.Logging.LogLevel.Info,
+                LogLevel.Warning => HtcSharp.Logging.LogLevel.Warn,
+                LogLevel.Error => HtcSharp.Logging.LogLevel.Error,
+                LogLevel.Critical => HtcSharp.Logging.LogLevel.Fatal,
+                _ => HtcSharp.Logging.LogLevel.Debug
             };
         }
     }

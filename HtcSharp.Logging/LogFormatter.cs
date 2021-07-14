@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace HtcSharp.Logging.Internal {
+namespace HtcSharp.Logging {
     public class LogFormatter {
 
         private readonly string _format;
@@ -54,10 +54,12 @@ namespace HtcSharp.Logging.Internal {
             builder.Replace("%level", logLevel.ToString());
             builder.Replace("%thread", Thread.CurrentThread.ManagedThreadId.ToString());
             builder.Replace("%message", msg);
-            builder.Replace("%ex-message", ex.Message);
-            builder.Replace("%ex-stack", $"{ex.StackTrace}\n");
-            builder.Replace("%ex-hresult", ex.HResult.ToString());
-            builder.Replace("%ex-source", ex.Source);
+            if (ex != null) {
+                builder.Replace("%ex-message", ex.Message);
+                builder.Replace("%ex-stack", $"{ex.StackTrace}\n");
+                builder.Replace("%ex-hresult", ex.HResult.ToString());
+                builder.Replace("%ex-source", ex.Source);
+            }
             builder.Replace("%type", logger.Type.Name);
             builder.Replace("%fulltype", logger.Type.FullName);
             builder.Replace("%obj", objs is {Length: > 0} ? objs.Select(o => $"{o} ").Aggregate((i, j) => i + j) : "");
