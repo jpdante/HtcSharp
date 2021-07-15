@@ -2,9 +2,9 @@
 using HtcSharp.Logging.Config.Appenders;
 
 namespace HtcSharp.Logging.Config {
-    public class AppenderConfig {
+    public abstract class AppenderConfig {
 
-        public AppenderType Type { get; set; } = AppenderType.Null;
+        public abstract AppenderType Type { get; set; }
 
         public LogLevel LogLevel { get; set; }
 
@@ -13,10 +13,12 @@ namespace HtcSharp.Logging.Config {
         public virtual IAppender GetAppender() {
             var formatter = Formatter?.GetFormatter();
             switch (Type) {
+                case AppenderType.Null:
+                    return ((NullAppenderConfig) this).GetAppender();
                 case AppenderType.Multi:
                     return ((MultiAppenderConfig) this).GetAppender();
                 case AppenderType.Console:
-                    return new ConsoleAppender(LogLevel, formatter);
+                    return ((ConsoleAppenderConfig) this).GetAppender();
                 case AppenderType.File:
                     return ((FileAppenderConfig) this).GetAppender();
                 case AppenderType.Rolling:

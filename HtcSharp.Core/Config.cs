@@ -12,9 +12,7 @@ namespace HtcSharp.Core {
         public LoggingConfig Logging { get; set; } = new() {
             Appender = new MultiAppenderConfig() {
                 Appenders = new List<AppenderConfig>() {
-                    new AppenderConfig {
-                        Type = AppenderType.Console
-                    },
+                    new ConsoleAppenderConfig(),
                     new RollingAppenderConfig()
                 }
             }

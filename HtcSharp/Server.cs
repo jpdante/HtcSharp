@@ -9,6 +9,7 @@ using HtcSharp.Core.Plugin;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
 using HtcSharp.Logging.Appenders;
+using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -52,26 +53,26 @@ namespace HtcSharp {
             Logger.LogInfo("Exiting...");
         }
 
-        private Task LoadConfig() {
+        private async Task LoadConfig() {
             string configPath = ArgsReader.GetOrDefault("config", "./config.yml");
             configPath = Path.GetFullPath(configPath);
             if (File.Exists(configPath)) {
-                using var fileStream = new FileStream(configPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
+                await using var fileStream = new FileStream(configPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
                 using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
-                var deserializer = new DeserializerBuilder()
-                    .WithNamingConvention(new CamelCaseNamingConvention())
+                /*var deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(new PascalCaseNamingConvention())
                     .Build();
-                Config = deserializer.Deserialize<Config>(streamReader);
+                Config = deserializer.Deserialize<Config>(streamReader);*/
+                YamlDocument
             } else {
-                using var fileStream = new FileStream(configPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
-                using var streamWriter = new StreamWriter(fileStream, Encoding.UTF8);
+                await using var fileStream = new FileStream(configPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+                await using var streamWriter = new StreamWriter(fileStream, Encoding.UTF8);
                 Config = new Config();
                 var serializer = new SerializerBuilder()
                     .WithNamingConvention(new PascalCaseNamingConvention())
                     .Build();
                 serializer.Serialize(streamWriter, Config);
             }
-            return Task.CompletedTask;
         }
     }
 }

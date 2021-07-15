@@ -4,6 +4,9 @@ using HtcSharp.Logging.Appenders;
 
 namespace HtcSharp.Logging.Config.Appenders {
     public class RollingAppenderConfig : AppenderConfig {
+
+        public override AppenderType Type { get; set; } = AppenderType.Rolling;
+
         public string Path { get; set; } = Directory.GetCurrentDirectory();
 
         public string Name { get; set; } = "log";
