@@ -22,7 +22,7 @@ namespace HtcSharp.HttpModule.Internal {
 
         public async Task OnRequest(HttpContext context) {
             var htcContext = new HtcHttpContext(context);
-            await context.Response.WriteAsync("Test");
+            await htcContext.Response.WriteAsync("Test");
         }
 
     }

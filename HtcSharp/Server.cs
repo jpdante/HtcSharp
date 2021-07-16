@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +9,7 @@ using HtcSharp.Core.Module;
 using HtcSharp.Core.Plugin;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
+using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -24,6 +27,8 @@ namespace HtcSharp {
             await LoadConfig();
 
             LoggerManager.Init(Config.Logging.GetAppender());
+
+            Test();
 
             Logger.LogInfo("Loading...");
 
