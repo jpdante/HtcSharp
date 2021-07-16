@@ -3,8 +3,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Internal;
 using HtcSharp.HttpModule.Logging;
+using HtcSharp.HttpModule.Middleware;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ILogger = HtcSharp.Logging.ILogger;
 
@@ -32,6 +34,9 @@ namespace HtcSharp.HttpModule {
                 logging.ClearProviders();
                 logging.AddProvider(new HtcLoggerProvider(Logger));
             })
+            .ConfigureServices(services => {
+                services.AddSingleton(GetMiddlewareContext());
+            })
             .Build();
             Logger.LogInfo("Loaded HttpEngine");
             return Task.CompletedTask;
@@ -47,6 +52,17 @@ namespace HtcSharp.HttpModule {
             Logger.LogInfo("Stopping HttpEngine...");
             await _webHost.StopAsync();
             Logger.LogInfo("Stopped HttpEngine");
+        }
+
+        public MiddlewareContext GetMiddlewareContext() {
+            return new MiddlewareBuilder()
+                /*.UseRewriter()
+                .UseRouter()
+                .UseMvc()
+                .UsePages()
+                .UseHttpEvents()
+                .UseStaticFiles()*/
+                .Build();
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http;
+using HtcSharp.HttpModule.Middleware;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -12,17 +14,24 @@ namespace HtcSharp.HttpModule.Internal {
 
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        public void ConfigureServices(IServiceCollection services) {
+        private MiddlewareContext _middlewareContext;
 
+        public void ConfigureServices(IServiceCollection services) {
+            
         }
 
         public void Configure(IApplicationBuilder app) {
+            _middlewareContext = app.ApplicationServices.GetService(typeof(MiddlewareContext)) as MiddlewareContext;
             app.Run(OnRequest);
         }
 
         public async Task OnRequest(HttpContext context) {
-            var htcContext = new HtcHttpContext(context);
-            await htcContext.Response.WriteAsync("Test");
+            try {
+                var htcContext = new HtcHttpContext(context);
+                await _middlewareContext.Invoke(htcContext);
+            } catch (Exception ex) {
+                Logger.LogError(null, ex);
+            }
         }
 
     }
