@@ -23,6 +23,7 @@ namespace HtcSharp.Core.Plugin {
         }
 
         public async Task LoadPlugins(string path) {
+            if (!Directory.Exists(path)) return;
             foreach (string assemblyPath in GetFiles(path, "*.plugin.dll", SearchOption.AllDirectories)) {
                 try {
                     await LoadPlugin(assemblyPath);

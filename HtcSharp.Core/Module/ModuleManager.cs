@@ -25,6 +25,7 @@ namespace HtcSharp.Core.Module {
         }
 
         public async Task LoadModules(string path) {
+            if (!Directory.Exists(path)) return;
             foreach (string assemblyPath in GetFiles(path, "*.module.dll", SearchOption.AllDirectories)) {
                 try {
                     await LoadModule(assemblyPath);
