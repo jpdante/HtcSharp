@@ -11,11 +11,11 @@ namespace HtcSharp.Logging.Appenders {
         private readonly StreamWriter _streamWriter;
         private readonly object _lock;
 
-        public FileAppender(string file, LogLevel logLevels, IFormatter logFormatter = null) {
+        public FileAppender(string fileName, LogLevel logLevels, IFormatter logFormatter = null) {
             _logLevels = logLevels;
             _logFormatter = logFormatter;
             _logFormatter ??= new Formatter();
-            _fileStream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+            _fileStream = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
             _fileStream.Seek(_fileStream.Length, SeekOrigin.Begin);
             _streamWriter = new StreamWriter(_fileStream);
             _lock = new object();

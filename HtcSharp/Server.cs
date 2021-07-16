@@ -1,21 +1,17 @@
 ﻿using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.Core;
 using HtcSharp.Core.Module;
 using HtcSharp.Core.Plugin;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
-using HtcSharp.Logging.Appenders;
-using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace HtcSharp {
     public class Server : DaemonApplication {
-
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private ArgsReader ArgsReader;
@@ -24,15 +20,12 @@ namespace HtcSharp {
         private PluginManager PluginManager;
 
         protected override async Task OnLoad() {
-            var multiAppender = new MultiAppender();
-            multiAppender.AddAppender(new ConsoleAppender(LogLevel.All));
-            multiAppender.AddAppender(new RollingFileAppender(new RollingFileAppender.RollingFileConfig(), LogLevel.All));
-            LoggerManager.Init(multiAppender);
-
-            Logger.LogInfo("Loading...");
-
             ArgsReader = new ArgsReader(Args);
             await LoadConfig();
+
+            LoggerManager.Init(Config.Logging.GetAppender());
+
+            Logger.LogInfo("Loading...");
 
             ModuleManager = new ModuleManager();
             await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
@@ -59,11 +52,10 @@ namespace HtcSharp {
             if (File.Exists(configPath)) {
                 await using var fileStream = new FileStream(configPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
                 using var streamReader = new StreamReader(fileStream, Encoding.UTF8);
-                /*var deserializer = new DeserializerBuilder()
+                var deserializer = new DeserializerBuilder()
                     .WithNamingConvention(new PascalCaseNamingConvention())
                     .Build();
-                Config = deserializer.Deserialize<Config>(streamReader);*/
-                YamlDocument
+                Config = deserializer.Deserialize<Config>(streamReader);
             } else {
                 await using var fileStream = new FileStream(configPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
                 await using var streamWriter = new StreamWriter(fileStream, Encoding.UTF8);

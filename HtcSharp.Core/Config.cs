@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using HtcSharp.Logging.Config;
-using HtcSharp.Logging.Config.Appenders;
 
 namespace HtcSharp.Core {
     public class Config {
@@ -10,10 +9,16 @@ namespace HtcSharp.Core {
         public string PluginsPath { get; set; } = "./plugins/";
 
         public LoggingConfig Logging { get; set; } = new() {
-            Appender = new MultiAppenderConfig() {
+            Enabled = true,
+            Appender = new AppenderConfig {
+                Type = AppenderType.Multi,
                 Appenders = new List<AppenderConfig>() {
-                    new ConsoleAppenderConfig(),
-                    new RollingAppenderConfig()
+                    new AppenderConfig {
+                        Type = AppenderType.Console,
+                    },
+                    new AppenderConfig {
+                        Type = AppenderType.RollingFile,
+                    }
                 }
             }
         };

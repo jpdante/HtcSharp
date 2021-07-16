@@ -4,6 +4,6 @@
         Multi,
         Console,
         File,
-        Rolling
+        RollingFile
     }
 }
