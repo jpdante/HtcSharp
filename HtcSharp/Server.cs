@@ -31,7 +31,7 @@ namespace HtcSharp {
             await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
 
             PluginManager = new PluginManager();
-            await PluginManager.LoadPlugins(Path.GetFullPath(Config.ModulesPath));
+            await PluginManager.LoadPlugins(Path.GetFullPath(Config.PluginsPath));
         }
 
         protected override async Task OnStart() {
