@@ -34,9 +34,6 @@ namespace HtcSharp.HttpModule {
                 logging.ClearProviders();
                 logging.AddProvider(new HtcLoggerProvider(Logger));
             })
-            .ConfigureServices(services => {
-                services.AddSingleton(GetMiddlewareContext());
-            })
             .Build();
             Logger.LogInfo("Loaded HttpEngine");
             return Task.CompletedTask;
@@ -52,17 +49,6 @@ namespace HtcSharp.HttpModule {
             Logger.LogInfo("Stopping HttpEngine...");
             await _webHost.StopAsync();
             Logger.LogInfo("Stopped HttpEngine");
-        }
-
-        public MiddlewareContext GetMiddlewareContext() {
-            return new MiddlewareBuilder()
-                /*.UseRewriter()
-                .UseRouter()
-                .UseMvc()
-                .UsePages()
-                .UseHttpEvents()
-                .UseStaticFiles()*/
-                .Build();
         }
     }
 }

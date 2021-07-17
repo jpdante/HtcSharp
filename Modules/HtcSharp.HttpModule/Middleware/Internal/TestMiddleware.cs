@@ -12,13 +12,16 @@ namespace HtcSharp.HttpModule.Middleware.Internal {
 
         public string Name { get; set; }
 
-        public TestMiddleware(string name) {
+        private readonly RequestDelegate _next;
+
+        public TestMiddleware(RequestDelegate next, string name) {
             Name = name;
+            _next = next;
         }
 
-        public Task<bool> Invoke(HtcHttpContext httpContext) {
+        public Task Invoke(HtcHttpContext httpContext) {
             Logger.LogInfo($"Passing middlware: {Name}");
-            return Task.FromResult(true);
+            return _next(httpContext);
         }
 
     }

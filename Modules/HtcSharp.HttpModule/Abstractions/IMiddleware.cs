@@ -4,7 +4,7 @@ using HtcSharp.HttpModule.Http;
 namespace HtcSharp.HttpModule.Abstractions {
     public interface IMiddleware {
 
-        public Task<bool> Invoke(HtcHttpContext httpContext);
+        public Task Invoke(HtcHttpContext httpContext);
 
     }
 }
