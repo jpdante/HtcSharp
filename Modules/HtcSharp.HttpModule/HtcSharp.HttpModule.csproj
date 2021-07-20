@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\HtcSharp.Core\HtcSharp.Core.csproj" />
+    <ProjectReference Include="..\..\HtcSharp.Shared\HtcSharp.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

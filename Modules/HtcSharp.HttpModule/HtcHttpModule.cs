@@ -5,20 +5,21 @@ using System.Threading.Tasks;
 using HtcSharp.Abstractions;
 using HtcSharp.HttpModule.Config;
 using HtcSharp.Logging;
+using HtcSharp.Shared.IO;
 
 namespace HtcSharp.HttpModule {
     public class HtcHttpModule : IModule {
 
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-        private const string ConfigPath = "";
 
         public string Name => "HtcHttp";
         public string Version => "0.1.0";
 
+        private HttpModuleConfig _config;
         private HttpEngine _httpEngine;
 
         public async Task Load() {
-            
+            _config = await LoadConfig();
             _httpEngine = new HttpEngine();
             await _httpEngine.Load();
         }
@@ -36,8 +37,18 @@ namespace HtcSharp.HttpModule {
         }
 
         public async Task<HttpModuleConfig> LoadConfig() {
-            if (File.Exists(""))
-            JsonSerializer.Deserialize<HttpModuleConfig>();
+            string fileName = Path.Combine(PathExt.GetConfigPath(true, "http"), "config.json");
+            if (File.Exists(fileName)) {
+                await using var fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                return await JsonSerializer.DeserializeAsync<HttpModuleConfig>(fileStream);
+            } else {
+                await using var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
+                var config = new HttpModuleConfig();
+                await JsonSerializer.SerializeAsync(fileStream, config, new JsonSerializerOptions() {
+                    WriteIndented = true
+                });
+                return config;
+            }
         }
     }
 }

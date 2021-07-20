@@ -35,7 +35,6 @@ namespace HtcSharp.HttpModule {
             .UseKestrel(options => {
                 options.ListenAnyIP(80, listenOptions => {
                     listenOptions.NoDelay = true;
-                    listenOptions.UseHttps()
                 });
             })
             .ConfigureLogging(logging => {
