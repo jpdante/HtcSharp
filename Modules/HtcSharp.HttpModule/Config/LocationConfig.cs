@@ -9,7 +9,16 @@ namespace HtcSharp.HttpModule.Config {
 
         public string Location { get; set; }
 
-        public List<string> Actions { get; set; }
+        public List<string> MiddlewaresConfig { get; set; }
+
+        public LocationConfig() {
+            LocationType = LocationType.None;
+            Location = "/";
+            MiddlewaresConfig = new List<string> {
+                "",
+
+            };
+        }
 
         public LocationConfig(string name, JsonElement data) {
             string[] names = name.Split(" ", 2);
@@ -34,6 +43,12 @@ namespace HtcSharp.HttpModule.Config {
                     LocationType = LocationType.None;
                     Location = name;
                     break;
+            }
+            MiddlewaresConfig = new List<string>();
+            foreach (var element in data.EnumerateArray()) {
+                string middlewareConfig = element.GetString();
+                if (string.IsNullOrEmpty(middlewareConfig)) continue;
+                MiddlewaresConfig.Add(middlewareConfig);
             }
         }
     }

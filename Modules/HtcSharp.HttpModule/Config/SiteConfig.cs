@@ -15,6 +15,12 @@ namespace HtcSharp.HttpModule.Config {
 
         public SslConfig SslConfig { get; set; }
 
+        private SiteConfig() {
+            Hosts = new List<string>();
+            Domains = new List<string>();
+            Locations = new List<LocationConfig>();
+        }
+
         public static SiteConfig ParseConfig(JsonElement jsonElement) {
             var site = new SiteConfig();
             foreach (var property in jsonElement.EnumerateObject()) {
@@ -33,10 +39,13 @@ namespace HtcSharp.HttpModule.Config {
                     }
                     break;
                 } else if (propertyName.StartsWith("location ")) {
-                    propertyName = propertyName.Remove(0, 9);
-                    var locationConfig = new LocationConfig(propertyName, property.Value);
+                    string name = property.Name.Remove(0, 9);
+                    var locationConfig = new LocationConfig(name, property.Value);
                     site.Locations.Add(locationConfig);
                 }
+            }
+            if (site.Locations.Count == 0) {
+                site.Locations.Add(new LocationConfig());
             }
             return site;
         }

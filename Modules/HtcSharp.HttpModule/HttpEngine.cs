@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Config;
+using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Internal;
 using HtcSharp.HttpModule.Logging;
 using HtcSharp.Logging;
@@ -16,12 +21,15 @@ namespace HtcSharp.HttpModule {
 
         private IWebHost _webHost;
 
-        public HttpEngine() {
+        private List<Site> _sites;
 
+        public HttpEngine() {
+            _sites = new List<Site>();
         }
 
         public Task Load() {
             Logger.LogInfo("Loading HttpEngine...");
+            _sites.Clear();
             _webHost = new WebHostBuilder()
             .UseStartup<WebServer>()
             .UseKestrel(options => {
@@ -49,6 +57,16 @@ namespace HtcSharp.HttpModule {
             Logger.LogInfo("Stopping HttpEngine...");
             await _webHost.StopAsync();
             Logger.LogInfo("Stopped HttpEngine");
+        }
+
+        public async Task LoadSites() {
+
+        }
+
+        public async Task LoadSite(string filename) {
+            await using var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var jsonDocument = await JsonDocument.ParseAsync(fs);
+            _sites.Add(new Site(SiteConfig.ParseConfig(jsonDocument.RootElement)));
         }
     }
 }
