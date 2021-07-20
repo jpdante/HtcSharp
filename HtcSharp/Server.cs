@@ -7,6 +7,7 @@ using HtcSharp.Core.Module;
 using HtcSharp.Core.Plugin;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
+using HtcSharp.Shared.IO;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -20,6 +21,7 @@ namespace HtcSharp {
         private PluginManager PluginManager;
 
         protected override async Task OnLoad() {
+            PathExt.EnsureFolders();
             ArgsReader = new ArgsReader(Args);
             await LoadConfig();
 
