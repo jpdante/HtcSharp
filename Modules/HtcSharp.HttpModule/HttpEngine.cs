@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Internal;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Middleware;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ILogger = HtcSharp.Logging.ILogger;
 
@@ -28,6 +27,7 @@ namespace HtcSharp.HttpModule {
             .UseKestrel(options => {
                 options.ListenAnyIP(80, listenOptions => {
                     listenOptions.NoDelay = true;
+                    listenOptions.UseHttps()
                 });
             })
             .ConfigureLogging(logging => {
