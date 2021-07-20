@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HtcSharp.Shared {
+namespace HtcSharp.Shared.System {
     public static class EnvironmentExt {
 
         public static SystemOS OperatingSystem {

@@ -15,40 +15,40 @@ namespace HtcSharp.Shared.IO {
 
         static PathExt() {
             TempPath = EnvironmentExt.OperatingSystem switch {
-                SystemOS.Unix => Path.Combine("/", "tmp"),
-                SystemOS.MacOSX => Path.Combine("/", "tmp"),
-                SystemOS.Windows => Path.GetTempPath(),
-                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "tmp")
+                SystemOS.Unix => Path.Combine("/", "tmp", "htcsharp"),
+                SystemOS.MacOSX => Path.Combine("/", "tmp", "htcsharp"),
+                SystemOS.Windows => Path.Combine(Path.GetTempPath(), "htcsharp"),
+                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "tmp", "htcsharp")
             };
             ProgramDataPath = EnvironmentExt.OperatingSystem switch {
-                SystemOS.Unix => Path.Combine("/", "var", "share"),
-                SystemOS.MacOSX => Path.Combine("/", "Library", "Application Support"),
-                SystemOS.Windows => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "share")
+                SystemOS.Unix => Path.Combine("/", "var", "share", "htcsharp"),
+                SystemOS.MacOSX => Path.Combine("/", "Library", "Application Support", "htcsharp"),
+                SystemOS.Windows => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "htcsharp"),
+                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "share", "htcsharp")
             };
             LogPath = EnvironmentExt.OperatingSystem switch {
-                SystemOS.Unix => Path.Combine("/", "var", "log"),
-                SystemOS.MacOSX => Path.Combine("/", "Library", "Application Support"),
-                SystemOS.Windows => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "log")
+                SystemOS.Unix => Path.Combine("/", "var", "log", "htcsharp"),
+                SystemOS.MacOSX => Path.Combine("/", "Library", "Application Support", "htcsharp"),
+                SystemOS.Windows => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "htcsharp"),
+                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "log", "htcsharp")
             };
             ConfigPath = EnvironmentExt.OperatingSystem switch {
-                SystemOS.Unix => Path.Combine("/", "etc"),
-                SystemOS.MacOSX => Path.Combine("/", "Library", "Preferences"),
-                SystemOS.Windows => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "etc")
+                SystemOS.Unix => Path.Combine("/", "etc", "htcsharp"),
+                SystemOS.MacOSX => Path.Combine("/", "Library", "Preferences", "htcsharp"),
+                SystemOS.Windows => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "htcsharp"),
+                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "etc", "htcsharp")
             };
             LockFilePath = EnvironmentExt.OperatingSystem switch {
-                SystemOS.Unix => Path.Combine("/", "var", "lock"),
-                SystemOS.MacOSX => Path.Combine("/", "Library", "Application Support"),
-                SystemOS.Windows => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "lock")
+                SystemOS.Unix => Path.Combine("/", "var", "lock", "htcsharp"),
+                SystemOS.MacOSX => Path.Combine("/", "Library", "Application Support", "htcsharp"),
+                SystemOS.Windows => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "htcsharp"),
+                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "lock", "htcsharp")
             };
             CachePath = EnvironmentExt.OperatingSystem switch {
-                SystemOS.Unix => Path.Combine("/", "var", "cache"),
-                SystemOS.MacOSX => Path.Combine("/", "Library", "Caches"),
-                SystemOS.Windows => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "cache")
+                SystemOS.Unix => Path.Combine("/", "var", "cache", "htcsharp"),
+                SystemOS.MacOSX => Path.Combine("/", "Library", "Caches", "htcsharp"),
+                SystemOS.Windows => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "htcsharp"),
+                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "cache", "htcsharp")
             };
         }
 
