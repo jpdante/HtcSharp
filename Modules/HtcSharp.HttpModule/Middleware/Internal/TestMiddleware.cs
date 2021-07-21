@@ -20,7 +20,7 @@ namespace HtcSharp.HttpModule.Middleware.Internal {
         }
 
         public Task Invoke(HtcHttpContext httpContext) {
-            Logger.LogInfo($"Passing middlware: {Name}");
+            //Logger.LogInfo($"Passing middlware: {Name}");
             return _next(httpContext);
         }
 

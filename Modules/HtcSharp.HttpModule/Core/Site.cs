@@ -13,7 +13,10 @@ namespace HtcSharp.HttpModule.Core {
 
         private readonly bool _matchAny;
 
+        public SiteConfig Config { get; }
+
         public Site(SiteConfig siteConfig) {
+            Config = siteConfig;
             _domains = new HashSet<string>();
             _matchAny = false;
         }

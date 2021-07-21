@@ -13,35 +13,54 @@ namespace HtcSharp.HttpModule.Config {
 
         public List<LocationConfig> Locations { get; set; }
 
-        public SslConfig SslConfig { get; set; }
+        public List<SslConfig> SslConfigs { get; set; }
 
         private SiteConfig() {
             Hosts = new List<string>();
             Domains = new List<string>();
             Locations = new List<LocationConfig>();
+            SslConfigs = new List<SslConfig>();
         }
 
         public static SiteConfig ParseConfig(JsonElement jsonElement) {
             var site = new SiteConfig();
             foreach (var property in jsonElement.EnumerateObject()) {
                 string propertyName = property.Name.ToLower();
-                if (propertyName.Equals("hosts")) {
-                    foreach (var element in property.Value.EnumerateArray()) {
-                        string elementValue = element.GetString();
-                        if (string.IsNullOrEmpty(elementValue)) continue;
-                        site.Hosts.Add(element.GetString());
+                switch (propertyName) {
+                    case "hosts": {
+                        foreach (var element in property.Value.EnumerateArray()) {
+                            string elementValue = element.GetString();
+                            if (string.IsNullOrEmpty(elementValue)) continue;
+                            site.Hosts.Add(element.GetString());
+                        }
+
+                        break;
                     }
-                } else if (propertyName.Equals("domains")) {
-                    foreach (var element in property.Value.EnumerateArray()) {
-                        string elementValue = element.GetString();
-                        if (string.IsNullOrEmpty(elementValue)) continue;
-                        site.Domains.Add(element.GetString());
+                    case "domains": {
+                        foreach (var element in property.Value.EnumerateArray()) {
+                            string elementValue = element.GetString();
+                            if (string.IsNullOrEmpty(elementValue)) continue;
+                            site.Domains.Add(element.GetString());
+                        }
+
+                        break;
                     }
-                    break;
-                } else if (propertyName.StartsWith("location ")) {
-                    string name = property.Name.Remove(0, 9);
-                    var locationConfig = new LocationConfig(name, property.Value);
-                    site.Locations.Add(locationConfig);
+                    case "ssl": {
+                        foreach (var element in property.Value.EnumerateArray()) {
+                            site.SslConfigs.Add(SslConfig.ParseConfig(property.Value));
+                        }
+
+                        break;
+                    }
+                    default: {
+                        if (propertyName.StartsWith("location ")) {
+                            string name = property.Name.Remove(0, 9);
+                            var locationConfig = new LocationConfig(name, property.Value);
+                            site.Locations.Add(locationConfig);
+                        }
+
+                        break;
+                    }
                 }
             }
             if (site.Locations.Count == 0) {

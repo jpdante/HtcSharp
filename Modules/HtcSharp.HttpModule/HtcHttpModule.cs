@@ -20,16 +20,16 @@ namespace HtcSharp.HttpModule {
 
         public async Task Load() {
             _config = await LoadConfig();
-            _httpEngine = new HttpEngine();
+            _httpEngine = new HttpEngine(Path.GetFullPath(_config.SitesPath));
             await _httpEngine.Load();
         }
 
         public async Task Enable() {
-            //await _httpEngine.Start();
+            await _httpEngine.Start();
         }
 
         public async Task Disable() {
-            //await _httpEngine.Stop();
+            await _httpEngine.Stop();
         }
 
         public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
