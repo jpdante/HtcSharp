@@ -9,9 +9,11 @@ namespace HtcSharp.HttpModule.Config {
 
         public List<string> Domains { get; set; }
 
-        public string Root { get; set; }
+        public string RootDirectory { get; set; }
 
         public List<LocationConfig> Locations { get; set; }
+
+        public bool NoDelay { get; set; }
 
         public List<SslConfig> SslConfigs { get; set; }
 
@@ -20,6 +22,8 @@ namespace HtcSharp.HttpModule.Config {
             Domains = new List<string>();
             Locations = new List<LocationConfig>();
             SslConfigs = new List<SslConfig>();
+            NoDelay = true;
+            RootDirectory = null;
         }
 
         public static SiteConfig ParseConfig(JsonElement jsonElement) {
@@ -33,7 +37,6 @@ namespace HtcSharp.HttpModule.Config {
                             if (string.IsNullOrEmpty(elementValue)) continue;
                             site.Hosts.Add(element.GetString());
                         }
-
                         break;
                     }
                     case "domains": {
@@ -42,14 +45,20 @@ namespace HtcSharp.HttpModule.Config {
                             if (string.IsNullOrEmpty(elementValue)) continue;
                             site.Domains.Add(element.GetString());
                         }
-
                         break;
                     }
                     case "ssl": {
                         foreach (var element in property.Value.EnumerateArray()) {
                             site.SslConfigs.Add(SslConfig.ParseConfig(property.Value));
                         }
-
+                        break;
+                    }
+                    case "no-delay": {
+                        site.NoDelay = property.Value.GetBoolean();
+                        break;
+                    }
+                    case "root": {
+                        site.RootDirectory = property.Value.GetString();
                         break;
                     }
                     default: {
