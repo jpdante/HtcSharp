@@ -38,7 +38,6 @@
 
   <ItemGroup>
     <Folder Include="Abstractions\Rewriter\" />
-    <Folder Include="Core\" />
     <Folder Include="Http\" />
     <Folder Include="Mvc\" />
   </ItemGroup>

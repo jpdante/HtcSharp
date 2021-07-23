@@ -14,6 +14,7 @@ using HtcSharp.HttpModule.Logging;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ILogger = HtcSharp.Logging.ILogger;
 
@@ -24,12 +25,12 @@ namespace HtcSharp.HttpModule {
 
         private IWebHost _webHost;
 
-        private readonly List<Site> _sites;
+        private readonly SiteCollection _sites;
         private readonly string _sitesPath;
 
         public HttpEngine(string sitesPath) {
             _sitesPath = sitesPath;
-            _sites = new List<Site>();
+            _sites = new SiteCollection();
         }
 
         public async Task Load() {
@@ -42,6 +43,9 @@ namespace HtcSharp.HttpModule {
             .ConfigureLogging(logging => {
                 logging.ClearProviders();
                 logging.AddProvider(new HtcLoggerProvider(Logger));
+            })
+            .ConfigureServices(configureServices => {
+                configureServices.AddSingleton(_sites);
             })
             .Build();
             Logger.LogInfo("Loaded HttpEngine");

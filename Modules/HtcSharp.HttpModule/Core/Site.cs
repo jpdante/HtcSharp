@@ -21,6 +21,10 @@ namespace HtcSharp.HttpModule.Core {
             _matchAny = false;
         }
 
+        public void LoadConfig() {
+            
+        }
+
         public bool Match(HtcHttpContext httpContext) {
             if (_matchAny) return true;
             return !httpContext.Request.Host.HasValue || _domains.Contains(httpContext.Request.Host.Value);
