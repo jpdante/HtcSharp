@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json;
 using HtcSharp.HttpModule.Abstractions.Routing;
+using HtcSharp.HttpModule.Core;
 
 namespace HtcSharp.HttpModule.Config {
     public class LocationConfig {
@@ -16,7 +17,6 @@ namespace HtcSharp.HttpModule.Config {
             Location = "/";
             MiddlewaresConfig = new List<string> {
                 "",
-
             };
         }
 
