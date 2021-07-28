@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.Http;
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class IndexDirective : IDirective {
 
-        private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-
         private readonly DirectiveDelegate _next;
 
         private readonly List<string> _files;
@@ -49,9 +47,9 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         }
 
         public Task Invoke(HtcHttpContext httpContext) {
-            foreach (string replaceName in _files) {
-                PathString fileName = replaceName.Replace("$uri", httpContext.Request.Path.Value);
-                var staticFileContext = new StaticFileContext(httpContext, httpContext.Site.FileProvider, fileName);
+            foreach (string fileName in _files) {
+                var path = httpContext.Request.Path.Add(fileName);
+                var staticFileContext = new StaticFileContext(httpContext, httpContext.Site.FileProvider, path);
                 if (!staticFileContext.LookupFileInfo()) continue;
                 return staticFileContext.ServeStaticFile(httpContext, _next);
             }

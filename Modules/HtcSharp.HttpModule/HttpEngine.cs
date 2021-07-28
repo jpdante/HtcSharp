@@ -87,8 +87,10 @@ namespace HtcSharp.HttpModule {
 
         private void LoadDefaultDirectives() {
             _directiveManager.RegisterDirective<TestDirective>("test");
-            _directiveManager.RegisterDirective<StaticFileDirective>("try_files");
             _directiveManager.RegisterDirective<IndexDirective>("index");
+            _directiveManager.RegisterDirective<StaticFileDirective>("try_files");
+            _directiveManager.RegisterDirective<AddHeaderDirective>("add_headers");
+            _directiveManager.RegisterDirective<ListDirectoryDirective>("list_directory");
         }
 
         public void ConfigureKestrel(KestrelServerOptions options) {
