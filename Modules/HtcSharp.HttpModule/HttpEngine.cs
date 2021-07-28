@@ -9,8 +9,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Config;
 using HtcSharp.HttpModule.Core;
-using HtcSharp.HttpModule.Internal;
+using HtcSharp.HttpModule.Directive;
 using HtcSharp.HttpModule.Logging;
+using HtcSharp.HttpModule.Routing;
+using HtcSharp.HttpModule.Routing.Directives;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -26,16 +28,18 @@ namespace HtcSharp.HttpModule {
         private IWebHost _webHost;
 
         private readonly SiteCollection _sites;
+        private readonly DirectiveManager _directiveManager;
         private readonly string _sitesPath;
 
         public HttpEngine(string sitesPath) {
             _sitesPath = sitesPath;
             _sites = new SiteCollection();
+            _directiveManager = new DirectiveManager();
         }
 
         public async Task Load() {
             Logger.LogInfo("Loading HttpEngine...");
-            _sites.Clear();
+            LoadDefaultDirectives();
             await LoadSites();
             _webHost = new WebHostBuilder()
             .UseStartup<WebServer>()
@@ -46,6 +50,7 @@ namespace HtcSharp.HttpModule {
             })
             .ConfigureServices(configureServices => {
                 configureServices.AddSingleton(_sites);
+                configureServices.AddSingleton(_directiveManager);
             })
             .Build();
             Logger.LogInfo("Loaded HttpEngine");
@@ -64,6 +69,7 @@ namespace HtcSharp.HttpModule {
         }
 
         public async Task LoadSites() {
+                     _sites.Clear();
             foreach (string fileName in Directory.GetFiles(_sitesPath, "*.json", SearchOption.TopDirectoryOnly)) {
                 try {
                     await LoadSite(fileName);
@@ -78,6 +84,10 @@ namespace HtcSharp.HttpModule {
             await using var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
             var jsonDocument = await JsonDocument.ParseAsync(fs);
             _sites.Add(new Site(SiteConfig.ParseConfig(jsonDocument.RootElement)));
+        }
+
+        private void LoadDefaultDirectives() {
+            _directiveManager.RegisterDirective<TestDirective>("test");
         }
 
         public void ConfigureKestrel(KestrelServerOptions options) {

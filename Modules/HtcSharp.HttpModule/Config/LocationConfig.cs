@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using HtcSharp.HttpModule.Abstractions.Routing;
-using HtcSharp.HttpModule.Core;
 
 namespace HtcSharp.HttpModule.Config {
     public class LocationConfig {
@@ -10,14 +10,12 @@ namespace HtcSharp.HttpModule.Config {
 
         public string Location { get; set; }
 
-        public List<string> MiddlewaresConfig { get; set; }
+        public List<JsonElement> Directives { get; set; }
 
         public LocationConfig() {
             LocationType = LocationType.None;
             Location = "/";
-            MiddlewaresConfig = new List<string> {
-                "",
-            };
+            Directives = new List<JsonElement>();
         }
 
         public LocationConfig(string name, JsonElement data) {
@@ -44,12 +42,7 @@ namespace HtcSharp.HttpModule.Config {
                     Location = name;
                     break;
             }
-            MiddlewaresConfig = new List<string>();
-            foreach (var element in data.EnumerateArray()) {
-                string middlewareConfig = element.GetString();
-                if (string.IsNullOrEmpty(middlewareConfig)) continue;
-                MiddlewaresConfig.Add(middlewareConfig);
-            }
+            Directives = data.EnumerateArray().ToList();
         }
     }
 }

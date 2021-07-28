@@ -7,25 +7,24 @@ using System.Threading.Tasks;
 using HtcSharp.HttpModule.Abstractions;
 using HtcSharp.HttpModule.Http;
 using Microsoft.Extensions.DependencyInjection;
-using IMiddleware = HtcSharp.HttpModule.Abstractions.IMiddleware;
 
-namespace HtcSharp.HttpModule.Middleware {
-    public static class UseMiddlewareExtensions {
+namespace HtcSharp.HttpModule.Directive {
+    public static class UseDirectiveExtensions {
         internal const string InvokeMethodName = "Invoke";
         internal const string InvokeAsyncMethodName = "InvokeAsync";
 
-        private static readonly MethodInfo GetServiceInfo = typeof(UseMiddlewareExtensions).GetMethod(nameof(GetService), BindingFlags.NonPublic | BindingFlags.Static)!;
+        private static readonly MethodInfo GetServiceInfo = typeof(UseDirectiveExtensions).GetMethod(nameof(GetService), BindingFlags.NonPublic | BindingFlags.Static)!;
 
-        private const DynamicallyAccessedMemberTypes MiddlewareAccessibility = DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicMethods;
+        private const DynamicallyAccessedMemberTypes DirectiveAccessibility = DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicMethods;
 
-        public static IMiddlewareBuilder UseMiddleware<[DynamicallyAccessedMembers(MiddlewareAccessibility)]TMiddleware>(this IMiddlewareBuilder builder, params object[] args) {
-            return builder.UseMiddleware(typeof(TMiddleware), args);
+        public static IDirectiveBuilder UseDirective<[DynamicallyAccessedMembers(DirectiveAccessibility)]TDirective>(this IDirectiveBuilder builder, params object[] args) {
+            return builder.UseDirective(typeof(TDirective), args);
         }
 
-        public static IMiddlewareBuilder UseMiddleware(this IMiddlewareBuilder builder, [DynamicallyAccessedMembers(MiddlewareAccessibility)] Type middleware, params object[] args) {
+        public static IDirectiveBuilder UseDirective(this IDirectiveBuilder builder, [DynamicallyAccessedMembers(DirectiveAccessibility)] Type directive, params object[] args) {
             var applicationServices = builder.ApplicationServices;
             return builder.Use(next => {
-                var methods = middleware.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+                var methods = directive.GetMethods(BindingFlags.Instance | BindingFlags.Public);
                 var invokeMethods = methods.Where(m =>
                     string.Equals(m.Name, InvokeMethodName, StringComparison.Ordinal)
                     || string.Equals(m.Name, InvokeAsyncMethodName, StringComparison.Ordinal)
@@ -36,7 +35,7 @@ namespace HtcSharp.HttpModule.Middleware {
                 }
 
                 if (invokeMethods.Length == 0) {
-                    throw new InvalidOperationException($"No public '{InvokeMethodName}' or '{InvokeAsyncMethodName}' method found for middleware of type '{middleware}'.");
+                    throw new InvalidOperationException($"No public '{InvokeMethodName}' or '{InvokeAsyncMethodName}' method found for directive of type '{directive}'.");
                 }
 
                 var methodInfo = invokeMethods[0];
@@ -52,9 +51,9 @@ namespace HtcSharp.HttpModule.Middleware {
                 var ctorArgs = new object[args.Length + 1];
                 ctorArgs[0] = next;
                 Array.Copy(args, 0, ctorArgs, 1, args.Length);
-                var instance = ActivatorUtilities.CreateInstance(builder.ApplicationServices, middleware, ctorArgs);
+                var instance = ActivatorUtilities.CreateInstance(builder.ApplicationServices, directive, ctorArgs);
                 if (parameters.Length == 1) {
-                    return (RequestDelegate)methodInfo.CreateDelegate(typeof(RequestDelegate), instance);
+                    return (DirectiveDelegate) methodInfo.CreateDelegate(typeof(DirectiveDelegate), instance);
                 }
 
                 var factory = Compile<object>(methodInfo, parameters);
@@ -71,11 +70,11 @@ namespace HtcSharp.HttpModule.Middleware {
         }
 
         private static Func<T, HtcHttpContext, IServiceProvider, Task> Compile<T>(MethodInfo methodInfo, ParameterInfo[] parameters) {
-            var middleware = typeof(T);
+            var directive = typeof(T);
 
             var httpContextArg = Expression.Parameter(typeof(HtcHttpContext), "httpContext");
             var providerArg = Expression.Parameter(typeof(IServiceProvider), "serviceProvider");
-            var instanceArg = Expression.Parameter(middleware, "middleware");
+            var instanceArg = Expression.Parameter(directive, "directive");
 
             var methodArguments = new Expression[parameters.Length];
             methodArguments[0] = httpContextArg;
@@ -96,22 +95,22 @@ namespace HtcSharp.HttpModule.Middleware {
                 methodArguments[i] = Expression.Convert(getServiceCall, parameterType);
             }
 
-            Expression middlewareInstanceArg = instanceArg;
+            Expression directiveInstanceArg = instanceArg;
             if (methodInfo.DeclaringType != null && methodInfo.DeclaringType != typeof(T)) {
-                middlewareInstanceArg = Expression.Convert(middlewareInstanceArg, methodInfo.DeclaringType);
+                directiveInstanceArg = Expression.Convert(directiveInstanceArg, methodInfo.DeclaringType);
             }
 
-            var body = Expression.Call(middlewareInstanceArg, methodInfo, methodArguments);
+            var body = Expression.Call(directiveInstanceArg, methodInfo, methodArguments);
 
             var lambda = Expression.Lambda<Func<T, HtcHttpContext, IServiceProvider, Task>>(body, instanceArg, httpContextArg, providerArg);
 
             return lambda.Compile();
         }
 
-        private static object GetService(IServiceProvider sp, Type type, Type middleware) {
+        private static object GetService(IServiceProvider sp, Type type, Type directive) {
             var service = sp.GetService(type);
             if (service == null) {
-                throw new InvalidOperationException($"Unable to resolve service for type '{type}' while attempting to Invoke middleware '{middleware}'.");
+                throw new InvalidOperationException($"Unable to resolve service for type '{type}' while attempting to Invoke directive '{directive}'.");
             }
 
             return service;

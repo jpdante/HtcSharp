@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 
-namespace HtcSharp.HttpModule.StaticFiles {
+namespace HtcSharp.HttpModule.Http {
     public static class ContentTypeExtensions {
         private static readonly ConcurrentDictionary<string, int> ValueLookup;
         private static readonly ConcurrentDictionary<string, int> ValueCache;

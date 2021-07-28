@@ -2,7 +2,7 @@
 using HtcSharp.HttpModule.Http;
 
 namespace HtcSharp.HttpModule.Abstractions {
-    public interface IMiddleware {
+    public interface IDirective {
 
         public Task Invoke(HtcHttpContext httpContext);
 

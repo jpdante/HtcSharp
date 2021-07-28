@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
+using HtcSharp.HttpModule.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Http.Features;
@@ -11,8 +12,9 @@ namespace HtcSharp.HttpModule.Http {
 
         private readonly HttpContext _httpContext;
 
-        public HtcHttpContext(HttpContext httpContext) {
+        public HtcHttpContext(HttpContext httpContext, IReadOnlySite site) {
             _httpContext = httpContext;
+            Site = site;
         }
 
         public override IFeatureCollection Features => _httpContext.Features;
@@ -59,6 +61,8 @@ namespace HtcSharp.HttpModule.Http {
             get => _httpContext.Session;
             set => _httpContext.Session = value;
         }
+
+        public IReadOnlySite Site { get; }
 
         public override void Abort() => _httpContext.Abort();
     }

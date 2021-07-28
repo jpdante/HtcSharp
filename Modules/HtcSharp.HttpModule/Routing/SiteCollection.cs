@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace HtcSharp.HttpModule.Core {
+namespace HtcSharp.HttpModule.Routing {
     public class SiteCollection : Collection<Site> {
         
     }

@@ -5,18 +5,17 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 
-namespace HtcSharp.HttpModule.StaticFiles {
+/*namespace HtcSharp.HttpModule.StaticFiles {
     internal struct StaticFileContext {
         private readonly HttpContext _context;
         private readonly HttpRequest _request;
         private readonly HttpResponse _response;
-        private readonly ILogger _logger;
         private readonly IFileProvider _fileProvider;
         private readonly string _method;
         private readonly string _contentType;
@@ -38,11 +37,10 @@ namespace HtcSharp.HttpModule.StaticFiles {
 
         private RequestType _requestType;
 
-        public StaticFileContext(HttpContext context, ILogger logger, IFileProvider fileProvider, string contentType, PathString subPath) {
+        public StaticFileContext(HttpContext context, IFileProvider fileProvider, string contentType, PathString subPath) {
             _context = context;
             _request = context.Request;
             _response = context.Response;
-            _logger = logger;
             _fileProvider = fileProvider;
             _method = _request.Method;
             _contentType = contentType;
@@ -194,7 +192,7 @@ namespace HtcSharp.HttpModule.StaticFiles {
                 return;
             }
 
-            (var isRangeRequest, var range) = RangeHelper.ParseRange(_context, RequestHeaders, _length, _logger);
+            (var isRangeRequest, var range) = RangeHelper.ParseRange(_context, RequestHeaders, _length);
 
             _range = range;
             IsRangeRequest = isRangeRequest;
@@ -221,8 +219,6 @@ namespace HtcSharp.HttpModule.StaticFiles {
                 // it is not returned for 304, 412, and 416
                 _response.ContentLength = _length;
             }
-
-            _options.OnPrepareResponse(new StaticFileResponseContext(_context, _fileInfo));
         }
 
         public PreconditionState GetPreconditionState()
@@ -242,11 +238,10 @@ namespace HtcSharp.HttpModule.StaticFiles {
         public Task SendStatusAsync(int statusCode) {
             ApplyResponseHeaders(statusCode);
 
-            _logger.Handled(statusCode, SubPath);
             return Task.CompletedTask;
         }
 
-        public async Task ServeStaticFile(HttpContext context, RequestDelegate next) {
+        public async Task ServeStaticFile(HtcHttpContext context, HtcSharp.HttpModule.Middleware.RequestDelegate next) {
             ComprehendRequestHeaders();
             switch (GetPreconditionState()) {
                 case PreconditionState.Unspecified:
@@ -263,7 +258,6 @@ namespace HtcSharp.HttpModule.StaticFiles {
                         }
 
                         await SendAsync();
-                        _logger.FileServed(SubPath, PhysicalPath);
                         return;
                     } catch (FileNotFoundException) {
                         context.Response.Clear();
@@ -272,11 +266,9 @@ namespace HtcSharp.HttpModule.StaticFiles {
                     await next(context);
                     return;
                 case PreconditionState.NotModified:
-                    _logger.FileNotModified(SubPath);
                     await SendStatusAsync(StatusCodes.Status304NotModified);
                     return;
                 case PreconditionState.PreconditionFailed:
-                    _logger.PreconditionFailed(SubPath);
                     await SendStatusAsync(StatusCodes.Status412PreconditionFailed);
                     return;
                 default:
@@ -287,13 +279,11 @@ namespace HtcSharp.HttpModule.StaticFiles {
         }
 
         public async Task SendAsync() {
-            SetCompressionMode();
             ApplyResponseHeaders(StatusCodes.Status200OK);
             try {
                 await _context.Response.SendFileAsync(_fileInfo, 0, _length, _context.RequestAborted);
-            } catch (OperationCanceledException ex) {
+            } catch (OperationCanceledException) {
                 // Don't throw this exception, it's most likely caused by the client disconnecting.
-                _logger.WriteCancelled(ex);
             }
         }
 
@@ -302,26 +292,20 @@ namespace HtcSharp.HttpModule.StaticFiles {
             if (_range == null) {
                 // 14.16 Content-Range - A server sending a response with status code 416 (Requested range not satisfiable)
                 // SHOULD include a Content-Range field with a byte-range-resp-spec of "*". The instance-length specifies
-                // the current length of the selected resource.  e.g. */length
+                // the current length of the selected resource.  e.g. #1#length
                 ResponseHeaders.ContentRange = new ContentRangeHeaderValue(_length);
                 ApplyResponseHeaders(StatusCodes.Status416RangeNotSatisfiable);
-
-                _logger.RangeNotSatisfiable(SubPath);
                 return;
             }
 
             ResponseHeaders.ContentRange = ComputeContentRange(_range, out var start, out var length);
             _response.ContentLength = length;
-            SetCompressionMode();
             ApplyResponseHeaders(StatusCodes.Status206PartialContent);
 
             try {
-                var logPath = !string.IsNullOrEmpty(_fileInfo.PhysicalPath) ? _fileInfo.PhysicalPath : SubPath;
-                _logger.SendingFileRange(_response.Headers[HeaderNames.ContentRange], logPath);
                 await _context.Response.SendFileAsync(_fileInfo, start, length, _context.RequestAborted);
-            } catch (OperationCanceledException ex) {
+            } catch (OperationCanceledException) {
                 // Don't throw this exception, it's most likely caused by the client disconnecting.
-                _logger.WriteCancelled(ex);
             }
         }
 
@@ -331,14 +315,6 @@ namespace HtcSharp.HttpModule.StaticFiles {
             long end = range.To.Value;
             length = end - start + 1;
             return new ContentRangeHeaderValue(start, end, _length);
-        }
-
-        // Only called when we expect to serve the body.
-        private void SetCompressionMode() {
-            var responseCompressionFeature = _context.Features.Get<IHttpsCompressionFeature>();
-            if (responseCompressionFeature != null) {
-                responseCompressionFeature.Mode = _options.HttpsCompression;
-            }
         }
 
         internal enum PreconditionState : byte {
@@ -356,4 +332,4 @@ namespace HtcSharp.HttpModule.StaticFiles {
             IsRange = 0b_100,
         }
     }
-}
+}*/

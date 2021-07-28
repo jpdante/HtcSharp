@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Http;
 using Microsoft.AspNetCore.Http;
@@ -52,8 +52,15 @@ namespace HtcSharp.HttpModule.StaticFiles {
             return true;
         }
 
-        public async Task TryServeFile(HtcHttpContext httpContext, PathString subPath, string contentType) {
-            
+        public Task TryServeFile(HtcHttpContext httpContext, PathString subPath, string contentType) {
+            var fileContext = new StaticFileContext(httpContext, httpContext.Site.FileProvider, contentType, subPath);
+            if (!fileContext.LookupFileInfo()) {
+            } else {
+                // If we get here, we can try to serve the file
+                return fileContext.ServeStaticFile(httpContext, _next);
+            }
+
+            return _next(httpContext);
         }
     }
-}
+}*/
