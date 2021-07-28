@@ -1,10 +1,7 @@
-﻿using HtcSharp.HttpModule.Http;
-using HtcSharp.HttpModule.Routing;
-
-namespace HtcSharp.HttpModule.Mvc {
+﻿namespace HtcSharp.HttpModule.Mvc {
     public class HttpDeleteAttribute : HttpMethodAttribute {
 
-        public HttpDeleteAttribute(string path, ContentType contentType = ContentType.DEFAULT, bool requireSession = false) : base("DELETE", path, contentType, requireSession) { }
+        public HttpDeleteAttribute(string path) : base("DELETE", path) { }
 
     }
 }

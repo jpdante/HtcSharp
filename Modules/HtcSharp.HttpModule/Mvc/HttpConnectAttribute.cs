@@ -1,10 +1,7 @@
-﻿using HtcSharp.HttpModule.Http;
-using HtcSharp.HttpModule.Routing;
-
-namespace HtcSharp.HttpModule.Mvc {
+﻿namespace HtcSharp.HttpModule.Mvc {
     public class HttpConnectAttribute : HttpMethodAttribute {
 
-        public HttpConnectAttribute(string path, ContentType contentType = ContentType.DEFAULT, bool requireSession = false) : base("CONNECT", path, contentType, requireSession) { }
+        public HttpConnectAttribute(string path) : base("CONNECT", path) { }
 
     }
 }

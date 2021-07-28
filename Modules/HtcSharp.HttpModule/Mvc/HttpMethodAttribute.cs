@@ -1,6 +1,4 @@
 ﻿using System;
-using HtcSharp.HttpModule.Http;
-using HtcSharp.HttpModule.Routing;
 
 namespace HtcSharp.HttpModule.Mvc {
     public class HttpMethodAttribute : Attribute {
@@ -9,15 +7,9 @@ namespace HtcSharp.HttpModule.Mvc {
 
         public string Path { get; }
 
-        public string RequireContentType { get; }
-
-        public bool RequireSession { get; }
-
-        public HttpMethodAttribute(string method, string path, ContentType requireContentType, bool requireSession) {
+        public HttpMethodAttribute(string method, string path) {
             Method = method;
             Path = path;
-            RequireContentType = requireContentType == ContentType.DEFAULT ? null : requireContentType.ToValue();
-            RequireSession = requireSession;
         }
     }
 }
