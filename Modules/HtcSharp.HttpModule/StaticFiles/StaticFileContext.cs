@@ -5,22 +5,22 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Directive;
 using HtcSharp.HttpModule.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
 
-/*namespace HtcSharp.HttpModule.StaticFiles {
+namespace HtcSharp.HttpModule.StaticFiles {
     internal struct StaticFileContext {
         private readonly HttpContext _context;
         private readonly HttpRequest _request;
         private readonly HttpResponse _response;
         private readonly IFileProvider _fileProvider;
-        private readonly string _method;
-        private readonly string _contentType;
 
         private IFileInfo _fileInfo;
+        private string _contentType;
         private EntityTagHeaderValue _etag;
         private RequestHeaders _requestHeaders;
         private ResponseHeaders _responseHeaders;
@@ -37,18 +37,18 @@ using Microsoft.Net.Http.Headers;
 
         private RequestType _requestType;
 
-        public StaticFileContext(HttpContext context, IFileProvider fileProvider, string contentType, PathString subPath) {
+        public StaticFileContext(HttpContext context, IFileProvider fileProvider, PathString subPath) {
             _context = context;
             _request = context.Request;
             _response = context.Response;
             _fileProvider = fileProvider;
-            _method = _request.Method;
-            _contentType = contentType;
+            string method = _request.Method;
             _fileInfo = null;
             _etag = null;
             _requestHeaders = null;
             _responseHeaders = null;
             _range = null;
+            _contentType = ContentType.DEFAULT.ToValue();
 
             _length = 0;
             _subPath = subPath;
@@ -58,9 +58,9 @@ using Microsoft.Net.Http.Headers;
             _ifModifiedSinceState = PreconditionState.Unspecified;
             _ifUnmodifiedSinceState = PreconditionState.Unspecified;
 
-            if (HttpMethods.IsGet(_method)) {
+            if (HttpMethods.IsGet(method)) {
                 _requestType = RequestType.IsGet;
-            } else if (HttpMethods.IsHead(_method)) {
+            } else if (HttpMethods.IsHead(method)) {
                 _requestType = RequestType.IsHead;
             } else {
                 _requestType = RequestType.Unspecified;
@@ -94,6 +94,7 @@ using Microsoft.Net.Http.Headers;
             _fileInfo = _fileProvider.GetFileInfo(_subPath.Value);
             if (_fileInfo.Exists) {
                 _length = _fileInfo.Length;
+                _contentType = ContentType.DEFAULT.FromExtension(_fileInfo.PhysicalPath).ToValue();
 
                 DateTimeOffset last = _fileInfo.LastModified;
                 // Truncate to the second.
@@ -241,7 +242,7 @@ using Microsoft.Net.Http.Headers;
             return Task.CompletedTask;
         }
 
-        public async Task ServeStaticFile(HtcHttpContext context, HtcSharp.HttpModule.Middleware.RequestDelegate next) {
+        public async Task ServeStaticFile(HtcHttpContext context, DirectiveDelegate next) {
             ComprehendRequestHeaders();
             switch (GetPreconditionState()) {
                 case PreconditionState.Unspecified:
@@ -332,4 +333,4 @@ using Microsoft.Net.Http.Headers;
             IsRange = 0b_100,
         }
     }
-}*/
+}

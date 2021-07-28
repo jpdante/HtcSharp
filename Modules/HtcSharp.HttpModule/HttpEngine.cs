@@ -22,7 +22,6 @@ using ILogger = HtcSharp.Logging.ILogger;
 
 namespace HtcSharp.HttpModule {
     public class HttpEngine {
-
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private IWebHost _webHost;
@@ -42,17 +41,17 @@ namespace HtcSharp.HttpModule {
             LoadDefaultDirectives();
             await LoadSites();
             _webHost = new WebHostBuilder()
-            .UseStartup<WebServer>()
-            .UseKestrel(ConfigureKestrel)
-            .ConfigureLogging(logging => {
-                logging.ClearProviders();
-                logging.AddProvider(new HtcLoggerProvider(Logger));
-            })
-            .ConfigureServices(configureServices => {
-                configureServices.AddSingleton(_sites);
-                configureServices.AddSingleton(_directiveManager);
-            })
-            .Build();
+                .UseStartup<WebServer>()
+                .UseKestrel(ConfigureKestrel)
+                .ConfigureLogging(logging => {
+                    logging.ClearProviders();
+                    logging.AddProvider(new HtcLoggerProvider(Logger));
+                })
+                .ConfigureServices(configureServices => {
+                    configureServices.AddSingleton(_sites);
+                    configureServices.AddSingleton(_directiveManager);
+                })
+                .Build();
             Logger.LogInfo("Loaded HttpEngine");
         }
 
@@ -69,7 +68,7 @@ namespace HtcSharp.HttpModule {
         }
 
         public async Task LoadSites() {
-                     _sites.Clear();
+            _sites.Clear();
             foreach (string fileName in Directory.GetFiles(_sitesPath, "*.json", SearchOption.TopDirectoryOnly)) {
                 try {
                     await LoadSite(fileName);
@@ -88,6 +87,8 @@ namespace HtcSharp.HttpModule {
 
         private void LoadDefaultDirectives() {
             _directiveManager.RegisterDirective<TestDirective>("test");
+            _directiveManager.RegisterDirective<StaticFileDirective>("try_files");
+            _directiveManager.RegisterDirective<IndexDirective>("index");
         }
 
         public void ConfigureKestrel(KestrelServerOptions options) {
@@ -107,10 +108,12 @@ namespace HtcSharp.HttpModule {
                         foreach (var sslConfig in site.Config.SslConfigs) {
                             endPoint.AddCertificate(sslConfig.GetCertificate());
                         }
+
                         ipEndPointList.Add(endPoint);
                     }
                 }
             }
+
             foreach (var endPoint in ipEndPointList) {
                 options.Listen(endPoint.IPAddress, endPoint.Port, listenOptions => {
                     if (endPoint.Certificates.Count > 0) {
@@ -121,8 +124,9 @@ namespace HtcSharp.HttpModule {
                     } else {
                         Logger.LogInfo($"Listening http on '{endPoint.IPAddress}:{endPoint.Port}'");
                     }
+
                     listenOptions.NoDelay = endPoint.NoDelay;
-                });   
+                });
             }
         }
 
@@ -132,12 +136,12 @@ namespace HtcSharp.HttpModule {
                 config = ipEndPointConfig;
                 return true;
             }
+
             config = null;
             return false;
         }
 
         private class IPEndPointConfig {
-
             public IPAddress IPAddress { get; }
 
             public int Port { get; }
