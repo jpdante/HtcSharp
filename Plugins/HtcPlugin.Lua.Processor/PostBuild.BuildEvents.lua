@@ -3,46 +3,49 @@ require("lua.io")
 
 -- Filename and directory blacklist
 function isBlackListed(path)
-  if path == [[CorePluginLoader.dll]] then return true
-  elseif path == [[HtcSharp.Core.dll]] then return true
+  if path == [[HtcSharp.Core.dll]] then return true
   elseif path == [[HtcSharp.Core.pdb]] then return true
-  elseif path == [[runtimes]] then return true
-  elseif path == [[runtimes\win]] then return true
-  elseif path == [[runtimes\win\lib]] then return true
-  elseif path == [[runtimes\win\lib\netcoreapp2.0]] then return true
-  elseif path == [[runtimes\win\lib\netcoreapp2.0\System.Diagnostics.EventLog.dll]] then return true
+  elseif path == [[HtcSharp.Logging.dll]] then return true
+  elseif path == [[HtcSharp.Logging.pdb]] then return true
+  elseif path == [[HtcSharp.Abstractions.dll]] then return true
+  elseif path == [[HtcSharp.Abstractions.pdb]] then return true
+  elseif path == [[HtcSharp.Shared.dll]] then return true
+  elseif path == [[HtcSharp.Shared.pdb]] then return true
   elseif path == [[HtcSharp.HttpModule.module.dll]] then return true
   elseif path == [[HtcSharp.HttpModule.module.pdb]] then return true
+  elseif path == [[Microsoft.AspNetCore.Connections.Abstractions.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Hosting.Abstractions.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Hosting.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Hosting.Server.Abstractions.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Http.Abstractions.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Http.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Http.Extensions.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Http.Features.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Server.Kestrel.Core.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Server.Kestrel.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Server.Kestrel.Https.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Server.Kestrel.Transport.Abstractions.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.dll]] then return true
+  elseif path == [[Microsoft.AspNetCore.WebUtilities.dll]] then return true
   elseif path == [[Microsoft.Extensions.Configuration.Abstractions.dll]] then return true
   elseif path == [[Microsoft.Extensions.Configuration.Binder.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Configuration.CommandLine.dll]] then return true
   elseif path == [[Microsoft.Extensions.Configuration.dll]] then return true
   elseif path == [[Microsoft.Extensions.Configuration.EnvironmentVariables.dll]] then return true
   elseif path == [[Microsoft.Extensions.Configuration.FileExtensions.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Configuration.Json.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Configuration.UserSecrets.dll]] then return true
   elseif path == [[Microsoft.Extensions.DependencyInjection.Abstractions.dll]] then return true
-  elseif path == [[Microsoft.Extensions.DependencyInjection]] then return true
+  elseif path == [[Microsoft.Extensions.DependencyInjection.dll]] then return true
   elseif path == [[Microsoft.Extensions.FileProviders.Abstractions.dll]] then return true
   elseif path == [[Microsoft.Extensions.FileProviders.Physical.dll]] then return true
   elseif path == [[Microsoft.Extensions.FileSystemGlobbing.dll]] then return true
   elseif path == [[Microsoft.Extensions.Hosting.Abstractions.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Hosting.dll]] then return true
   elseif path == [[Microsoft.Extensions.Logging.Abstractions.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Logging.Configuration.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Logging.Console.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Logging.Debug.dll]] then return true
   elseif path == [[Microsoft.Extensions.Logging.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Logging.EventLog.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Logging.EventSource.dll]] then return true
   elseif path == [[Microsoft.Extensions.ObjectPool.dll]] then return true
-  elseif path == [[Microsoft.Extensions.Options.ConfigurationExtensions.dll]] then return true
   elseif path == [[Microsoft.Extensions.Options.dll]] then return true
   elseif path == [[Microsoft.Extensions.Primitives.dll]] then return true
-  elseif path == [[Newtonsoft.Json.dll]] then return true
-  elseif path == [[System.Diagnostics.EventLog.dll]] then return true
+  elseif path == [[Microsoft.Net.Http.Headers.dll]] then return true
   elseif path == [[System.IO.Pipelines.dll]] then return true
-  elseif path == [[Microsoft.Extensions.DependencyInjection.dll]] then return true
+  elseif path == [[ref]] then return true
   else return false
   end
 end
@@ -50,7 +53,7 @@ end
 print("[LuaBuildEvents] Running in " .. args[2] .. " Mode\n")
 
 -- Create base directory
-pluginsPath = Path.combine(args[3], [[HtcSharp.Server/bin/]] .. args[6] .. "/" .. args[2] .. [[/plugins/lua]])
+pluginsPath = Path.combine(args[3], [[HtcSharp/bin/]] .. args[6] .. "/" .. args[2] .. [[/plugins/lua]])
 if Directory.exists(pluginsPath) == false then
   Directory.createDirectory(pluginsPath)
 end
@@ -61,7 +64,7 @@ outputDirectories = Directory.getDirectories(outputDirectory, "*", SearchOption.
 for key,value in ipairs(outputDirectories) do
   directoryReplace = value:gsub(outputDirectory, "")
   if isBlackListed(directoryReplace) == true then
-    print("Blacklisted directory: " .. Path.getFileName(directoryReplace) .. "\n")
+    print("Blacklisted directory: " .. value .. "\n")
     goto continue
   end
   fixedDirectory = Path.combine(pluginsPath, directoryReplace)
@@ -69,11 +72,26 @@ for key,value in ipairs(outputDirectories) do
     print("Creating directory: " .. fixedDirectory .. "\n")
     Directory.createDirectory(fixedDirectory)
   end
+
+  -- Copy files
+  outputFiles = Directory.getFiles(value, "*.*", SearchOption.TopDirectoryOnly)
+  for key2,value2 in ipairs(outputFiles) do
+    fileNameReplace = value2:gsub(outputDirectory, "")
+    if isBlackListed(Path.getFileName(fileNameReplace)) == true then
+      print("Blacklisted file: " .. Path.getFileName(fileNameReplace) .. "\n")
+      goto continue2
+    end
+    fixedFileName = Path.combine(pluginsPath, fileNameReplace)
+    print("Copying file: " .. fixedFileName .. "\n")
+    File.copy(value2, fixedFileName, true)
+    ::continue2::
+  end
+
   ::continue::
 end
 
 -- Copy files
-outputFiles = Directory.getFiles(outputDirectory, "*.*", SearchOption.AllDirectories)
+outputFiles = Directory.getFiles(outputDirectory, "*.*", SearchOption.TopDirectoryOnly)
 for key,value in ipairs(outputFiles) do
   fileNameReplace = value:gsub(outputDirectory, "")
   if isBlackListed(Path.getFileName(fileNameReplace)) == true then
@@ -85,5 +103,6 @@ for key,value in ipairs(outputFiles) do
   File.copy(value, fixedFileName, true)
   ::continue::
 end
+
 
 print("[LuaBuildEvents] Finishing HtcPlugin.Lua.Processor PostBuild\n")

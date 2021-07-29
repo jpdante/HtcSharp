@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>HtcPlugin.Lua.Processor.plugin</AssemblyName>
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -13,7 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\HtcSharp.Core\HtcSharp.Core.csproj" />
+    <ProjectReference Include="..\..\HtcSharp.Abstractions\HtcSharp.Abstractions.csproj" />
+    <ProjectReference Include="..\..\HtcSharp.Logging\HtcSharp.Logging.csproj" />
+    <ProjectReference Include="..\..\HtcSharp.Shared\HtcSharp.Shared.csproj" />
     <ProjectReference Include="..\..\Modules\HtcSharp.HttpModule\HtcSharp.HttpModule.csproj" />
   </ItemGroup>
 
