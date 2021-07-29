@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Abstractions;
@@ -26,34 +25,40 @@ namespace HtcSharp.HttpModule.Routing.Directives {
         public async Task Invoke(HtcHttpContext httpContext) {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
-            var directoryContents = httpContext.Site.FileProvider.GetDirectoryContents(httpContext.Request.Path);
+            var directoryContents = httpContext.Site.FileProvider.GetDirectoryContents(httpContext.Request.Path.Value);
             if (directoryContents.Exists) {
                 httpContext.Response.StatusCode = 200;
-                await httpContext.Response.WriteAsync(_templete.Header.Replace("%RelativePath%", httpContext.Request.Path));
+                await httpContext.Response.WriteAsync(_templete.Header.Replace("$RelativePath", httpContext.Request.Path.Value));
                 if (httpContext.Request.Path.Value.Length > 1) {
                     await httpContext.Response.WriteAsync(_templete.DirectoryRow
-                        .Replace("%RelativePath%", "..")
-                        .Replace("%FileName%", "..")
+                        .Replace("$RelativePath", "..")
+                        .Replace("$FileName", "..")
+                        .Replace("$Size", "-")
+                        .Replace("$SizeLong", "-1")
+                        .Replace("$LastModified", "-")
                     );
                 }
                 foreach (var fileInfo in directoryContents) {
                     if (fileInfo.IsDirectory) {
                         await httpContext.Response.WriteAsync(_templete.DirectoryRow
-                            .Replace("%RelativePath%", fileInfo.Name)
-                            .Replace("%FileName%", $"{fileInfo.Name}/")
+                            .Replace("$RelativePath", $"{fileInfo.Name}/")
+                            .Replace("$FileName", $"{fileInfo.Name}/")
+                            .Replace("$SizeLong", "-1")
+                            .Replace("$Size", "-")
+                            .Replace("$LastModified", fileInfo.LastModified.DateTime.ToString("dd/MM/yyy HH:mm:ss", CultureInfo.InvariantCulture))
                         );
                     } else {
                         await httpContext.Response.WriteAsync(_templete.FileRow
-                            .Replace("%RelativePath%", fileInfo.Name)
-                            .Replace("%FileName%", fileInfo.Name)
-                            .Replace("%SizeLong%", fileInfo.Length.ToString())
-                            .Replace("%Size%", FormatSize(fileInfo.Length))
-                            .Replace("%LastModified%", fileInfo.LastModified.ToString(CultureInfo.InvariantCulture))
+                            .Replace("$RelativePath", $"{fileInfo.Name}")
+                            .Replace("$FileName", fileInfo.Name)
+                            .Replace("$SizeLong", fileInfo.Length.ToString())
+                            .Replace("$Size", FormatSize(fileInfo.Length))
+                            .Replace("$LastModified", fileInfo.LastModified.DateTime.ToString("dd/MM/yyy HH:mm:ss", CultureInfo.InvariantCulture))
                         );
                     }
                 }
                 stopWatch.Stop();
-                await httpContext.Response.WriteAsync(_templete.Footer.Replace("%RenderTime%", $"{stopWatch.ElapsedMilliseconds} ms"));
+                await httpContext.Response.WriteAsync(_templete.Footer.Replace("$RenderTime", $"{stopWatch.ElapsedMilliseconds} ms"));
                 return;
             }
             await _next(httpContext);

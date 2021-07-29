@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Abstractions;
 using HtcSharp.HttpModule.Directive;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.StaticFiles;
-using HtcSharp.Logging;
 using Microsoft.AspNetCore.Http;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
     public class StaticFileDirective : IDirective {
-
-        private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private readonly DirectiveDelegate _next;
 
