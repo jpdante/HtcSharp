@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using HtcSharp.HttpModule.Abstractions;
 using HtcSharp.HttpModule.Abstractions.Routing;
 using HtcSharp.HttpModule.Config;
 using HtcSharp.HttpModule.Directive;
@@ -10,7 +8,7 @@ using HtcSharp.HttpModule.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HtcSharp.HttpModule.Routing {
+namespace HtcSharp.HttpModule.Core {
     public class SiteLocation {
 
         private readonly DirectiveDelegate _directiveDelegate;

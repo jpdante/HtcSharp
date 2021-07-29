@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading.Tasks;
+using HtcSharp.Abstractions;
+using HtcSharp.HttpModule.Abstractions;
 using HtcSharp.HttpModule.Config;
 using HtcSharp.HttpModule.Core;
+using HtcSharp.HttpModule.Core.Exceptions;
 using HtcSharp.HttpModule.Directive;
 using HtcSharp.HttpModule.Logging;
-using HtcSharp.HttpModule.Routing;
+using HtcSharp.HttpModule.Mvc;
 using HtcSharp.HttpModule.Routing.Directives;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Hosting;
@@ -24,22 +26,25 @@ namespace HtcSharp.HttpModule {
     public class HttpEngine {
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        private IWebHost _webHost;
+        private static HttpEngine _httpEngine;
 
+        private readonly string _sitesPath;
         private readonly SiteCollection _sites;
         private readonly DirectiveManager _directiveManager;
-        private readonly string _sitesPath;
+
+        private IWebHost _webHost;
 
         public HttpEngine(string sitesPath) {
             _sitesPath = sitesPath;
             _sites = new SiteCollection();
             _directiveManager = new DirectiveManager();
+            _httpEngine = this;
         }
 
         public async Task Load() {
             Logger.LogInfo("Loading HttpEngine...");
             LoadDefaultDirectives();
-            await LoadSites();
+            await LoadSites(_sitesPath);
             _webHost = new WebHostBuilder()
                 .UseStartup<WebServer>()
                 .UseKestrel(ConfigureKestrel)
@@ -67,9 +72,9 @@ namespace HtcSharp.HttpModule {
             Logger.LogInfo("Stopped HttpEngine");
         }
 
-        public async Task LoadSites() {
+        public async Task LoadSites(string sitesPath) {
             _sites.Clear();
-            foreach (string fileName in Directory.GetFiles(_sitesPath, "*.json", SearchOption.TopDirectoryOnly)) {
+            foreach (string fileName in Directory.GetFiles(sitesPath, "*.json", SearchOption.TopDirectoryOnly)) {
                 try {
                     await LoadSite(fileName);
                 } catch (Exception ex) {
@@ -78,7 +83,7 @@ namespace HtcSharp.HttpModule {
             }
         }
 
-        public async Task LoadSite(string filename) {
+        private async Task LoadSite(string filename) {
             Logger.LogInfo($"Loading site '{Path.GetFileName(filename)}'...");
             await using var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
             var jsonDocument = await JsonDocument.ParseAsync(fs);
@@ -88,12 +93,47 @@ namespace HtcSharp.HttpModule {
         private void LoadDefaultDirectives() {
             _directiveManager.RegisterDirective<TestDirective>("test");
             _directiveManager.RegisterDirective<IndexDirective>("index");
+
+            //_directiveManager.RegisterDirective<MvcDirective>("try_mvc");
+            _directiveManager.RegisterDirective<PagesDirective>("try_pages");
             _directiveManager.RegisterDirective<StaticFileDirective>("try_files");
+            _directiveManager.RegisterDirective<FileExtensionDirective>("try_extensions");
+
             _directiveManager.RegisterDirective<AddHeaderDirective>("add_headers");
             _directiveManager.RegisterDirective<ListDirectoryDirective>("list_directory");
         }
 
-        public void ConfigureKestrel(KestrelServerOptions options) {
+        #region Static
+
+        public static void RegisterPage(IPlugin plugin, string path, IHttpPage page) {
+            if (_httpEngine == null) throw new HttpEngineNotInitializedException();
+            foreach (var site in _httpEngine._sites) {
+                if (!site.HasPermission(plugin)) continue;
+                site.RegisterPage(path, page);
+            }
+        }
+
+        public static void RegisterMvc(IPlugin plugin, HttpMvc mvc) {
+            if (_httpEngine == null) throw new HttpEngineNotInitializedException();
+            foreach (var site in _httpEngine._sites) {
+                if (!site.HasPermission(plugin)) continue;
+                //site.RegisterMvcPage(path, mvc);
+            }
+        }
+
+        public static void RegisterExtensionProcessor(IPlugin plugin, string path, IExtensionProcessor extensionProcessor) {
+            if (_httpEngine == null) throw new HttpEngineNotInitializedException();
+            foreach (var site in _httpEngine._sites) {
+                if (!site.HasPermission(plugin)) continue;
+                site.RegisterExtensionProcessor(path, extensionProcessor);
+            }
+        }
+
+        #endregion
+
+        #region Configure Kestrel
+
+        private void ConfigureKestrel(KestrelServerOptions options) {
             var ipEndPointList = new List<IPEndPointConfig>();
             foreach (var site in _sites) {
                 foreach (string host in site.Config.Hosts) {
@@ -167,5 +207,7 @@ namespace HtcSharp.HttpModule {
                 return IPAddress.ToString().Equals(address) && Port == port;
             }
         }
+
+        #endregion
     }
 }

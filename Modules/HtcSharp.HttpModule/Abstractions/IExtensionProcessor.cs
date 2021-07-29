@@ -3,9 +3,9 @@ using HtcSharp.HttpModule.Directive;
 using HtcSharp.HttpModule.Http;
 
 namespace HtcSharp.HttpModule.Abstractions {
-    public interface IHttpFileExtension {
+    public interface IExtensionProcessor {
         
-        Task OnHttpFileExtension(DirectiveDelegate next, HtcHttpContext httpContext, string fileName, string extension);
+        Task OnHttpExtensionProcess(DirectiveDelegate next, HtcHttpContext httpContext, string extension);
 
     }
 }

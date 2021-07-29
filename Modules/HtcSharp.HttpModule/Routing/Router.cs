@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Core;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Http;
