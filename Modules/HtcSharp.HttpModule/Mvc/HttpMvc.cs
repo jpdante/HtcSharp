@@ -42,26 +42,26 @@ namespace HtcSharp.HttpModule.Mvc {
             }
         }
 
-        public virtual Task LoadSession(HttpContext httpContext) {
+        protected virtual Task LoadSession(HttpContext httpContext) {
             return Task.CompletedTask;
         }
 
-        public virtual async Task ThrowInvalidSession(HttpContext httpContext) {
+        protected virtual async Task ThrowInvalidSession(HttpContext httpContext) {
             httpContext.Response.StatusCode = 403;
             await httpContext.Response.WriteAsync("Invalid session.");
         }
 
-        public virtual async Task ThrowInvalidContentType(HttpContext httpContext) {
+        protected virtual async Task ThrowInvalidContentType(HttpContext httpContext) {
             httpContext.Response.StatusCode = 415;
             await httpContext.Response.WriteAsync("Content-Type invalid or not recognized.");
         }
 
-        public virtual async Task ThrowHttpException(HttpContext httpContext, HttpException httpException) {
+        protected virtual async Task ThrowHttpException(HttpContext httpContext, HttpException httpException) {
             httpContext.Response.StatusCode = httpException.Status;
             await httpContext.Response.WriteAsync(httpException.Message);
         }
 
-        public virtual async Task ThrowException(HttpContext httpContext, Exception exception) {
+        protected virtual async Task ThrowException(HttpContext httpContext, Exception exception) {
             Logger.LogError($"[{httpContext.Connection.Id}]", exception);
             Logger.LogError(exception);
             if (!httpContext.Response.HasStarted) {
@@ -70,19 +70,19 @@ namespace HtcSharp.HttpModule.Mvc {
             }
         }
 
-        public virtual Task ThrowPreProcessingException(HttpContext httpContext, Exception exception) {
+        protected virtual Task ThrowPreProcessingException(HttpContext httpContext, Exception exception) {
             Logger.LogError(exception);
             return Task.CompletedTask;
         }
 
-        public virtual async Task ThrowFailedDecodeData(HttpContext httpContext, JsonException exception) {
+        protected virtual async Task ThrowFailedDecodeData(HttpContext httpContext, JsonException exception) {
             if (!httpContext.Response.HasStarted) {
                 httpContext.Response.StatusCode = 500;
                 await httpContext.Response.WriteAsync("Failed to decode request data.");
             }
         }
 
-        public virtual Task<bool> BeforePageRequest(HttpContext httpContext, string filename) {
+        protected virtual Task<bool> BeforePageRequest(HttpContext httpContext, string filename) {
             return Task.FromResult(false);
         }
 
