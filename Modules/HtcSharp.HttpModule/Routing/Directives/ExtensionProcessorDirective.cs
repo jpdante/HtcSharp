@@ -8,13 +8,13 @@ using HtcSharp.HttpModule.Directive;
 using HtcSharp.HttpModule.Http;
 
 namespace HtcSharp.HttpModule.Routing.Directives {
-    public class FileExtensionDirective : IDirective {
+    public class ExtensionProcessorDirective : IDirective {
 
         private readonly DirectiveDelegate _next;
 
         private readonly List<string> _paths;
 
-        public FileExtensionDirective(DirectiveDelegate next, JsonElement config) {
+        public ExtensionProcessorDirective(DirectiveDelegate next, JsonElement config) {
             _next = next;
             if (config.TryGetProperty("paths", out var filesProperty)) {
                 switch (filesProperty.ValueKind) {
@@ -49,7 +49,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 try {
                     string path = replacePath.Replace("$uri", httpContext.Request.Path.Value);
                     string extension = Path.GetExtension(path);
-                    if (httpContext.Site.FileExtensions.TryGetValue(path, out var extensionProcessor)) {
+                    if (httpContext.Site.FileExtensions.TryGetValue(extension, out var extensionProcessor)) {
                         return extensionProcessor.OnHttpExtensionProcess(_next, httpContext, extension);
                     }
                     return _next(httpContext);

@@ -97,7 +97,7 @@ namespace HtcSharp.HttpModule {
             //_directiveManager.RegisterDirective<MvcDirective>("try_mvc");
             _directiveManager.RegisterDirective<PagesDirective>("try_pages");
             _directiveManager.RegisterDirective<StaticFileDirective>("try_files");
-            _directiveManager.RegisterDirective<FileExtensionDirective>("try_extensions");
+            _directiveManager.RegisterDirective<ExtensionProcessorDirective>("try_extensions");
 
             _directiveManager.RegisterDirective<AddHeaderDirective>("add_headers");
             _directiveManager.RegisterDirective<ListDirectoryDirective>("list_directory");
@@ -123,6 +123,7 @@ namespace HtcSharp.HttpModule {
 
         public static void RegisterExtensionProcessor(IPlugin plugin, string extension, IExtensionProcessor extensionProcessor) {
             if (_httpEngine == null) throw new HttpEngineNotInitializedException();
+            _httpEngine.Logger.LogInfo($"Registering extension processor for '{extension}'");
             foreach (var site in _httpEngine._sites) {
                 if (!site.HasPermission(plugin)) continue;
                 site.RegisterExtensionProcessor(extension, extensionProcessor);
