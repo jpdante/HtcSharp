@@ -9,12 +9,12 @@ namespace HtcSharp.HttpModule {
             HttpEngine.RegisterPage(plugin, path, page);
         }
 
-        public static void RegisterExtensionProcessor(this IPlugin plugin, string path, IExtensionProcessor extensionProcessor) {
-            HttpEngine.RegisterExtensionProcessor(plugin, path, extensionProcessor);
-        }
-
         public static void RegisterMvc(this IPlugin plugin, HttpMvc mvc) {
             HttpEngine.RegisterMvc(plugin, mvc);
+        }
+
+        public static void RegisterExtensionProcessor(this IPlugin plugin, string extension, IExtensionProcessor extensionProcessor) {
+            HttpEngine.RegisterExtensionProcessor(plugin, extension, extensionProcessor);
         }
 
     }

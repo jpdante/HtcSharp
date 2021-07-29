@@ -121,11 +121,11 @@ namespace HtcSharp.HttpModule {
             }
         }
 
-        public static void RegisterExtensionProcessor(IPlugin plugin, string path, IExtensionProcessor extensionProcessor) {
+        public static void RegisterExtensionProcessor(IPlugin plugin, string extension, IExtensionProcessor extensionProcessor) {
             if (_httpEngine == null) throw new HttpEngineNotInitializedException();
             foreach (var site in _httpEngine._sites) {
                 if (!site.HasPermission(plugin)) continue;
-                site.RegisterExtensionProcessor(path, extensionProcessor);
+                site.RegisterExtensionProcessor(extension, extensionProcessor);
             }
         }
 

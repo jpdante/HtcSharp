@@ -82,9 +82,9 @@ namespace HtcSharp.HttpModule.Core {
             _mvcPages.Add(path, httpMvc);
         }
 
-        internal void RegisterExtensionProcessor(string path, IExtensionProcessor extensionProcessor) {
-            if (_fileExtensions.ContainsKey(path)) throw new PageAlreadyExistsException(path);
-            _fileExtensions.Add(path, extensionProcessor);
+        internal void RegisterExtensionProcessor(string extension, IExtensionProcessor extensionProcessor) {
+            if (_fileExtensions.ContainsKey(extension)) throw new PageAlreadyExistsException(extension);
+            _fileExtensions.Add(extension, extensionProcessor);
         }
     }
 }
