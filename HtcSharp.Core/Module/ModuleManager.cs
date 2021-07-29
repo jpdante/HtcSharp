@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Loader;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
 using HtcSharp.Core.Internal;
@@ -43,7 +41,7 @@ namespace HtcSharp.Core.Module {
                 if (module == null) continue;
                 // TODO: Check if is compatible
                 _modules.Add(module);
-                _modulesDictionary.Add(module, new BaseModule(module, assemblyLoadContext));
+                _modulesDictionary.Add(module, new BaseModule(module, assembly, assemblyLoadContext));
                 await module.Load();
                 Logger.LogInfo($"Loaded module {module.Name} {module.Version}.");
             }
@@ -95,6 +93,8 @@ namespace HtcSharp.Core.Module {
             }
             return files.ToArray();
         }
+
+        internal bool TryGetBaseModule(IModule module, out BaseModule? baseModule) => _modulesDictionary.TryGetValue(module, out baseModule);
 
     }
 }

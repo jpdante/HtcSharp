@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Loader;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
+using HtcSharp.Core.Internal;
+using HtcSharp.Core.Module;
 using HtcSharp.Logging;
 
 namespace HtcSharp.Core.Plugin {
@@ -14,10 +17,12 @@ namespace HtcSharp.Core.Plugin {
 
         private readonly List<IPlugin> _plugins;
         private readonly Dictionary<IPlugin, BasePlugin> _pluginsDictionary;
+        private readonly ModuleManager _moduleManager;
 
         public IReadOnlyList<IPlugin> Plugins => _plugins;
 
-        public PluginManager() {
+        public PluginManager(ModuleManager moduleManager) {
+            _moduleManager = moduleManager;
             _plugins = new List<IPlugin>();
             _pluginsDictionary = new Dictionary<IPlugin, BasePlugin>();
         }
@@ -34,14 +39,22 @@ namespace HtcSharp.Core.Plugin {
         }
 
         public async Task LoadPlugin(string assemblyPath) {
-            var assemblyLoadContext = new AssemblyLoadContext("ModuleContext", true);
-            var assembly = assemblyLoadContext.LoadFromAssemblyPath(assemblyPath);
+            var assemblyLoadContext = new CustomAssemblyLoadContext(assemblyPath);
+            foreach (var module in _moduleManager.Modules) {
+                if (!_moduleManager.TryGetBaseModule(module, out var baseModule)) continue;
+                if (baseModule == null) continue;
+                if (baseModule.Assembly == null) continue;
+                if (string.IsNullOrEmpty(baseModule.Assembly.FullName)) continue;
+                Logger.LogInfo($"Adding shared assembly: {baseModule.Assembly.FullName}");
+                assemblyLoadContext.AddSharedAssembly(baseModule.Assembly.FullName, baseModule.Assembly);
+            }
+            var assembly = assemblyLoadContext.LoadAssemblyFromFilePath(assemblyPath);
             foreach (var pluginType in assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract)) {
                 var plugin = Activator.CreateInstance(pluginType) as IPlugin;
                 if (plugin == null) continue;
                 // TODO: Check if is compatible
                 _plugins.Add(plugin);
-                _pluginsDictionary.Add(plugin, new BasePlugin(plugin, assemblyLoadContext));
+                _pluginsDictionary.Add(plugin, new BasePlugin(plugin, assembly, assemblyLoadContext));
                 await plugin.Load();
                 Logger.LogInfo($"Loaded plugin {plugin.Name} {plugin.Version}.");
             }
@@ -93,6 +106,8 @@ namespace HtcSharp.Core.Plugin {
             }
             return files.ToArray();
         }
+
+        internal bool TryGetBasePlugin(IPlugin plugin, out BasePlugin? basePlugin) => _pluginsDictionary.TryGetValue(plugin, out basePlugin);
 
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Runtime.Loader;
+﻿using System.Reflection;
 using HtcSharp.Abstractions;
 using HtcSharp.Core.Internal;
 
@@ -7,15 +7,18 @@ namespace HtcSharp.Core.Module {
 
         public IModule Module { get; }
 
-        private readonly CustomAssemblyLoadContext _assemblyLoadContext;
+        internal Assembly Assembly { get; }
 
-        public BaseModule(IModule module, CustomAssemblyLoadContext assemblyLoadContext) {
+        internal CustomAssemblyLoadContext AssemblyLoadContext { get; }
+
+        public BaseModule(IModule module, Assembly assembly, CustomAssemblyLoadContext assemblyLoadContext) {
             Module = module;
-            _assemblyLoadContext = assemblyLoadContext;
+            Assembly = assembly;
+            AssemblyLoadContext = assemblyLoadContext;
         }
 
         public void Unload() {
-            _assemblyLoadContext.Unload();
+            AssemblyLoadContext.Unload();
         }
 
     }

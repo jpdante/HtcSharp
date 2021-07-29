@@ -32,7 +32,7 @@ namespace HtcSharp {
             ModuleManager = new ModuleManager();
             await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
 
-            PluginManager = new PluginManager();
+            PluginManager = new PluginManager(ModuleManager);
             await PluginManager.LoadPlugins(Path.GetFullPath(Config.PluginsPath));
         }
 

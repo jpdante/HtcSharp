@@ -1,20 +1,24 @@
-﻿using System.Runtime.Loader;
+﻿using System.Reflection;
 using HtcSharp.Abstractions;
+using HtcSharp.Core.Internal;
 
 namespace HtcSharp.Core.Plugin {
     internal class BasePlugin {
 
         public IPlugin Plugin { get; }
 
-        private readonly AssemblyLoadContext _assemblyLoadContext;
+        internal Assembly Assembly { get; }
 
-        public BasePlugin(IPlugin plugin, AssemblyLoadContext assemblyLoadContext) {
+        internal CustomAssemblyLoadContext AssemblyLoadContext { get; }
+
+        public BasePlugin(IPlugin plugin, Assembly assembly, CustomAssemblyLoadContext assemblyLoadContext) {
             Plugin = plugin;
-            _assemblyLoadContext = assemblyLoadContext;
+            Assembly = assembly;
+            AssemblyLoadContext = assemblyLoadContext;
         }
 
         public void Unload() {
-            _assemblyLoadContext.Unload();
+            AssemblyLoadContext.Unload();
         }
 
     }

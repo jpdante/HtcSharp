@@ -1,18 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Loader;
+using HtcSharp.Logging;
 
 namespace HtcSharp.Core.Internal {
     internal class CustomAssemblyLoadContext : AssemblyLoadContext {
+
+        private readonly ILogger Logger = LoggerManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+
         private readonly AssemblyDependencyResolver _dependencyResolver;
+
+        private readonly Dictionary<string, Assembly> _sharedAssemblies;
 
         public CustomAssemblyLoadContext(string mainAssemblyPath) : base(mainAssemblyPath, true) {
             _dependencyResolver = new AssemblyDependencyResolver(mainAssemblyPath);
+            _sharedAssemblies = new Dictionary<string, Assembly>();
+        }
+
+        public void AddSharedAssembly(string assemblyName, Assembly assembly) {
+            _sharedAssemblies.Add(assemblyName, assembly);
         }
 
         protected override Assembly? Load(AssemblyName assemblyName) {
             if (string.IsNullOrEmpty(assemblyName.Name)) throw new ArgumentNullException(nameof(assemblyName));
+
+            if (_sharedAssemblies.TryGetValue(assemblyName.FullName, out var assembly)) {
+                Logger.LogDebug($"Loading from Shared Assembly: {assemblyName.FullName}");
+                return assembly;
+            }
 
             string? resolvedPath = _dependencyResolver.ResolveAssemblyToPath(assemblyName);
             if (!string.IsNullOrEmpty(resolvedPath) && File.Exists(resolvedPath)) {
