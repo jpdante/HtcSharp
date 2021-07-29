@@ -49,7 +49,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
             foreach (string replacePath in _paths) {
                 string path = replacePath.Replace("$uri", httpContext.Request.Path.Value);
                 if (httpContext.Site.Pages.TryGetValue(path, out var page)) {
-                    return page.OnHttpPageRequest(_next, httpContext);
+                    return page.OnHttpPageRequest(_next, httpContext, path);
                 }
                 return _next(httpContext);
             }

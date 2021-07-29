@@ -50,7 +50,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                     string path = replacePath.Replace("$uri", httpContext.Request.Path.Value);
                     string extension = Path.GetExtension(path);
                     if (httpContext.Site.FileExtensions.TryGetValue(extension, out var extensionProcessor)) {
-                        return extensionProcessor.OnHttpExtensionProcess(_next, httpContext, extension);
+                        return extensionProcessor.OnHttpExtensionProcess(_next, httpContext, path, extension);
                     }
                     return _next(httpContext);
                 } catch {

@@ -5,7 +5,7 @@ using HtcSharp.HttpModule.Http;
 namespace HtcSharp.HttpModule.Abstractions {
     public interface IHttpPage {
         
-        Task OnHttpPageRequest(DirectiveDelegate next, HtcHttpContext httpContext);
+        Task OnHttpPageRequest(DirectiveDelegate next, HtcHttpContext httpContext, string fileName);
 
     }
 }
