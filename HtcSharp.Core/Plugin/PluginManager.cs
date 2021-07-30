@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
 using HtcSharp.Core.Internal;
@@ -36,6 +35,15 @@ namespace HtcSharp.Core.Plugin {
                     Logger.LogError($"Failed to load plugin '{assemblyPath}'.", ex);
                 }
             }
+            foreach (var plugin in Plugins) {
+                var loaderContext = _pluginsDictionary[plugin].AssemblyLoadContext;
+                foreach (var subPlugin in Plugins) {
+                    if (subPlugin == plugin) continue;
+                    var subPluginAssembly = _pluginsDictionary[subPlugin].Assembly;
+                    if (string.IsNullOrEmpty(subPluginAssembly.FullName)) continue;
+                    loaderContext.AddSharedAssembly(subPluginAssembly.FullName, subPluginAssembly);
+                }
+            }
         }
 
         public async Task LoadPlugin(string assemblyPath) {
@@ -45,8 +53,12 @@ namespace HtcSharp.Core.Plugin {
                 if (baseModule == null) continue;
                 if (baseModule.Assembly == null) continue;
                 if (string.IsNullOrEmpty(baseModule.Assembly.FullName)) continue;
-                Logger.LogInfo($"Adding shared assembly: {baseModule.Assembly.FullName}");
+                //Logger.LogInfo($"Adding shared assembly: {baseModule.Assembly.FullName}");
                 assemblyLoadContext.AddSharedAssembly(baseModule.Assembly.FullName, baseModule.Assembly);
+                foreach (var (key, value) in baseModule.AssemblyLoadContext.LoadedAssemblies) {
+                    //Logger.LogInfo($"Adding shared assembly: {key}");
+                    assemblyLoadContext.AddSharedAssembly(key, value);
+                }
             }
             var assembly = assemblyLoadContext.LoadAssemblyFromFilePath(assemblyPath);
             foreach (var pluginType in assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract)) {

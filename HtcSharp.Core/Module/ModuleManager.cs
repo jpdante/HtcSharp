@@ -31,6 +31,15 @@ namespace HtcSharp.Core.Module {
                     Logger.LogError($"Failed to load module '{assemblyPath}'.", ex);
                 }
             }
+            foreach (var module in Modules) {
+                var loaderContext = _modulesDictionary[module].AssemblyLoadContext;
+                foreach (var subModule in Modules) {
+                    if (subModule == module) continue;
+                    var subModuleAssembly = _modulesDictionary[subModule].Assembly;
+                    if (string.IsNullOrEmpty(subModuleAssembly.FullName)) continue;
+                    loaderContext.AddSharedAssembly(subModuleAssembly.FullName, subModuleAssembly);
+                }
+            }
         }
 
         public async Task LoadModule(string assemblyPath) {
