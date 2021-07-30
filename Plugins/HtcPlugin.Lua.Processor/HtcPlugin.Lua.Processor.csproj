@@ -19,6 +19,10 @@
     <ProjectReference Include="..\..\Modules\HtcSharp.HttpModule\HtcSharp.HttpModule.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="LuaBuildEvents PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir) $(PlatformName)" />
   </Target>

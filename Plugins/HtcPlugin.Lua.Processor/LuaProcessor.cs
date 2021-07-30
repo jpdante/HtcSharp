@@ -1,20 +1,17 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading.Tasks;
+using HtcPlugin.Lua.Processor.Core;
 using HtcSharp.Abstractions;
 using HtcSharp.HttpModule;
 using HtcSharp.HttpModule.Abstractions;
 using HtcSharp.HttpModule.Directive;
 using HtcSharp.HttpModule.Http;
 using HtcSharp.Logging;
-using Microsoft.AspNetCore.Http;
-using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Loaders;
 
 namespace HtcPlugin.Lua.Processor {
     public class LuaProcessor : IPlugin, IExtensionProcessor {
 
-        private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+        internal static readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         public string Name => "HtcLuaProcessor";
         public string Version => "1.0.0";
@@ -39,9 +36,9 @@ namespace HtcPlugin.Lua.Processor {
             return true;
         }
 
-        public Task OnHttpExtensionProcess(DirectiveDelegate next, HtcHttpContext httpContext, string extension) {
-            Logger.LogDebug($"{httpContext.Request.Path.Value} {extension}");
-            return next(httpContext);
+        public Task OnHttpExtensionProcess(DirectiveDelegate next, HtcHttpContext httpContext, string fileName, string extension) {
+            var luaContext = new LuaContext(httpContext, fileName);
+            return luaContext.Load() ? luaContext.ProcessRequest() : next(httpContext);
         }
     }
 }
