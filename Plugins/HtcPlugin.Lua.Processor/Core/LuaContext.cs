@@ -121,11 +121,9 @@ namespace HtcPlugin.Lua.Processor.Core {
             AddHeaders();
             AddFunctions();
 
-            await using var memoryStream = new MemoryStream();
-
             IoModule.SetDefaultFile(script, StandardFileType.StdIn, httpContext.Request.Body);
-            IoModule.SetDefaultFile(script, StandardFileType.StdOut, memoryStream);
-            IoModule.SetDefaultFile(script, StandardFileType.StdErr, memoryStream);
+            IoModule.SetDefaultFile(script, StandardFileType.StdOut, httpContext.Response.Body);
+            IoModule.SetDefaultFile(script, StandardFileType.StdErr, httpContext.Response.Body);
 
             try {
                 var scriptData = script.LoadStream(stream, codeFriendlyName: _fileInfo.Name);
@@ -144,9 +142,6 @@ namespace HtcPlugin.Lua.Processor.Core {
             }
 
             finished = true;
-
-            memoryStream.Position = 0;
-            await memoryStream.CopyToAsync(_httpContext.Response.Body);
         }
 
         private string GetFormatedString(string message) {
