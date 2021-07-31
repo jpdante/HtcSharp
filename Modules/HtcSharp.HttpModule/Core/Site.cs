@@ -17,15 +17,17 @@ namespace HtcSharp.HttpModule.Core {
 
         private readonly bool _matchAny;
         private readonly HashSet<string> _domains;
+        private readonly List<string> _indexes;
         private readonly Dictionary<string, IHttpPage> _pages;
         private readonly Dictionary<string, HttpMvc> _mvcPages;
         private readonly Dictionary<string, IExtensionProcessor> _fileExtensions;
 
         private Collection<SiteLocation> _locations;
 
-        Dictionary<string, IHttpPage> IReadOnlySite.Pages => _pages;
-        Dictionary<string, HttpMvc> IReadOnlySite.MvcPages => _mvcPages;
-        Dictionary<string, IExtensionProcessor> IReadOnlySite.FileExtensions => _fileExtensions;
+        IReadOnlyList<string> IReadOnlySite.Indexes => _indexes;
+        IReadOnlyDictionary<string, IHttpPage> IReadOnlySite.Pages => _pages;
+        IReadOnlyDictionary<string, HttpMvc> IReadOnlySite.MvcPages => _mvcPages;
+        IReadOnlyDictionary<string, IExtensionProcessor> IReadOnlySite.FileExtensions => _fileExtensions;
 
         public SiteConfig Config { get; }
         public IFileProvider FileProvider { get; }
@@ -39,6 +41,7 @@ namespace HtcSharp.HttpModule.Core {
                 _domains.Add(domain);
             }
             _locations = new Collection<SiteLocation>();
+            _indexes = new List<string>();
             _pages = new Dictionary<string, IHttpPage>();
             _mvcPages = new Dictionary<string, HttpMvc>();
             _fileExtensions = new Dictionary<string, IExtensionProcessor>();
@@ -85,6 +88,12 @@ namespace HtcSharp.HttpModule.Core {
         internal void RegisterExtensionProcessor(string extension, IExtensionProcessor extensionProcessor) {
             if (_fileExtensions.ContainsKey(extension)) throw new PageAlreadyExistsException(extension);
             _fileExtensions.Add(extension, extensionProcessor);
+        }
+
+        internal void RegisterIndexFilename(string fileName) {
+            if (!fileName.StartsWith("/")) fileName = $"/{fileName}";
+            if (_indexes.Contains(fileName)) throw new MvcPageAlreadyExistsException(fileName);
+            _indexes.Add(fileName);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Abstractions;
@@ -37,6 +38,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                 }
             } else {
                 _files = new List<string> {
+                    "/$internal",
                     "/index.html",
                     "/index.htm"
                 };
@@ -45,6 +47,15 @@ namespace HtcSharp.HttpModule.Routing.Directives {
 
         public Task Invoke(HtcHttpContext httpContext) {
             foreach (string fileName in _files) {
+                if (fileName.Equals("/$internal")) {
+                    foreach (string fileName2 in httpContext.Site.Indexes) {
+                        var path2 = httpContext.Request.Path.Add(fileName2);
+                        string extension = Path.GetExtension(path2);
+                        if (httpContext.Site.FileExtensions.TryGetValue(extension, out var extensionProcessor)) {
+                            return extensionProcessor.OnHttpExtensionProcess(_next, httpContext, path2, extension);
+                        }
+                    }
+                }
                 var path = httpContext.Request.Path.Add(fileName);
                 var staticFileContext = new StaticFileContext(httpContext, httpContext.Site.FileProvider, path);
                 if (!staticFileContext.LookupFileInfo()) continue;

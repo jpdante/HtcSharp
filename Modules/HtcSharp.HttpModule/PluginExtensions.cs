@@ -17,5 +17,8 @@ namespace HtcSharp.HttpModule {
             HttpEngine.RegisterExtensionProcessor(plugin, extension, extensionProcessor);
         }
 
+        public static void RegisterIndex(this IPlugin plugin, string fileName) {
+            HttpEngine.RegisterIndex(plugin, fileName);
+        }
     }
 }

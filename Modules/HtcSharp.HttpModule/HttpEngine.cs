@@ -130,6 +130,15 @@ namespace HtcSharp.HttpModule {
             }
         }
 
+        public static void RegisterIndex(IPlugin plugin, string fileName) {
+            if (_httpEngine == null) throw new HttpEngineNotInitializedException();
+            _httpEngine.Logger.LogInfo($"Registering index '{fileName}'");
+            foreach (var site in _httpEngine._sites) {
+                if (!site.HasPermission(plugin)) continue;
+                site.RegisterIndexFilename(fileName);
+            }
+        }
+
         #endregion
 
         #region Configure Kestrel

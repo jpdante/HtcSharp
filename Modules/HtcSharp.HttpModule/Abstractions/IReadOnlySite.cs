@@ -9,11 +9,13 @@ namespace HtcSharp.HttpModule.Abstractions {
 
         public IFileProvider FileProvider { get; }
 
-        internal Dictionary<string, IHttpPage> Pages { get; }
+        internal IReadOnlyList<string> Indexes { get; }
 
-        internal Dictionary<string, HttpMvc> MvcPages { get; }
+        internal IReadOnlyDictionary<string, IHttpPage> Pages { get; }
 
-        internal Dictionary<string, IExtensionProcessor> FileExtensions { get; }
+        internal IReadOnlyDictionary<string, HttpMvc> MvcPages { get; }
+
+        internal IReadOnlyDictionary<string, IExtensionProcessor> FileExtensions { get; }
 
         public bool Match(HttpContext httpContext);
 
