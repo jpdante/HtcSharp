@@ -19,6 +19,7 @@ namespace HtcPlugin.Lua.Processor {
         public Task Load() {
             Logger.LogInfo("Loading...");
             this.RegisterExtensionProcessor(".lua", this);
+            this.RegisterIndex("index.lua");
             return Task.CompletedTask;
         }
 
@@ -38,7 +39,7 @@ namespace HtcPlugin.Lua.Processor {
 
         public Task OnHttpExtensionProcess(DirectiveDelegate next, HtcHttpContext httpContext, string fileName, string extension) {
             var luaContext = new LuaContext(httpContext, fileName);
-            return luaContext.Load() ? luaContext.ProcessRequest() : next(httpContext);
+            return luaContext.LoadFile() ? luaContext.ProcessRequest() : next(httpContext);
         }
     }
 }
