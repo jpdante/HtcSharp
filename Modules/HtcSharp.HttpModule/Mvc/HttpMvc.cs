@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Http;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Http;
 
@@ -12,12 +13,13 @@ namespace HtcSharp.HttpModule.Mvc {
     public abstract class HttpMvc {
 
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-        private readonly Dictionary<string, (HttpMethodAttribute, bool, Type, MethodInfo)> _routes;
 
         private Assembly _assembly;
 
+        private readonly Dictionary<string, List<RouteContext>> _routes;
+
         protected HttpMvc() {
-            _routes = new Dictionary<string, (HttpMethodAttribute, bool, Type, MethodInfo)>();
+            _assembly = null;
         }
 
         public void Setup(Assembly assembly) {
@@ -27,18 +29,51 @@ namespace HtcSharp.HttpModule.Mvc {
 
         public void ReloadControllers() {
             _routes.Clear();
-            MethodInfo[] methods = _assembly.GetTypes().SelectMany(t => t.GetMethods()).Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0).ToArray();
-            foreach (var method in methods) {
-                if (method.ReturnType != typeof(Task) || !method.IsStatic) continue;
-                ParameterInfo[] parameters = method.GetParameters();
-                var attribute = method.GetCustomAttributes(typeof(HttpMethodAttribute), false).First() as HttpMethodAttribute;
-                if (attribute == null) continue;
-                if (parameters.Length < 1 || parameters[0].ParameterType != typeof(HttpContext)) continue;
+            IEnumerable<MethodInfo> functions = _assembly.GetTypes().SelectMany(t => t.GetMethods()).Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0);
+            foreach (var function in functions) {
+                if (function.ReturnType != typeof(Task) || !function.IsStatic) continue;
+                ParameterInfo[] parameters = function.GetParameters();
+
+                // Load routes
+                var routeContexts = new List<RouteContext>();
+                foreach (var attribute in function.GetCustomAttributes()) {
+                    if (attribute is HttpMethodAttribute httpMethod) {
+                        routeContexts.Add(new RouteContext(httpMethod));
+                    }
+                }
+
+                // Apply extras to routes
+                foreach (var attribute in function.GetCustomAttributes()) {
+                    switch (attribute) {
+                        case RequireSessionAttribute requireSession: {
+                            foreach (var routeContext in routeContexts) {
+                                routeContext.SetRequireSession(requireSession.RequireSession);
+                            }
+                            break;
+                        }
+                        case RequireContentTypeAttribute requireContentType: {
+                            foreach (var routeContext in routeContexts) {
+                                routeContext.SetRequiredContentType(requireContentType.ContentType);
+                            }
+                            break;
+                        }
+                    }
+                }
+                if (parameters.Length < 1 || parameters[0].ParameterType != typeof(HtcHttpContext)) continue;
+                foreach (var routeContext in routeContexts) {
+                    if (_routes.TryGetValue(routeContext.Path, out List<RouteContext> listRouteContexts)) {
+                        listRouteContexts.Add(routeContext);
+                    } else {
+                        _routes.Add(routeContext.Path, new List<RouteContext> { routeContext });
+                    }
+                }
+                /*
                 if (parameters.Length == 2 && !parameters[1].ParameterType.GetInterfaces().Contains(typeof(IHttpJsonObject))) continue;
                 Logger.LogInfo(parameters.Length == 2 ? $"Registering route: [{attribute.Method}, JsonObject] {attribute.Path}" : $"Registering route: [{attribute.Method}] {attribute.Path}");
                 if (_routes.ContainsKey($"{attribute.Method.ToUpper()}{attribute.Path}")) throw new DuplicateNameException($"Duplicate route [{attribute.Method.ToUpper()}] {attribute.Path}");
                 _routes.Add($"{attribute.Method.ToUpper()}{attribute.Path}", (attribute, parameters.Length == 2, parameters.Length == 2 ? parameters[1].ParameterType : null, method));
-                if (!UrlMapper.RegisteredPages.ContainsKey(attribute.Path)) UrlMapper.RegisterPluginPage(attribute.Path, this);
+                PathList.Add(attribute.Path);
+                if (!UrlMapper.RegisteredPages.ContainsKey(attribute.Path)) UrlMapper.RegisterPluginPage(attribute.Path, this);*/
             }
         }
 
@@ -48,12 +83,12 @@ namespace HtcSharp.HttpModule.Mvc {
 
         protected virtual async Task ThrowInvalidSession(HttpContext httpContext) {
             httpContext.Response.StatusCode = 403;
-            await httpContext.Response.WriteAsync("Invalid session.");
+            await httpContext.Response.WriteAsync("Error: Invalid session.");
         }
 
         protected virtual async Task ThrowInvalidContentType(HttpContext httpContext) {
             httpContext.Response.StatusCode = 415;
-            await httpContext.Response.WriteAsync("Content-Type invalid or not recognized.");
+            await httpContext.Response.WriteAsync("Error: Content-Type is invalid or not recognized.");
         }
 
         protected virtual async Task ThrowHttpException(HttpContext httpContext, HttpException httpException) {
@@ -86,10 +121,10 @@ namespace HtcSharp.HttpModule.Mvc {
             return Task.FromResult(false);
         }
 
-        public async Task OnHttpPageRequest(HttpContext httpContext, string filename) {
-            if (await BeforePageRequest(httpContext, filename)) return;
+        public async Task OnHttpRequest(HttpContext httpContext, string fileName) {
+            if (await BeforePageRequest(httpContext, fileName)) return;
             try {
-                if (_routes.TryGetValue($"{httpContext.Request.Method.ToUpper()}{filename}", out var value)) {
+                if (_routes.TryGetValue($"{httpContext.Request.Method.ToUpper()}{fileName}", out var value)) {
                     await LoadSession(httpContext);
                     if (value.Item1.RequireSession && httpContext.Session != null && !httpContext.Session.IsAvailable) {
                         await ThrowInvalidSession(httpContext);
