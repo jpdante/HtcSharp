@@ -39,9 +39,6 @@ namespace HtcSharp.HttpModule.Mvc {
                     RequireObject = true;
                     var objectParameter = parameters[1];
                     _parameterType = objectParameter.ParameterType;
-                    foreach (var a in objectParameter.ParameterType.GetInterfaces()) {
-                        Console.WriteLine(a.FullName);   
-                    }
                     break;
                 }
                 default:
