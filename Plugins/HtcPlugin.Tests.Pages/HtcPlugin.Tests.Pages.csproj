@@ -1,19 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>HtcPlugin.Tests.Pages.plugin</AssemblyName>
     <Platforms>x64</Platforms>
-    <AssemblyName>HtcPlugin.Tests.Mvc.plugin</AssemblyName>
   </PropertyGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="LuaBuildEvents PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir) $(PlatformName)" />
-  </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\..\HtcSharp.Abstractions\HtcSharp.Abstractions.csproj" />
     <ProjectReference Include="..\..\HtcSharp.Logging\HtcSharp.Logging.csproj" />
     <ProjectReference Include="..\..\Modules\HtcSharp.HttpModule\HtcSharp.HttpModule.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="LuaBuildEvents PostBuild.BuildEvents.lua $(ConfigurationName) $(SolutionDir) $(ProjectDir) $(OutDir) $(PlatformName)" />
+  </Target>
 
 </Project>

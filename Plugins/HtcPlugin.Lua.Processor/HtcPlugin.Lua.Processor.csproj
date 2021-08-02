@@ -5,7 +5,7 @@
     <AssemblyName>HtcPlugin.Lua.Processor.plugin</AssemblyName>
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <Platforms>x64;x86</Platforms>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿print("[LuaBuildEvents] Starting HtcPlugin.Tests.Mvc PostBuild\n")
+﻿print("[LuaBuildEvents] Starting HtcPlugin.Tests.Pages PostBuild\n")
 require("lua.io")
 
 -- Filename and directory blacklist
@@ -53,7 +53,7 @@ end
 print("[LuaBuildEvents] Running in " .. args[2] .. " Mode\n")
 
 -- Create base directory
-pluginsPath = Path.combine(args[3], [[HtcSharp/bin/]] .. args[6] .. "/" .. args[2] .. [[/plugins/mvctest]])
+pluginsPath = Path.combine(args[3], [[HtcSharp/bin/]] .. args[6] .. "/" .. args[2] .. [[/plugins/pagestest]])
 if Directory.exists(pluginsPath) == false then
   Directory.createDirectory(pluginsPath)
 end
@@ -105,4 +105,4 @@ for key,value in ipairs(outputFiles) do
 end
 
 
-print("[LuaBuildEvents] Finishing HtcPlugin.Tests.Mvc PostBuild\n")
+print("[LuaBuildEvents] Finishing HtcPlugin.Tests.Pages PostBuild\n")
