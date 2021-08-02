@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HtcSharp.HttpModule.Mvc {
+namespace HtcSharp.HttpModule.Mvc.Exceptions {
     public class HttpException : Exception {
 
         public readonly int Status;

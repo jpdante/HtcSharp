@@ -1,44 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using HtcSharp.HttpModule.Abstractions.Mvc;
 using HtcSharp.HttpModule.Http;
+using HtcSharp.HttpModule.Mvc.Exceptions;
+using HtcSharp.HttpModule.Mvc.Parsers;
 using HtcSharp.Logging;
 using Microsoft.AspNetCore.Http;
 
 namespace HtcSharp.HttpModule.Mvc {
-    public abstract class HttpMvc {
-
+    public class HttpMvc {
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        private Assembly _assembly;
-
+        private string _prefix;
+        private bool _matchAnyDomain;
+        private readonly HashSet<string> _domains;
         private readonly Dictionary<string, List<RouteContext>> _routes;
+        private readonly Dictionary<Type, IHttpObjectParser> _parsers;
+
+        public string Prefix => _prefix;
+        public bool MatchAnyDomain => _matchAnyDomain;
+        public IReadOnlySet<string> Domains => _domains;
+        public IEnumerable<string> Routes => _routes.Keys;
+        public IReadOnlyDictionary<Type, IHttpObjectParser> Parsers => _parsers;
 
         protected HttpMvc() {
-            _assembly = null;
+            _prefix = null;
+            _matchAnyDomain = true;
+            _domains = new HashSet<string>();
+            _routes = new Dictionary<string, List<RouteContext>>();
+            _parsers = new Dictionary<Type, IHttpObjectParser> {{typeof(IHttpJsonObject), new JsonObjectParser()}, {typeof(IHttpXmlObject), new XmlObjectParser()}};
         }
 
-        public void Setup(Assembly assembly) {
-            _assembly = assembly;
-            ReloadControllers();
+        public HttpMvc LoadControllers(Assembly assembly) {
+            foreach (var type in assembly.GetTypes()) {
+                LoadController(type);
+            }
+
+            return this;
         }
 
-        public void ReloadControllers() {
-            _routes.Clear();
-            IEnumerable<MethodInfo> functions = _assembly.GetTypes().SelectMany(t => t.GetMethods()).Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0);
+        public HttpMvc LoadController(Type type) {
+            IEnumerable<MethodInfo> functions = type.GetMethods().Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0);
             foreach (var function in functions) {
                 if (function.ReturnType != typeof(Task) || !function.IsStatic) continue;
+
                 ParameterInfo[] parameters = function.GetParameters();
+
+                if (parameters.Length < 1 || parameters[0].ParameterType != typeof(HtcHttpContext)) continue;
 
                 // Load routes
                 var routeContexts = new List<RouteContext>();
                 foreach (var attribute in function.GetCustomAttributes()) {
                     if (attribute is HttpMethodAttribute httpMethod) {
-                        routeContexts.Add(new RouteContext(httpMethod));
+                        routeContexts.Add(new RouteContext(this, null, function, httpMethod));
                     }
                 }
 
@@ -49,123 +67,195 @@ namespace HtcSharp.HttpModule.Mvc {
                             foreach (var routeContext in routeContexts) {
                                 routeContext.SetRequireSession(requireSession.RequireSession);
                             }
+
                             break;
                         }
                         case RequireContentTypeAttribute requireContentType: {
                             foreach (var routeContext in routeContexts) {
                                 routeContext.SetRequiredContentType(requireContentType.ContentType);
                             }
+
                             break;
                         }
                     }
                 }
-                if (parameters.Length < 1 || parameters[0].ParameterType != typeof(HtcHttpContext)) continue;
+
                 foreach (var routeContext in routeContexts) {
+                    Logger.LogInfo($"Registering route: [{routeContext.Method}] {routeContext.Path}");
+                    var route = $"{_prefix}{routeContext.Path}";
+                    if (_routes.TryGetValue(route, out List<RouteContext> listRouteContexts)) {
+                        listRouteContexts.Add(routeContext);
+                    } else {
+                        _routes.Add(route, new List<RouteContext> {routeContext});
+                    }
+                }
+            }
+
+            return this;
+        }
+
+        public HttpMvc LoadController(object instance) {
+            var type = instance.GetType();
+            IEnumerable<MethodInfo> functions = type.GetMethods().Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0);
+            foreach (var function in functions) {
+                if (function.ReturnType != typeof(Task) || function.IsStatic) continue;
+
+                ParameterInfo[] parameters = function.GetParameters();
+
+                if (parameters.Length < 1 || parameters[0].ParameterType != typeof(HtcHttpContext)) continue;
+
+                // Load routes
+                var routeContexts = new List<RouteContext>();
+                foreach (var attribute in function.GetCustomAttributes()) {
+                    if (attribute is HttpMethodAttribute httpMethod) {
+                        routeContexts.Add(new RouteContext(this, instance, function, httpMethod));
+                    }
+                }
+
+                // Apply extras to routes
+                foreach (var attribute in function.GetCustomAttributes()) {
+                    switch (attribute) {
+                        case RequireSessionAttribute requireSession: {
+                            foreach (var routeContext in routeContexts) {
+                                routeContext.SetRequireSession(requireSession.RequireSession);
+                            }
+
+                            break;
+                        }
+                        case RequireContentTypeAttribute requireContentType: {
+                            foreach (var routeContext in routeContexts) {
+                                routeContext.SetRequiredContentType(requireContentType.ContentType);
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                foreach (var routeContext in routeContexts) {
+                    Logger.LogInfo($"Registering route: [{routeContext.Method}] {routeContext.Path}");
                     if (_routes.TryGetValue(routeContext.Path, out List<RouteContext> listRouteContexts)) {
                         listRouteContexts.Add(routeContext);
                     } else {
-                        _routes.Add(routeContext.Path, new List<RouteContext> { routeContext });
+                        _routes.Add(routeContext.Path, new List<RouteContext> {routeContext});
                     }
                 }
-                /*
-                if (parameters.Length == 2 && !parameters[1].ParameterType.GetInterfaces().Contains(typeof(IHttpJsonObject))) continue;
-                Logger.LogInfo(parameters.Length == 2 ? $"Registering route: [{attribute.Method}, JsonObject] {attribute.Path}" : $"Registering route: [{attribute.Method}] {attribute.Path}");
-                if (_routes.ContainsKey($"{attribute.Method.ToUpper()}{attribute.Path}")) throw new DuplicateNameException($"Duplicate route [{attribute.Method.ToUpper()}] {attribute.Path}");
-                _routes.Add($"{attribute.Method.ToUpper()}{attribute.Path}", (attribute, parameters.Length == 2, parameters.Length == 2 ? parameters[1].ParameterType : null, method));
-                PathList.Add(attribute.Path);
-                if (!UrlMapper.RegisteredPages.ContainsKey(attribute.Path)) UrlMapper.RegisterPluginPage(attribute.Path, this);*/
             }
+
+            return this;
         }
 
-        protected virtual Task LoadSession(HttpContext httpContext) {
-            return Task.CompletedTask;
+        public HttpMvc MatchDomain(string domain) {
+            _domains.Add(domain);
+            _matchAnyDomain = _domains.Count == 0;
+            return this;
         }
 
-        protected virtual async Task ThrowInvalidSession(HttpContext httpContext) {
+        public HttpMvc RemoveDomain(string domain) {
+            _domains.Remove(domain);
+            _matchAnyDomain = _domains.Count == 0;
+            return this;
+        }
+
+        public HttpMvc UsePrefix(string prefix) {
+            _prefix = prefix;
+            return this;
+        }
+
+        public HttpMvc UseParser(Type type, IHttpObjectParser parser) {
+            if (!type.IsAssignableFrom(typeof(IHttpObject))) throw new MvcContructException($"Type '{type.FullName}' is not assignable from IHttpObject.");
+            if (!type.IsInterface) throw new MvcContructException($"Type '{type.FullName}' should be an interface.");
+            if (_parsers.ContainsKey(type)) throw new MvcContructException($"Type '{type.FullName}' already is registered.");
+            _parsers.Add(type, parser);
+            return this;
+        }
+
+        public HttpMvc RemoveParser(Type type) {
+            _parsers.Remove(type);
+            return this;
+        }
+
+        protected virtual Task LoadSession(HtcHttpContext httpContext) => Task.CompletedTask;
+
+        protected virtual async Task ThrowInvalidSession(HtcHttpContext httpContext) {
             httpContext.Response.StatusCode = 403;
             await httpContext.Response.WriteAsync("Error: Invalid session.");
         }
 
-        protected virtual async Task ThrowInvalidContentType(HttpContext httpContext) {
+        protected virtual async Task ThrowInvalidContentType(HtcHttpContext httpContext) {
             httpContext.Response.StatusCode = 415;
             await httpContext.Response.WriteAsync("Error: Content-Type is invalid or not recognized.");
         }
 
-        protected virtual async Task ThrowHttpException(HttpContext httpContext, HttpException httpException) {
+        protected virtual async Task ThrowHttpException(HtcHttpContext httpContext, HttpException httpException) {
             httpContext.Response.StatusCode = httpException.Status;
             await httpContext.Response.WriteAsync(httpException.Message);
         }
 
-        protected virtual async Task ThrowException(HttpContext httpContext, Exception exception) {
+        protected virtual async Task ThrowException(HtcHttpContext httpContext, Exception exception) {
             Logger.LogError($"[{httpContext.Connection.Id}]", exception);
-            Logger.LogError(exception);
             if (!httpContext.Response.HasStarted) {
                 httpContext.Response.StatusCode = 500;
                 await httpContext.Response.WriteAsync($"[{httpContext.Connection.Id}] An internal failure occurred. Please try again later.");
             }
         }
 
-        protected virtual Task ThrowPreProcessingException(HttpContext httpContext, Exception exception) {
+        protected virtual Task ThrowPreProcessingException(HtcHttpContext httpContext, Exception exception) {
             Logger.LogError(exception);
             return Task.CompletedTask;
         }
 
-        protected virtual async Task ThrowFailedDecodeData(HttpContext httpContext, JsonException exception) {
+        protected virtual async Task ThrowFailedDecodeData(HtcHttpContext httpContext, JsonException exception) {
             if (!httpContext.Response.HasStarted) {
                 httpContext.Response.StatusCode = 500;
                 await httpContext.Response.WriteAsync("Failed to decode request data.");
             }
         }
 
-        protected virtual Task<bool> BeforePageRequest(HttpContext httpContext, string filename) {
-            return Task.FromResult(false);
+        internal bool Match(HtcHttpContext httpContext, string path) {
+            if (_matchAnyDomain) {
+                return _routes.ContainsKey(path);
+            } else {
+                return _domains.Contains(httpContext.Request.Host.Value) && _routes.ContainsKey(path);
+            }
         }
 
-        public async Task OnHttpRequest(HttpContext httpContext, string fileName) {
-            if (await BeforePageRequest(httpContext, fileName)) return;
+        internal async Task OnHttpRequest(HtcHttpContext httpContext, string path) {
             try {
-                if (_routes.TryGetValue($"{httpContext.Request.Method.ToUpper()}{fileName}", out var value)) {
-                    await LoadSession(httpContext);
-                    if (value.Item1.RequireSession && httpContext.Session != null && !httpContext.Session.IsAvailable) {
-                        await ThrowInvalidSession(httpContext);
-                        return;
-                    }
-                    if (value.Item1.RequireContentType != null) {
-                        if (httpContext.Request.ContentType == null || httpContext.Request.ContentType.Split(";")[0] != value.Item1.RequireContentType) {
-                            await ThrowInvalidContentType(httpContext);
-                            return;
-                        }
-                    }
-                    try {
-                        object[] data;
-                        if (value.Item2) {
-                            var obj = await JsonSerializer.DeserializeAsync(httpContext.Request.Body, value.Item3);
-                            if (obj != null && obj is IHttpJsonObject httpJsonObject && await httpJsonObject.ValidateData(httpContext))
-                                data = new[] { httpContext, obj };
-                            else {
-                                await ThrowFailedDecodeData(httpContext, null);
-                                return;
+                if (_routes.TryGetValue(path, out List<RouteContext> routeContexts)) {
+                    foreach (var routeContext in routeContexts.Where(context => context.Method == httpContext.Request.Method)) {
+                        try {
+                            if (routeContext.RequireSession) {
+                                if (httpContext.Session == null) await LoadSession(httpContext);
+                                if (httpContext.Session == null) {
+                                    await ThrowInvalidSession(httpContext);
+                                    break;
+                                }
                             }
-                        } else {
-                            data = new object[] { httpContext };
+
+                            if (routeContext.RequiredContentType != null) {
+                                string contentType = httpContext.Request.ContentType.Split(";", 2)[0];
+                                if (contentType != routeContext.RequiredContentType) {
+                                    await ThrowInvalidContentType(httpContext);
+                                    break;
+                                }
+                            }
+
+                            await routeContext.ProcessRequest(httpContext);
+                        } catch (HttpException ex) {
+                            await ThrowHttpException(httpContext, ex);
+                        } catch (JsonException ex) {
+                            await ThrowFailedDecodeData(httpContext, ex);
+                        } catch (Exception ex) {
+                            await ThrowException(httpContext, ex);
                         }
-                        // ReSharper disable once PossibleNullReferenceException
-                        await (Task)value.Item4.Invoke(null, data);
-                    } catch (HttpException ex) {
-                        await ThrowHttpException(httpContext, ex);
-                    } catch (JsonException ex) {
-                        await ThrowFailedDecodeData(httpContext, ex);
-                    } catch (Exception ex) {
-                        await ThrowException(httpContext, ex);
+
+                        break;
                     }
                 }
             } catch (Exception ex) {
                 await ThrowPreProcessingException(httpContext, ex);
             }
-        }
-
-        public virtual Task OnHttpExtensionRequest(HttpContext httpContext, string filename, string extension) {
-            return Task.CompletedTask;
         }
     }
 }

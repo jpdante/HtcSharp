@@ -11,9 +11,9 @@ namespace HtcSharp.HttpModule.Abstractions {
 
         internal IReadOnlyList<string> Indexes { get; }
 
-        internal IReadOnlyDictionary<string, IHttpPage> Pages { get; }
+        internal IReadOnlyList<HttpMvc> Mvcs { get; }
 
-        internal IReadOnlyDictionary<string, HttpMvc> MvcPages { get; }
+        internal IReadOnlyDictionary<string, IHttpPage> Pages { get; }
 
         internal IReadOnlyDictionary<string, IExtensionProcessor> FileExtensions { get; }
 

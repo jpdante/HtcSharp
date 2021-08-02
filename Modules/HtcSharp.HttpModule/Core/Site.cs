@@ -18,15 +18,15 @@ namespace HtcSharp.HttpModule.Core {
         private readonly bool _matchAny;
         private readonly HashSet<string> _domains;
         private readonly List<string> _indexes;
+        private readonly List<HttpMvc> _mvcs;
         private readonly Dictionary<string, IHttpPage> _pages;
-        private readonly Dictionary<string, HttpMvc> _mvcPages;
         private readonly Dictionary<string, IExtensionProcessor> _fileExtensions;
 
         private Collection<SiteLocation> _locations;
 
         IReadOnlyList<string> IReadOnlySite.Indexes => _indexes;
+        IReadOnlyList<HttpMvc> IReadOnlySite.Mvcs => _mvcs;
         IReadOnlyDictionary<string, IHttpPage> IReadOnlySite.Pages => _pages;
-        IReadOnlyDictionary<string, HttpMvc> IReadOnlySite.MvcPages => _mvcPages;
         IReadOnlyDictionary<string, IExtensionProcessor> IReadOnlySite.FileExtensions => _fileExtensions;
 
         public SiteConfig Config { get; }
@@ -43,7 +43,7 @@ namespace HtcSharp.HttpModule.Core {
             _locations = new Collection<SiteLocation>();
             _indexes = new List<string>();
             _pages = new Dictionary<string, IHttpPage>();
-            _mvcPages = new Dictionary<string, HttpMvc>();
+            _mvcs = new List<HttpMvc>();
             _fileExtensions = new Dictionary<string, IExtensionProcessor>();
             if (string.IsNullOrEmpty(Config.RootDirectory)) throw new NullReferenceException("Root path was not specified.");
             FileProvider = new PhysicalFileProvider(Path.GetFullPath(Config.RootDirectory));
@@ -80,9 +80,9 @@ namespace HtcSharp.HttpModule.Core {
             _pages.Add(path, page);
         }
 
-        internal void RegisterMvcPage(string path, HttpMvc httpMvc) {
-            if (_mvcPages.ContainsKey(path)) throw new MvcPageAlreadyExistsException(path);
-            _mvcPages.Add(path, httpMvc);
+        internal void RegisterMvc(HttpMvc httpMvc) {
+            if (_mvcs.Contains(httpMvc)) throw new MvcAlreadyExistsException(httpMvc.GetType().FullName);
+            _mvcs.Add(httpMvc);
         }
 
         internal void RegisterExtensionProcessor(string extension, IExtensionProcessor extensionProcessor) {
@@ -92,7 +92,7 @@ namespace HtcSharp.HttpModule.Core {
 
         internal void RegisterIndexFilename(string fileName) {
             if (!fileName.StartsWith("/")) fileName = $"/{fileName}";
-            if (_indexes.Contains(fileName)) throw new MvcPageAlreadyExistsException(fileName);
+            if (_indexes.Contains(fileName)) throw new MvcAlreadyExistsException(fileName);
             _indexes.Add(fileName);
         }
     }

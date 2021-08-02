@@ -94,7 +94,7 @@ namespace HtcSharp.HttpModule {
             _directiveManager.RegisterDirective<TestDirective>("test");
             _directiveManager.RegisterDirective<IndexDirective>("index");
 
-            //_directiveManager.RegisterDirective<MvcDirective>("try_mvc");
+            _directiveManager.RegisterDirective<MvcDirective>("try_mvc");
             _directiveManager.RegisterDirective<PagesDirective>("try_pages");
             _directiveManager.RegisterDirective<StaticFileDirective>("try_files");
             _directiveManager.RegisterDirective<ExtensionProcessorDirective>("try_extensions");
@@ -117,7 +117,7 @@ namespace HtcSharp.HttpModule {
             if (_httpEngine == null) throw new HttpEngineNotInitializedException();
             foreach (var site in _httpEngine._sites) {
                 if (!site.HasPermission(plugin)) continue;
-                //site.RegisterMvcPage(path, mvc);
+                site.RegisterMvc(mvc);
             }
         }
 

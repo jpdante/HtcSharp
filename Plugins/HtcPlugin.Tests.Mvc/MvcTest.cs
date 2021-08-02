@@ -1,41 +1,37 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading.Tasks;
-using HtcSharp.Core.Logging.Abstractions;
-using HtcSharp.Core.Plugin;
-using HtcSharp.Core.Plugin.Abstractions;
+using HtcSharp.Abstractions;
 using HtcSharp.HttpModule;
-using HtcSharp.HttpModule.Http.Abstractions;
+using HtcSharp.HttpModule.Mvc;
+using HtcSharp.Logging;
 
 namespace HtcPlugin.Tests.Mvc {
     public class MvcTest : HttpMvc, IPlugin {
 
+        internal static readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+
         public string Name => "MvcTest";
-        public string Version => "1.0.2";
+        public string Version => "1.0.0";
 
-        private ILogger _logger;
-
-        public Task Disable() {
+        public Task Load() {
+            Logger.LogInfo("Loading...");
+            LoadControllers(GetType().Assembly);
+            this.RegisterMvc(this);
             return Task.CompletedTask;
         }
 
         public Task Enable() {
+            Logger.LogInfo("Enabling...");
+            return Task.CompletedTask;
+        }
+
+        public Task Disable() {
+            Logger.LogInfo("Disabling...");
             return Task.CompletedTask;
         }
 
         public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
             return true;
-        }
-
-        public Task Load(PluginServerContext pluginServerContext, ILogger logger) {
-            _logger = logger;
-            Setup(Assembly.GetExecutingAssembly(), _logger);
-            return Task.CompletedTask;
-        }
-
-        public override Task<bool> BeforePageRequest(HttpContext httpContext, string filename) {
-            _logger.LogInfo($"Request: {filename}");
-            return Task.FromResult(false);
         }
     }
 }
