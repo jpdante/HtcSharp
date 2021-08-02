@@ -25,8 +25,8 @@ namespace HtcSharp.HttpModule.Directive {
         public DirectiveDelegate Build() {
             DirectiveDelegate app = context =>  {
                 // End of pipe-line
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-                return Task.CompletedTask;
+                context.Response.StatusCode = 404;
+                return context.Site.TemplateManager.TryGetTemplate("404", out var template) ? template.SendTemplate(context) : Task.CompletedTask;
             };
             return _directives.Reverse().Aggregate(app, (current, component) => component(current));
         }

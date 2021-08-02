@@ -101,6 +101,7 @@ namespace HtcSharp.HttpModule {
 
             _directiveManager.RegisterDirective<AddHeaderDirective>("add_headers");
             _directiveManager.RegisterDirective<ListDirectoryDirective>("list_directory");
+            _directiveManager.RegisterDirective<ReturnDirective>("return");
         }
 
         #region Static
