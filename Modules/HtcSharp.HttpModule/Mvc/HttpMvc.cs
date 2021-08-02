@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Abstractions.Mvc;
 using HtcSharp.HttpModule.Http;
@@ -13,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace HtcSharp.HttpModule.Mvc {
     public class HttpMvc {
-        private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+        internal readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private string _prefix;
         private bool _matchAnyDomain;
@@ -175,17 +174,15 @@ namespace HtcSharp.HttpModule.Mvc {
             return this;
         }
 
+        internal bool Match(HtcHttpContext httpContext, string path) {
+            if (_matchAnyDomain) {
+                return _routes.ContainsKey(path);
+            } else {
+                return _domains.Contains(httpContext.Request.Host.Value) && _routes.ContainsKey(path);
+            }
+        }
+
         protected virtual Task LoadSession(HtcHttpContext httpContext) => Task.CompletedTask;
-
-        protected virtual async Task ThrowInvalidSession(HtcHttpContext httpContext) {
-            httpContext.Response.StatusCode = 403;
-            await httpContext.Response.WriteAsync("Error: Invalid session.");
-        }
-
-        protected virtual async Task ThrowInvalidContentType(HtcHttpContext httpContext) {
-            httpContext.Response.StatusCode = 415;
-            await httpContext.Response.WriteAsync("Error: Content-Type is invalid or not recognized.");
-        }
 
         protected virtual async Task ThrowHttpException(HtcHttpContext httpContext, HttpException httpException) {
             httpContext.Response.StatusCode = httpException.Status;
@@ -200,61 +197,29 @@ namespace HtcSharp.HttpModule.Mvc {
             }
         }
 
-        protected virtual Task ThrowPreProcessingException(HtcHttpContext httpContext, Exception exception) {
-            Logger.LogError(exception);
-            return Task.CompletedTask;
-        }
-
-        protected virtual async Task ThrowFailedDecodeData(HtcHttpContext httpContext, JsonException exception) {
-            if (!httpContext.Response.HasStarted) {
-                httpContext.Response.StatusCode = 500;
-                await httpContext.Response.WriteAsync("Failed to decode request data.");
-            }
-        }
-
-        internal bool Match(HtcHttpContext httpContext, string path) {
-            if (_matchAnyDomain) {
-                return _routes.ContainsKey(path);
-            } else {
-                return _domains.Contains(httpContext.Request.Host.Value) && _routes.ContainsKey(path);
-            }
-        }
-
         internal async Task OnHttpRequest(HtcHttpContext httpContext, string path) {
-            try {
-                if (_routes.TryGetValue(path, out List<RouteContext> routeContexts)) {
-                    foreach (var routeContext in routeContexts.Where(context => context.Method == httpContext.Request.Method)) {
-                        try {
-                            if (routeContext.RequireSession) {
-                                if (httpContext.Session == null) await LoadSession(httpContext);
-                                if (httpContext.Session == null) {
-                                    await ThrowInvalidSession(httpContext);
-                                    break;
-                                }
-                            }
-
-                            if (routeContext.RequiredContentType != null) {
-                                string contentType = httpContext.Request.ContentType.Split(";", 2)[0];
-                                if (contentType != routeContext.RequiredContentType) {
-                                    await ThrowInvalidContentType(httpContext);
-                                    break;
-                                }
-                            }
-
-                            await routeContext.ProcessRequest(httpContext);
-                        } catch (HttpException ex) {
-                            await ThrowHttpException(httpContext, ex);
-                        } catch (JsonException ex) {
-                            await ThrowFailedDecodeData(httpContext, ex);
-                        } catch (Exception ex) {
-                            await ThrowException(httpContext, ex);
+            if (_routes.TryGetValue(path, out List<RouteContext> routeContexts)) {
+                foreach (var routeContext in routeContexts.Where(context => context.Method == httpContext.Request.Method)) {
+                    try {
+                        if (routeContext.RequireSession) {
+                            if (httpContext.Session == null) await LoadSession(httpContext);
+                            if (httpContext.Session == null) throw new HttpInvalidSessionException();
                         }
 
-                        break;
+                        if (routeContext.RequiredContentType != null) {
+                            string contentType = httpContext.Request.ContentType.Split(";", 2)[0];
+                            if (contentType != routeContext.RequiredContentType) throw new HttpInvalidContentTypeException();
+                        }
+
+                        await routeContext.ProcessRequest(httpContext);
+                    } catch (HttpException ex) {
+                        await ThrowHttpException(httpContext, ex);
+                    } catch (Exception ex) {
+                        await ThrowException(httpContext, ex);
                     }
+
+                    break;
                 }
-            } catch (Exception ex) {
-                await ThrowPreProcessingException(httpContext, ex);
             }
         }
     }

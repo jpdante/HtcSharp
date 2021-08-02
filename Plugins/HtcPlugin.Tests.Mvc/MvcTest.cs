@@ -1,9 +1,13 @@
 ﻿using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
 using HtcSharp.HttpModule;
+using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Mvc;
+using HtcSharp.HttpModule.Mvc.Exceptions;
 using HtcSharp.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace HtcPlugin.Tests.Mvc {
     public class MvcTest : HttpMvc, IPlugin {
@@ -15,6 +19,8 @@ namespace HtcPlugin.Tests.Mvc {
 
         public Task Load() {
             Logger.LogInfo("Loading...");
+            UsePrefix("/mvc");
+            MatchDomain("127.0.0.1");
             LoadControllers(GetType().Assembly);
             this.RegisterMvc(this);
             return Task.CompletedTask;
@@ -32,6 +38,16 @@ namespace HtcPlugin.Tests.Mvc {
 
         public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
             return true;
+        }
+
+        protected override async Task ThrowHttpException(HtcHttpContext httpContext, HttpException httpException) {
+            if (httpException is HttpDecodeDataException httpDecodeDataException) {
+                foreach (var exception in httpDecodeDataException.InnerExceptions) {
+                    Logger.LogError(exception);
+                }
+            }
+            httpContext.Response.StatusCode = httpException.Status;
+            await httpContext.Response.WriteAsync(httpException.Message);
         }
     }
 }

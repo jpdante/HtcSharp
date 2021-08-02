@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Abstractions.Mvc;
@@ -8,10 +9,10 @@ using HtcSharp.HttpModule.Mvc.Exceptions;
 namespace HtcSharp.HttpModule.Mvc {
     public struct RouteContext {
 
-        private readonly HttpMvc _httpMvc;
         private readonly object _instance;
         private readonly MethodInfo _methodInfo;
         private readonly Type _parameterType;
+        private readonly List<IHttpObjectParser> _parsers;
 
         public string Path { get; private set; }
         public string Method { get; private set; }
@@ -20,10 +21,10 @@ namespace HtcSharp.HttpModule.Mvc {
         public string RequiredContentType { get; private set; }
 
         public RouteContext(HttpMvc httpMvc, object instance, MethodInfo methodInfo, HttpMethodAttribute httpMethod) {
-            _httpMvc = httpMvc;
             _instance = instance;
             _methodInfo = methodInfo;
             _parameterType = null;
+            _parsers = new List<IHttpObjectParser>();
 
             Path = httpMethod.Path;
             Method = httpMethod.Method;
@@ -39,10 +40,14 @@ namespace HtcSharp.HttpModule.Mvc {
                     RequireObject = true;
                     var objectParameter = parameters[1];
                     _parameterType = objectParameter.ParameterType;
+                    foreach (var (type, parser) in httpMvc.Parsers) {
+                        if (!type.IsAssignableFrom(_parameterType)) continue;
+                        _parsers.Add(parser);
+                    }
                     break;
                 }
                 default:
-                    throw new MvcContructException($"Failed to load controller function '{_methodInfo.Name}' using 'HTTP [{Method}] {_httpMvc.Parsers}', too many parameters.");
+                    throw new MvcContructException($"Failed to load controller function '{_methodInfo.Name}' using 'HTTP [{Method}] {httpMvc.Parsers}', too many parameters.");
             }
         }
 
@@ -57,24 +62,24 @@ namespace HtcSharp.HttpModule.Mvc {
         public async Task ProcessRequest(HtcHttpContext httpContext) {
             object[] parameterData;
             if (RequireObject) {
+                var exceptionList = new List<Exception>();
                 IHttpObject parsedHttpObject = null;
-                foreach (var (type, parser) in _httpMvc.Parsers) {
-                    if (!type.IsAssignableFrom(_parameterType)) continue;
+                foreach (var parser in _parsers) {
                     try {
                         parsedHttpObject = await parser.Parse(httpContext, _parameterType);
-                    } catch (Exception) {
-                        // ignored
+                    } catch (Exception ex) {
+                        exceptionList.Add(ex);
                     }
                     if (parsedHttpObject == null) continue;
                 }
-                if (parsedHttpObject == null) throw new HttpException(500, "Failed to decode data.");
-                if (!await parsedHttpObject.ValidateData(httpContext)) throw new HttpException(403, "Failed to validate data.");
+                if (parsedHttpObject == null) throw new HttpDecodeDataException(exceptionList.ToArray());
+                if (!await parsedHttpObject.ValidateData(httpContext)) throw new HttpDataValidationException();
                 parameterData = new object[] { httpContext, parsedHttpObject };
             } else {
                 parameterData = new object[] { httpContext };
             }
             object task = _methodInfo.Invoke(_instance, parameterData);
-            if (task == null) throw new HttpException(500, "Returned task is null.");
+            if (task == null) throw new HttpNullTaskException();
             await (Task) task;
         }
     }
