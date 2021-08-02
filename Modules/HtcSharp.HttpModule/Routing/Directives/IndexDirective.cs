@@ -17,7 +17,7 @@ namespace HtcSharp.HttpModule.Routing.Directives {
 
         public IndexDirective(DirectiveDelegate next, JsonElement config) {
             _next = next;
-            if (config.TryGetProperty("files", out var filesProperty)) {
+            if (config.TryGetProperty("files", out var filesProperty)) { ;
                 switch (filesProperty.ValueKind) {
                     case JsonValueKind.String: {
                         string value = filesProperty.GetString();
@@ -51,7 +51,8 @@ namespace HtcSharp.HttpModule.Routing.Directives {
                     foreach (string fileName2 in httpContext.Site.Indexes) {
                         var path2 = httpContext.Request.Path.Add(fileName2);
                         string extension = Path.GetExtension(path2);
-                        if (httpContext.Site.FileExtensions.TryGetValue(extension, out var extensionProcessor)) {
+                        var fileInfo = httpContext.Site.FileProvider.GetFileInfo(path2);
+                        if (fileInfo.Exists && httpContext.Site.FileExtensions.TryGetValue(extension, out var extensionProcessor)) {
                             return extensionProcessor.OnHttpExtensionProcess(_next, httpContext, path2, extension);
                         }
                     }

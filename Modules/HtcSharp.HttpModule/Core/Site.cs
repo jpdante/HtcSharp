@@ -31,6 +31,7 @@ namespace HtcSharp.HttpModule.Core {
 
         public SiteConfig Config { get; }
         public IFileProvider FileProvider { get; }
+        public TemplateManager TemplateManager { get; }
 
         public Site(SiteConfig siteConfig) {
             Config = siteConfig;
@@ -47,6 +48,7 @@ namespace HtcSharp.HttpModule.Core {
             _fileExtensions = new Dictionary<string, IExtensionProcessor>();
             if (string.IsNullOrEmpty(Config.RootDirectory)) throw new NullReferenceException("Root path was not specified.");
             FileProvider = new PhysicalFileProvider(Path.GetFullPath(Config.RootDirectory));
+            TemplateManager = new TemplateManager();
         }
 
         public void InitializeLocations(IServiceProvider serviceProvider) {
