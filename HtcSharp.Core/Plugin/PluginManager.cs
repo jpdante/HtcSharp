@@ -35,7 +35,7 @@ namespace HtcSharp.Core.Plugin {
                     Logger.LogError($"Failed to load plugin '{assemblyPath}'.", ex);
                 }
             }
-            /*foreach (var plugin in Plugins) {
+            foreach (var plugin in Plugins) {
                 var loaderContext = _pluginsDictionary[plugin].AssemblyLoadContext;
                 foreach (var subPlugin in Plugins) {
                     if (subPlugin == plugin) continue;
@@ -43,7 +43,7 @@ namespace HtcSharp.Core.Plugin {
                     if (string.IsNullOrEmpty(subPluginAssembly.FullName)) continue;
                     loaderContext.AddSharedAssembly(subPluginAssembly.FullName, subPluginAssembly);
                 }
-            }*/
+            }
         }
 
         public async Task LoadPlugin(string assemblyPath) {
