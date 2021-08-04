@@ -9,6 +9,12 @@ namespace HtcSharp.Logging {
         Warn = 4,
         Error = 8,
         Fatal = 16,
+
         All = 31,
+        DebugUp = 31,
+        InfoUp = 30,
+        WarnUp = 28,
+        ErrorUp = 24,
+        FatalUp = 16
     }
 }
