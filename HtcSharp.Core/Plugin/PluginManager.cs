@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
 using HtcSharp.Core.Internal;
@@ -26,11 +25,28 @@ namespace HtcSharp.Core.Plugin {
             _pluginsDictionary = new Dictionary<IPlugin, BasePlugin>();
         }
 
-        public async Task LoadPlugins(string path) {
+        internal bool TryGetBasePlugin(IPlugin plugin, out BasePlugin? basePlugin) => _pluginsDictionary.TryGetValue(plugin, out basePlugin);
+
+        private static string[] GetFiles(string path, string searchPattern = "*.*", SearchOption searchOption = SearchOption.TopDirectoryOnly) {
+            List<string> files = Directory.GetFiles(path, searchPattern, SearchOption.TopDirectoryOnly).ToList();
+            if (searchOption == SearchOption.TopDirectoryOnly) return files.ToArray();
+            foreach (string subDir in Directory.GetDirectories(path)) {
+                try {
+                    files.AddRange(GetFiles(subDir, searchPattern, searchOption));
+                } catch {
+                    // ignored
+                }
+            }
+            return files.ToArray();
+        }
+
+        #region Find Plugins
+
+        public async Task FindPlugins(string path) {
             if (!Directory.Exists(path)) return;
             foreach (string assemblyPath in GetFiles(path, "*.plugin.dll", SearchOption.AllDirectories)) {
                 try {
-                    await LoadPlugin(assemblyPath);
+                    await LoadPluginAssemblies(assemblyPath);
                 } catch (Exception ex) {
                     Logger.LogError($"Failed to load plugin '{assemblyPath}'.", ex);
                 }
@@ -46,7 +62,11 @@ namespace HtcSharp.Core.Plugin {
             }
         }
 
-        public async Task LoadPlugin(string assemblyPath) {
+        #endregion
+
+        #region Load Assemblies
+
+        public Task LoadPluginAssemblies(string assemblyPath) {
             var assemblyLoadContext = new CustomAssemblyLoadContext(assemblyPath);
             foreach (var module in _moduleManager.Modules) {
                 if (!_moduleManager.TryGetBaseModule(module, out var baseModule)) continue;
@@ -67,31 +87,19 @@ namespace HtcSharp.Core.Plugin {
                 // TODO: Check if is compatible
                 _plugins.Add(plugin);
                 _pluginsDictionary.Add(plugin, new BasePlugin(plugin, assembly, assemblyLoadContext));
-                await plugin.Load();
-                Logger.LogInfo($"Loaded plugin {plugin.Name} {plugin.Version}.");
             }
+            return Task.CompletedTask;
         }
 
-        public async Task InitPlugins() {
-            foreach (var plugin in _plugins.ToArray()) {
-                try {
-                    await InitPlugin(plugin);
-                    Logger.LogInfo($"Enabled plugin {plugin.Name} {plugin.Version}.");
-                } catch (Exception ex) {
-                    Logger.LogError($"Failed to enable plugin {plugin.Name} {plugin.Version}.", ex);
-                }
-            }
-        }
+        #endregion
 
-        public async Task InitPlugin(IPlugin plugin) {
-            await plugin.Enable();
-        }
+        #region Unload Plugins
 
         public async Task UnloadPlugins() {
             foreach (var plugin in _plugins.ToArray()) {
                 try {
                     await UnloadPlugin(plugin);
-                    Logger.LogInfo($"Unloaded plugin {plugin.Name} {plugin.Version}.");
+                    Logger.LogInfo($"Unloaded plugin assembly {plugin.Name} {plugin.Version}.");
                 } catch (Exception ex) {
                     Logger.LogError($"Failed to load plugin {plugin.Name} {plugin.Version}.", ex);
                 }
@@ -106,20 +114,63 @@ namespace HtcSharp.Core.Plugin {
             _pluginsDictionary.Remove(plugin);
         }
 
-        private static string[] GetFiles(string path, string searchPattern = "*.*", SearchOption searchOption = SearchOption.TopDirectoryOnly) {
-            List<string> files = Directory.GetFiles(path, searchPattern, SearchOption.TopDirectoryOnly).ToList();
-            if (searchOption == SearchOption.TopDirectoryOnly) return files.ToArray();
-            foreach (string subDir in Directory.GetDirectories(path)) {
+        #endregion
+
+        #region Load Modules
+
+        public async Task LoadPlugins() {
+            foreach (var plugin in _plugins.ToArray()) {
                 try {
-                    files.AddRange(GetFiles(subDir, searchPattern, searchOption));
-                } catch {
-                    // ignored
+                    await LoadPlugin(plugin);
+                    Logger.LogInfo($"Loaded plugin {plugin.Name} {plugin.Version}.");
+                } catch (Exception ex) {
+                    Logger.LogError($"Failed to load plugin {plugin.Name} {plugin.Version}.", ex);
                 }
             }
-            return files.ToArray();
         }
 
-        internal bool TryGetBasePlugin(IPlugin plugin, out BasePlugin? basePlugin) => _pluginsDictionary.TryGetValue(plugin, out basePlugin);
+        public async Task LoadPlugin(IPlugin plugin) {
+            await plugin.Load();
+        }
 
+        #endregion
+
+        #region Enable Modules
+
+        public async Task EnablePlugins() {
+            foreach (var plugin in _plugins.ToArray()) {
+                try {
+                    await EnablePlugin(plugin);
+                    Logger.LogInfo($"Enabled plugin {plugin.Name} {plugin.Version}.");
+                } catch (Exception ex) {
+                    Logger.LogError($"Failed to enable plugin {plugin.Name} {plugin.Version}.", ex);
+                }
+            }
+        }
+
+        public async Task EnablePlugin(IPlugin plugin) {
+            await plugin.Enable();
+        }
+
+        #endregion
+
+        #region Disable Modules
+
+        public async Task DisablePlugins() {
+            foreach (var plugin in _plugins.ToArray()) {
+                try {
+                    await DisablePlugin(plugin);
+                    Logger.LogInfo($"Disabled plugin {plugin.Name} {plugin.Version}.");
+                } catch (Exception ex) {
+                    Logger.LogError($"Failed to disable plugin {plugin.Name} {plugin.Version}.", ex);
+                }
+            }
+        }
+
+        public async Task DisablePlugin(IPlugin plugin) {
+            await plugin.Disable();
+        }
+
+        #endregion
     }
 }

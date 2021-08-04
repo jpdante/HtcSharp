@@ -1,9 +1,9 @@
 ﻿using System;
 
 namespace HtcSharp.Cli {
-    class Program {
-        static void Main(string[] args) {
-            Console.WriteLine("Hello World!");
+    public class Program {
+        public static void Main(string[] args) {
+            new Client().Run(args);
         }
     }
 }

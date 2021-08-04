@@ -22,7 +22,7 @@ namespace HtcSharp {
         private Config Config;
         private ModuleManager ModuleManager;
         private PluginManager PluginManager;
-        private CliManager CliManager;
+        private CliServer CliServer;
 
         protected override async Task OnLoad() {
             PathExt.EnsureFolders();
@@ -33,36 +33,51 @@ namespace HtcSharp {
 
             Logger.LogInfo("Loading...");
 
+            CliServer = new CliServer(ArgsReader.GetOrDefault("pipe", "htcsharp"));
+            CliServer.AddCommand(new ReloadAllCommand(this));
+
             ModuleManager = new ModuleManager();
-            await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
+            await ModuleManager.FindModules(Path.GetFullPath(Config.ModulesPath));
 
             PluginManager = new PluginManager(ModuleManager);
-            await PluginManager.LoadPlugins(Path.GetFullPath(Config.PluginsPath));
+            await PluginManager.FindPlugins(Path.GetFullPath(Config.PluginsPath));
 
-            CliManager = new CliManager("htcsharp");
-            CliManager.AddCommand(new ReloadCommand(this));
+            await ModuleManager.LoadModules();
+            await PluginManager.LoadPlugins();
         }
 
         protected override async Task OnStart() {
             Logger.LogInfo("Starting...");
-            await ModuleManager.InitModules();
-            await PluginManager.InitPlugins();
-            await CliManager.Start();
+
+            await ModuleManager.EnableModules();
+            await PluginManager.EnablePlugins();
+
+            await CliServer.Start();
         }
 
         protected override async Task OnExit() {
+            await CliServer.Stop();
+
+            await ModuleManager.DisableModules();
+            await PluginManager.DisablePlugins();
+
             await PluginManager.UnloadPlugins();
             await ModuleManager.UnloadModules();
-            await CliManager.Stop();
+
             Logger.LogInfo("Exiting...");
         }
 
         public async Task OnReload() {
-            await PluginManager.UnloadPlugins();
-            await ModuleManager.UnloadModules();
+            Logger.LogInfo("Reloading...");
 
-            await ModuleManager.InitModules();
-            await PluginManager.InitPlugins();
+            await ModuleManager.DisableModules();
+            await PluginManager.DisablePlugins();
+
+            await ModuleManager.LoadModules();
+            await PluginManager.LoadPlugins();
+
+            await ModuleManager.EnableModules();
+            await PluginManager.EnablePlugins();
         }
 
         private async Task LoadConfig() {

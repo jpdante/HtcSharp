@@ -43,6 +43,7 @@ namespace HtcSharp.HttpModule {
 
         public async Task Load() {
             Logger.LogInfo("Loading HttpEngine...");
+            _sites.Clear();
             LoadDefaultDirectives();
             await LoadSites(_sitesPath);
             _webHost = new WebHostBuilder()

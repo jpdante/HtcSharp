@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipes;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions.Internal.Console;
+using HtcSharp.Logging;
 
 namespace HtcSharp.Core.Console {
-    public class CliManager : IDisposable {
+    public class CliServer : IDisposable {
+
+        private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private readonly Dictionary<string, CliCommand> _commands;
 
@@ -20,7 +24,7 @@ namespace HtcSharp.Core.Console {
         public bool Connected { get; private set; }
         public IEnumerable<CliCommand> Commands => _commands.Values;
 
-        public CliManager(string pipeName) {
+        public CliServer(string pipeName) {
             PipeName = pipeName;
             _commands = new Dictionary<string, CliCommand>();
         }
@@ -28,7 +32,7 @@ namespace HtcSharp.Core.Console {
         public Task Start() {
             Running = true;
             _cancellationTokenSource = new CancellationTokenSource();
-            _namedPipeServerStream = new NamedPipeServerStream("htcsharp", PipeDirection.InOut, 1);
+            _namedPipeServerStream = new NamedPipeServerStream(PipeName, PipeDirection.InOut, 1);
             _namedPipeServerStream.BeginWaitForConnection(OnNewConnection, null);
             return Task.CompletedTask;
         }
@@ -54,6 +58,7 @@ namespace HtcSharp.Core.Console {
                 if (!Running) return;
                 if (_namedPipeServerStream == null) throw new NullReferenceException();
                 _namedPipeServerStream.EndWaitForConnection(result);
+                Logger.LogInfo("New CLI connection");
                 Connected = true;
                 await ProcessCommands();
             } catch (Exception) {
@@ -62,17 +67,25 @@ namespace HtcSharp.Core.Console {
         }
 
         private async Task ProcessCommands() {
-            if (_namedPipeServerStream == null) throw new NullReferenceException();
-            using var reader = new StreamReader(_namedPipeServerStream, Encoding.UTF8);
-            await using var writer = new StreamWriter(_namedPipeServerStream, Encoding.UTF8);
-
-            while (Running) {
-                string? line = await reader.ReadLineAsync();
-                if (string.IsNullOrEmpty(line)) continue;
-                string[] data = line.Split(" ", 2);
-                if (_commands.TryGetValue(data[0], out var command)) {
-                    await command.Process(reader, writer, data[1]);
+            try {
+                if (_namedPipeServerStream == null) throw new NullReferenceException();
+                using var reader = new StreamReader(_namedPipeServerStream, Encoding.UTF8);
+                await using var writer = new StreamWriter(_namedPipeServerStream, Encoding.UTF8);
+                while (Running) {
+                    string? line = await reader.ReadLineAsync();
+                    Logger.LogInfo($">{line}");
+                    if (string.IsNullOrEmpty(line)) continue;
+                    string[] data = line.Split(" ", 2);
+                    if (_commands.TryGetValue(data[0], out var command)) {
+                        await command.Process(reader, writer, data.Length > 1 ? data[1] : null);
+                    } else {
+                        await writer.WriteLineAsync($"Unknown command '{data[0]}'.");
+                    }
+                    await writer.FlushAsync();
                 }
+            } catch (Exception ex) {
+                Logger.LogError(ex);
+                Running = false;
             }
         }
 

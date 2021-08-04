@@ -7,7 +7,9 @@ namespace HtcSharp.Cli.Internal {
     public abstract class ConsoleApplication {
 
         private readonly ManualResetEvent _shutdownEvent;
+
         protected string[] Args { get; private set; }
+        protected bool Running { get; private set; }
 
         protected ConsoleApplication() {
             _shutdownEvent = new ManualResetEvent(false);
@@ -16,6 +18,7 @@ namespace HtcSharp.Cli.Internal {
 
         public void Run(string[] args) {
             Args = args;
+            Running = true;
             _shutdownEvent.Reset();
             try {
                 var task = AsyncRun();
@@ -34,11 +37,13 @@ namespace HtcSharp.Cli.Internal {
 
         private void ConsoleOnCancelKeyPress(object sender, ConsoleCancelEventArgs e) {
             _shutdownEvent.Set();
+            Running = false;
             e.Cancel = true;
         }
 
         protected void Stop() {
             _shutdownEvent.Set();
+            Running = false;
         }
 
         protected abstract Task OnLoad();
