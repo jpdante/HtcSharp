@@ -15,6 +15,11 @@ namespace HtcSharp.Logging {
             DefaultAppender = appender;
         }
 
+        public static void Dispose() {
+            DefaultAppender.Dispose();
+            DefaultAppender = new NullAppender();
+        }
+
         public static ILogger GetLogger(Type type) {
             return new Logger(type);
         }
