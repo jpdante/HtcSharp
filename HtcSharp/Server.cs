@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,7 @@ namespace HtcSharp {
             ArgsReader = new ArgsReader(Args);
             await LoadConfig();
 
+            LoggerManager.Dispose();
             LoggerManager.Init(Config.Logging.GetAppender());
 
             Logger.LogInfo("Loading...");
@@ -69,6 +71,10 @@ namespace HtcSharp {
 
         public async Task OnReload() {
             Logger.LogInfo("Reloading...");
+            LoggerManager.Dispose();
+
+            await LoadConfig();
+            LoggerManager.Init(Config.Logging.GetAppender());
 
             await ModuleManager.DisableModules();
             await PluginManager.DisablePlugins();
