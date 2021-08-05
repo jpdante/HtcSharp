@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using System.Text.Json;
+﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
 using HtcSharp.HttpModule;
@@ -17,7 +17,7 @@ namespace HtcPlugin.Tests.Mvc {
         public string Name => "MvcTest";
         public string Version => "1.0.0";
 
-        public Task Load() {
+        public Task Init(IServiceProvider serviceProvider) {
             Logger.LogInfo("Loading...");
             UsePrefix("/mvc");
             MatchDomain("127.0.0.1");
@@ -36,7 +36,7 @@ namespace HtcPlugin.Tests.Mvc {
             return Task.CompletedTask;
         }
 
-        public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
+        public bool IsCompatible(IVersion version) {
             return true;
         }
 
@@ -48,6 +48,9 @@ namespace HtcPlugin.Tests.Mvc {
             }
             httpContext.Response.StatusCode = httpException.Status;
             await httpContext.Response.WriteAsync(httpException.Message);
+        }
+
+        public void Dispose() {
         }
     }
 }

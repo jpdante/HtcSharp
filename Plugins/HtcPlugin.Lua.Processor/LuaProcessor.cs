@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using HtcPlugin.Lua.Processor.Core;
 using HtcSharp.Abstractions;
@@ -16,7 +17,7 @@ namespace HtcPlugin.Lua.Processor {
         public string Name => "HtcLuaProcessor";
         public string Version => "1.0.0";
 
-        public Task Load() {
+        public Task Init(IServiceProvider serviceProvider) {
             Logger.LogInfo("Loading...");
             this.RegisterExtensionProcessor(".lua", this);
             this.RegisterIndex("index.lua");
@@ -33,13 +34,16 @@ namespace HtcPlugin.Lua.Processor {
             return Task.CompletedTask;
         }
 
-        public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
+        public bool IsCompatible(IVersion version) {
             return true;
         }
 
         public Task OnHttpExtensionProcess(DirectiveDelegate next, HtcHttpContext httpContext, string fileName, string extension) {
             var luaContext = new LuaContext(httpContext, fileName);
             return luaContext.LoadFile() ? luaContext.ProcessRequest() : next(httpContext);
+        }
+
+        public void Dispose() {
         }
     }
 }

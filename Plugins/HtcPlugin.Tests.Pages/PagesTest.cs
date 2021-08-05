@@ -17,7 +17,7 @@ namespace HtcPlugin.Tests.Pages {
         public string Name => "PagesTest";
         public string Version => "1.0.0";
 
-        public Task Load() {
+        public Task Init(IServiceProvider serviceProvider) {
             Logger.LogInfo("Loading...");
             this.RegisterPage("/pages/test", this);
             return Task.CompletedTask;
@@ -33,12 +33,15 @@ namespace HtcPlugin.Tests.Pages {
             return Task.CompletedTask;
         }
 
-        public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
+        public bool IsCompatible(IVersion version) {
             return true;
         }
 
         public async Task OnHttpPageRequest(DirectiveDelegate next, HtcHttpContext httpContext, string fileName) {
             await httpContext.Response.WriteAsync($"Requested page: {fileName}");
+        }
+
+        public void Dispose() {
         }
     }
 }

@@ -1,11 +1,13 @@
-﻿namespace HtcSharp {
-    public static class Version {
+﻿using HtcSharp.Abstractions;
 
-        public static int Major = 0;
+namespace HtcSharp {
+    public class Version : IVersion {
 
-        public static int Minor = 1;
+        public int Major { get; init; }
 
-        public static int Patch = 0;
+        public int Minor { get; init; }
+
+        public int Patch { get; init; }
 
     }
 }

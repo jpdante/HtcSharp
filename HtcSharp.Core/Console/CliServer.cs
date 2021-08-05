@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HtcSharp.Abstractions.Internal.Console;
 using HtcSharp.Logging;
 
 namespace HtcSharp.Core.Console {
@@ -22,7 +21,7 @@ namespace HtcSharp.Core.Console {
         public string PipeName { get; private set; }
         public bool Running { get; private set; }
         public bool Connected { get; private set; }
-        public IEnumerable<CliCommand> Commands => _commands.Values;
+        internal IEnumerable<CliCommand> Commands => _commands.Values;
 
         public CliServer(string pipeName) {
             PipeName = pipeName;
@@ -44,12 +43,12 @@ namespace HtcSharp.Core.Console {
             if (_namedPipeServerStream != null) await _namedPipeServerStream.DisposeAsync()!;
         }
 
-        public void AddCommand(CliCommand command) {
+        internal void AddCommand(CliCommand command) {
             if (command.Command.Contains(" ")) throw new Exception("Command cannot contain spaces.");
             _commands.Add(command.Command, command);
         }
 
-        public void RemoveCommand(CliCommand command) {
+        internal void RemoveCommand(CliCommand command) {
             _commands.Remove(command.Command);
         }
 

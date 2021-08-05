@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using HtcSharp.Abstractions.Internal;
-using HtcSharp.Abstractions.Internal.Console;
+using HtcSharp.Abstractions;
 
 namespace HtcSharp.Core.Console.Commands {
-    public class ReloadAllCommand : CliCommand {
+    internal class ReloadAllCommand : CliCommand {
 
         public override string Command => "reload-all";
 

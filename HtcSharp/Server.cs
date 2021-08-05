@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using HtcSharp.Abstractions.Internal;
+using HtcSharp.Abstractions;
 using HtcSharp.Core;
 using HtcSharp.Core.Console;
-using HtcSharp.Core.Console.Commands;
 using HtcSharp.Core.Module;
 using HtcSharp.Core.Plugin;
 using HtcSharp.Internal;
@@ -19,16 +17,27 @@ namespace HtcSharp {
     public class Server : DaemonApplication, IServer {
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        private ArgsReader ArgsReader;
-        private Config Config;
-        private ModuleManager ModuleManager;
-        private PluginManager PluginManager;
-        private CliServer CliServer;
+        internal readonly Version Version;
+        internal Config Config;
+        internal ArgsReader ArgsReader;
+        internal ModuleManager ModuleManager;
+        internal PluginManager PluginManager;
+        internal CliServer CliServer;
+
+        public Server() {
+            Version = new Version {
+                Major = 1,
+                Minor = 0,
+                Patch = 0,
+            };
+        }
 
         protected override async Task OnLoad() {
             PathExt.EnsureFolders();
+
             ArgsReader = new ArgsReader(Args);
-            await LoadConfig();
+
+            Config = await LoadConfig(ArgsReader.GetOrDefault("config", "./config.yml"));
 
             LoggerManager.Dispose();
             LoggerManager.Init(Config.Logging.GetAppender());
@@ -36,16 +45,20 @@ namespace HtcSharp {
             Logger.LogInfo("Loading...");
 
             CliServer = new CliServer(ArgsReader.GetOrDefault("pipe", "htcsharp"));
-            CliServer.AddCommand(new ReloadAllCommand(this));
 
-            ModuleManager = new ModuleManager();
-            await ModuleManager.FindModules(Path.GetFullPath(Config.ModulesPath));
+            ModuleManager = new ModuleManager(Version, configureServices => {
 
-            PluginManager = new PluginManager(ModuleManager);
-            await PluginManager.FindPlugins(Path.GetFullPath(Config.PluginsPath));
+            });
+            await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
 
-            await ModuleManager.LoadModules();
-            await PluginManager.LoadPlugins();
+            await ModuleManager.InitModules();
+
+            PluginManager = new PluginManager(Version, ModuleManager, configureServices => {
+
+            });
+            await PluginManager.LoadPlugins(Path.GetFullPath(Config.PluginsPath));
+
+            await PluginManager.InitPlugins();
         }
 
         protected override async Task OnStart() {
@@ -73,21 +86,20 @@ namespace HtcSharp {
             Logger.LogInfo("Reloading...");
             LoggerManager.Dispose();
 
-            await LoadConfig();
-            LoggerManager.Init(Config.Logging.GetAppender());
-
             await ModuleManager.DisableModules();
             await PluginManager.DisablePlugins();
 
-            await ModuleManager.LoadModules();
-            await PluginManager.LoadPlugins();
+            Config = await LoadConfig(ArgsReader.GetOrDefault("config", "./config.yml"));
+            LoggerManager.Init(Config.Logging.GetAppender());
+
+            await ModuleManager.InitModules();
+            await PluginManager.InitPlugins();
 
             await ModuleManager.EnableModules();
             await PluginManager.EnablePlugins();
         }
 
-        private async Task LoadConfig() {
-            string configPath = ArgsReader.GetOrDefault("config", "./config.yml");
+        private async Task<Config> LoadConfig(string configPath) {
             configPath = Path.GetFullPath(configPath);
             if (File.Exists(configPath)) {
                 await using var fileStream = new FileStream(configPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read);
@@ -95,15 +107,16 @@ namespace HtcSharp {
                 var deserializer = new DeserializerBuilder()
                     .WithNamingConvention(new PascalCaseNamingConvention())
                     .Build();
-                Config = deserializer.Deserialize<Config>(streamReader);
+                return deserializer.Deserialize<Config>(streamReader);
             } else {
                 await using var fileStream = new FileStream(configPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
                 await using var streamWriter = new StreamWriter(fileStream, Encoding.UTF8);
-                Config = new Config();
+                var config = new Config();
                 var serializer = new SerializerBuilder()
                     .WithNamingConvention(new PascalCaseNamingConvention())
                     .Build();
-                serializer.Serialize(streamWriter, Config);
+                serializer.Serialize(streamWriter, config);
+                return config;
             }
         }
     }

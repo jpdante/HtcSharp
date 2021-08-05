@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace HtcSharp.Abstractions.Internal {
+namespace HtcSharp.Abstractions {
     public interface IServer {
 
         public abstract Task OnReload();

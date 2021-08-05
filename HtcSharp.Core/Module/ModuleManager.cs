@@ -2,76 +2,60 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
-using HtcSharp.Core.Internal;
 using HtcSharp.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HtcSharp.Core.Module {
-    public class ModuleManager {
+    public class ModuleManager : IModuleManager {
 
         private readonly ILogger Logger = LoggerManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
-
+        private readonly IVersion _version;
         private readonly List<IModule> _modules;
-        private readonly Dictionary<IModule, BaseModule> _modulesDictionary;
+        private readonly Dictionary<IModule, ModuleLoader> _modulesDictionary;
+        private readonly IServiceProvider _serviceProvider;
 
-        public IReadOnlyList<IModule> Modules => _modules;
+        public IEnumerable<IReadOnlyModule> Modules => _modules;
 
-        public ModuleManager() {
+        public ModuleManager(IVersion version, Action<IServiceCollection> configureServices) {
+            _version = version;
             _modules = new List<IModule>();
-            _modulesDictionary = new Dictionary<IModule, BaseModule>();
+            _modulesDictionary = new Dictionary<IModule, ModuleLoader>();
+            var serviceCollection = new ServiceCollection();
+            configureServices.Invoke(serviceCollection);
+            serviceCollection.AddSingleton<IModuleManager>(this);
+            _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        internal bool TryGetBaseModule(IModule module, out BaseModule? baseModule) => _modulesDictionary.TryGetValue(module, out baseModule);
+        public bool TryGetBaseModule(IReadOnlyModule module, out ModuleLoader? baseModule) => _modulesDictionary.TryGetValue((IModule) module, out baseModule);
 
-        private static string[] GetFiles(string path, string searchPattern = "*.*", SearchOption searchOption = SearchOption.TopDirectoryOnly) {
-            List<string> files = Directory.GetFiles(path, searchPattern, SearchOption.TopDirectoryOnly).ToList();
-            if (searchOption == SearchOption.TopDirectoryOnly) return files.ToArray();
-            foreach (string subDir in Directory.GetDirectories(path)) {
-                try {
-                    files.AddRange(GetFiles(subDir, searchPattern, searchOption));
-                } catch {
-                    // ignored
-                }
-            }
-            return files.ToArray();
-        }
+        public bool HasModule(string name) => _modules.Any(module => module.Name == name);
 
-        #region Find Modules
+        #region Load Modules
 
-        public async Task FindModules(string path) {
+        public async Task LoadModules(string path) {
             if (!Directory.Exists(path)) return;
             foreach (string assemblyPath in GetFiles(path, "*.module.dll", SearchOption.AllDirectories)) {
                 try {
-                    await LoadModuleAssemblies(assemblyPath);
+                    await LoadModule(assemblyPath);
                 } catch (Exception ex) {
                     Logger.LogError($"Failed to load module assembly '{assemblyPath}'.", ex);
                 }
             }
-            foreach (var module in Modules) {
-                var loaderContext = _modulesDictionary[module].AssemblyLoadContext;
-                foreach (var subModule in Modules) {
-                    if (subModule == module) continue;
-                    var subModuleAssembly = _modulesDictionary[subModule].Assembly;
-                    if (string.IsNullOrEmpty(subModuleAssembly.FullName)) continue;
-                    loaderContext.AddSharedAssembly(subModuleAssembly.FullName, subModuleAssembly);
-                }
-            }
         }
 
-        #endregion
-
-        #region Load Assemblies
-
-        public Task LoadModuleAssemblies(string assemblyPath) {
-            var assemblyLoadContext = new CustomAssemblyLoadContext(assemblyPath);
-            var assembly = assemblyLoadContext.LoadAssemblyFromFilePath(assemblyPath);
-            foreach (var moduleType in assembly.GetTypes().Where(t => typeof(IModule).IsAssignableFrom(t) && !t.IsAbstract)) {
-                var module = Activator.CreateInstance(moduleType) as IModule;
-                if (module == null) continue;
-                // TODO: Check if is compatible
-                _modules.Add(module);
-                _modulesDictionary.Add(module, new BaseModule(module, assembly, assemblyLoadContext));
+        public Task LoadModule(string assemblyPath) {
+            var moduleLoader = new ModuleLoader(assemblyPath);
+            moduleLoader.Load(_version);
+            if (moduleLoader.Instances.Count == 0) {
+                moduleLoader.Dispose();
+                return Task.CompletedTask;
+            }
+            foreach (var instance in moduleLoader.Instances) {
+                _modulesDictionary.Add(instance, moduleLoader);
+                _modules.Add(instance);
             }
             return Task.CompletedTask;
         }
@@ -81,7 +65,7 @@ namespace HtcSharp.Core.Module {
         #region Unload Modules
 
         public async Task UnloadModules() {
-            foreach (var module in _modules.ToArray()) {
+            foreach (var module in _modules) {
                 try {
                     await UnloadModule(module);
                     Logger.LogInfo($"Unloaded module assembly {module.Name} {module.Version}.");
@@ -92,30 +76,33 @@ namespace HtcSharp.Core.Module {
         }
 
         public Task UnloadModule(IModule module) {
-            if (!_modulesDictionary.TryGetValue(module, out var baseModule)) return Task.CompletedTask;
-            baseModule.Unload();
+            if (!_modulesDictionary.TryGetValue(module, out var moduleLoader)) return Task.CompletedTask;
+            moduleLoader.UnloadModule(module);
             _modules.Remove(module);
             _modulesDictionary.Remove(module);
+            if (moduleLoader.Instances.Count == 0) {
+                moduleLoader.Dispose();
+            }
             return Task.CompletedTask;
         }
 
         #endregion
 
-        #region Load Modules
+        #region Init Modules
 
-        public async Task LoadModules() {
-            foreach (var module in _modules.ToArray()) {
+        public async Task InitModules() {
+            foreach (var module in _modules) {
                 try {
-                    await LoadModule(module);
-                    Logger.LogInfo($"Loaded module {module.Name} {module.Version}.");
+                    await InitModule(module);
+                    Logger.LogInfo($"Initialized module {module.Name} {module.Version}.");
                 } catch (Exception ex) {
-                    Logger.LogError($"Failed to load module {module.Name} {module.Version}.", ex);
+                    Logger.LogError($"Failed to initialize module {module.Name} {module.Version}.", ex);
                 }
             }
         }
 
-        public async Task LoadModule(IModule module) {
-            await module.Load();
+        public async Task InitModule(IModule module) {
+            await module.Init(_serviceProvider);
         }
 
         #endregion
@@ -123,7 +110,7 @@ namespace HtcSharp.Core.Module {
         #region Enable Modules
 
         public async Task EnableModules() {
-            foreach (var module in _modules.ToArray()) {
+            foreach (var module in _modules) {
                 try {
                     await EnableModule(module);
                     Logger.LogInfo($"Enabled module {module.Name} {module.Version}.");
@@ -142,7 +129,7 @@ namespace HtcSharp.Core.Module {
         #region Disable Modules
 
         public async Task DisableModules() {
-            foreach (var module in _modules.ToArray()) {
+            foreach (var module in _modules) {
                 try {
                     await DisableModule(module);
                     Logger.LogInfo($"Disabled module {module.Name} {module.Version}.");
@@ -158,5 +145,17 @@ namespace HtcSharp.Core.Module {
 
         #endregion
 
+        private static IEnumerable<string> GetFiles(string path, string searchPattern = "*.*", SearchOption searchOption = SearchOption.TopDirectoryOnly) {
+            List<string> files = Directory.GetFiles(path, searchPattern, SearchOption.TopDirectoryOnly).ToList();
+            if (searchOption == SearchOption.TopDirectoryOnly) return files.ToArray();
+            foreach (string subDir in Directory.GetDirectories(path)) {
+                try {
+                    files.AddRange(GetFiles(subDir, searchPattern, searchOption));
+                } catch {
+                    // ignored
+                }
+            }
+            return files;
+        }
     }
 }

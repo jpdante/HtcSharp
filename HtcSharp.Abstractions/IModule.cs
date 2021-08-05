@@ -1,15 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace HtcSharp.Abstractions {
-    public interface IModule {
+    public interface IModule : IReadOnlyModule, IDisposable {
 
-        string Name { get; }
-        string Version { get; }
-
-        Task Load();
+        Task Init(IServiceProvider serviceProvider);
         Task Enable();
         Task Disable();
 
-        bool IsCompatible(int htcMajor, int htcMinor, int htcPatch);
     }
 }

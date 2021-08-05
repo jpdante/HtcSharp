@@ -1,8 +1,9 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using HtcSharp.Abstractions;
 
-namespace HtcSharp.Abstractions.Internal.Console {
-    public abstract class CliCommand {
+namespace HtcSharp.Core.Console {
+    internal abstract class CliCommand {
 
         public abstract string Command { get; }
 

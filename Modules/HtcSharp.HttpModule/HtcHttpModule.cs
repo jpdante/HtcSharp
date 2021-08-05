@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace HtcSharp.HttpModule {
         private HttpModuleConfig _config;
         private HttpEngine _httpEngine;
 
-        public async Task Load() {
+        public async Task Init(IServiceProvider serviceProvider) {
             _config = await LoadConfig();
             _httpEngine = new HttpEngine(Path.GetFullPath(_config.SitesPath));
             await _httpEngine.Load();
@@ -32,7 +33,7 @@ namespace HtcSharp.HttpModule {
             await _httpEngine.Stop();
         }
 
-        public bool IsCompatible(int htcMajor, int htcMinor, int htcPatch) {
+        public bool IsCompatible(IVersion version) {
             return true;
         }
 
@@ -49,6 +50,9 @@ namespace HtcSharp.HttpModule {
                 });
                 return config;
             }
+        }
+
+        public void Dispose() {
         }
     }
 }
