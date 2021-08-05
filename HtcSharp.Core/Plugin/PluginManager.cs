@@ -61,17 +61,12 @@ namespace HtcSharp.Core.Plugin {
                 string? moduleAssemblyName = moduleLoader.Assembly.GetName().Name;
                 if (string.IsNullOrEmpty(moduleAssemblyName)) continue;
                 pluginLoader.SharedAssemblies.Add(moduleAssemblyName, moduleLoader.Assembly);   
-                foreach (var (assemblyName, assembly) in moduleLoader.LoadedAssemblies) {
-                    Logger.LogError(assemblyName);
-                    pluginLoader.SharedAssemblies.Add(assemblyName, assembly);   
-                }
+                pluginLoader.SharedContexts.Add(moduleLoader);
             }
 
             // Add plugins as shared libraries
-            foreach (var subPluginLoader in _pluginsDictionary.Values.Where(subPluginLoader => subPluginLoader != pluginLoader)) {
-                foreach (var (assemblyName, assembly) in subPluginLoader.LoadedAssemblies) {
-                    pluginLoader.SharedAssemblies.Add(assemblyName, assembly);   
-                }
+            foreach (var subPluginLoader in _pluginsDictionary.Values) {
+                pluginLoader.SharedContexts.Add(subPluginLoader);
             }
 
             // Load plugins

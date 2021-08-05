@@ -9,46 +9,21 @@ using HtcSharp.Logging;
 // ReSharper disable PrivateFieldCanBeConvertedToLocalVariable
 
 namespace HtcSharp.Core.Module {
-    public class ModuleLoader : IDisposable {
+    public class ModuleLoader : ManagedLoadContext, IDisposable {
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-
-        public readonly Dictionary<string, Assembly> SharedAssemblies;
-        public readonly Dictionary<string, Assembly> LoadedAssemblies;
-        public readonly List<string> PrivateAssemblies;
-        public readonly List<string> AdditionalProbingPaths;
-        public readonly List<string> ResourceProbingPaths;
-
-        public bool ShadowCopyNativeLibraries { get; set; }
 
         public string AssemblyPath { get; }
         public Assembly? Assembly { get; private set; }
         public List<IModule> Instances { get; }
-        public ManagedLoadContext AssemblyLoadContext { get; }
 
-        public ModuleLoader(string assemblyPath) {
+        public ModuleLoader(string assemblyPath) : base(assemblyPath, true) {
             AssemblyPath = assemblyPath;
             Assembly = null;
             Instances = new List<IModule>();
-
-            SharedAssemblies = new Dictionary<string, Assembly>();
-            LoadedAssemblies = new Dictionary<string, Assembly>();
-            PrivateAssemblies = new List<string>();
-            AdditionalProbingPaths = new List<string>();
-            ResourceProbingPaths = new List<string>();
-
-            ShadowCopyNativeLibraries = false;
-
-            AssemblyLoadContext = new ManagedLoadContext(AssemblyPath, SharedAssemblies, PrivateAssemblies, AdditionalProbingPaths, ResourceProbingPaths, ShadowCopyNativeLibraries);
-            AssemblyLoadContext.LoadManagedLibrary += OnLoadManagedLibrary;
-        }
-
-        private void OnLoadManagedLibrary(AssemblyName assemblyName, Assembly assembly) {
-            if (assemblyName.Name == null) return;
-            LoadedAssemblies.Add(assemblyName.Name, assembly);
         }
 
         public void Load(IVersion version) {
-            Assembly = AssemblyLoadContext.LoadAssemblyFromFilePath(AssemblyPath);
+            Assembly = LoadAssemblyFromFilePath(AssemblyPath);
             foreach (var moduleType in Assembly.GetTypes().Where(t => typeof(IModule).IsAssignableFrom(t) && !t.IsAbstract)) {
                 var module = Activator.CreateInstance(moduleType) as IModule;
                 if (module == null) continue;
@@ -67,7 +42,7 @@ namespace HtcSharp.Core.Module {
             }
         }
 
-        public void UnloadAll() {
+        public void UnloadModules() {
             foreach (var instance in Instances) {
                 string moduleName = $"{instance.Name} v{instance.Version}";
                 try {
@@ -81,7 +56,7 @@ namespace HtcSharp.Core.Module {
         }
 
         public void Dispose() {
-            AssemblyLoadContext.Unload();
+            Unload();
         }
     }
 }

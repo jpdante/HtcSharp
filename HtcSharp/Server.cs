@@ -73,8 +73,8 @@ namespace HtcSharp {
         protected override async Task OnExit() {
             await CliServer.Stop();
 
-            await ModuleManager.DisableModules();
             await PluginManager.DisablePlugins();
+            await ModuleManager.DisableModules();
 
             await PluginManager.UnloadPlugins();
             await ModuleManager.UnloadModules();
@@ -86,13 +86,19 @@ namespace HtcSharp {
             Logger.LogInfo("Reloading...");
             LoggerManager.Dispose();
 
-            await ModuleManager.DisableModules();
             await PluginManager.DisablePlugins();
+            await ModuleManager.DisableModules();
+
+            await PluginManager.UnloadPlugins();
+            await ModuleManager.UnloadModules();
 
             Config = await LoadConfig(ArgsReader.GetOrDefault("config", "./config.yml"));
             LoggerManager.Init(Config.Logging.GetAppender());
 
+            await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
             await ModuleManager.InitModules();
+
+            await PluginManager.LoadPlugins(Path.GetFullPath(Config.PluginsPath));
             await PluginManager.InitPlugins();
 
             await ModuleManager.EnableModules();

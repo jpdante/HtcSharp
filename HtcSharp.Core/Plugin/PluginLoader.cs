@@ -7,46 +7,22 @@ using HtcSharp.Core.Internal.AssemblyLoader;
 using HtcSharp.Logging;
 
 namespace HtcSharp.Core.Plugin {
-    public class PluginLoader : IDisposable {
+    public class PluginLoader : ManagedLoadContext, IDisposable {
 
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-
-        public readonly Dictionary<string, Assembly> SharedAssemblies;
-        public readonly Dictionary<string, Assembly> LoadedAssemblies;
-        public readonly List<string> PrivateAssemblies;
-        public readonly List<string> AdditionalProbingPaths;
-        public readonly List<string> ResourceProbingPaths;
-
-        public bool ShadowCopyNativeLibraries { get; set; }
 
         public string AssemblyPath { get; }
         public Assembly? Assembly { get; private set; }
         public List<IPlugin> Instances { get; }
-        public ManagedLoadContext AssemblyLoadContext { get; private set; }
 
-        public PluginLoader(string assemblyPath) {
+        public PluginLoader(string assemblyPath) : base(assemblyPath, true) {
             AssemblyPath = assemblyPath;
             Instances = new List<IPlugin>();
             Assembly = null;
-
-            SharedAssemblies = new Dictionary<string, Assembly>();
-            LoadedAssemblies = new Dictionary<string, Assembly>();
-            PrivateAssemblies = new List<string>();
-            AdditionalProbingPaths = new List<string>();
-            ResourceProbingPaths = new List<string>();
-            ShadowCopyNativeLibraries = false;
-
-            AssemblyLoadContext = new ManagedLoadContext(AssemblyPath, SharedAssemblies, PrivateAssemblies, AdditionalProbingPaths, ResourceProbingPaths, ShadowCopyNativeLibraries);
-            AssemblyLoadContext.LoadManagedLibrary += OnLoadManagedLibrary;
-        }
-
-        private void OnLoadManagedLibrary(AssemblyName assemblyName, Assembly assembly) {
-            if (assemblyName.Name == null) return;
-            LoadedAssemblies.Add(assemblyName.Name, assembly);
         }
 
         public void Load(IVersion version) {
-            Assembly = AssemblyLoadContext.LoadAssemblyFromFilePath(AssemblyPath);
+            Assembly = LoadAssemblyFromFilePath(AssemblyPath);
             foreach (var pluginType in Assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract)) {
                 var plugin = Activator.CreateInstance(pluginType) as IPlugin;
                 if (plugin == null) continue;
@@ -65,7 +41,7 @@ namespace HtcSharp.Core.Plugin {
             }
         }
 
-        public void UnloadAll() {
+        public void UnloadPlugins() {
             foreach (var instance in Instances) {
                 string pluginName = $"{instance.Name} v{instance.Version}";
                 try {
@@ -78,7 +54,7 @@ namespace HtcSharp.Core.Plugin {
         }
 
         public void Dispose() {
-            AssemblyLoadContext.Unload();
+            Unload();
         }
     }
 }

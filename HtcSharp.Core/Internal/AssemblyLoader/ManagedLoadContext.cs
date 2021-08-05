@@ -13,42 +13,35 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
     public class ManagedLoadContext : AssemblyLoadContext {
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        public delegate void LoadManagedLibraryHandler(AssemblyName assemblyName, Assembly assembly);
-        public event LoadManagedLibraryHandler LoadManagedLibrary;
-
         private readonly string _basePath;
         private readonly string _mainAssemblyPath;
         private readonly AssemblyDependencyResolver _dependencyResolver;
+        private readonly bool _shadowCopyNativeLibraries;
 
-        private readonly IReadOnlyDictionary<string, Assembly> _sharedAssemblies;
-        private readonly IReadOnlyCollection<string> _privateAssemblies;
-        private readonly IReadOnlyCollection<string> _additionalProbingPaths;
-        private readonly IReadOnlyCollection<string> _resourceProbingPaths;
+        public readonly Dictionary<string, Assembly> SharedAssemblies;
+        public readonly Dictionary<string, Assembly> LoadedAssemblies;
+        public readonly List<ManagedLoadContext> SharedContexts;
+        public readonly List<string> PrivateAssemblies;
+        public readonly List<string> AdditionalProbingPaths;
+        public readonly List<string> ResourceProbingPaths;
 
         private readonly string[] _resourceRoots;
-        private readonly bool _shadowCopyNativeLibraries;
         private readonly string _unmanagedDllShadowCopyDirectoryPath;
 
-        public ManagedLoadContext(string mainAssemblyPath,
-            IReadOnlyDictionary<string, Assembly> sharedAssemblies,
-            IReadOnlyCollection<string> privateAssemblies,
-            IReadOnlyCollection<string> additionalProbingPaths,
-            IReadOnlyCollection<string> resourceProbingPaths,
-            bool shadowCopyNativeLibraries
-        ) : base(mainAssemblyPath, true) {
+        public ManagedLoadContext(string mainAssemblyPath, bool shadowCopyNativeLibraries) : base(mainAssemblyPath, true) {
             _mainAssemblyPath = mainAssemblyPath ?? throw new ArgumentNullException(nameof(mainAssemblyPath));
             _dependencyResolver = new AssemblyDependencyResolver(mainAssemblyPath);
             _basePath = Path.GetDirectoryName(mainAssemblyPath) ?? throw new ArgumentException(nameof(mainAssemblyPath));
 
-            _sharedAssemblies = sharedAssemblies;
-            _privateAssemblies = privateAssemblies ?? throw new ArgumentNullException(nameof(privateAssemblies));
-            _additionalProbingPaths = additionalProbingPaths ?? throw new ArgumentNullException(nameof(additionalProbingPaths));
-            _resourceProbingPaths = resourceProbingPaths ?? throw new ArgumentNullException(nameof(resourceProbingPaths));
-
-            _resourceRoots = new[] { _basePath }
-                .Concat(resourceProbingPaths)
-                .ToArray();
+            SharedAssemblies = new Dictionary<string, Assembly>();
+            LoadedAssemblies = new Dictionary<string, Assembly>();
+            SharedContexts = new List<ManagedLoadContext>();
+            PrivateAssemblies = new List<string>();
+            AdditionalProbingPaths = new List<string>();
+            ResourceProbingPaths = new List<string>();
             _shadowCopyNativeLibraries = shadowCopyNativeLibraries;
+
+            _resourceRoots = new[] { _basePath }.Concat(ResourceProbingPaths).ToArray();
             _unmanagedDllShadowCopyDirectoryPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             if (_shadowCopyNativeLibraries) {
                 Unloading += _ => OnUnloaded();
@@ -58,7 +51,7 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
         protected override Assembly? Load(AssemblyName assemblyName) {
             if (string.IsNullOrEmpty(assemblyName.Name)) throw new ArgumentNullException(nameof(assemblyName));
             // Ignore Resolver
-            if (_privateAssemblies.Contains(assemblyName.Name)) return null;
+            if (PrivateAssemblies.Contains(assemblyName.Name)) return null;
 
             Assembly? assembly;
 
@@ -66,7 +59,7 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
             string? resolvedPath = _dependencyResolver.ResolveAssemblyToPath(assemblyName);
             if (!string.IsNullOrEmpty(resolvedPath) && File.Exists(resolvedPath)) {
                 assembly = LoadAssemblyFromFilePath(resolvedPath);
-                LoadManagedLibrary?.Invoke(assemblyName, assembly);
+                LoadedAssemblies.Add(assemblyName.Name, assembly);
                 return assembly;
             }
 
@@ -76,7 +69,7 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
                     string resourcePath = Path.Combine(resourceRoot, assemblyName.CultureName, assemblyName.Name + ".dll");
                     if (!File.Exists(resourcePath)) continue;
                     assembly = LoadAssemblyFromFilePath(resourcePath);
-                    LoadManagedLibrary?.Invoke(assemblyName, assembly);
+                    LoadedAssemblies.Add(assemblyName.Name, assembly);
                     return assembly;
                 }
 
@@ -84,18 +77,24 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
             }
 
             // Shared Resolver
-            if (_sharedAssemblies.TryGetValue(assemblyName.Name, out assembly) && assembly != null) {
-                LoadManagedLibrary?.Invoke(assemblyName, assembly);
+            if (SharedAssemblies.TryGetValue(assemblyName.Name, out assembly) && assembly != null) {
+                LoadedAssemblies.Add(assemblyName.Name, assembly);
                 return assembly;
             } else {
                 string dllName = assemblyName.Name + ".dll";
-                foreach (var probingPath in _additionalProbingPaths.Prepend(_basePath)) {
+                foreach (var probingPath in AdditionalProbingPaths.Prepend(_basePath)) {
                     string localFile = Path.Combine(probingPath, dllName);
                     if (!File.Exists(localFile)) continue;
                     assembly = LoadAssemblyFromFilePath(localFile);
-                    LoadManagedLibrary?.Invoke(assemblyName, assembly);
+                    LoadedAssemblies.Add(assemblyName.Name, assembly);
                     return assembly;
                 }
+            }
+
+            foreach (var sharedContext in SharedContexts) {
+                if (!sharedContext.LoadedAssemblies.TryGetValue(assemblyName.Name, out assembly)) continue;
+                LoadedAssemblies.Add(assemblyName.Name, assembly);
+                return assembly;
             }
             return null;
         }
@@ -119,7 +118,7 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
                     string prefixSuffixDllName = prefix + unmanagedDllName + suffix;
                     string prefixDllName = prefix + unmanagedDllName;
 
-                    foreach (var probingPath in _additionalProbingPaths.Prepend(_basePath)) {
+                    foreach (var probingPath in AdditionalProbingPaths.Prepend(_basePath)) {
                         string localFile = Path.Combine(probingPath, prefixSuffixDllName);
                         if (File.Exists(localFile)) {
                             return LoadUnmanagedDllFromResolvedPath(localFile);
