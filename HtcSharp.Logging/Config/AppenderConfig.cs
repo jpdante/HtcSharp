@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using HtcSharp.Logging.Appenders;
+using HtcSharp.Shared.IO;
 
 namespace HtcSharp.Logging.Config {
     public sealed class AppenderConfig {
@@ -30,7 +31,7 @@ namespace HtcSharp.Logging.Config {
                 case AppenderType.Console:
                     return new ConsoleAppender(LogLevel, formatter);
                 case AppenderType.File:
-                    return Settings.TryGetValue("FileName", out string fileName) ? new FileAppender(fileName, LogLevel, formatter) : new FileAppender("log.log", LogLevel, formatter);
+                    return Settings.TryGetValue("FileName", out string fileName) ? new FileAppender(fileName, LogLevel, formatter) : new FileAppender(PathExt.GetLogPath("htcsharp.log"), LogLevel, formatter);
                 case AppenderType.RollingFile:
                     var rollingConfig = new RollingFileAppender.RollingFileConfig();
                     if (Settings == null) return new RollingFileAppender(rollingConfig, LogLevel, formatter);

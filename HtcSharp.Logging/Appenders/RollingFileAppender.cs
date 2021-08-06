@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using HtcSharp.Logging.Internal;
+using HtcSharp.Shared.IO;
 
 namespace HtcSharp.Logging.Appenders {
     public class RollingFileAppender : IAppender {
@@ -166,9 +167,9 @@ namespace HtcSharp.Logging.Appenders {
 
         public class RollingFileConfig {
 
-            public string Path { get; set; } = Directory.GetCurrentDirectory();
+            public string Path { get; set; } = PathExt.GetLogPath();
 
-            public string Name { get; set; } = "log";
+            public string Name { get; set; } = "htcsharp";
 
             public string FileFormat { get; set; } = "dd-MM-yyyy";
 

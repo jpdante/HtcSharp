@@ -5,4 +5,8 @@
     <Platforms>x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HtcSharp.Shared\HtcSharp.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
