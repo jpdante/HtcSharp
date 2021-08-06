@@ -21,10 +21,10 @@ namespace HtcSharp.Shared.IO {
                 _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "tmp", "htcsharp")
             };
             ProgramDataPath = EnvironmentExt.OperatingSystem switch {
-                SystemOS.Unix => Path.Combine("/", "var", "share", "htcsharp"),
+                SystemOS.Unix => Path.Combine("/", "var", "lib", "htcsharp"),
                 SystemOS.MacOSX => Path.Combine("/", "Library", "Application Support", "htcsharp"),
                 SystemOS.Windows => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "htcsharp"),
-                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "share", "htcsharp")
+                _ => Path.Combine(Directory.GetCurrentDirectory(), "vfs", "var", "lib", "htcsharp")
             };
             LogPath = EnvironmentExt.OperatingSystem switch {
                 SystemOS.Unix => Path.Combine("/", "var", "log", "htcsharp"),
