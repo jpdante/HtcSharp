@@ -14,7 +14,7 @@ namespace HtcSharp.HttpModule {
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         public string Name => "HtcHttp";
-        public string Version => "0.1.0";
+        public string Version => "1.0.0";
 
         private HttpModuleConfig _config;
         private HttpEngine _httpEngine;
@@ -45,7 +45,7 @@ namespace HtcSharp.HttpModule {
             } else {
                 await using var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
                 var config = new HttpModuleConfig();
-                await JsonSerializer.SerializeAsync(fileStream, config, new JsonSerializerOptions() {
+                await JsonSerializer.SerializeAsync(fileStream, config, new JsonSerializerOptions {
                     WriteIndented = true
                 });
                 return config;

@@ -93,10 +93,10 @@ namespace HtcSharp.HttpModule {
 
         private void LoadDefaultDirectives() {
             _directiveManager.RegisterDirective<TestDirective>("test");
-            _directiveManager.RegisterDirective<IndexDirective>("index");
 
             _directiveManager.RegisterDirective<MvcDirective>("try_mvc");
             _directiveManager.RegisterDirective<PagesDirective>("try_pages");
+            _directiveManager.RegisterDirective<IndexDirective>("try_indexes");
             _directiveManager.RegisterDirective<StaticFileDirective>("try_files");
             _directiveManager.RegisterDirective<ExtensionProcessorDirective>("try_extensions");
 
