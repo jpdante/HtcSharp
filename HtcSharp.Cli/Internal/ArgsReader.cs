@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace HtcSharp.Cli.Internal {
     public class ArgsReader {
@@ -28,7 +29,7 @@ namespace HtcSharp.Cli.Internal {
                         }
                     }
                 } else {
-                    UnknownArgs = $"{UnknownArgs} {current}";
+                    UnknownArgs = position == 0 ? current : $"{UnknownArgs} {current}";
                     _argsDictionary.Add(count.ToString(), current);
                     count++;
                 }

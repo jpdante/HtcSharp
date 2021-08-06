@@ -12,8 +12,8 @@ namespace HtcSharp.Core.Internal.Cli {
 
         public CliReader(Stream stream) : this(stream, Encoding.UTF8) { }
 
-        public CliReader(Stream stream, Encoding encoding) {
-            _streamReader = new StreamReader(stream, encoding);
+        public CliReader(Stream stream, Encoding encoding, int bufferSize = -1, bool leaveOpen = true) {
+            _streamReader = new StreamReader(stream, encoding, bufferSize: bufferSize, leaveOpen: leaveOpen);
         }
 
         public int Read() => _streamReader.Read();

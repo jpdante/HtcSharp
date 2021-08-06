@@ -20,7 +20,7 @@ namespace HtcSharp.Core.Cli {
 
         public string PipeName { get; private set; }
         public bool Running { get; private set; }
-        public bool Connected { get; private set; }
+        public bool? Connected => _namedPipeServerStream?.IsConnected;
         internal IEnumerable<ICliCommand> Commands => _commands.Values;
 
         public CliServer(string pipeName) {
@@ -58,10 +58,17 @@ namespace HtcSharp.Core.Cli {
                 if (_namedPipeServerStream == null) throw new NullReferenceException();
                 _namedPipeServerStream.EndWaitForConnection(result);
                 Logger.LogInfo("New CLI connection");
-                Connected = true;
                 await ProcessCommands();
-            } catch (Exception) {
-                Connected = false;
+                try {
+                    if (_namedPipeServerStream.IsConnected) _namedPipeServerStream.Disconnect();
+                } catch {
+                    // ignored
+                }
+                if (Running && _cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested) {
+                    _namedPipeServerStream.BeginWaitForConnection(OnNewConnection, null);
+                }
+            } catch (Exception ex) {
+                Logger.LogError(ex);
             }
         }
 
@@ -70,21 +77,37 @@ namespace HtcSharp.Core.Cli {
                 if (_namedPipeServerStream == null) throw new NullReferenceException();
                 using var reader = new CliReader(_namedPipeServerStream);
                 await using var writer = new CliWriter(_namedPipeServerStream);
-                while (Running) {
+                var cliMode = false;
+                var firstCmd = true;
+                while (_namedPipeServerStream.IsConnected) {
                     string? line = await reader.ReadLineAsync();
-                    Logger.LogInfo($">{line}");
                     if (string.IsNullOrEmpty(line)) continue;
+                    if (firstCmd) {
+                        firstCmd = false;
+                        if (line == "cli-mode") {
+                            cliMode = true;
+                            await writer.WriteAsync(">");
+                            await writer.FlushAsync();
+                            continue;
+                        }
+                    }
+                    if (line == "exit") {
+                        await writer.WriteLineAsync("Exiting...");
+                        await writer.FlushAsync();
+                        return;
+                    }
+                    Logger.LogInfo($">{line}");
                     string[] data = line.Split(" ", 2);
                     if (_commands.TryGetValue(data[0], out var command)) {
                         await command.Process(reader, writer, data.Length > 1 ? data[1] : null);
                     } else {
                         await writer.WriteLineAsync($"Unknown command '{data[0]}'.");
                     }
+                    if (cliMode) await writer.WriteAsync(">");
                     await writer.FlushAsync();
                 }
             } catch (Exception ex) {
                 Logger.LogError(ex);
-                Running = false;
             }
         }
 
