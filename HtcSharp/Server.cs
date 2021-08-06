@@ -39,7 +39,7 @@ namespace HtcSharp {
 
             argsReader = new ArgsReader(Args);
 
-            config = await LoadConfig(argsReader.GetOrDefault("config", "./config.yml"));
+            config = await LoadConfig(argsReader.GetOrDefault("config", Path.Combine(PathExt.GetConfigPath(), "config.yml")));
 
             LoggerManager.Dispose();
             LoggerManager.Init(config.Logging.GetAppender());
@@ -95,7 +95,7 @@ namespace HtcSharp {
             await moduleManager.UnloadModules();
 
             LoggerManager.Dispose();
-            config = await LoadConfig(argsReader.GetOrDefault("config", "./config.yml"));
+            config = await LoadConfig(argsReader.GetOrDefault("config", Path.Combine(PathExt.GetConfigPath(), "config.yml")));
             LoggerManager.Init(config.Logging.GetAppender());
 
             await moduleManager.LoadModules(Path.GetFullPath(config.ModulesPath));
