@@ -10,6 +10,11 @@
     <Platforms>x64</Platforms>
     <AssemblyName>HtcSharp</AssemblyName>
     <RootNamespace>HtcSharp</RootNamespace>
+    <Authors>jpdante</Authors>
+    <Description>HtcSharp is a server that supports modules and plugins for application development and hosting</Description>
+    <PackageProjectUrl>https://github.com/jpdante/HtcSharp/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jpdante/HtcSharp/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

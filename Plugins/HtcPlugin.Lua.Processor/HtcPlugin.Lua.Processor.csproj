@@ -6,6 +6,13 @@
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <Platforms>x64</Platforms>
+    <PackageId>HtcPlugin.Lua.Processor</PackageId>
+    <Authors>jpdante</Authors>
+    <Product>HtcLuaProcessor</Product>
+    <Description>Lua processor for HtcSharp</Description>
+    <PackageProjectUrl>https://github.com/jpdante/HtcSharp/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jpdante/HtcSharp/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

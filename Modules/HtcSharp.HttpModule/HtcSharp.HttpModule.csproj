@@ -5,6 +5,14 @@
     <AssemblyName>HtcSharp.HttpModule.module</AssemblyName>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <Platforms>x64</Platforms>
+    <Product>HtcHttp</Product>
+    <PackageId>HtcSharp.HttpModule</PackageId>
+    <Authors>jpdante</Authors>
+    <Company />
+    <PackageProjectUrl>https://github.com/jpdante/HtcSharp/</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/jpdante/HtcSharp</RepositoryUrl>
+    <Description>Http module for HtcSharp</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

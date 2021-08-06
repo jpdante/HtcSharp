@@ -4,6 +4,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <Platforms>x64</Platforms>
+    <AssemblyName>htcsharp-cli</AssemblyName>
+    <Authors>jpdante</Authors>
+    <PackageProjectUrl>https://github.com/jpdante/HtcSharp/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jpdante/HtcSharp/</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>HtcSharp command line interface</Description>
   </PropertyGroup>
 
 </Project>
