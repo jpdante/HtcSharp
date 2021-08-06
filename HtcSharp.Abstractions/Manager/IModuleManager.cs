@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HtcSharp.Abstractions {
+namespace HtcSharp.Abstractions.Manager {
     public interface IModuleManager {
         
         public IEnumerable<IReadOnlyModule> Modules { get; }

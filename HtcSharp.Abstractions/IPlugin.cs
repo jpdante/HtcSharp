@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using HtcSharp.Abstractions.Manager;
 
 namespace HtcSharp.Abstractions {
     public interface IPlugin : IReadOnlyPlugin, IDisposable {

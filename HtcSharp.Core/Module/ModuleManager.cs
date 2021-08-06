@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
+using HtcSharp.Abstractions.Manager;
 using HtcSharp.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -65,7 +66,7 @@ namespace HtcSharp.Core.Module {
         #region Unload Modules
 
         public async Task UnloadModules() {
-            foreach (var module in _modules) {
+            foreach (var module in _modules.ToArray()) {
                 try {
                     await UnloadModule(module);
                     Logger.LogInfo($"Unloaded module assembly {module.Name} {module.Version}.");

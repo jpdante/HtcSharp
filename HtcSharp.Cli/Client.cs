@@ -37,7 +37,6 @@ namespace HtcSharp.Cli {
         private async Task ProcessCommands() {
             Console.WriteLine("Using CLI mode, press Ctrl + C to exit.");
             while (Running) {
-                Console.Write(">");
                 string command = Console.ReadLine();
                 if (string.IsNullOrEmpty(command)) continue;
                 await CliClient.SendCommand(command);

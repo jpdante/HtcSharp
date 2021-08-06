@@ -3,13 +3,15 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
+using HtcSharp.Commands;
 using HtcSharp.Core;
-using HtcSharp.Core.Console;
+using HtcSharp.Core.Cli;
 using HtcSharp.Core.Module;
 using HtcSharp.Core.Plugin;
 using HtcSharp.Internal;
 using HtcSharp.Logging;
 using HtcSharp.Shared.IO;
+using Microsoft.Extensions.DependencyInjection;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -17,15 +19,15 @@ namespace HtcSharp {
     public class Server : DaemonApplication, IServer {
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        internal readonly Version Version;
-        internal Config Config;
-        internal ArgsReader ArgsReader;
-        internal ModuleManager ModuleManager;
-        internal PluginManager PluginManager;
-        internal CliServer CliServer;
+        internal readonly Version version;
+        internal Config config;
+        internal ArgsReader argsReader;
+        internal ModuleManager moduleManager;
+        internal PluginManager pluginManager;
+        internal CliServer cliServer;
 
         public Server() {
-            Version = new Version {
+            version = new Version {
                 Major = 1,
                 Minor = 0,
                 Patch = 0,
@@ -35,74 +37,76 @@ namespace HtcSharp {
         protected override async Task OnLoad() {
             PathExt.EnsureFolders();
 
-            ArgsReader = new ArgsReader(Args);
+            argsReader = new ArgsReader(Args);
 
-            Config = await LoadConfig(ArgsReader.GetOrDefault("config", "./config.yml"));
+            config = await LoadConfig(argsReader.GetOrDefault("config", "./config.yml"));
 
             LoggerManager.Dispose();
-            LoggerManager.Init(Config.Logging.GetAppender());
+            LoggerManager.Init(config.Logging.GetAppender());
 
             Logger.LogInfo("Loading...");
 
-            CliServer = new CliServer(ArgsReader.GetOrDefault("pipe", "htcsharp"));
+            cliServer = new CliServer(argsReader.GetOrDefault("pipe", "htcsharp"));
+            cliServer.AddCommand(new ReloadCommand(this));
 
-            ModuleManager = new ModuleManager(Version, configureServices => {
-
+            moduleManager = new ModuleManager(version, configureServices => {
+                configureServices.AddSingleton(cliServer);
             });
-            await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
+            await moduleManager.LoadModules(Path.GetFullPath(config.ModulesPath));
 
-            await ModuleManager.InitModules();
+            await moduleManager.InitModules();
 
-            PluginManager = new PluginManager(Version, ModuleManager, configureServices => {
-
+            pluginManager = new PluginManager(version, moduleManager, configureServices => {
+                configureServices.AddSingleton(cliServer);
             });
-            await PluginManager.LoadPlugins(Path.GetFullPath(Config.PluginsPath));
+            await pluginManager.LoadPlugins(Path.GetFullPath(config.PluginsPath));
 
-            await PluginManager.InitPlugins();
+            await pluginManager.InitPlugins();
         }
 
         protected override async Task OnStart() {
             Logger.LogInfo("Starting...");
 
-            await ModuleManager.EnableModules();
-            await PluginManager.EnablePlugins();
+            await moduleManager.EnableModules();
+            await pluginManager.EnablePlugins();
 
-            await CliServer.Start();
+            await cliServer.Start();
         }
 
         protected override async Task OnExit() {
-            await CliServer.Stop();
+            await cliServer.Stop();
 
-            await PluginManager.DisablePlugins();
-            await ModuleManager.DisableModules();
+            await pluginManager.DisablePlugins();
+            await moduleManager.DisableModules();
 
-            await PluginManager.UnloadPlugins();
-            await ModuleManager.UnloadModules();
+            await pluginManager.UnloadPlugins();
+            await moduleManager.UnloadModules();
 
             Logger.LogInfo("Exiting...");
         }
 
         public async Task OnReload() {
             Logger.LogInfo("Reloading...");
+
+            await pluginManager.DisablePlugins();
+            await moduleManager.DisableModules();
+
+            await pluginManager.UnloadPlugins();
+            await moduleManager.UnloadModules();
+
             LoggerManager.Dispose();
+            config = await LoadConfig(argsReader.GetOrDefault("config", "./config.yml"));
+            LoggerManager.Init(config.Logging.GetAppender());
 
-            await PluginManager.DisablePlugins();
-            await ModuleManager.DisableModules();
+            await moduleManager.LoadModules(Path.GetFullPath(config.ModulesPath));
+            await moduleManager.InitModules();
 
-            await PluginManager.UnloadPlugins();
-            await ModuleManager.UnloadModules();
+            await pluginManager.LoadPlugins(Path.GetFullPath(config.PluginsPath));
+            await pluginManager.InitPlugins();
 
-            Config = await LoadConfig(ArgsReader.GetOrDefault("config", "./config.yml"));
-            LoggerManager.Init(Config.Logging.GetAppender());
-
-            await ModuleManager.LoadModules(Path.GetFullPath(Config.ModulesPath));
-            await ModuleManager.InitModules();
-
-            await PluginManager.LoadPlugins(Path.GetFullPath(Config.PluginsPath));
-            await PluginManager.InitPlugins();
-
-            await ModuleManager.EnableModules();
-            await PluginManager.EnablePlugins();
+            await moduleManager.EnableModules();
+            await pluginManager.EnablePlugins();
+            Logger.LogInfo("Reloaded!");
         }
 
         private async Task<Config> LoadConfig(string configPath) {

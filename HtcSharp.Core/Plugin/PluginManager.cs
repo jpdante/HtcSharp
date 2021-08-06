@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
+using HtcSharp.Abstractions.Manager;
 using HtcSharp.Core.Module;
 using HtcSharp.Logging;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,7 +89,7 @@ namespace HtcSharp.Core.Plugin {
         #region Unload Plugins
 
         public async Task UnloadPlugins() {
-            foreach (var plugin in _plugins) {
+            foreach (var plugin in _plugins.ToArray()) {
                 try {
                     await UnloadPlugin(plugin);
                     Logger.LogInfo($"Unloaded plugin assembly {plugin.Name} {plugin.Version}.");

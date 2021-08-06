@@ -1,6 +1,6 @@
-﻿namespace HtcSharp.Abstractions {
-    public interface IReadOnlyPlugin {
-
+﻿namespace HtcSharp.Abstractions.Manager {
+    public interface IReadOnlyModule {
+        
         string Name { get; }
         string Version { get; }
 
