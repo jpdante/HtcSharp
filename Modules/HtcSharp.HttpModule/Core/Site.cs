@@ -60,7 +60,7 @@ namespace HtcSharp.HttpModule.Core {
 
         public bool Match(HttpContext httpContext) {
             if (_matchAny) return true;
-            return !httpContext.Request.Host.HasValue || _domains.Contains(httpContext.Request.Host.Value);
+            return httpContext.Request.Host.HasValue && _domains.Contains(httpContext.Request.Host.Value);
         }
 
         public bool HasPermission(IPlugin plugin) {
