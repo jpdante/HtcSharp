@@ -55,6 +55,18 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
 
             Assembly? assembly;
 
+            // Shared Resolver
+            if (SharedAssemblies.TryGetValue(assemblyName.Name, out assembly) && assembly != null) {
+                LoadedAssemblies.Add(assemblyName.Name, assembly);
+                return assembly;
+            }
+
+            foreach (var sharedContext in SharedContexts) {
+                if (!sharedContext.LoadedAssemblies.TryGetValue(assemblyName.Name, out assembly)) continue;
+                LoadedAssemblies.Add(assemblyName.Name, assembly);
+                return assembly;
+            }
+
             // Native Resolver
             string? resolvedPath = _dependencyResolver.ResolveAssemblyToPath(assemblyName);
             if (!string.IsNullOrEmpty(resolvedPath) && File.Exists(resolvedPath)) {
@@ -76,23 +88,12 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
                 return null;
             }
 
-            // Shared Resolver
-            if (SharedAssemblies.TryGetValue(assemblyName.Name, out assembly) && assembly != null) {
-                LoadedAssemblies.Add(assemblyName.Name, assembly);
-                return assembly;
-            } else {
-                string dllName = assemblyName.Name + ".dll";
-                foreach (var probingPath in AdditionalProbingPaths.Prepend(_basePath)) {
-                    string localFile = Path.Combine(probingPath, dllName);
-                    if (!File.Exists(localFile)) continue;
-                    assembly = LoadAssemblyFromFilePath(localFile);
-                    LoadedAssemblies.Add(assemblyName.Name, assembly);
-                    return assembly;
-                }
-            }
-
-            foreach (var sharedContext in SharedContexts) {
-                if (!sharedContext.LoadedAssemblies.TryGetValue(assemblyName.Name, out assembly)) continue;
+            // Probe Additional Paths
+            string dllName = assemblyName.Name + ".dll";
+            foreach (var probingPath in AdditionalProbingPaths.Prepend(_basePath)) {
+                string localFile = Path.Combine(probingPath, dllName);
+                if (!File.Exists(localFile)) continue;
+                assembly = LoadAssemblyFromFilePath(localFile);
                 LoadedAssemblies.Add(assemblyName.Name, assembly);
                 return assembly;
             }

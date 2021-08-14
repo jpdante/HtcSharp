@@ -46,15 +46,10 @@ namespace HtcSharp.HttpModule.Routing.Directives {
 
         public Task Invoke(HtcHttpContext httpContext) {
             foreach (string replacePath in _paths) {
-                try {
-                    string path = replacePath.Replace("$uri", httpContext.Request.Path.Value);
-                    string extension = Path.GetExtension(path);
-                    if (httpContext.Site.FileExtensions.TryGetValue(extension, out var extensionProcessor)) {
-                        return extensionProcessor.OnHttpExtensionProcess(_next, httpContext, path, extension);
-                    }
-                    return _next(httpContext);
-                } catch {
-                    // ignored
+                string path = replacePath.Replace("$uri", httpContext.Request.Path.Value);
+                string extension = Path.GetExtension(path);
+                if (httpContext.Site.FileExtensions.TryGetValue(extension, out var extensionProcessor)) {
+                    return extensionProcessor.OnHttpExtensionProcess(_next, httpContext, path, extension);
                 }
                 return _next(httpContext);
             }

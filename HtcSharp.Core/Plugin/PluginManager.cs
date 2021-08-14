@@ -62,7 +62,7 @@ namespace HtcSharp.Core.Plugin {
                 if (moduleLoader.Assembly == null) continue;
                 string? moduleAssemblyName = moduleLoader.Assembly.GetName().Name;
                 if (string.IsNullOrEmpty(moduleAssemblyName)) continue;
-                pluginLoader.SharedAssemblies.Add(moduleAssemblyName, moduleLoader.Assembly);   
+                pluginLoader.SharedAssemblies.Add(moduleAssemblyName, moduleLoader.Assembly);
                 pluginLoader.SharedContexts.Add(moduleLoader);
             }
 
