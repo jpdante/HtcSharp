@@ -21,7 +21,7 @@ namespace HtcSharp.HttpModule {
 
         public async Task Init(IServiceProvider serviceProvider) {
             _config = await LoadConfig();
-            _httpEngine = new HttpEngine(Path.GetFullPath(_config.SitesPath));
+            _httpEngine = new HttpEngine(Path.GetFullPath(_config.SitesPath), _config.LogLevel);
             await _httpEngine.Load();
         }
 

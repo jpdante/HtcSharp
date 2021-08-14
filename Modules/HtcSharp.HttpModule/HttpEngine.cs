@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ILogger = HtcSharp.Logging.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace HtcSharp.HttpModule {
     public class HttpEngine {
@@ -29,13 +30,17 @@ namespace HtcSharp.HttpModule {
         private static HttpEngine _httpEngine;
 
         private readonly string _sitesPath;
+        private readonly LogLevel _logLevel;
         private readonly SiteCollection _sites;
         private readonly DirectiveManager _directiveManager;
 
         private IWebHost _webHost;
 
-        public HttpEngine(string sitesPath) {
+        public HttpEngine(string sitesPath, string logLevel) {
             _sitesPath = sitesPath;
+            if (!Enum.TryParse<LogLevel>(logLevel, out _logLevel)) {
+                _logLevel = LogLevel.Warning;
+            }
             _sites = new SiteCollection();
             _directiveManager = new DirectiveManager();
             _httpEngine = this;

@@ -6,5 +6,8 @@ namespace HtcSharp.HttpModule.Config {
         [JsonPropertyName("SitesPath")]
         public string SitesPath { get; set; } = "sites/";
 
+        [JsonPropertyName("LogLevel")]
+        public string LogLevel { get; set; } = "Warning";
+
     }
 }

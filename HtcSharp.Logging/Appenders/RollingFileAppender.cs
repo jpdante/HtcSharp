@@ -7,7 +7,6 @@ using HtcSharp.Shared.IO;
 
 namespace HtcSharp.Logging.Appenders {
     public class RollingFileAppender : IAppender {
-
         private LogLevel _logLevels;
         private readonly RollingFileConfig _config;
         private readonly IFormatter _logFormatter;
@@ -55,7 +54,7 @@ namespace HtcSharp.Logging.Appenders {
                 }
             } else {
                 lock (_lock) {
-                    if(!ShouldRollFile(_currentLog)) return;
+                    if (!ShouldRollFile(_currentLog)) return;
 
                     string oldLogPath = _currentLog.LogPath;
                     var oldLogDate = _currentLog.LogDate;
@@ -74,8 +73,19 @@ namespace HtcSharp.Logging.Appenders {
         private void RollFile(string logPath, DateTime dateTime) {
             if (_config.CompressOldLogs) {
                 string rollPath = GetFileName(dateTime, "zip");
-                if (File.Exists(rollPath)) File.Delete(rollPath);
+                try {
+                    if (File.Exists(rollPath)) File.Delete(rollPath);
+                } catch {
+                    // ignored
+                }
+
                 CompressFile(logPath, rollPath);
+                try {
+                    if (File.Exists(logPath)) File.Delete(logPath);
+                } catch {
+                    // ignored
+                }
+
                 AdvanceRollingFiles(rollPath);
             } else {
                 AdvanceRollingFiles(logPath);
@@ -112,6 +122,7 @@ namespace HtcSharp.Logging.Appenders {
                     File.Move(currentPath, $"{path}.{i + 1}");
                 }
             }
+
             File.Move(path, $"{path}.1");
         }
 
@@ -137,7 +148,6 @@ namespace HtcSharp.Logging.Appenders {
         }
 
         private class LogFile : IDisposable {
-
             public FileStream FileStream { get; }
 
             public string LogPath { get; }
@@ -166,7 +176,6 @@ namespace HtcSharp.Logging.Appenders {
         }
 
         public class RollingFileConfig {
-
             public string Path { get; set; } = PathExt.GetLogPath();
 
             public string Name { get; set; } = "htcsharp";
