@@ -55,6 +55,13 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
 
             Assembly? assembly;
 
+            // Load overrides
+            if (File.Exists(Path.Combine(_basePath, $"{assemblyName.Name}.dll"))) {
+                assembly = LoadAssemblyFromFilePath(Path.Combine(_basePath, $"{assemblyName.Name}.dll"));
+                LoadedAssemblies.Add(assemblyName.Name, assembly);
+                return assembly;
+            }
+
             // Shared Resolver
             if (SharedAssemblies.TryGetValue(assemblyName.Name, out assembly) && assembly != null) {
                 LoadedAssemblies.Add(assemblyName.Name, assembly);
@@ -63,14 +70,6 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
 
             foreach (var sharedContext in SharedContexts) {
                 if (!sharedContext.LoadedAssemblies.TryGetValue(assemblyName.Name, out assembly)) continue;
-                LoadedAssemblies.Add(assemblyName.Name, assembly);
-                return assembly;
-            }
-
-            // Native Resolver
-            string? resolvedPath = _dependencyResolver.ResolveAssemblyToPath(assemblyName);
-            if (!string.IsNullOrEmpty(resolvedPath) && File.Exists(resolvedPath)) {
-                assembly = LoadAssemblyFromFilePath(resolvedPath);
                 LoadedAssemblies.Add(assemblyName.Name, assembly);
                 return assembly;
             }
@@ -86,6 +85,14 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
                 }
 
                 return null;
+            }
+
+            // Native Resolver
+            string? resolvedPath = _dependencyResolver.ResolveAssemblyToPath(assemblyName);
+            if (!string.IsNullOrEmpty(resolvedPath) && File.Exists(resolvedPath)) {
+                assembly = LoadAssemblyFromFilePath(resolvedPath);
+                LoadedAssemblies.Add(assemblyName.Name, assembly);
+                return assembly;
             }
 
             // Probe Additional Paths
