@@ -80,8 +80,8 @@ namespace HtcSharp.HttpModule.Mvc {
                 }
 
                 foreach (var routeContext in routeContexts) {
-                    Logger.LogInfo($"Registering route: [{routeContext.Method}] {routeContext.Path}");
                     var route = $"{_prefix}{routeContext.Path}";
+                    Logger.LogInfo($"Registering route: [{routeContext.Method}] {route}");
                     if (_routes.TryGetValue(route, out List<RouteContext> listRouteContexts)) {
                         listRouteContexts.Add(routeContext);
                     } else {
@@ -132,11 +132,12 @@ namespace HtcSharp.HttpModule.Mvc {
                 }
 
                 foreach (var routeContext in routeContexts) {
-                    Logger.LogInfo($"Registering route: [{routeContext.Method}] {routeContext.Path}");
-                    if (_routes.TryGetValue(routeContext.Path, out List<RouteContext> listRouteContexts)) {
+                    var route = $"{_prefix}{routeContext.Path}";
+                    Logger.LogInfo($"Registering route: [{routeContext.Method}] {route}");
+                    if (_routes.TryGetValue(route, out List<RouteContext> listRouteContexts)) {
                         listRouteContexts.Add(routeContext);
                     } else {
-                        _routes.Add(routeContext.Path, new List<RouteContext> {routeContext});
+                        _routes.Add(route, new List<RouteContext> {routeContext});
                     }
                 }
             }
