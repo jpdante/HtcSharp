@@ -16,7 +16,7 @@ namespace HtcSharp.Logging.Internal {
             _format = format;
         }
 
-        public string FormatLog(ILogger logger, LogLevel logLevel, string msg, Exception ex, params object[] objs) {
+        public string FormatLog(ILogger logger, LogLevel logLevel, object msg, Exception ex, params object[] objs) {
             var dateTime = DateTime.Now;
             var builder = new StringBuilder(_format);
             builder.Replace("%YYYY", dateTime.Year.ToString("00"));
@@ -29,7 +29,7 @@ namespace HtcSharp.Logging.Internal {
             builder.Replace("%tt", dateTime.Ticks.ToString("00"));
             builder.Replace("%level", logLevel.ToString());
             builder.Replace("%thread", Thread.CurrentThread.ManagedThreadId.ToString());
-            builder.Replace("%message", msg);
+            builder.Replace("%message", msg?.ToString());
             if (ex == null) {
                 builder.Replace("%ex-message", null);
                 builder.Replace("%ex-stack", null);

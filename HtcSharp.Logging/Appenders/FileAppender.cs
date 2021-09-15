@@ -21,7 +21,7 @@ namespace HtcSharp.Logging.Appenders {
             _lock = new object();
         }
 
-        public void Log(ILogger logger, LogLevel logLevel, string msg, params object[] objs) {
+        public void Log(ILogger logger, LogLevel logLevel, object msg, params object[] objs) {
             if (!_logLevels.HasFlag(logLevel)) return;
             lock (_lock) {
                 _streamWriter.Write(_logFormatter.FormatLog(logger, logLevel, msg, null, objs));
@@ -30,7 +30,7 @@ namespace HtcSharp.Logging.Appenders {
             }
         }
 
-        public void Log(ILogger logger, LogLevel logLevel, string msg, Exception ex, params object[] objs) {
+        public void Log(ILogger logger, LogLevel logLevel, object msg, Exception ex, params object[] objs) {
             if (!_logLevels.HasFlag(logLevel)) return;
             lock (_lock) {
                 _streamWriter.Write(_logFormatter.FormatLog(logger, logLevel, msg, ex, objs));

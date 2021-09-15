@@ -9,11 +9,11 @@ namespace HtcSharp.Logging.Internal {
             Type = type;
         }
 
-        public void Log(LogLevel logLevel, string msg, params object[] objs) {
+        public void Log(LogLevel logLevel, object msg, params object[] objs) {
             LoggerManager.DefaultAppender.Log(this, logLevel, msg, objs);
         }
 
-        public void Log(LogLevel logLevel, string msg, Exception ex, params object[] objs) {
+        public void Log(LogLevel logLevel, object msg, Exception ex, params object[] objs) {
             if (ex == null) LoggerManager.DefaultAppender.Log(this, logLevel, msg, objs);
             else LoggerManager.DefaultAppender.Log(this, logLevel, msg, ex, objs);
         }
