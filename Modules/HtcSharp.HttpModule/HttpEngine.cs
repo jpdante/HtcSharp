@@ -183,8 +183,6 @@ namespace HtcSharp.HttpModule {
                     } else {
                         Logger.LogInfo($"Listening http on '{endPoint.IPAddress}:{endPoint.Port}'");
                     }
-
-                    listenOptions.NoDelay = endPoint.NoDelay;
                 });
             }
         }

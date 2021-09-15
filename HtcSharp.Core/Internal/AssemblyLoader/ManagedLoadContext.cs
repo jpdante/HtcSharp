@@ -67,12 +67,15 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
                 LoadedAssemblies.Add(assemblyName.Name, assembly);
                 return assembly;
             }
+            //Logger.LogError(SharedAssemblies.ContainsKey(assemblyName.Name));
 
             foreach (var sharedContext in SharedContexts) {
                 if (!sharedContext.LoadedAssemblies.TryGetValue(assemblyName.Name, out assembly)) continue;
+                Logger.LogInfo($"Loading from shared {assemblyName.Name}.");
                 LoadedAssemblies.Add(assemblyName.Name, assembly);
                 return assembly;
             }
+            Logger.LogInfo($"Didn't load from shared {assemblyName.Name}.");
 
             // Probe Resource Roots
             if (!string.IsNullOrEmpty(assemblyName.CultureName) && !string.Equals("neutral", assemblyName.CultureName)) {
@@ -104,6 +107,8 @@ namespace HtcSharp.Core.Internal.AssemblyLoader {
                 LoadedAssemblies.Add(assemblyName.Name, assembly);
                 return assembly;
             }
+
+            Logger.LogInfo($"Failed to load {assemblyName.Name}.");
             return null;
         }
 

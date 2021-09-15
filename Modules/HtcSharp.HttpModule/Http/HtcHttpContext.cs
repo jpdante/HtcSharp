@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading;
 using HtcSharp.HttpModule.Abstractions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Http.Features;
 
 namespace HtcSharp.HttpModule.Http {
@@ -26,11 +25,6 @@ namespace HtcSharp.HttpModule.Http {
         public override ConnectionInfo Connection => _httpContext.Connection;
 
         public override WebSocketManager WebSockets => _httpContext.WebSockets;
-
-#pragma warning disable 618
-        [Obsolete("This is obsolete and will be removed in a future version. The recommended alternative is to use Microsoft.AspNetCore.Authentication.AuthenticationHttpContextExtensions. See https://go.microsoft.com/fwlink/?linkid=845470.")]
-        public override AuthenticationManager Authentication => _httpContext.Authentication;
-#pragma warning restore 618
 
         public override ClaimsPrincipal User {
             get => _httpContext.User;

@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace HtcSharp.Core.Module {
     public class ModuleManager : IModuleManager {
 
-        private readonly ILogger Logger = LoggerManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod()?.DeclaringType);
+        private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private readonly IVersion _version;
         private readonly List<IModule> _modules;
         private readonly Dictionary<IModule, ModuleLoader> _modulesDictionary;

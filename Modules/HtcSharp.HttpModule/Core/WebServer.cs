@@ -26,7 +26,7 @@ namespace HtcSharp.HttpModule.Core {
             try {
                 await _router.ProcessRequest(context);
             } catch (Exception ex) {
-                Logger.LogError(null, ex);
+                Logger.LogError(message: null, ex);
             }
         }
     }

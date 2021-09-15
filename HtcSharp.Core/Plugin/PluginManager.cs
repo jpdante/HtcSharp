@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using HtcSharp.Abstractions;
 using HtcSharp.Abstractions.Manager;
@@ -56,20 +54,20 @@ namespace HtcSharp.Core.Plugin {
             var pluginLoader = new PluginLoader(assemblyPath);
 
             // Add modules as shared libraries
-            foreach (var readOnlyModule in _moduleManager.Modules) {
+            /*foreach (var readOnlyModule in _moduleManager.Modules) {
                 if (!_moduleManager.TryGetBaseModule(readOnlyModule, out var moduleLoader)) continue;
                 if (moduleLoader == null) continue;
                 if (moduleLoader.Assembly == null) continue;
                 string? moduleAssemblyName = moduleLoader.Assembly.GetName().Name;
                 if (string.IsNullOrEmpty(moduleAssemblyName)) continue;
                 pluginLoader.SharedAssemblies.Add(moduleAssemblyName, moduleLoader.Assembly);
-                pluginLoader.SharedContexts.Add(moduleLoader);
-            }
+                //pluginLoader.SharedContexts.Add(moduleLoader);
+            }*/
 
             // Add plugins as shared libraries
-            foreach (var subPluginLoader in _pluginsDictionary.Values) {
+            /*foreach (var subPluginLoader in _pluginsDictionary.Values) {
                 pluginLoader.SharedContexts.Add(subPluginLoader);
-            }
+            }*/
 
             // Load plugins
             pluginLoader.Load(_version);

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HtcSharp.Abstractions;
-using HtcSharp.Core.Internal.AssemblyLoader;
 using HtcSharp.Logging;
 
 namespace HtcSharp.Core.Plugin {
-    public class PluginLoader : ManagedLoadContext, IDisposable {
+    public class PluginLoader : IDisposable {
 
         private readonly ILogger Logger = LoggerManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
@@ -15,14 +14,14 @@ namespace HtcSharp.Core.Plugin {
         public Assembly? Assembly { get; private set; }
         public List<IPlugin> Instances { get; }
 
-        public PluginLoader(string assemblyPath) : base(assemblyPath, true) {
+        public PluginLoader(string assemblyPath) {
             AssemblyPath = assemblyPath;
             Instances = new List<IPlugin>();
             Assembly = null;
         }
 
         public void Load(IVersion version) {
-            Assembly = LoadAssemblyFromFilePath(AssemblyPath);
+            Assembly = Assembly.LoadFrom(AssemblyPath);
             foreach (var pluginType in Assembly.GetTypes().Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract)) {
                 var plugin = Activator.CreateInstance(pluginType) as IPlugin;
                 if (plugin == null) continue;
@@ -54,7 +53,6 @@ namespace HtcSharp.Core.Plugin {
         }
 
         public void Dispose() {
-            Unload();
         }
     }
 }
