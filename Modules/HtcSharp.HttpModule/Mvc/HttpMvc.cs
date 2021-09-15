@@ -183,7 +183,7 @@ namespace HtcSharp.HttpModule.Mvc {
             }
         }
 
-        protected virtual Task LoadSession(HtcHttpContext httpContext) => Task.CompletedTask;
+        protected virtual Task<ISession> LoadSession(HtcHttpContext httpContext) => Task.FromResult<ISession>(null);
 
         protected virtual async Task ThrowHttpException(HtcHttpContext httpContext, HttpException httpException) {
             httpContext.Response.StatusCode = httpException.Status;
@@ -203,7 +203,7 @@ namespace HtcSharp.HttpModule.Mvc {
                 foreach (var routeContext in routeContexts.Where(context => context.Method == httpContext.Request.Method)) {
                     try {
                         if (routeContext.RequireSession) {
-                            if (httpContext.Session == null) await LoadSession(httpContext);
+                            httpContext.Session = await LoadSession(httpContext);
                             if (httpContext.Session == null) throw new HttpInvalidSessionException();
                         }
 

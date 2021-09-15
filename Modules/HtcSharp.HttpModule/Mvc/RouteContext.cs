@@ -7,7 +7,7 @@ using HtcSharp.HttpModule.Http;
 using HtcSharp.HttpModule.Mvc.Exceptions;
 
 namespace HtcSharp.HttpModule.Mvc {
-    public struct RouteContext {
+    public class RouteContext {
 
         private readonly object _instance;
         private readonly MethodInfo _methodInfo;
