@@ -43,11 +43,13 @@ namespace HtcSharp.HttpModule.Mvc {
         }
 
         public HttpMvc LoadController(Type type) {
-            IEnumerable<MethodInfo> functions = type.GetMethods().Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0);
+            var functions = type.GetMethods().Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0);
             foreach (var function in functions) {
-                if (function.ReturnType != typeof(Task) || !function.IsStatic) continue;
+                if (function.ReturnType != typeof(Task) ||
+                    function.ReturnType != typeof(Task<>) ||
+                    !function.IsStatic) continue;
 
-                ParameterInfo[] parameters = function.GetParameters();
+                var parameters = function.GetParameters();
 
                 if (parameters.Length < 1 || parameters[0].ParameterType != typeof(HtcHttpContext)) continue;
 
@@ -95,11 +97,13 @@ namespace HtcSharp.HttpModule.Mvc {
 
         public HttpMvc LoadController(object instance) {
             var type = instance.GetType();
-            IEnumerable<MethodInfo> functions = type.GetMethods().Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0);
+            var functions = type.GetMethods().Where(m => m.GetCustomAttributes(typeof(HttpMethodAttribute), false).Length > 0);
             foreach (var function in functions) {
-                if (function.ReturnType != typeof(Task) || function.IsStatic) continue;
+                if (function.ReturnType != typeof(Task) ||
+                    function.ReturnType != typeof(Task<>) ||
+                    !function.IsStatic) continue;
 
-                ParameterInfo[] parameters = function.GetParameters();
+                var parameters = function.GetParameters();
 
                 if (parameters.Length < 1 || parameters[0].ParameterType != typeof(HtcHttpContext)) continue;
 
@@ -199,7 +203,7 @@ namespace HtcSharp.HttpModule.Mvc {
         }
 
         internal async Task OnHttpRequest(HtcHttpContext httpContext, string path) {
-            if (_routes.TryGetValue(path, out List<RouteContext> routeContexts)) {
+            if (_routes.TryGetValue(path, out var routeContexts)) {
                 foreach (var routeContext in routeContexts.Where(context => context.Method == httpContext.Request.Method)) {
                     try {
                         if (routeContext.RequireSession) {
@@ -208,7 +212,7 @@ namespace HtcSharp.HttpModule.Mvc {
                         }
 
                         if (routeContext.RequiredContentType != null) {
-                            string contentType = httpContext.Request.ContentType.Split(";", 2)[0];
+                            var contentType = httpContext.Request.ContentType?.Split(";", 2)[0];
                             if (contentType != routeContext.RequiredContentType) throw new HttpInvalidContentTypeException();
                         }
 

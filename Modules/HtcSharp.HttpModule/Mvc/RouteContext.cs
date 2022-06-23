@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using HtcSharp.HttpModule.Abstractions.Mvc;
 using HtcSharp.HttpModule.Http;
@@ -18,6 +19,7 @@ namespace HtcSharp.HttpModule.Mvc {
         public string Method { get; private set; }
         public bool RequireObject { get; private set; }
         public bool RequireSession { get; private set; }
+        public bool ReturnObject { get; private set; }
         public string RequiredContentType { get; private set; }
 
         public RouteContext(HttpMvc httpMvc, object instance, MethodInfo methodInfo, HttpMethodAttribute httpMethod) {
@@ -30,9 +32,10 @@ namespace HtcSharp.HttpModule.Mvc {
             Method = httpMethod.Method;
             RequireObject = false;
             RequireSession = false;
+            ReturnObject = _methodInfo.ReturnType == typeof(Task<>);
             RequiredContentType = null;
 
-            ParameterInfo[] parameters = _methodInfo.GetParameters();
+            var parameters = _methodInfo.GetParameters();
             switch (parameters.Length) {
                 case 1:
                     break;
@@ -78,9 +81,17 @@ namespace HtcSharp.HttpModule.Mvc {
             } else {
                 parameterData = new object[] { httpContext };
             }
-            object task = _methodInfo.Invoke(_instance, parameterData);
-            if (task == null) throw new HttpNullTaskException();
-            await (Task) task;
+            var invokeReturn = _methodInfo.Invoke(_instance, parameterData);
+            if (invokeReturn is Task<object> taskReturn) {
+                var data = await taskReturn;
+                try {
+                    await JsonSerializer.SerializeAsync(httpContext.Response.Body, data);
+                } catch (Exception ex) {
+                    throw new HttpEncodeDataException(ex);
+                }
+            } else if (invokeReturn is Task task) {
+                await task;
+            } else throw new HttpNullTaskException();
         }
     }
 }

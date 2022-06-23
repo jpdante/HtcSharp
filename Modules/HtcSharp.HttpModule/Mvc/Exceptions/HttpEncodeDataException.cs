@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 
 namespace HtcSharp.HttpModule.Mvc.Exceptions {
-    public class HttpDecodeDataException : HttpException {
+    public class HttpEncodeDataException : HttpException {
 
         public Exception[] InnerExceptions;
 
-        public HttpDecodeDataException(params Exception[] innerExceptions) : base(500, "Failed to decode body data.") {
+        public HttpEncodeDataException(params Exception[] innerExceptions) : base(500, "Failed to encode body data.") {
             InnerExceptions = innerExceptions;
         }
     }
